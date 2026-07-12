@@ -45,27 +45,27 @@
     <!-- Background Ornamen -->
     <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-    <!-- HEADER: Menampilkan Logo & Judul -->
-    <header class="h-24 flex items-center justify-between px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
-        <div class="flex items-center gap-4">
-            <img src="asset/logob.webp" alt="Whoost Logo" class="h-8 w-auto object-contain">
-            <div class="h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            <h1 class="text-xl md:text-2xl font-semibold tracking-tight">Daftar Pengajuan</h1>
+    <!-- HEADER -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logob.webp" alt="Whoost Logo" class="h-6 sm:h-8 w-auto object-contain">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Daftar Pengajuan</h1>
         </div>
     </header>
 
     <!-- TOOLBAR (Search & Filter) -->
-    <div class="px-8 py-6 z-10 flex flex-col sm:flex-row gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full">
+    <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
         <!-- Search Bar -->
-        <div class="relative w-full sm:max-w-md">
-            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" placeholder="Cari pembuat konten, judul, atau campaign..." 
-                class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-11 pr-4 py-3 text-[14px] text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-shadow">
+        <div class="relative w-full md:max-w-md">
+            <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <input type="text" placeholder="Cari kreator, judul..." 
+                class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-[13px] sm:text-[14px] text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-shadow">
         </div>
 
         <!-- Filter Dropdown -->
-        <div class="relative w-full sm:w-auto">
-            <button onclick="toggleFilter()" id="btnFilter" class="w-full sm:w-auto flex items-center justify-between sm:justify-center gap-3 bg-cardBg border border-zinc-800 px-5 py-3 rounded-xl text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
+        <div class="relative w-full md:w-auto">
+            <button onclick="toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
                 <div class="flex items-center gap-2">
                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                     <span id="filterLabel">Status: Pending</span>
@@ -73,130 +73,128 @@
                 <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             
-            <div id="dropdownFilter" class="absolute right-0 top-full mt-2 w-full sm:w-48 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                <button onclick="selectFilter('Pending')" class="text-left px-5 py-3 text-[14px] hover:bg-zinc-800 transition-colors">Pending</button>
-                <button onclick="selectFilter('Disetujui')" class="text-left px-5 py-3 text-[14px] text-green-500 hover:bg-zinc-800 transition-colors">Disetujui</button>
-                <button onclick="selectFilter('Ditolak')" class="text-left px-5 py-3 text-[14px] text-red-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Ditolak</button>
+            <div id="dropdownFilter" class="absolute right-0 top-full mt-2 w-full md:w-48 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
+                <button onclick="selectFilter('Pending')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors">Pending</button>
+                <button onclick="selectFilter('Disetujui')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-green-500 hover:bg-zinc-800 transition-colors">Disetujui</button>
+                <button onclick="selectFilter('Ditolak')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-red-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Ditolak</button>
             </div>
         </div>
     </div>
 
     <!-- DAFTAR KONTEN & LOAD MORE BUTTON -->
-    <main class="flex-1 overflow-y-auto px-8 pb-32 z-0 scroll-smooth w-full">
-        <!-- max-w dihilangkan agar merentang penuh ke kanan/kiri -->
-        <div id="contentGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 w-full">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 pt-4 pb-32 z-0 scroll-smooth w-full">
+        
+        <!-- Grid: Mobile 2 kolom, sm 3 kolom, md 4, lg 5, xl 6 kolom -->
+        <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-6 w-full">
             
-            <!-- JS Loop Content (Dummy 12 Items for demonstration) -->
-            <!-- Item 1: TikTok -->
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
+            <!-- Generate 12 Cards Default Layout -->
+            <!-- 1. TIKTOK -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                        <span class="text-[11px] font-semibold tracking-wider text-white">TikTok</span>
+                    
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
                     </div>
-                    <div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div>
-                    <div class="absolute bottom-3 left-3 right-3">
-                        <p class="text-sm font-semibold text-white truncate">@johndoe_creator</p>
-                        <p class="text-[11px] text-zinc-300 truncate">Campaign Launching Sepatu</p>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div>
+
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p>
                     </div>
                 </div>
-                <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                    <a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         Lihat
                     </a>
-                    <button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
+                    <button onclick="openReviewModal('konten-1')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
                 </div>
             </div>
 
-            <!-- Item 2: Instagram Reels -->
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
+            <!-- 2. IG REELS -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-fuchsia-500"></span>
-                        <span class="text-[11px] font-semibold tracking-wider text-white">IG Reels</span>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">IG Reels</span>
                     </div>
-                    <div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div>
-                    <div class="absolute bottom-3 left-3 right-3">
-                        <p class="text-sm font-semibold text-white truncate">@sarah.style</p>
-                        <p class="text-[11px] text-zinc-300 truncate">Review Skincare Malam</p>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div>
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Skincare Malam</p>
                     </div>
                 </div>
-                <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        Lihat
-                    </a>
-                    <button onclick="openReviewModal('konten-2')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                    <a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
+                    <button onclick="openReviewModal('konten-2')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
                 </div>
             </div>
 
-            <!-- Item 3: Threads -->
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
+            <!-- 3. THREADS -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-zinc-100"></span>
-                        <span class="text-[11px] font-semibold tracking-wider text-white">Threads</span>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span>
                     </div>
-                    <div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div>
-                    <div class="absolute bottom-3 left-3 right-3">
-                        <p class="text-sm font-semibold text-white truncate">@tech.reviewid</p>
-                        <p class="text-[11px] text-zinc-300 truncate">Unboxing Gadget Baru</p>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div>
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Unboxing Gadget Baru</p>
                     </div>
                 </div>
-                <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        Lihat
-                    </a>
-                    <button onclick="openReviewModal('konten-3')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                    <a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
+                    <button onclick="openReviewModal('konten-3')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
                 </div>
             </div>
+
+            <!-- 4. YT SHORTS -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YT Shorts</span>
+                    </div>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div>
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Vlog Makan Siang</p>
+                    </div>
+                </div>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                    <a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
+                    <button onclick="openReviewModal('konten-4')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
+                </div>
+            </div>
+
+            <!-- (Duplicate untuk memperlihatkan Load More) -->
+            <!-- Baris 2 -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-1')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Skincare Malam</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-2')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Unboxing Gadget Baru</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-3')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Vlog Makan Siang</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-4')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
             
-            <!-- Item 4: YouTube Shorts -->
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
-                        <span class="w-2 h-2 rounded-full bg-red-600"></span>
-                        <span class="text-[11px] font-semibold tracking-wider text-white">YT Shorts</span>
-                    </div>
-                    <div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div>
-                    <div class="absolute bottom-3 left-3 right-3">
-                        <p class="text-sm font-semibold text-white truncate">@foodvlogger</p>
-                        <p class="text-[11px] text-zinc-300 truncate">Vlog Makan Siang</p>
-                    </div>
-                </div>
-                <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                        Lihat
-                    </a>
-                    <button onclick="openReviewModal('konten-4')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
-                </div>
-            </div>
-
-            <!-- DUMMY DATA FOR "LOAD MORE" TEST (Same 4 items duplicated below) -->
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-cyan-400"></span><span class="text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="text-[11px] text-zinc-300 truncate">Campaign Launching Sepatu</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-fuchsia-500"></span><span class="text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@sarah.style</p><p class="text-[11px] text-zinc-300 truncate">Review Skincare Malam</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-2')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-zinc-100"></span><span class="text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="text-[11px] text-zinc-300 truncate">Unboxing Gadget Baru</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-3')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-red-600"></span><span class="text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@foodvlogger</p><p class="text-[11px] text-zinc-300 truncate">Vlog Makan Siang</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-4')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-cyan-400"></span><span class="text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="text-[11px] text-zinc-300 truncate">Campaign Launching Sepatu</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-fuchsia-500"></span><span class="text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@sarah.style</p><p class="text-[11px] text-zinc-300 truncate">Review Skincare Malam</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-2')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-zinc-100"></span><span class="text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="text-[11px] text-zinc-300 truncate">Unboxing Gadget Baru</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-3')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-red-600"></span><span class="text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@foodvlogger</p><p class="text-[11px] text-zinc-300 truncate">Vlog Makan Siang</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-4')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <!-- Baris 3 -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-1')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Skincare Malam</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-2')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Unboxing Gadget Baru</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-3')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p><p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Vlog Makan Siang</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-4')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
         </div>
 
         <!-- TOMBOL LIHAT SELENGKAPNYA -->
-        <div class="mt-10 flex justify-center w-full">
-            <button id="btnLoadMore" onclick="loadMore()" class="hidden px-6 py-3 bg-zinc-900 border border-zinc-700 hover:bg-white hover:text-black hover:border-white rounded-xl text-[14px] font-semibold text-white transition-colors">
+        <div class="mt-8 flex justify-center w-full">
+            <button id="btnLoadMore" onclick="loadMore()" class="hidden px-5 sm:px-6 py-2.5 sm:py-3 bg-zinc-900 border border-zinc-700 hover:bg-white hover:text-black hover:border-white rounded-xl text-[13px] sm:text-[14px] font-semibold text-white transition-colors">
                 Lihat Selengkapnya
             </button>
         </div>
@@ -205,48 +203,48 @@
     <!-- ========================================== -->
     <!-- MODAL POPUP REVIEW KONTEN                  -->
     <!-- ========================================== -->
-    <div id="reviewModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300">
-        <div id="reviewModalBox" class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-md mx-4 p-6 transform scale-95 transition-transform duration-300 relative">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-semibold text-white">Review Konten</h3>
+    <div id="reviewModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center opacity-0 transition-opacity duration-300 px-4">
+        <div id="reviewModalBox" class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-md p-5 sm:p-6 transform scale-95 transition-transform duration-300 relative">
+            <div class="flex justify-between items-center mb-5 sm:mb-6">
+                <h3 class="text-lg sm:text-xl font-semibold text-white">Review Konten</h3>
                 <button onclick="closeReviewModal()" class="text-zinc-500 hover:text-white hover:bg-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors focus:outline-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <p class="text-[14px] text-zinc-400 mb-5">Tentukan status untuk pengajuan konten ini.</p>
+            <p class="text-[13px] sm:text-[14px] text-zinc-400 mb-5">Tentukan status untuk pengajuan konten ini.</p>
             
-            <div class="flex gap-4 mb-6">
-                <button id="btnSetuju" onclick="selectDecision('setuju')" class="flex-1 py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none">
-                    <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <div class="flex gap-3 sm:gap-4 mb-5 sm:mb-6">
+                <button id="btnSetuju" onclick="selectDecision('setuju')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     Setujui
                 </button>
-                <button id="btnTolak" onclick="selectDecision('tolak')" class="flex-1 py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none">
-                    <svg class="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button id="btnTolak" onclick="selectDecision('tolak')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     Tolak
                 </button>
             </div>
 
-            <div id="formTolak" class="hidden flex-col gap-3 mb-6 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-                <label class="text-[13px] font-medium text-white mb-1">Alasan Penolakan:</label>
-                <label class="flex items-center gap-3 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Tidak sesuai brief" class="w-4 h-4" onchange="toggleCustomReason(false)">
-                    <span class="text-[14px] text-zinc-300 group-hover:text-white transition-colors">Tidak sesuai brief</span>
+            <div id="formTolak" class="hidden flex-col gap-2.5 sm:gap-3 mb-5 sm:mb-6 bg-zinc-900/50 p-3 sm:p-4 rounded-xl border border-zinc-800">
+                <label class="text-[12px] sm:text-[13px] font-medium text-white mb-1">Alasan Penolakan:</label>
+                <label class="flex items-center gap-2 sm:gap-3 cursor-pointer group">
+                    <input type="radio" name="alasan" value="Tidak sesuai brief" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="toggleCustomReason(false)">
+                    <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Tidak sesuai brief</span>
                 </label>
-                <label class="flex items-center gap-3 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Budget habis" class="w-4 h-4" onchange="toggleCustomReason(false)">
-                    <span class="text-[14px] text-zinc-300 group-hover:text-white transition-colors">Budget habis</span>
+                <label class="flex items-center gap-2 sm:gap-3 cursor-pointer group">
+                    <input type="radio" name="alasan" value="Budget habis" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="toggleCustomReason(false)">
+                    <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Budget habis</span>
                 </label>
-                <label class="flex items-center gap-3 cursor-pointer group">
-                    <input type="radio" name="alasan" value="lainnya" class="w-4 h-4" onchange="toggleCustomReason(true)">
-                    <span class="text-[14px] text-zinc-300 group-hover:text-white transition-colors">Lainnya (Isi sendiri)</span>
+                <label class="flex items-center gap-2 sm:gap-3 cursor-pointer group">
+                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="toggleCustomReason(true)">
+                    <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Lainnya (Isi sendiri)</span>
                 </label>
-                <textarea id="customReason" class="w-full bg-black/50 border border-zinc-700 rounded-lg p-3 text-[13px] text-white focus:outline-none focus:border-red-500 hidden mt-2 placeholder-zinc-600 resize-none" rows="3" placeholder="Ketik alasan spesifik penolakan..."></textarea>
+                <textarea id="customReason" class="w-full bg-black/50 border border-zinc-700 rounded-lg p-2.5 sm:p-3 text-[12px] sm:text-[13px] text-white focus:outline-none focus:border-red-500 hidden mt-1.5 sm:mt-2 placeholder-zinc-600 resize-none" rows="3" placeholder="Ketik alasan spesifik penolakan..."></textarea>
             </div>
 
-            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-800/80">
-                <button onclick="closeReviewModal()" class="px-5 py-2.5 rounded-xl text-[14px] font-medium text-white hover:bg-zinc-800 transition-colors">Batal</button>
-                <button id="btnSubmitReview" class="px-6 py-2.5 bg-white text-black rounded-xl text-[14px] font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
-                    Kirim Keputusan
+            <div class="flex justify-end gap-2 sm:gap-3 pt-4 border-t border-zinc-800/80">
+                <button onclick="closeReviewModal()" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-800 transition-colors">Batal</button>
+                <button id="btnSubmitReview" class="px-5 sm:px-6 py-2 sm:py-2.5 bg-white text-black rounded-xl text-[13px] sm:text-[14px] font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                    Kirim
                 </button>
             </div>
         </div>
@@ -285,7 +283,7 @@
         });
 
         /* ================= Pagination / Load More Logic ================= */
-        let currentItemCount = 8; // Default tampilkan 8 item pertama (sekitar 2 baris PC)
+        let currentItemCount = 12; // Load langsung 12 konten diawal
         const cards = document.querySelectorAll('.content-card');
         const btnLoadMore = document.getElementById('btnLoadMore');
 
@@ -300,7 +298,6 @@
                 }
             });
 
-            // Sembunyikan tombol jika semua item sudah tampil
             if (currentItemCount >= cards.length) {
                 btnLoadMore.classList.add('hidden');
             } else {
@@ -309,13 +306,11 @@
         }
 
         function loadMore() {
-            currentItemCount += 8; // Tambah 8 item lagi saat diklik
+            currentItemCount += 8; // Saat diklik tambah 8 konten lagi
             updateGridDisplay();
         }
 
-        // Panggil saat pertama kali load
         document.addEventListener('DOMContentLoaded', updateGridDisplay);
-
 
         /* ================= Modal Review ================= */
         const reviewModal = document.getElementById('reviewModal');
@@ -354,8 +349,8 @@
             const btnSetuju = document.getElementById('btnSetuju');
             const btnTolak = document.getElementById('btnTolak');
             
-            btnSetuju.className = "flex-1 py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
-            btnTolak.className = "flex-1 py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
+            btnSetuju.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
+            btnTolak.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
             
             document.querySelectorAll('input[name="alasan"]').forEach(radio => radio.checked = false);
         }
@@ -367,16 +362,16 @@
             const formTolak = document.getElementById('formTolak');
             const btnSubmit = document.getElementById('btnSubmitReview');
 
-            btnSetuju.className = "flex-1 py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
-            btnTolak.className = "flex-1 py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
+            btnSetuju.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
+            btnTolak.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
 
             if (decision === 'setuju') {
-                btnSetuju.className = "flex-1 py-3 rounded-xl border-2 border-green-500 bg-green-500/10 text-green-500 font-semibold transition-all focus:outline-none";
+                btnSetuju.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-green-500 bg-green-500/10 text-green-500 text-[13px] sm:text-base font-semibold transition-all focus:outline-none";
                 formTolak.classList.add('hidden');
                 formTolak.classList.remove('flex');
                 btnSubmit.disabled = false;
             } else if (decision === 'tolak') {
-                btnTolak.className = "flex-1 py-3 rounded-xl border-2 border-red-500 bg-red-500/10 text-red-500 font-semibold transition-all focus:outline-none";
+                btnTolak.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-red-500 bg-red-500/10 text-red-500 text-[13px] sm:text-base font-semibold transition-all focus:outline-none";
                 formTolak.classList.remove('hidden');
                 formTolak.classList.add('flex');
                 btnSubmit.disabled = true;
