@@ -36,27 +36,26 @@
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
         input[type="radio"] {
-            accent-color: #ef4444; /* red-500 */
+            accent-color: #ef4444;
         }
     </style>
 </head>
-<body class="antialiased selection:bg-zinc-300 selection:text-black h-screen flex flex-col overflow-hidden bg-darkBg relative">
+<body class="antialiased selection:bg-zinc-300 selection:text-black h-screen flex flex-col overflow-hidden bg-darkBg relative w-full">
 
     <!-- Background Ornamen -->
     <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
     <!-- HEADER: Menampilkan Logo & Judul -->
-    <header class="h-24 flex items-center justify-between px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0">
+    <header class="h-24 flex items-center justify-between px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-4">
-            <!-- Logo menggantikan Hamburger Menu yang dihapus -->
             <img src="asset/logob.webp" alt="Whoost Logo" class="h-8 w-auto object-contain">
-            <div class="h-6 w-px bg-zinc-800"></div>
+            <div class="h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-xl md:text-2xl font-semibold tracking-tight">Daftar Pengajuan</h1>
         </div>
     </header>
 
     <!-- TOOLBAR (Search & Filter) -->
-    <div class="px-8 py-6 z-10 flex flex-col sm:flex-row gap-4 items-center justify-between bg-darkBg flex-shrink-0">
+    <div class="px-8 py-6 z-10 flex flex-col sm:flex-row gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full">
         <!-- Search Bar -->
         <div class="relative w-full sm:max-w-md">
             <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -82,44 +81,40 @@
         </div>
     </div>
 
-    <!-- DAFTAR KONTEN (GRID 3:4) -->
-    <!-- Catatan: Ditambahkan pb-32 (padding-bottom) agar konten terhindar dari ketutupan navigasi melayang -->
+    <!-- DAFTAR KONTEN & LOAD MORE BUTTON -->
     <main class="flex-1 overflow-y-auto px-8 pb-32 z-0 scroll-smooth w-full">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 max-w-[1400px] mx-auto">
+        <!-- max-w dihilangkan agar merentang penuh ke kanan/kiri -->
+        <div id="contentGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 w-full">
             
+            <!-- JS Loop Content (Dummy 12 Items for demonstration) -->
             <!-- Item 1: TikTok -->
-            <div class="bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-colors duration-300">
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    
                     <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
                         <span class="text-[11px] font-semibold tracking-wider text-white">TikTok</span>
                     </div>
                     <div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div>
-
                     <div class="absolute bottom-3 left-3 right-3">
                         <p class="text-sm font-semibold text-white truncate">@johndoe_creator</p>
                         <p class="text-[11px] text-zinc-300 truncate">Campaign Launching Sepatu</p>
                     </div>
                 </div>
-                
                 <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" target="_blank" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         Lihat
                     </a>
-                    <button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">
-                        Review
-                    </button>
+                    <button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
                 </div>
             </div>
 
             <!-- Item 2: Instagram Reels -->
-            <div class="bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-colors duration-300">
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                     <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-fuchsia-500"></span>
@@ -132,7 +127,7 @@
                     </div>
                 </div>
                 <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" target="_blank" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         Lihat
                     </a>
@@ -141,9 +136,9 @@
             </div>
 
             <!-- Item 3: Threads -->
-            <div class="bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-colors duration-300">
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                     <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-zinc-100"></span>
@@ -156,7 +151,7 @@
                     </div>
                 </div>
                 <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" target="_blank" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         Lihat
                     </a>
@@ -165,9 +160,9 @@
             </div>
             
             <!-- Item 4: YouTube Shorts -->
-            <div class="bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-colors duration-300">
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                     <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm">
                         <span class="w-2 h-2 rounded-full bg-red-600"></span>
@@ -180,7 +175,7 @@
                     </div>
                 </div>
                 <div class="mt-2 grid grid-cols-2 gap-2">
-                    <a href="#" target="_blank" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                    <a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                         Lihat
                     </a>
@@ -188,6 +183,22 @@
                 </div>
             </div>
 
+            <!-- DUMMY DATA FOR "LOAD MORE" TEST (Same 4 items duplicated below) -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-cyan-400"></span><span class="text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="text-[11px] text-zinc-300 truncate">Campaign Launching Sepatu</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-fuchsia-500"></span><span class="text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@sarah.style</p><p class="text-[11px] text-zinc-300 truncate">Review Skincare Malam</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-2')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-zinc-100"></span><span class="text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="text-[11px] text-zinc-300 truncate">Unboxing Gadget Baru</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-3')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-red-600"></span><span class="text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@foodvlogger</p><p class="text-[11px] text-zinc-300 truncate">Vlog Makan Siang</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-4')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-cyan-400"></span><span class="text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="text-[11px] text-zinc-300 truncate">Campaign Launching Sepatu</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-1')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-fuchsia-500"></span><span class="text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@sarah.style</p><p class="text-[11px] text-zinc-300 truncate">Review Skincare Malam</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-2')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-zinc-100"></span><span class="text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="text-[11px] text-zinc-300 truncate">Unboxing Gadget Baru</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-3')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-2 flex flex-col hover:border-zinc-600 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md border border-white/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 shadow-sm"><span class="w-2 h-2 rounded-full bg-red-600"></span><span class="text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="absolute top-3 right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Pending</div><div class="absolute bottom-3 left-3 right-3"><p class="text-sm font-semibold text-white truncate">@foodvlogger</p><p class="text-[11px] text-zinc-300 truncate">Vlog Makan Siang</p></div></div><div class="mt-2 grid grid-cols-2 gap-2"><a href="#" class="flex items-center justify-center gap-1.5 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('konten-4')" class="py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+        </div>
+
+        <!-- TOMBOL LIHAT SELENGKAPNYA -->
+        <div class="mt-10 flex justify-center w-full">
+            <button id="btnLoadMore" onclick="loadMore()" class="hidden px-6 py-3 bg-zinc-900 border border-zinc-700 hover:bg-white hover:text-black hover:border-white rounded-xl text-[14px] font-semibold text-white transition-colors">
+                Lihat Selengkapnya
+            </button>
         </div>
     </main>
 
@@ -242,17 +253,15 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- DEKLARASI MENU AKTIF & PEMANGGILAN NAVBAR  -->
+    <!-- JAVASCRIPT & LOAD MORE LOGIC               -->
     <!-- ========================================== -->
     <script>
-        // Set id menu yang sedang aktif di halaman ini (harus sama dengan properti 'id' di navbarclient.js)
         const ACTIVE_MENU = 'pengajuan';
     </script>
-    <!-- Panggil file komponen navbar -->
     <script src="attribute/navbarclient.js"></script>
 
-    <!-- Skrip Modal & Filter Logika -->
     <script>
+        /* ================= Dropdown Filter ================= */
         function toggleFilter() {
             const dropdown = document.getElementById('dropdownFilter');
             dropdown.classList.toggle('hidden');
@@ -275,6 +284,40 @@
             }
         });
 
+        /* ================= Pagination / Load More Logic ================= */
+        let currentItemCount = 8; // Default tampilkan 8 item pertama (sekitar 2 baris PC)
+        const cards = document.querySelectorAll('.content-card');
+        const btnLoadMore = document.getElementById('btnLoadMore');
+
+        function updateGridDisplay() {
+            cards.forEach((card, index) => {
+                if (index < currentItemCount) {
+                    card.classList.remove('hidden');
+                    card.classList.add('flex');
+                } else {
+                    card.classList.add('hidden');
+                    card.classList.remove('flex');
+                }
+            });
+
+            // Sembunyikan tombol jika semua item sudah tampil
+            if (currentItemCount >= cards.length) {
+                btnLoadMore.classList.add('hidden');
+            } else {
+                btnLoadMore.classList.remove('hidden');
+            }
+        }
+
+        function loadMore() {
+            currentItemCount += 8; // Tambah 8 item lagi saat diklik
+            updateGridDisplay();
+        }
+
+        // Panggil saat pertama kali load
+        document.addEventListener('DOMContentLoaded', updateGridDisplay);
+
+
+        /* ================= Modal Review ================= */
         const reviewModal = document.getElementById('reviewModal');
         const reviewModalBox = document.getElementById('reviewModalBox');
         let currentDecision = null;
