@@ -93,16 +93,15 @@
                 <p class="text-zinc-400 text-sm md:text-base">Lengkapi profil bisnismu agar terlihat profesional di mata kreator.</p>
             </div>
 
-            <form action="dashboard.html" method="POST" id="profileForm" class="relative z-10">
+            <!-- PERHATIKAN: form tidak langsung nge-post ke PHP/Dashboard, tapi ditahan lewat JS -->
+            <form id="profileForm" class="relative z-10">
                 
                 <!-- 1. FOTO PROFIL SECTION -->
                 <div class="flex flex-col items-center justify-center mb-10">
                     <label for="avatarUpload" class="relative cursor-pointer group">
                         <div id="avatarPreview" class="w-28 h-28 rounded-full bg-zinc-900 border-2 border-dashed border-zinc-700 flex items-center justify-center group-hover:border-white group-hover:bg-zinc-800 transition-all overflow-hidden relative">
-                            <!-- Icon Default User -->
                             <svg id="defaultIcon" class="w-10 h-10 text-zinc-500 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
-                        <!-- Plus Icon -->
                         <div class="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full border-[3px] border-cardBg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                             <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
                         </div>
@@ -125,14 +124,13 @@
                                 class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 transition-colors">
                         </div>
 
-                        <!-- Kategori Bisnis (Custom Dropdown Trigger) -->
+                        <!-- Kategori Bisnis -->
                         <div>
                             <label class="block text-sm font-semibold text-zinc-300 mb-2">Kategori Bisnis</label>
                             
-                            <!-- Hidden input untuk menyimpan value kategori yang dipilih -->
-                            <input type="hidden" name="kategori_bisnis" id="kategoriInput" required>
+                            <!-- PERBAIKAN: Atribut 'required' dihapus agar HTML5 tidak memblokir silent form submit -->
+                            <input type="hidden" name="kategori_bisnis" id="kategoriInput">
                             
-                            <!-- Fake Input untuk Trigger Modal -->
                             <div id="kategoriTrigger" onclick="openCategoryModal()" 
                                 class="whoost-input flex items-center justify-between w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-zinc-500 transition-colors cursor-pointer text-sm hover:border-zinc-500">
                                 <span id="kategoriText">Pilih kategori bisnis</span>
@@ -159,7 +157,7 @@
 
                 <hr class="border-zinc-800/80 mb-8">
 
-                <!-- 3. SUMBER INFO (DARI MANA KAMU TAU) SECTION -->
+                <!-- 3. SUMBER INFO SECTION -->
                 <div class="mb-10">
                     <p class="text-[11px] font-bold tracking-[0.15em] text-zinc-500 mb-1 uppercase">Dari mana kamu tau Whoost?</p>
                     <p class="text-xs text-zinc-500 mb-5">Bantu kami berkembang — opsional, sekali tap.</p>
@@ -202,7 +200,6 @@
                 <!-- 4. SUBMIT BUTTON -->
                 <button type="submit" id="btnSubmit" class="w-full py-4 rounded-xl font-bold text-lg bg-white text-black hover:bg-zinc-200 transition-all duration-300 flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95">
                     <span id="btnText">Simpan Profil</span>
-                    <!-- Spinner Loading (Hidden by default) -->
                     <svg id="btnSpinner" class="hidden animate-spin h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -217,23 +214,16 @@
     <!-- MODAL PILIH KATEGORI (CUSTOM DROPDOWN)     -->
     <!-- ========================================== -->
     <div id="categoryModal" class="fixed inset-0 z-50 flex items-end md:items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <!-- Backdrop Blur -->
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCategoryModal()"></div>
-        
-        <!-- Modal Content Container -->
         <div id="categoryContent" class="relative w-full md:w-[28rem] bg-cardBg border border-zinc-800 rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col transform translate-y-full md:translate-y-10 md:scale-95 transition-transform duration-300 max-h-[85vh]">
-            
-            <!-- Sticky Header -->
-            <div class="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-cardBg z-10 rounded-t-3xl">
+            <div class="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-cardBg z-10 rounded-t-3xl md:rounded-t-3xl">
                 <h3 class="text-xl font-bold text-white">Pilih Kategori Bisnis</h3>
                 <button type="button" onclick="closeCategoryModal()" class="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-
-            <!-- List Kategori (Scrollable) -->
             <div class="overflow-y-auto p-2" id="categoryListContainer">
-                <!-- Data Kategori Di-generate lewat JavaScript -->
+                <!-- Generate via JS -->
             </div>
         </div>
     </div>
@@ -241,15 +231,18 @@
     <!-- ========================================== -->
     <!-- MODAL SUCCESS LOADING                      -->
     <!-- ========================================== -->
+    <!-- Tambahan pointer-events-none agar modal tetap overlay tapi klik belakang mati -->
     <div id="successModal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-500">
+        <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
-        <div id="successContent" class="relative flex flex-col items-center justify-center transform scale-90 opacity-0 transition-all duration-500">
-            <!-- Icon Glow Check -->
+        <!-- Content -->
+        <div id="successContent" class="relative z-[70] flex flex-col items-center justify-center scale-90 opacity-0 transition-all duration-500">
+            <!-- Icon Check -->
             <div class="relative flex items-center justify-center w-24 h-24 mb-6">
                 <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-20"></div>
                 <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] relative z-10 scale-0 animate-[popIn_0.5s_ease-out_forwards]">
                     <svg class="w-10 h-10 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
             </div>
@@ -274,9 +267,7 @@
     <script>
         AOS.init({ once: true, offset: 20, duration: 800 });
 
-        // ==========================================
-        // 1. UPLOAD PREVIEW SCRIPT
-        // ==========================================
+        // Preview Gambar
         function previewImage(event) {
             const input = event.target;
             const previewContainer = document.getElementById('avatarPreview');
@@ -295,9 +286,7 @@
             }
         }
 
-        // ==========================================
-        // 2. KATEGORI MODAL & LOGIC
-        // ==========================================
+        // Kategori JS
         const categories = [
             "Fashion & Pakaian", "Makanan & Minuman (F&B)", "Kecantikan & Skincare", 
             "Teknologi & Gadget", "Gaya Hidup", "Kesehatan & Wellness", 
@@ -309,22 +298,17 @@
             "Podcast & Media Digital", "Lainnya"
         ];
 
-        // Render list kategori ke dalam modal
         const listContainer = document.getElementById('categoryListContainer');
         categories.forEach(cat => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            // Styling button list kategori (B&W Theme)
             btn.className = "w-full text-left px-6 py-4 flex items-center justify-between border-b border-zinc-800/50 text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors group";
-            
             btn.innerHTML = `
                 <span class="text-[15px] font-medium">${cat}</span>
                 <svg class="w-5 h-5 opacity-0 text-white transform scale-50 transition-all group-hover:scale-100 group-hover:opacity-50 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             `;
-            
-            // Event saat kategori diklik
             btn.onclick = () => selectCategory(cat, btn);
             listContainer.appendChild(btn);
         });
@@ -338,15 +322,13 @@
 
         function openCategoryModal() {
             categoryModal.classList.remove('hidden');
-            // Trigger reflow
             void categoryModal.offsetWidth;
             categoryModal.classList.remove('opacity-0');
             
-            // Animasi masuk (beda HP dan Desktop)
             if(window.innerWidth < 768) {
-                categoryContent.classList.remove('translate-y-full'); // Naik dari bawah di HP
+                categoryContent.classList.remove('translate-y-full');
             } else {
-                categoryContent.classList.remove('translate-y-10', 'scale-95'); // Zoom in di Desktop
+                categoryContent.classList.remove('translate-y-10', 'scale-95');
             }
         }
 
@@ -363,75 +345,69 @@
         }
 
         function selectCategory(catName, btnElement) {
-            // Update UI Trigger Input
             kategoriInput.value = catName;
             kategoriText.innerText = catName;
             kategoriText.classList.replace('text-zinc-500', 'text-white');
             
-            // Hilangkan status error jika ada
             kategoriTrigger.classList.remove('input-error');
             kategoriErrorMsg.classList.add('hidden');
 
-            // Reset semua checkmark di list
             document.querySelectorAll('.check-icon').forEach(icon => {
                 icon.classList.remove('opacity-100', 'scale-100');
                 icon.classList.add('opacity-0', 'scale-50');
             });
 
-            // Tampilkan checkmark di item yang dipilih
             const targetIcon = btnElement.querySelector('.check-icon');
             targetIcon.classList.remove('opacity-0', 'scale-50', 'group-hover:opacity-50');
             targetIcon.classList.add('opacity-100', 'scale-100');
 
-            // Tutup Modal
             closeCategoryModal();
         }
 
-        // ==========================================
-        // 3. FORM SUBMIT & LOADING SUCCESS LOGIC
-        // ==========================================
+        // Logic Form Submit & Trigger Popup Success
         const profileForm = document.getElementById('profileForm');
         const btnSubmit = document.getElementById('btnSubmit');
         const btnText = document.getElementById('btnText');
         const btnSpinner = document.getElementById('btnSpinner');
 
         profileForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Cegah reload halaman
+            e.preventDefault(); // Mematikan fungsi submit default agar JS bisa jalan
 
-            // Manual Validation untuk Custom Kategori
+            // Validasi: pastikan kolom Kategori Bisnis dipilih (karena hidden ga bisa di 'required')
             if(!kategoriInput.value) {
                 kategoriTrigger.classList.add('input-error');
                 kategoriErrorMsg.classList.remove('hidden');
-                
-                // Scroll ke bagian kategori agar user sadar
                 kategoriTrigger.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
             }
 
-            // 1. Ubah tombol jadi Loading State
+            // 1. Tampilkan state Loading pada tombol
             btnSubmit.setAttribute('disabled', 'true');
             btnSubmit.classList.add('opacity-70', 'cursor-not-allowed');
             btnText.innerText = "Menyimpan...";
             btnSpinner.classList.remove('hidden');
 
-            // 2. Simulasi Proses Network (misal: 1.5 detik)
+            // 2. Simulasi koneksi server / menyimipan ke database (1.5 Detik)
             setTimeout(() => {
                 
-                // Tampilkan Modal Sukses
+                // 3. Tampilkan Popup Berhasil Disimpan
                 const successModal = document.getElementById('successModal');
+                const successContent = document.getElementById('successContent');
+                
                 successModal.classList.remove('hidden');
-                void successModal.offsetWidth;
+                void successModal.offsetWidth; // Trigger browser reflow
                 successModal.classList.remove('opacity-0');
+                
+                // Animasi Content Muncul
+                successContent.classList.remove('scale-90', 'opacity-0');
+                successContent.classList.add('scale-100', 'opacity-100');
 
-                // 3. Redirect ke Dashboard setelah animasi sukses selesai (misal: 2 detik)
+                // 4. Otomatis Pindah Halaman ke dashboard (setelah popup muncul 2.5 Detik)
                 setTimeout(() => {
-                    // Eksekusi submit form yang sebenarnya atau direct pake JS
-                    // profileForm.submit(); 
                     window.location.href = "dashboard.html";
-                }, 2000);
+                }, 2500);
 
             }, 1500);
-
         });
     </script>
 </body>
