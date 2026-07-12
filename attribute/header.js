@@ -18,9 +18,9 @@ class CustomHeader extends HTMLElement {
                 <!-- Nav Links -->
                 <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-zinc-300">
                     <a href="index.html" class="hover:text-white transition">Home</a>
-                    <a href="#" class="hover:text-white transition">Explore</a>
-                    <a href="#" class="hover:text-white transition">FAQ</a>
-                    <a href="#" class="hover:text-white transition">Contact</a>
+                    <a href="explore.html" class="hover:text-white transition">Explore</a>
+                    <a href="faq.html" class="hover:text-white transition">FAQ</a>
+                    <a href="contact.html" class="hover:text-white transition">Contact</a>
                 </div>
 
                 <!-- CTA Button -->
