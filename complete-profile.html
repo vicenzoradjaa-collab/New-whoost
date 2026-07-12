@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lengkapi Profil - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* Sembunyikan input file dan radio asli */
+        input[type="file"], input[type="radio"].source-radio {
+            display: none;
+        }
+
+        /* Custom Input Focus */
+        .whoost-input:focus {
+            border-color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        /* Styling Chip yang aktif */
+        .source-chip {
+            transition: all 0.2s ease-in-out;
+        }
+        .source-radio:checked + .source-chip {
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            font-weight: 600;
+        }
+        .source-radio:checked + .source-chip svg {
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black min-h-screen flex flex-col items-center justify-center relative py-12">
+
+    <!-- Background Ornaments (Efek Blur) -->
+    <div class="absolute top-0 left-1/4 w-[30rem] h-[30rem] bg-zinc-800/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+    <div class="absolute bottom-0 right-1/4 w-[30rem] h-[30rem] bg-zinc-800/10 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+
+    <main class="w-full max-w-2xl px-6 z-10" data-aos="fade-up">
+        
+        <!-- Wrapper Card Utama -->
+        <div class="bg-cardBg border border-zinc-800 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            
+            <!-- Header Teks -->
+            <div class="text-center mb-10 relative z-10">
+                <h1 class="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight text-white">Lengkapi Profil Bisnis</h1>
+                <p class="text-zinc-400 text-sm md:text-base">Lengkapi profil bisnismu agar terlihat profesional di mata kreator.</p>
+            </div>
+
+            <form action="dashboard.html" method="POST" id="profileForm" class="relative z-10">
+                
+                <!-- 1. FOTO PROFIL SECTION -->
+                <div class="flex flex-col items-center justify-center mb-10">
+                    <label for="avatarUpload" class="relative cursor-pointer group">
+                        <div id="avatarPreview" class="w-28 h-28 rounded-full bg-zinc-900 border-2 border-dashed border-zinc-700 flex items-center justify-center group-hover:border-white group-hover:bg-zinc-800 transition-all overflow-hidden relative">
+                            <!-- Icon Default User -->
+                            <svg id="defaultIcon" class="w-10 h-10 text-zinc-500 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                        <!-- Plus Icon -->
+                        <div class="absolute bottom-0 right-0 w-8 h-8 bg-white rounded-full border-[3px] border-cardBg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                    </label>
+                    <input type="file" id="avatarUpload" accept="image/*" onchange="previewImage(event)">
+                    <span class="text-xs text-zinc-500 font-medium mt-3 uppercase tracking-wider">Tambah Foto</span>
+                </div>
+
+                <hr class="border-zinc-800/80 mb-10">
+
+                <!-- 2. INFORMASI BISNIS SECTION -->
+                <div class="mb-10">
+                    <p class="text-[11px] font-bold tracking-[0.15em] text-zinc-500 mb-6 uppercase">Informasi Bisnis</p>
+
+                    <div class="space-y-6">
+                        <!-- Nama Bisnis -->
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Nama Bisnis</label>
+                            <input type="text" placeholder="Masukkan nama bisnis" required
+                                class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 transition-colors">
+                        </div>
+
+                        <!-- Kategori Bisnis (Custom Select) -->
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Kategori Bisnis</label>
+                            <div class="relative">
+                                <select required class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white appearance-none transition-colors cursor-pointer text-sm">
+                                    <option value="" disabled selected class="text-zinc-500">Pilih kategori bisnis</option>
+                                    <option value="fnb">Food & Beverage</option>
+                                    <option value="fashion">Fashion & Apparel</option>
+                                    <option value="beauty">Beauty & Skincare</option>
+                                    <option value="tech">Technology & Gadgets</option>
+                                    <option value="services">Jasa & Layanan</option>
+                                    <option value="other">Lainnya</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                                    <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alamat Bisnis -->
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Alamat Bisnis <span class="text-zinc-500 font-normal">(Opsional)</span></label>
+                            <input type="text" placeholder="Masukkan alamat bisnis" 
+                                class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 transition-colors">
+                        </div>
+
+                        <!-- Website -->
+                        <div>
+                            <label class="block text-sm font-semibold text-zinc-300 mb-2">Website <span class="text-zinc-500 font-normal">(Opsional)</span></label>
+                            <input type="url" placeholder="https://domainbisnis.com" 
+                                class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 transition-colors">
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-zinc-800/80 mb-8">
+
+                <!-- 3. SUMBER INFO (DARI MANA KAMU TAU) SECTION -->
+                <div class="mb-10">
+                    <p class="text-[11px] font-bold tracking-[0.15em] text-zinc-500 mb-1 uppercase">Dari mana kamu tau Whoost?</p>
+                    <p class="text-xs text-zinc-500 mb-5">Bantu kami berkembang — opsional, sekali tap.</p>
+
+                    <!-- Grid Options -->
+                    <div class="flex flex-wrap gap-3">
+                        
+                        <label class="cursor-pointer">
+                            <input type="radio" name="source" value="instagram" class="source-radio">
+                            <div class="source-chip flex items-center gap-2 px-4 py-2.5 border border-zinc-700 rounded-full bg-zinc-900 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                                Instagram
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="source" value="tiktok" class="source-radio">
+                            <div class="source-chip flex items-center gap-2 px-4 py-2.5 border border-zinc-700 rounded-full bg-zinc-900 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 448 512"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/></svg>
+                                TikTok
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="source" value="teman" class="source-radio">
+                            <div class="source-chip flex items-center gap-2 px-4 py-2.5 border border-zinc-700 rounded-full bg-zinc-900 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                Teman / Keluarga
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="source" value="google" class="source-radio">
+                            <div class="source-chip flex items-center gap-2 px-4 py-2.5 border border-zinc-700 rounded-full bg-zinc-900 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/></svg>
+                                Google
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="source" value="youtube" class="source-radio">
+                            <div class="source-chip flex items-center gap-2 px-4 py-2.5 border border-zinc-700 rounded-full bg-zinc-900 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                YouTube
+                            </div>
+                        </label>
+
+                        <label class="cursor-pointer">
+                            <input type="radio" name="source" value="lainnya" class="source-radio">
+                            <div class="source-chip flex items-center gap-2 px-4 py-2.5 border border-zinc-700 rounded-full bg-zinc-900 text-zinc-400 text-sm hover:border-zinc-500 hover:text-white">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path></svg>
+                                Lainnya
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 4. SUBMIT BUTTON -->
+                <button type="submit" class="w-full py-4 rounded-xl font-bold text-lg bg-white text-black hover:bg-zinc-200 transition duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95">
+                    Simpan Profil
+                </button>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            offset: 20,
+            duration: 800
+        });
+
+        // Script untuk Live Preview Foto Profil yang diupload
+        function previewImage(event) {
+            const input = event.target;
+            const previewContainer = document.getElementById('avatarPreview');
+            const defaultIcon = document.getElementById('defaultIcon');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Sembunyikan icon SVG default
+                    if(defaultIcon) defaultIcon.style.display = 'none';
+                    
+                    // Set image background ke container bulat
+                    previewContainer.style.backgroundImage = `url(${e.target.result})`;
+                    previewContainer.style.backgroundSize = 'cover';
+                    previewContainer.style.backgroundPosition = 'center';
+                    previewContainer.style.borderStyle = 'solid'; // ganti dashed jadi solid setelah ada gambar
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>
