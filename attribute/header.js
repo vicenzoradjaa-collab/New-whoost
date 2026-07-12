@@ -24,9 +24,11 @@ class CustomHeader extends HTMLElement {
                 </div>
 
                 <!-- CTA Button -->
+                <a href="login.html">
                 <button class="bg-white text-black px-7 py-3 rounded-xl font-bold text-sm hover:bg-zinc-200 transition transform hover:scale-105 duration-300 shadow-md hidden sm:block">
                     Boost Income
                 </button>
+                </a>
             </nav>
         </header>
         `;
