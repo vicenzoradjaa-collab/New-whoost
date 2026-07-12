@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Peran - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Panggil file Header & Footer -->
+    <script src="attribute/header.js"></script>
+    <script src="attribute/footer.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* Sembunyikan radio button asli */
+        input[type="radio"] {
+            display: none;
+        }
+
+        /* Styling untuk card yang aktif / terpilih */
+        .role-card {
+            transition: all 0.3s ease;
+        }
+        
+        /* Glow Effect ketika active */
+        .role-card.active {
+            border-color: #ffffff;
+            background-color: #1a1a1e;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+        }
+        
+        .role-card.active .check-circle {
+            background-color: #ffffff;
+            border-color: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black min-h-screen flex flex-col">
+
+    <!-- Memanggil Component Header (Bisa disembunyikan navigasinya jika ini murni halaman onboarding) -->
+    <custom-header></custom-header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow pt-32 pb-24 px-6 flex flex-col items-center justify-center relative">
+        
+        <!-- Background Ornaments -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-zinc-800/20 rounded-full blur-[100px] -z-10"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-zinc-800/10 rounded-full blur-[100px] -z-10"></div>
+
+        <!-- Header Section -->
+        <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-down">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">Kamu seorang...?</h1>
+            <p class="text-zinc-400 text-lg">
+                Pilih peranmu di ekosistem Whoost. <br class="hidden md:block">
+                <span class="text-white font-semibold border-b border-zinc-700 pb-0.5">Pilih dengan bijak, peran tidak dapat diubah nantinya.</span>
+            </p>
+        </div>
+
+        <!-- Form Pemilihan Role -->
+        <form id="roleForm" class="w-full max-w-4xl" action="langkah_selanjutnya.html" method="POST">
+            
+            <div class="grid md:grid-cols-2 gap-6 md:gap-8 mb-12">
+                
+                <!-- CARD 1: BRAND -->
+                <label class="role-card cursor-pointer bg-cardBg border-2 border-zinc-800 rounded-[2rem] p-8 md:p-10 relative group hover:border-zinc-500 block" data-aos="fade-right" data-aos-delay="100">
+                    <input type="radio" name="user_role" value="brand" onchange="handleRoleSelection(this)">
+                    
+                    <!-- Indikator Check -->
+                    <div class="absolute top-8 right-8 w-6 h-6 rounded-full border-2 border-zinc-600 flex items-center justify-center transition-colors check-circle text-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+
+                    <!-- Visual Icon Wrapper -->
+                    <div class="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center mb-8 shadow-inner">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+
+                    <h2 class="text-3xl font-bold mb-2 text-white">Client / Brand</h2>
+                    <p class="text-zinc-500 text-sm font-semibold uppercase tracking-wider mb-6">Brand & Influencer</p>
+                    
+                    <ul class="space-y-4 text-zinc-400">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Buat kampanye UGC & viral distribution
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Jangkau ribuan kreator & clipper terverifikasi
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Pantau performa kampanye secara realtime
+                        </li>
+                    </ul>
+                </label>
+
+                <!-- CARD 2: CLIPPER / KREATOR -->
+                <label class="role-card cursor-pointer bg-cardBg border-2 border-zinc-800 rounded-[2rem] p-8 md:p-10 relative group hover:border-zinc-500 block" data-aos="fade-left" data-aos-delay="200">
+                    <input type="radio" name="user_role" value="clipper" onchange="handleRoleSelection(this)">
+                    
+                    <!-- Indikator Check -->
+                    <div class="absolute top-8 right-8 w-6 h-6 rounded-full border-2 border-zinc-600 flex items-center justify-center transition-colors check-circle text-transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+
+                    <!-- Visual Icon Wrapper -->
+                    <div class="w-16 h-16 bg-zinc-900 border border-zinc-700 rounded-2xl flex items-center justify-center mb-8 shadow-inner">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+
+                    <h2 class="text-3xl font-bold mb-2 text-white">Kreator</h2>
+                    <p class="text-zinc-500 text-sm font-semibold uppercase tracking-wider mb-6">Kreator Konten & Clipper</p>
+                    
+                    <ul class="space-y-4 text-zinc-400">
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Ikut kampanye brand dan hasilkan uang
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Viral distribution konten ke akun sosialmu
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-white flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Terima bayaran langsung ke dompet / rekening
+                        </li>
+                    </ul>
+                </label>
+
+            </div>
+
+            <!-- Tombol Submit Lanjutkan -->
+            <div class="flex justify-center" data-aos="fade-up" data-aos-delay="300">
+                <button type="submit" id="btnSubmit" disabled 
+                    class="w-full max-w-md py-4 rounded-xl font-bold text-lg transition-all duration-300 bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none border border-transparent">
+                    Pilih peran terlebih dahulu
+                </button>
+            </div>
+
+        </form>
+    </main>
+
+    <!-- Memanggil Component Footer -->
+    <custom-footer></custom-footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800
+        });
+
+        // Script untuk Handle Pemilihan Card & Tombol
+        function handleRoleSelection(radioInput) {
+            // 1. Hapus class 'active' dari semua label card
+            const allCards = document.querySelectorAll('.role-card');
+            allCards.forEach(card => card.classList.remove('active'));
+
+            // 2. Tambahkan class 'active' ke label card yang parent dari radio yg di-klik
+            radioInput.closest('.role-card').classList.add('active');
+
+            // 3. Ubah state tombol Submit
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.removeAttribute('disabled');
+            
+            // Ubah gaya tombol (dari disabled abu-abu menjadi Putih aktif)
+            btnSubmit.classList.remove('bg-zinc-800', 'text-zinc-500', 'cursor-not-allowed');
+            btnSubmit.classList.add('bg-white', 'text-black', 'hover:bg-zinc-200', 'cursor-pointer', 'shadow-[0_0_20px_rgba(255,255,255,0.1)]', 'active:scale-95');
+            
+            // Ubah teks tombol sesuai pilihan
+            if(radioInput.value === 'brand') {
+                btnSubmit.innerText = "Lanjutkan sebagai Brand";
+            } else {
+                btnSubmit.innerText = "Lanjutkan sebagai Kreator";
+            }
+        }
+    </script>
+</body>
+</html>
