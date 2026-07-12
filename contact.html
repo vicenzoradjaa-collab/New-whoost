@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Panggil file Header & Footer -->
+    <script src="attribute/header.js"></script>
+    <script src="attribute/footer.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* Custom Patterns */
+        .bg-dots {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Animation for the Network / Map Lines */
+        @keyframes drawAndFadeMap {
+            0% { stroke-dashoffset: 1000; opacity: 0; }
+            15% { opacity: 1; }
+            85% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+        .premium-line-map {
+            stroke-dasharray: 1000;
+            animation: drawAndFadeMap 4s ease-in-out infinite;
+            fill: none;
+            stroke-width: 1.5;
+        }
+        
+        @keyframes pulse-dot-map {
+            0%, 100% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 rgba(255,255,255,0); }
+            50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 15px rgba(255,255,255,0.8); }
+        }
+        .blip-map {
+            animation: pulse-dot-map 2s infinite;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black bg-dots">
+
+    <!-- Memanggil Component Header -->
+    <custom-header></custom-header>
+
+    <!-- Main Content Contact -->
+    <main class="pt-40 pb-24 px-6 max-w-7xl mx-auto min-h-screen">
+        
+        <!-- Header Text & Button Section (Sesuai Referensi) -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16" data-aos="fade-up">
+            <div class="max-w-2xl">
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight">
+                    For Brand <br>
+                    <span class="text-zinc-500">Contact Us</span>
+                </h1>
+                <p class="text-lg text-zinc-400 leading-relaxed max-w-lg">
+                    Hubungi kami untuk buat campaign eksklusif di Whoost dan mulai viralkan brand Anda melalui ribuan kreator ahli di seluruh Indonesia.
+                </p>
+            </div>
+            
+            <a href="#contact-form" class="inline-block bg-white text-black px-10 py-4 rounded-xl font-bold text-lg hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] whitespace-nowrap">
+                Hubungi Kami Sekarang!
+            </a>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- NETWORK / MAP VISUALIZATION SECTION        -->
+        <!-- ========================================== -->
+        <div class="w-full h-[400px] md:h-[600px] relative rounded-3xl border border-zinc-800/60 bg-[#0a0a0c] overflow-hidden shadow-2xl flex items-center justify-center mb-24 group" data-aos="fade-up" data-aos-delay="200">
+            
+            <!-- Glow background sentral -->
+            <div class="absolute bottom-10 left-1/4 w-64 h-64 bg-zinc-700/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+            <!-- SVG Animated Network (Meniru visualisasi peta distribusi) -->
+            <svg viewBox="0 0 1000 500" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                <defs>
+                    <linearGradient id="mapGrad1" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                    </linearGradient>
+                    <linearGradient id="mapGrad2" x1="0%" y1="100%" x2="100%" y2="50%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="1" />
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Titik Pusat (Misal: Jakarta/HQ) -->
+                <circle cx="250" cy="400" r="5" fill="#ffffff" class="animate-pulse" />
+                <circle cx="250" cy="400" r="20" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.3" class="animate-ping" style="animation-duration: 3s;" />
+                <circle cx="250" cy="400" r="40" fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.1" />
+
+                <!-- Jalur Distribusi 1 (Ke Atas Kiri) -->
+                <path d="M250 400 Q 180 200 120 150" stroke="url(#mapGrad1)" class="premium-line-map" style="animation-delay: 0.2s;" />
+                <circle cx="120" cy="150" r="3" fill="#ffffff" opacity="0.8"/>
+                <circle cx="120" cy="150" r="1.5" fill="#000"/>
+
+                <!-- Jalur Distribusi 2 (Ke Tengah Atas) -->
+                <path d="M250 400 Q 300 250 450 180" stroke="url(#mapGrad2)" class="premium-line-map" style="animation-delay: 1.5s;" />
+                <circle cx="450" cy="180" r="3" fill="#ffffff" opacity="0.8"/>
+                
+                <!-- Jalur Distribusi 3 (Ke Kanan Atas - Jauh) -->
+                <path d="M250 400 Q 500 100 800 220" stroke="url(#mapGrad1)" class="premium-line-map" style="animation-delay: 0.8s;" />
+                <circle cx="800" cy="220" r="4" fill="#ffffff" class="blip-map"/>
+                <circle cx="800" cy="220" r="1.5" fill="#0a0a0c"/>
+
+                <!-- Jalur Distribusi 4 (Ke Kanan Tengah) -->
+                <path d="M250 400 Q 400 350 650 300" stroke="url(#mapGrad2)" class="premium-line-map" style="animation-delay: 2.1s;" />
+                <circle cx="650" cy="300" r="3" fill="#ffffff" opacity="0.8"/>
+                
+                <!-- Jalur Distribusi 5 (Ke Kanan Bawah) -->
+                <path d="M250 400 Q 450 480 750 420" stroke="url(#mapGrad1)" class="premium-line-map" style="animation-delay: 1.2s;" />
+                <circle cx="750" cy="420" r="3" fill="#ffffff" opacity="0.8"/>
+
+                <!-- Extra Dots to simulate spread/cities -->
+                <g opacity="0.4" fill="#52525b">
+                    <circle cx="150" cy="250" r="1.5" />
+                    <circle cx="200" cy="180" r="1.5" />
+                    <circle cx="350" cy="280" r="1.5" />
+                    <circle cx="550" cy="220" r="1.5" />
+                    <circle cx="600" cy="380" r="1.5" />
+                    <circle cx="850" cy="300" r="1.5" />
+                    <circle cx="700" cy="150" r="1.5" />
+                </g>
+            </svg>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- CONTACT FORM SECTION                       -->
+        <!-- ========================================== -->
+        <div id="contact-form" class="bg-cardBg border border-zinc-800 rounded-[2.5rem] p-8 md:p-14 max-w-4xl mx-auto shadow-2xl relative overflow-hidden" data-aos="fade-up">
+            
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-20"></div>
+
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold mb-3">Mulai Campaign Anda</h2>
+                <p class="text-zinc-400 text-sm">Tim kami akan merespon pesan Anda maksimal dalam waktu 1x24 Jam.</p>
+            </div>
+
+            <form action="#" method="POST" class="space-y-6">
+                <!-- Row 1: Nama & Brand -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Nama Lengkap</label>
+                        <input type="text" placeholder="John Doe" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-zinc-500 focus:bg-zinc-800/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Nama Brand / Perusahaan</label>
+                        <input type="text" placeholder="PT Kreatif Digital" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-zinc-500 focus:bg-zinc-800/50 transition-all">
+                    </div>
+                </div>
+
+                <!-- Row 2: Email & WhatsApp -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Email Bisnis</label>
+                        <input type="email" placeholder="john@perusahaan.com" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-zinc-500 focus:bg-zinc-800/50 transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Nomor WhatsApp</label>
+                        <div class="flex">
+                            <span class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-zinc-800 bg-zinc-800 text-zinc-400 font-semibold">+62</span>
+                            <input type="tel" placeholder="812 3456 7890" class="w-full bg-zinc-900 border border-zinc-800 rounded-r-xl px-5 py-4 text-white focus:outline-none focus:border-zinc-500 focus:bg-zinc-800/50 transition-all">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Range Budget -->
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Estimasi Budget Campaign</label>
+                    <select class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-zinc-500 focus:bg-zinc-800/50 transition-all appearance-none cursor-pointer">
+                        <option value="" disabled selected>Pilih estimasi budget (Opsional)</option>
+                        <option value="1">Rp 1.000.000 - Rp 5.000.000</option>
+                        <option value="2">Rp 5.000.000 - Rp 20.000.000</option>
+                        <option value="3">Rp 20.000.000 - Rp 50.000.000</option>
+                        <option value="4">Lebih dari Rp 50.000.000</option>
+                    </select>
+                </div>
+
+                <!-- Row 4: Pesan -->
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Pesan & Detail Briefing</label>
+                    <textarea rows="4" placeholder="Ceritakan singkat tentang tujuan campaign Anda..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-zinc-500 focus:bg-zinc-800/50 transition-all resize-none"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full bg-white text-black py-4 rounded-xl font-bold text-lg hover:bg-zinc-200 active:scale-[0.99] transition-all flex items-center justify-center gap-2 group">
+                    Kirim Pesan
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Memanggil Component Footer -->
+    <custom-footer></custom-footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800
+        });
+    </script>
+</body>
+</html>
