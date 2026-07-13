@@ -8,7 +8,7 @@ class CustomHeader extends HTMLElement {
                 <!-- Logo Group -->
                 <a href="index.html" class="flex items-center gap-2 md:gap-3 font-bold text-xl md:text-2xl tracking-tight text-white group">
                     <!-- Ganti path src dibawah ini dengan gambar logo Anda sendiri -->
-                    <img src="asset/logow.webp" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 object-contain group-hover:scale-105 transition-transform" onerror="this.src='https://via.placeholder.com/32x32.png?text=W'">
+                    <img src="asset/logow.webp" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 object-contain group-hover:scale-105 transition-transform -mt-1" onerror="this.src='https://via.placeholder.com/32x32.png?text=W'">
                     Whoost.id
                 </a>
 
