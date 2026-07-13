@@ -8,8 +8,10 @@ class CustomFooter extends HTMLElement {
                 <!-- Kolom 1: Brand & Deskripsi -->
                 <div class="col-span-2">
                     <a href="#" class="flex items-center gap-3 font-bold text-2xl text-white tracking-tight mb-6">
-                        <!-- Menggunakan iconb.webp dari folder asset -->
-                        <img src="asset/logob.webp" alt="Whoost Logo" class="w-8 h-8 object-contain">
+                        <!-- Kotak Putih dengan Sudut Membulat (rounded-lg) untuk Logo Hitam -->
+                        <div class="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1.5">
+                            <img src="asset/logob.webp" alt="Whoost Logo" class="w-full h-full object-contain">
+                        </div>
                         Whoost
                     </a>
                     <p class="text-zinc-500 text-sm leading-relaxed max-w-sm">
@@ -58,7 +60,6 @@ class CustomFooter extends HTMLElement {
             <div class="max-w-7xl mx-auto px-6 border-t border-zinc-800/60 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500 gap-4">
                 <p>&copy; 2026 Whoost. All rights reserved.</p>
                 <p>
-                    <!-- Warna biru diganti menjadi putih & dipertebal (text-white font-semibold) menyesuaikan tema B&W -->
                     <span class="text-white font-semibold">Boost</span> Your Content, <span class="text-white font-semibold">Boost</span> Your Income!
                 </p>
             </div>
