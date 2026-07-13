@@ -23,65 +23,89 @@
         }
     </script>
     <style>
+        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
         * { -webkit-tap-highlight-color: transparent !important; outline: none; }
         html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         /* Custom Donut Chart Base */
         .donut-ring { stroke: #27272a; stroke-width: 3.5; fill: transparent; }
         .donut-segment { stroke: #22c55e; stroke-width: 3.5; fill: transparent; stroke-linecap: round; }
     </style>
 </head>
-<body class="antialiased flex flex-col relative w-full h-full">
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- HEADER -->
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN                             -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Analytics...</p>
+        </div>
+    </div>
+
+    <!-- Background Ornamen Aman -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- HEADER                                     -->
+    <!-- ========================================== -->
     <header class="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
-            <a href="brand-campaign.html" class="p-2 -ml-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors focus:outline-none">
+            <a href="brand-campaign.html" class="p-2 -ml-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors focus:outline-none relative z-10">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
             </a>
-            <h1 class="text-base sm:text-lg font-semibold tracking-tight">Performa Campaign</h1>
+            <h1 class="text-base sm:text-lg font-semibold tracking-tight relative z-10">Performa</h1>
         </div>
 
-        <div>
-            <button onclick="alert('Mendownload laporan berformat CSV/PDF...')" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs sm:text-sm font-semibold hover:bg-zinc-800 transition-colors focus:outline-none flex items-center gap-2">
+        <div class="relative z-10">
+            <button onclick="alert('Mendownload laporan berformat CSV/PDF...')" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs sm:text-sm font-semibold hover:bg-zinc-800 transition-colors focus:outline-none flex items-center gap-2 shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Export
             </button>
         </div>
     </header>
 
-    <!-- MAIN DASHBOARD AREA -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full">
+    <!-- ========================================== -->
+    <!-- MAIN DASHBOARD AREA                        -->
+    <!-- ========================================== -->
+    <!-- pb-32 memberikan ruang ekstra agar tidak tertutup nav bottom -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full relative z-10">
         <div class="max-w-6xl mx-auto space-y-8">
 
-            <!-- 1. TOP CARDS (Total Views & CPV) -->
+            <!-- 1. TOP CARDS (Total Views & Total Budget) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
-                <!-- TOTAL VIEWS CARD (Membentang lebih lebar) -->
-                <div class="md:col-span-2 bg-gradient-to-br from-zinc-900 to-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col relative overflow-hidden group">
-                    <div class="flex justify-between items-start mb-10">
+                <!-- TOTAL VIEWS CARD -->
+                <div class="md:col-span-2 bg-gradient-to-br from-zinc-900 to-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col relative overflow-hidden group shadow-lg">
+                    <div class="flex justify-between items-start mb-10 relative z-10">
                         <div>
                             <h2 class="text-sm font-bold text-zinc-400 tracking-widest uppercase mb-1">Total Views</h2>
                             <p class="text-[10px] text-zinc-500">*Hanya views dari konten yang disetujui</p>
                         </div>
                     </div>
 
-                    <div class="mb-10">
+                    <div class="mb-10 relative z-10">
                         <h1 class="text-6xl sm:text-7xl font-black text-white tracking-tight">0</h1>
                     </div>
 
                     <!-- Progress Bar Budget -->
-                    <div class="mt-auto w-full">
+                    <div class="mt-auto w-full relative z-10">
                         <div class="flex justify-between text-xs font-semibold text-zinc-400 mb-2">
                             <span>Budget Terpakai</span>
                             <span class="text-white">100%</span>
                         </div>
                         <div class="w-full h-1.5 sm:h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
-                            <div class="h-full bg-green-500 w-full rounded-full transition-all duration-1000"></div> <!-- Width diubah sesuai % -->
+                            <div class="h-full bg-green-500 w-full rounded-full transition-all duration-1000"></div>
                         </div>
                         <div class="flex justify-between items-center text-[11px] sm:text-xs">
                             <span class="text-zinc-500 font-medium">Rp 3.000.000 / Rp 3.000.000</span>
@@ -90,32 +114,28 @@
                     </div>
                 </div>
 
-                <!-- CPV CARD -->
-                <div class="md:col-span-1 bg-green-500/5 border border-green-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-center items-start relative overflow-hidden">
+                <!-- TOTAL BUDGET CARD (Perubahan dari Cost Per View) -->
+                <div class="md:col-span-1 bg-green-500/5 border border-green-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-center items-start relative overflow-hidden shadow-lg">
                     <!-- Ornamen background blur -->
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 blur-[40px] rounded-full pointer-events-none"></div>
                     
-                    <h2 class="text-sm font-bold text-green-500 tracking-widest uppercase mb-4 relative z-10">Cost Per View</h2>
+                    <h2 class="text-sm font-bold text-green-500 tracking-widest uppercase mb-4 relative z-10">Total Budget</h2>
                     <h1 class="text-4xl sm:text-5xl font-black text-green-400 tracking-tight relative z-10">Rp 0</h1>
                 </div>
 
             </div>
 
-            <!-- 2. QUICK STATS ROW -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 py-4">
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors">
+            <!-- 2. QUICK STATS ROW (3 Kolom, Kreator dihapus) -->
+            <div class="grid grid-cols-3 gap-4 sm:gap-6 py-4">
+                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors shadow-sm">
                     <h3 class="text-3xl font-black text-white mb-1">1</h3>
                     <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Campaign</p>
                 </div>
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors">
+                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors shadow-sm">
                     <h3 class="text-3xl font-black text-white mb-1">0</h3>
                     <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Aktif</p>
                 </div>
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors">
-                    <h3 class="text-3xl font-black text-white mb-1">0</h3>
-                    <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Kreator</p>
-                </div>
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors">
+                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors shadow-sm">
                     <h3 class="text-3xl font-black text-white mb-1">0</h3>
                     <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Konten</p>
                 </div>
@@ -128,14 +148,14 @@
                     <span class="text-xs font-semibold text-zinc-500">0 Total Views</span>
                 </div>
 
-                <div class="bg-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8 md:gap-16 lg:gap-24">
+                <div class="bg-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8 md:gap-16 lg:gap-24 shadow-lg">
                     
                     <!-- Donut Chart Left -->
                     <div class="relative w-48 h-48 sm:w-56 sm:h-56 shrink-0 flex items-center justify-center">
                         <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90 drop-shadow-2xl">
                             <!-- Background Ring Empty -->
                             <path class="donut-ring" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <!-- Segment Value (Saat ini 0, tidak di render pathnya, tapi kodenya siap pakai) -->
+                            <!-- Placeholder untuk data terisi (Stroke Dasharray) -->
                             <!-- <path class="donut-segment" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /> -->
                         </svg>
                         
@@ -236,5 +256,29 @@
         </div>
     </main>
 
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT & LOGIC                         -->
+    <!-- ========================================== -->
+    
+    <!-- Memanggil Navbar Bawah -->
+    <script>
+        const ACTIVE_MENU = 'performa'; // Identifier menu aktif
+    </script>
+    <script src="attribute/navbarclient.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // LOGIC HILANGKAN LOADING SCREEN
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                if(loader){
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500); 
+                }
+            }, 1000); 
+        });
+    </script>
 </body>
 </html>
