@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Clipper - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        /* Hide scrollbar for horizontal scroll areas */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
+
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN                             -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <!-- Animasi Efek Glow di belakang logo -->
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <!-- Logo Whoost -->
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <!-- Teks -->
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Background Ornamen Aman -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] left-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- HEADER                                     -->
+    <!-- ========================================== -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Dashboard Clipper</h1>
+        </div>
+        <!-- Ikon Notifikasi (Opsional) -->
+        <button class="relative p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 transition-colors">
+            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-darkBg rounded-full"></span>
+        </button>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT AREA                          -->
+    <!-- ========================================== -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
+        <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
+            
+            <!-- SECTION 1: RINGKASAN AKUN -->
+            <section>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                    <!-- Saldo -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-between hover:border-zinc-500 transition-colors duration-300">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Saldo Tersedia</p>
+                            <button class="text-[10px] bg-white text-black px-2 py-1 rounded font-semibold hover:bg-zinc-200 transition">Tarik</button>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-semibold text-white flex items-center gap-2">
+                            Rp 20.000 <span class="text-emerald-400 text-sm">↑</span>
+                        </h3>
+                    </div>
+                    
+                    <!-- Portofolio -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
+                        <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Portofolio Saya</p>
+                        <h3 class="text-2xl sm:text-3xl font-semibold text-white flex items-center gap-2">
+                            37 <span class="text-emerald-400 text-sm">↑</span>
+                        </h3>
+                    </div>
+
+                    <!-- Total Estimasi Views (Tambahan relevan untuk Clipper) -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300 col-span-2 lg:col-span-1">
+                        <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Estimasi Views</p>
+                        <h3 class="text-2xl sm:text-3xl font-semibold text-white">142.5K</h3>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: AKSI CEPAT (MENU ICON) -->
+            <section>
+                <h2 class="text-sm font-semibold mb-3 text-zinc-300 uppercase tracking-wide">Menu Cepat</h2>
+                <div class="grid grid-cols-4 md:grid-cols-8 gap-3 sm:gap-4">
+                    <!-- Menu 1 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Klaim Views</span>
+                    </a>
+                    <!-- Menu 2 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
+                        <div class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">PRO</div>
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Akses VIP</span>
+                    </a>
+                    <!-- Menu 3 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Submit Konten</span>
+                    </a>
+                    <!-- Menu 4 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Pengajuan Sample</span>
+                    </a>
+                    <!-- Menu 5 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Wallet</span>
+                    </a>
+                    <!-- Menu 6 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Portofolio Saya</span>
+                    </a>
+                    <!-- Menu 7 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Leaderboard</span>
+                    </a>
+                    <!-- Menu 8 -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Alat Kreasi</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- SECTION 3: KAMPANYE TERSEDIA (Horizontal Scroll) -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-white">Kampanye Tersedia</h2>
+                    <a href="#" class="text-[12px] sm:text-[13px] font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
+                        Lihat Semua
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+                <div class="flex gap-4 sm:gap-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
+                    
+                    <!-- KARTU KAMPANYE 1 -->
+                    <div class="snap-center flex-shrink-0 w-[280px] sm:w-[320px] bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full h-40 bg-zinc-900">
+                            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Campaign Banner" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardBg via-transparent to-black/40"></div>
+                            <!-- Badge -->
+                            <div class="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded text-[9px] font-bold uppercase">Tersedia</div>
+                            <div class="absolute top-3 right-3 bg-zinc-900/80 backdrop-blur border border-zinc-700 text-white px-2 py-1 rounded text-[9px] font-medium">Seni & Kreatif</div>
+                            <!-- Brand & Profil -->
+                            <div class="absolute bottom-3 left-3 flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-zinc-700 overflow-hidden border border-zinc-500">
+                                    <img src="https://ui-avatars.com/api/?name=DJ&background=random" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-xs font-semibold text-white">DJ VERO 168</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-sm font-semibold text-white mb-1 truncate">Buat video pendek remix 168</h3>
+                            <p class="text-[11px] text-zinc-400 mb-4 line-clamp-2">Ciptakan video pendek kreatif menggunakan audio dari DJ Vero dan tunjukkan gaya kreatifmu.</p>
+                            
+                            <div class="flex items-center justify-between border-t border-zinc-800 pt-3">
+                                <div class="flex items-center gap-1.5 text-zinc-400">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <span class="text-[10px]">31 Jul 2026</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[11px] font-bold text-emerald-400">Rp 2.500</span>
+                                    <span class="text-[9px] text-zinc-500">/ 1k views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU KAMPANYE 2 -->
+                    <div class="snap-center flex-shrink-0 w-[280px] sm:w-[320px] bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full h-40 bg-zinc-900">
+                            <img src="https://images.unsplash.com/photo-1539367628448-4b5f922758f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Campaign Banner" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardBg via-transparent to-black/40"></div>
+                            <!-- Badge -->
+                            <div class="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded text-[9px] font-bold uppercase">Tersedia</div>
+                            <div class="absolute top-3 right-3 bg-blue-600 border border-blue-500 text-white px-2 py-1 rounded text-[9px] font-medium">E-Commerce</div>
+                            <!-- Brand & Profil -->
+                            <div class="absolute bottom-3 left-3 flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-zinc-700 overflow-hidden border border-zinc-500">
+                                    <img src="https://ui-avatars.com/api/?name=TK&background=random" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-xs font-semibold text-white">The Keranjang Bali</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-sm font-semibold text-white mb-1 truncate">Wisatawan Sambut Oleh-oleh</h3>
+                            <p class="text-[11px] text-zinc-400 mb-4 line-clamp-2">Bagikan momen serumu berbelanja oleh-oleh khas Bali di The Keranjang. Tunjukkan barang favoritmu!</p>
+                            
+                            <div class="flex items-center justify-between border-t border-zinc-800 pt-3">
+                                <div class="flex items-center gap-1.5 text-zinc-400">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <span class="text-[10px]">18 Jul 2026</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[11px] font-bold text-emerald-400">Rp 3.000</span>
+                                    <span class="text-[9px] text-zinc-500">/ 1k views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU KAMPANYE 3 -->
+                    <div class="snap-center flex-shrink-0 w-[280px] sm:w-[320px] bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full h-40 bg-zinc-900">
+                            <img src="https://images.unsplash.com/photo-1544144433-d50aff500b91?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Campaign Banner" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-cardBg via-transparent to-black/40"></div>
+                            <!-- Badge -->
+                            <div class="absolute top-3 left-3 bg-white text-black px-2 py-1 rounded text-[9px] font-bold uppercase">Tersedia</div>
+                            <div class="absolute top-3 right-3 bg-zinc-900/80 backdrop-blur border border-zinc-700 text-white px-2 py-1 rounded text-[9px] font-medium">F&B</div>
+                            <!-- Brand & Profil -->
+                            <div class="absolute bottom-3 left-3 flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-zinc-700 overflow-hidden border border-zinc-500">
+                                    <img src="https://ui-avatars.com/api/?name=LK&background=random" class="w-full h-full object-cover">
+                                </div>
+                                <span class="text-xs font-semibold text-white">LOKAAL 30ML</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="text-sm font-semibold text-white mb-1 truncate">Review Lokaal Berry Flavor</h3>
+                            <p class="text-[11px] text-zinc-400 mb-4 line-clamp-2">Buat ulasan jujur tentang perpaduan rasa anggur juicy dengan sensasi segar dari Lokaal.</p>
+                            
+                            <div class="flex items-center justify-between border-t border-zinc-800 pt-3">
+                                <div class="flex items-center gap-1.5 text-zinc-400">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <span class="text-[10px]">20 Aug 2026</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[11px] font-bold text-emerald-400">Rp 1.500</span>
+                                    <span class="text-[9px] text-zinc-500">/ 1k views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: PORTOFOLIO SAYA (Horizontal Scroll Portrait) -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-white">Portofolio Saya</h2>
+                    <a href="#" class="text-[12px] sm:text-[13px] font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
+                        Lihat Semua
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                </div>
+
+                <div class="flex gap-3 sm:gap-4 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
+                    
+                    <!-- KARTU TAMBAH KONTEN -->
+                    <button class="snap-start flex-shrink-0 w-[120px] sm:w-[140px] aspect-[3/4] rounded-2xl border-2 border-dashed border-zinc-800 bg-cardBg/50 hover:bg-zinc-900 hover:border-zinc-500 flex flex-col items-center justify-center transition-all group">
+                        <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-2 group-hover:bg-white transition-colors">
+                            <svg class="w-5 h-5 text-zinc-400 group-hover:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        </div>
+                        <span class="text-[11px] font-medium text-zinc-400 group-hover:text-white">Add Content</span>
+                    </button>
+
+                    <!-- KARTU PORTOFOLIO 1 -->
+                    <div class="snap-start flex-shrink-0 w-[120px] sm:w-[140px] aspect-[3/4] bg-zinc-900 rounded-2xl overflow-hidden relative group cursor-pointer border border-zinc-800 hover:border-zinc-500 transition-all">
+                        <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Portofolio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
+                        
+                        <!-- Play Icon & Title -->
+                        <div class="absolute bottom-3 left-2 right-2">
+                            <h4 class="text-[11px] sm:text-xs font-semibold text-white truncate mb-1">REVIEW...</h4>
+                            <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-300">
+                                <span class="truncate pr-2">by Vicenzo</span>
+                                <div class="flex items-center gap-1 font-semibold text-white">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+                                    4K
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU PORTOFOLIO 2 -->
+                    <div class="snap-start flex-shrink-0 w-[120px] sm:w-[140px] aspect-[3/4] bg-zinc-900 rounded-2xl overflow-hidden relative group cursor-pointer border border-zinc-800 hover:border-zinc-500 transition-all">
+                        <!-- Contoh tanpa image (placeholder dokumen/video draft) -->
+                        <div class="w-full h-full bg-zinc-800 flex items-center justify-center">
+                             <svg class="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
+                        
+                        <div class="absolute bottom-3 left-2 right-2">
+                            <h4 class="text-[11px] sm:text-xs font-semibold text-white truncate mb-1">Clipper...</h4>
+                            <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-300">
+                                <span class="truncate pr-2">by Vicenzo</span>
+                                <div class="flex items-center gap-1 font-semibold text-white">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+                                    3.2K
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU PORTOFOLIO 3 -->
+                    <div class="snap-start flex-shrink-0 w-[120px] sm:w-[140px] aspect-[3/4] bg-zinc-900 rounded-2xl overflow-hidden relative group cursor-pointer border border-zinc-800 hover:border-zinc-500 transition-all">
+                        <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Portofolio" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
+                        
+                        <div class="absolute bottom-3 left-2 right-2">
+                            <h4 class="text-[11px] sm:text-xs font-semibold text-white truncate mb-1">Clipper...</h4>
+                            <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-300">
+                                <span class="truncate pr-2">by Vicenzo</span>
+                                <div class="flex items-center gap-1 font-semibold text-white">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+                                    648
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KARTU PORTOFOLIO 4 -->
+                    <div class="snap-start flex-shrink-0 w-[120px] sm:w-[140px] aspect-[3/4] bg-zinc-900 rounded-2xl overflow-hidden relative group cursor-pointer border border-zinc-800 hover:border-zinc-500 transition-all">
+                        <div class="w-full h-full bg-zinc-800 flex items-center justify-center">
+                             <svg class="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/90"></div>
+                        
+                        <div class="absolute bottom-3 left-2 right-2">
+                            <h4 class="text-[11px] sm:text-xs font-semibold text-white truncate mb-1">Clipper K...</h4>
+                            <div class="flex items-center justify-between text-[9px] sm:text-[10px] text-zinc-300">
+                                <span class="truncate pr-2">by Vicenzo</span>
+                                <div class="flex items-center gap-1 font-semibold text-white">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4l12 6-12 6z"></path></svg>
+                                    3K
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT & LOGIC                         -->
+    <!-- ========================================== -->
+    
+    <!-- Memanggil Navbar Bawah (Pastikan Anda menggunakan script navbar untuk clipper/creator) -->
+    <script>
+        const ACTIVE_MENU = 'beranda'; 
+    </script>
+    <!-- Ganti src ini sesuai dengan nama file JS navbar untuk clipper Anda -->
+    <!-- <script src="attribute/navbarclipper.js"></script> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // LOGIC HILANGKAN LOADING SCREEN
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                loader.classList.add('opacity-0'); // Transisi smooth fade out
+                setTimeout(() => {
+                    loader.style.display = 'none'; // Benar-benar dihilangkan dari tampilan
+                }, 500); // Waktu transisi sejalan dengan duration-500
+            }, 1000); // Simulasi waktu loading data selama 1 detik
+        });
+    </script>
+</body>
+</html>
