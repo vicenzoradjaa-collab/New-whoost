@@ -22,6 +22,7 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        .bg-dots-card { background-image: radial-gradient(#27272a 1px, transparent 1px); background-size: 10px 10px; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -39,7 +40,7 @@
 
     <!-- Main Area -->
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 z-0 w-full relative scroll-smooth">
-        <div class="max-w-5xl mx-auto space-y-6">
+        <div class="max-w-7xl mx-auto space-y-6">
             
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -52,82 +53,301 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
+                    <!-- Trigger filter/pencarian setiap mengetik -->
                     <input type="text" id="searchInput" onkeyup="searchCampaign()" placeholder="Cari campaign..." class="w-full bg-zinc-900 border border-zinc-700 rounded-full pl-10 pr-4 py-2 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors">
                 </div>
             </div>
 
-            <!-- List Campaign Aktif -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="campaignList">
+            <!-- List Campaign Aktif (Grid 2 Kolom di Mobile, 3-4 di Desktop) -->
+            <!-- Saya duplikasi beberapa kali untuk menampilkan sistem Load More -->
+            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6" id="cards-container">
                 
-                <!-- Card 1 -->
-                <div class="campaign-card bg-cardBg border border-zinc-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 hover:border-zinc-500 transition-all duration-300">
-                    <div class="w-full sm:w-32 h-40 sm:h-full bg-zinc-900 rounded-xl overflow-hidden shrink-0 relative">
-                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Brand" class="w-full h-full object-cover opacity-80">
-                        <div class="absolute top-2 right-2 bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 rounded-full">Aktif</div>
+                <!-- CARD 1 -->
+                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="ENHYPEN Jakarta (Presale)">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">ENHYPEN</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
                     </div>
-                    <div class="flex-1 flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-sm sm:text-base font-bold text-white campaign-title">Review Sepatu Hypebeast</h3>
-                            <p class="text-[10px] sm:text-xs text-zinc-400 mt-1">SneakerZone ID</p>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">PK</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">PK Entertain...</span>
                         </div>
-                        <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="flex flex-col">
-                                <span class="text-[9px] text-zinc-500 font-semibold uppercase">Rate/1K Views</span>
-                                <span class="text-xs font-bold text-emerald-400">Rp 5.000</span>
-                            </div>
-                            <a href="clipper-submit.html" class="bg-white hover:bg-zinc-200 text-black text-xs font-bold px-4 py-2 rounded-lg text-center transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                Submit Video
-                            </a>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="ENHYPEN Jakarta (Presale)">ENHYPEN Jakarta (Presale)</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 3.000</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                        <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                            <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
                         </div>
+                        <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Entertainment</span>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="flex justify-between items-end mb-1.5 md:mb-2">
+                            <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
+                            <span class="text-[9px] md:text-xs font-black text-white">44%</span>
+                        </div>
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full w-[44%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        </div>
+                        <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
+                    </div>
+                </div>
+                
+                <!-- CARD 2 -->
+                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Review Sepatu Hypebeast">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">SNEAKER</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
+                    </div>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">SZ</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">Sneaker Zone</span>
+                        </div>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Review Sepatu Hypebeast">Review Sepatu Hypebeast</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 5.000</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                        <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                        </div>
+                        <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Fashion</span>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="flex justify-between items-end mb-1.5 md:mb-2">
+                            <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
+                            <span class="text-[9px] md:text-xs font-black text-white">78%</span>
+                        </div>
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full w-[78%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        </div>
+                        <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
                     </div>
                 </div>
 
-                <!-- Card 2 -->
-                <div class="campaign-card bg-cardBg border border-zinc-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 hover:border-zinc-500 transition-all duration-300">
-                    <div class="w-full sm:w-32 h-40 sm:h-full bg-zinc-900 rounded-xl overflow-hidden shrink-0 relative">
-                        <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Brand" class="w-full h-full object-cover opacity-80">
-                        <div class="absolute top-2 right-2 bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 rounded-full">Aktif</div>
+                <!-- CARD 3 (DUPLIKASI) -->
+                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Tips Skincare Glowing">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">SKINCARE</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
                     </div>
-                    <div class="flex-1 flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-sm sm:text-base font-bold text-white campaign-title">Tips Skincare Glowing</h3>
-                            <p class="text-[10px] sm:text-xs text-zinc-400 mt-1">GlowUp Beauty</p>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">GB</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">GlowUp Beauty</span>
                         </div>
-                        <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="flex flex-col">
-                                <span class="text-[9px] text-zinc-500 font-semibold uppercase">Rate/1K Views</span>
-                                <span class="text-xs font-bold text-emerald-400">Rp 4.500</span>
-                            </div>
-                            <a href="clipper-submit.html" class="bg-white hover:bg-zinc-200 text-black text-xs font-bold px-4 py-2 rounded-lg text-center transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-                                Submit Video
-                            </a>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Tips Skincare Glowing">Tips Skincare Glowing</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 4.500</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                        <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
                         </div>
+                        <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Beauty</span>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="flex justify-between items-end mb-1.5 md:mb-2">
+                            <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
+                            <span class="text-[9px] md:text-xs font-black text-white">92%</span>
+                        </div>
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full w-[92%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        </div>
+                        <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
+                    </div>
+                </div>
+
+                <!-- CARD 4 (DUPLIKASI) -->
+                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Promo Akhir Tahun">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">PROMO</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
+                    </div>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">SP</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">Store Pedia</span>
+                        </div>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Promo Akhir Tahun">Promo Akhir Tahun</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 2.500</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                        <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="flex justify-between items-end mb-1.5 md:mb-2">
+                            <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
+                            <span class="text-[9px] md:text-xs font-black text-white">12%</span>
+                        </div>
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full w-[12%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        </div>
+                        <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
+                    </div>
+                </div>
+                
+                <!-- CARD 5 (DUPLIKASI UNTUK LOAD MORE) -->
+                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Review Sepatu Hypebeast 2">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">SNEAKER 2</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
+                    </div>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">SZ</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">Sneaker Zone</span>
+                        </div>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Review Sepatu Hypebeast 2">Review Sepatu Hypebeast 2</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 5.000</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full w-[78%]"></div>
+                        </div>
+                        <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
+                    </div>
+                </div>
+
+                <!-- CARD 6 (DUPLIKASI UNTUK LOAD MORE) -->
+                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Review Sepatu Hypebeast 3">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">SNEAKER 3</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
+                    </div>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">SZ</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">Sneaker Zone</span>
+                        </div>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Review Sepatu Hypebeast 3">Review Sepatu Hypebeast 3</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 5.000</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full w-[78%]"></div>
+                        </div>
+                        <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
                     </div>
                 </div>
 
             </div>
+
+            <!-- TOMBOL LOAD MORE -->
+            <div id="load-more-container" class="w-full flex justify-center mt-8 hidden">
+                <button onclick="loadMore()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 text-zinc-300 text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-full transition-colors flex items-center gap-2">
+                    Muat Lebih Banyak
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+            </div>
+
         </div>
     </main>
 
     <!-- Navigasi Bawah -->
-    <script> const ACTIVE_MENU = 'campaignselector'; </script>
+    <script> const ACTIVE_MENU = 'campaign'; </script>
     <script src="attribute/navbarclipper.js"></script>
 
-    <!-- JS Pencarian -->
+    <!-- JS Logic Search & Load More -->
     <script>
-        function searchCampaign() {
+        // Menghitung kolom grid berdasarkan ukuran layar
+        function getCols() {
+            const w = window.innerWidth;
+            if (w >= 1280) return 4; // XL: 4
+            if (w >= 1024) return 3; // LG: 3
+            return 2;                // Mobile: 2
+        }
+
+        // Limit awal adalah (Jumlah Kolom * 2 Baris)
+        let currentLimit = getCols() * 2;
+
+        function updateVisibility() {
             let input = document.getElementById('searchInput').value.toLowerCase();
-            let cards = document.getElementsByClassName('campaign-card');
-            
-            for (let i = 0; i < cards.length; i++) {
-                let title = cards[i].querySelector('.campaign-title').innerText.toLowerCase();
-                if (title.indexOf(input) > -1) {
-                    cards[i].style.display = "";
+            let cards = document.querySelectorAll('.campaign-card');
+            let matchCount = 0;
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                let title = card.getAttribute('data-title').toLowerCase();
+                
+                if (title.includes(input)) {
+                    matchCount++;
+                    // Batasi dengan Limit (Paginasi)
+                    if (visibleCount < currentLimit) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
                 } else {
-                    cards[i].style.display = "none";
+                    card.style.display = 'none';
                 }
+            });
+
+            // Sembunyikan atau Munculkan tombol Load More
+            const loadMoreBtn = document.getElementById('load-more-container');
+            if (matchCount > currentLimit) {
+                loadMoreBtn.classList.remove('hidden');
+            } else {
+                loadMoreBtn.classList.add('hidden');
             }
         }
+
+        function searchCampaign() {
+            // Ketika user melakukan search, kembalikan limit ke 2 baris awal
+            currentLimit = getCols() * 2;
+            updateVisibility();
+        }
+
+        function loadMore() {
+            // Tambahkan 2 baris lagi
+            currentLimit += getCols() * 2;
+            updateVisibility();
+        }
+
+        // Init di awal
+        document.addEventListener('DOMContentLoaded', updateVisibility);
+        // Refresh grid limit jika ukuran di resize
+        window.addEventListener('resize', updateVisibility);
     </script>
 </body>
 </html>
