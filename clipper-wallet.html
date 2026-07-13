@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js untuk Grafik Statistik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas untuk Save Share Card -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     
     <script>
@@ -32,25 +34,11 @@
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Background unik untuk Share Card Whoost */
-        .bg-share-card {
-            background: linear-gradient(135deg, #18181b 0%, #0a0a0c 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .bg-share-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 50%);
-            pointer-events: none;
-        }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- HEADER (Sama dengan Dashboard) -->
+    <!-- HEADER (Icon Lonceng Dihilangkan) -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <a href="dashboard.html" class="hover:opacity-80 transition-opacity">
@@ -59,9 +47,8 @@
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Wallet</h1>
         </div>
-        <button class="relative p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 transition-colors">
-            <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-        </button>
+        <!-- Area Kanan Kosong (Lonceng Notifikasi Dihapus) -->
+        <div></div>
     </header>
 
     <!-- MAIN CONTENT -->
@@ -73,11 +60,11 @@
                 <p class="text-zinc-400 text-sm">Kelola komisi, tarik dana, dan pamerkan pencapaian performa Anda sebagai clipper Whoost.</p>
             </div>
 
-            <!-- GRID LAYOUT -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            <!-- GRID LAYOUT (items-stretch untuk menyamakan tinggi kolom) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                 
                 <!-- KIRI: KARTU SALDO & INFORMASI (COL-SPAN 4) -->
-                <div class="lg:col-span-4 space-y-6">
+                <div class="lg:col-span-4 space-y-6 flex flex-col justify-start">
                     
                     <!-- Kartu Saldo Utama -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group hover:border-zinc-500 transition-all duration-300 shadow-xl">
@@ -155,8 +142,8 @@
 
                 </div>
 
-                <!-- KANAN: RIWAYAT & STATISTIK (COL-SPAN 8) -->
-                <div class="lg:col-span-8 bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 min-h-[500px] flex flex-col">
+                <!-- KANAN: RIWAYAT & STATISTIK (COL-SPAN 8, Class h-full agar sama tinggi dengan kiri) -->
+                <div class="lg:col-span-8 bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col h-full">
                     
                     <!-- Header Kanan -->
                     <div class="flex justify-between items-center mb-6">
@@ -178,33 +165,11 @@
                         <div class="col-span-1 text-right">Status</div>
                     </div>
 
-                    <!-- List Area (Empty State Default sesuai referensi) -->
-                    <div class="flex-1 flex flex-col items-center justify-center text-center opacity-60 mt-10 sm:mt-0">
+                    <!-- List Area (Empty State) -->
+                    <div class="flex-1 flex flex-col items-center justify-center text-center opacity-60 min-h-[300px]">
                         <svg class="w-16 h-16 text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                         <p class="text-sm text-zinc-500 font-medium">Belum ada riwayat penarikan dana.</p>
                     </div>
-
-                    <!-- CONTOH LIST JIKA ADA DATA (Uncomment untuk melihat) -->
-                    <!-- 
-                    <div class="space-y-0 custom-scrollbar overflow-y-auto max-h-[400px]">
-                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 sm:gap-4 items-center py-4 border-b border-zinc-800/50 hover:bg-zinc-900/30 px-2 rounded-lg transition-colors">
-                            <div class="col-span-1">
-                                <p class="text-sm font-semibold text-white">10 Jul 2026</p>
-                                <p class="text-[10px] text-zinc-500 font-mono mt-0.5">#WD-99281X</p>
-                            </div>
-                            <div class="col-span-1 flex flex-col sm:block">
-                                <span class="text-sm font-medium text-zinc-300">BCA</span>
-                                <span class="text-[10px] text-zinc-500">7040423031</span>
-                            </div>
-                            <div class="col-span-1">
-                                <p class="text-sm font-bold text-white">Rp 150.000</p>
-                            </div>
-                            <div class="col-span-1 sm:text-right mt-2 sm:mt-0">
-                                <span class="inline-block px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-wider">BERHASIL</span>
-                            </div>
-                        </div>
-                    </div> 
-                    -->
 
                 </div>
             </div>
@@ -226,13 +191,11 @@
             </div>
             
             <div class="p-5 space-y-5">
-                <!-- Info Saldo -->
                 <div class="flex justify-between items-center p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                     <span class="text-xs text-zinc-400 font-medium">Saldo Maksimal</span>
                     <span class="text-sm font-bold text-white" id="max-withdraw-amount" data-val="383314">Rp 383.314</span>
                 </div>
 
-                <!-- Input Nominal -->
                 <div>
                     <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Nominal Penarikan</label>
                     <div class="relative flex items-center">
@@ -243,7 +206,6 @@
                     <p id="withdraw-error" class="text-[10px] text-red-500 mt-1 hidden">Nominal tidak mencukupi atau di bawah batas minimum.</p>
                 </div>
 
-                <!-- Kalkulasi -->
                 <div class="bg-darkBg rounded-xl p-4 border border-zinc-800 space-y-3">
                     <div class="flex justify-between text-xs">
                         <span class="text-zinc-400">Biaya Layanan/Fee:</span>
@@ -256,13 +218,27 @@
                     </div>
                 </div>
 
-                <!-- Tombol Aksi -->
+                <!-- Tombol Proses - Terhubung ke function processWithdrawal() -->
                 <div class="flex gap-3 pt-2">
                     <button onclick="toggleModal('withdrawModal')" class="flex-1 py-3 rounded-xl border border-zinc-700 text-zinc-300 font-bold text-sm hover:bg-zinc-800 transition-colors">Batal</button>
-                    <!-- Tombol di Whoost biasanya putih untuk primary, tapi karena referensi minta biru, kita pakai putih sesuai Whoost atau warna solid -->
-                    <button id="btn-process-withdraw" disabled class="flex-[2] py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Proses Penarikan</button>
+                    <button id="btn-process-withdraw" disabled onclick="processWithdrawal()" class="flex-[2] py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Proses Penarikan</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL POPUP SUCCESS PENARIKAN DIPROSES     -->
+    <!-- ========================================== -->
+    <div id="successWithdrawModal" class="fixed inset-0 z-[1000] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleModal('successWithdrawModal')"></div>
+        <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] shadow-2xl relative z-10 w-[90%] max-w-sm transform scale-95 transition-transform duration-300 overflow-hidden modal-content flex flex-col items-center text-center p-8">
+            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mb-5 border border-emerald-500/20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Penarikan Diproses!</h3>
+            <p class="text-sm text-zinc-400 mb-8 leading-relaxed">Permintaan penarikan dana Anda telah masuk ke sistem dan sedang ditinjau admin. Harap tunggu 1-3 hari kerja.</p>
+            <button onclick="toggleModal('successWithdrawModal')" class="w-full py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors active:scale-[0.98]">Oke, Mengerti</button>
         </div>
     </div>
 
@@ -273,7 +249,6 @@
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleModal('shareModal')"></div>
         <div class="relative z-10 w-[85%] max-w-sm flex flex-col items-center transform scale-95 transition-transform duration-300 modal-content">
             
-            <!-- Header Share Modal -->
             <div class="w-full flex justify-between items-center mb-4 px-2">
                 <h3 class="text-sm font-bold text-white">Share Pendapatan</h3>
                 <button onclick="toggleModal('shareModal')" class="text-zinc-400 hover:text-white transition-colors">
@@ -281,40 +256,49 @@
                 </button>
             </div>
 
-            <!-- The Card -->
-            <div id="capture-card" class="w-full bg-share-card border border-zinc-800 rounded-[2rem] p-8 shadow-2xl flex flex-col relative">
+            <!-- The Card to Capture -->
+            <!-- Menggunakan kelas bawaan tailwind gradient murni untuk keamanan html2canvas rendering -->
+            <div id="capture-card" class="w-full bg-gradient-to-br from-zinc-900 via-[#121214] to-black border border-zinc-800 rounded-[2rem] p-8 shadow-2xl flex flex-col relative overflow-hidden">
+                
+                <!-- Ornamen Halus -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 blur-[50px] rounded-full pointer-events-none"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none"></div>
+
                 <!-- Branding -->
-                <div class="flex justify-between items-start mb-12">
-                    <img src="asset/logow.webp" alt="Whoost" class="h-6 w-auto" onerror="this.src='https://via.placeholder.com/100x30?text=WHOOST'">
-                    <span class="text-[9px] font-bold text-zinc-500 tracking-widest uppercase">whoost.id</span>
+                <div class="flex justify-between items-start mb-12 relative z-10">
+                    <!-- Icon dibesarkan menjadi h-10 -->
+                    <img src="asset/logow.webp" alt="Whoost" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/100x40?text=WHOOST'">
+                    <span class="text-[10px] font-bold text-zinc-500 tracking-[0.2em] uppercase mt-1">whoost.id</span>
                 </div>
 
                 <!-- User Info -->
-                <div class="text-center mb-8">
-                    <h2 class="text-2xl font-black text-white mb-1">Vicenzo Radja</h2>
-                    <p class="text-[10px] font-bold text-blue-400 tracking-[0.2em] uppercase">Whoost Clipper</p>
+                <div class="text-center mb-8 relative z-10">
+                    <h2 class="text-2xl font-black text-white mb-1 tracking-tight">Vicenzo Radja</h2>
+                    <p class="text-[10px] font-bold text-blue-400 tracking-[0.25em] uppercase">Whoost Clipper</p>
                 </div>
 
                 <!-- Number -->
-                <div class="text-center mb-10">
-                    <p class="text-[10px] font-bold text-zinc-500 tracking-wider uppercase mb-2">Total Payout</p>
-                    <h1 class="text-4xl font-black text-white mb-3">+Rp 383.314</h1>
+                <div class="text-center mb-10 relative z-10">
+                    <p class="text-[11px] font-bold text-zinc-500 tracking-[0.15em] uppercase mb-2">Total Payout</p>
+                    <h1 class="text-4xl font-black text-white mb-3 tracking-tighter">+Rp 383.314</h1>
                     <div class="flex items-center justify-center gap-1.5 text-zinc-400">
                         <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         <span class="text-sm font-bold text-white">27.4M</span>
-                        <span class="text-xs">Views</span>
+                        <span class="text-xs font-semibold">Views</span>
                     </div>
                 </div>
 
-                <div class="mt-auto border-t border-zinc-800/50 pt-4 text-center">
-                    <p class="text-[9px] text-zinc-600 font-mono tracking-widest uppercase">Update: 13 Juli 2026</p>
+                <div class="mt-auto border-t border-zinc-800/80 pt-5 text-center relative z-10">
+                    <p class="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">Update: 13 Juli 2026</p>
                 </div>
             </div>
 
-            <!-- Action Button -->
-            <button class="mt-6 w-full py-4 bg-white text-black font-bold text-sm rounded-2xl hover:bg-zinc-200 transition-all flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Save & Share
+            <!-- Action Button - HTML to Image Trigger -->
+            <button id="btn-download-share" onclick="downloadShareCard()" class="mt-6 w-full py-4 bg-white text-black font-bold text-sm rounded-2xl hover:bg-zinc-200 active:scale-[0.98] transition-all flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                <span id="share-btn-text" class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Save & Share
+                </span>
             </button>
         </div>
     </div>
@@ -337,8 +321,6 @@
             </div>
             
             <div class="overflow-y-auto p-5 space-y-6 custom-scrollbar flex-1">
-                
-                <!-- Top 3 Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40">
                         <p class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase mb-1">Total Pendapatan</p>
@@ -354,14 +336,12 @@
                     </div>
                 </div>
 
-                <!-- Chart Area -->
                 <div class="p-4 sm:p-6 rounded-xl border border-zinc-800 bg-darkBg">
                     <h4 class="text-xs font-medium text-zinc-400 mb-4">Grafik Pendapatan 5 Bulan Terakhir</h4>
                     <div class="relative w-full h-64">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -381,7 +361,6 @@
             </div>
             
             <div class="p-4 space-y-3">
-                <!-- List Rekening (Aktif) -->
                 <div class="flex items-center justify-between bg-zinc-900/80 border border-white/20 p-4 rounded-xl cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.05)] relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-white"></div>
                     <div class="flex items-center gap-3">
@@ -396,7 +375,6 @@
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
 
-                <!-- Opsi Tambah Rekening -->
                 <a href="#" class="flex items-center justify-center gap-2 w-full p-4 border border-dashed border-zinc-700 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors mt-4">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     <span class="text-sm font-semibold">Tambah Rekening di Profil</span>
@@ -431,7 +409,7 @@
             }
         }
 
-        // LOGIC BUKA TUTUP MODAL UMUM
+        // LOGIC BUKA TUTUP MODAL
         function toggleModal(modalId) {
             const modal = document.getElementById(modalId);
             const content = modal.querySelector('.modal-content');
@@ -442,7 +420,7 @@
                 content.classList.remove('scale-95');
                 content.classList.add('scale-100');
                 
-                // Jika modal chart dibuka, init chart agar animasinya muncul
+                // init chart jika dibuka
                 if(modalId === 'statsModal' && !window.myChart) {
                     initChart();
                 }
@@ -454,7 +432,7 @@
             }
         }
 
-        // LOGIC KALKULASI PENARIKAN (Sesuai referensi Fee 0%)
+        // LOGIC KALKULASI PENARIKAN
         function calculateWithdraw() {
             const inputEl = document.getElementById('withdraw-input');
             const netEl = document.getElementById('withdraw-net');
@@ -479,19 +457,60 @@
                 errorEl.classList.add('hidden');
                 btn.disabled = false;
                 
-                // Fee = 0, Net = Input
                 let formattedNet = new Intl.NumberFormat('id-ID').format(val);
                 netEl.innerText = 'Rp ' + formattedNet;
             }
         }
 
+        // LOGIC PROSES PENARIKAN -> POPUP SUKSES
+        function processWithdrawal() {
+            // Tutup modal tarik dana
+            toggleModal('withdrawModal');
+            
+            // Buka modal sukses setelah jeda animasi (300ms)
+            setTimeout(() => {
+                toggleModal('successWithdrawModal');
+                
+                // Reset form penarikan ke default
+                document.getElementById('withdraw-input').value = '';
+                document.getElementById('withdraw-net').innerText = 'Rp 0';
+                document.getElementById('btn-process-withdraw').disabled = true;
+            }, 300);
+        }
+
+        // LOGIC RENDER & DOWNLOAD SHARE CARD (HTML2CANVAS)
+        function downloadShareCard() {
+            const card = document.getElementById('capture-card');
+            const btnText = document.getElementById('share-btn-text');
+            const originalText = btnText.innerHTML;
+            
+            // Ubah tombol jadi status loading
+            btnText.innerHTML = 'Mempersiapkan Foto...';
+            
+            html2canvas(card, {
+                backgroundColor: '#0a0a0c', // Samakan dengan darkBg base agar rapi
+                scale: 3, // Skala resolusi tinggi
+                useCORS: true, // Izinkan rendering image eksternal jika ada
+            }).then(canvas => {
+                // Buat link download otomatis
+                const link = document.createElement('a');
+                link.download = 'Whoost_Pencapaian_Clipper.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // Kembalikan tulisan tombol
+                btnText.innerHTML = originalText;
+            }).catch(err => {
+                alert('Terjadi kesalahan saat memproses gambar.');
+                btnText.innerHTML = originalText;
+            });
+        }
+
         // LOGIC CHART.JS UNTUK STATISTIK KINERJA
         function initChart() {
             const ctx = document.getElementById('revenueChart').getContext('2d');
-            
-            // Gradient Background for Line Chart
             let gradient = ctx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(96, 165, 250, 0.4)'); // blue-400
+            gradient.addColorStop(0, 'rgba(96, 165, 250, 0.4)');
             gradient.addColorStop(1, 'rgba(96, 165, 250, 0.0)');
 
             window.myChart = new Chart(ctx, {
@@ -500,17 +519,17 @@
                     labels: ['Mar 2026', 'Apr 2026', 'Mei 2026', 'Jun 2026', 'Jul 2026'],
                     datasets: [{
                         label: 'Pendapatan',
-                        data: [0, 0, 380000, 150000, 0], // Data dummy mirip di gambar
-                        borderColor: '#60a5fa', // Tailwind blue-400
+                        data: [0, 0, 380000, 150000, 0], 
+                        borderColor: '#60a5fa', 
                         backgroundColor: gradient,
                         borderWidth: 3,
-                        pointBackgroundColor: '#0a0a0c', // darkBg
+                        pointBackgroundColor: '#0a0a0c', 
                         pointBorderColor: '#60a5fa',
                         pointBorderWidth: 2,
                         pointRadius: 5,
                         pointHoverRadius: 7,
                         fill: true,
-                        tension: 0.4 // Smooth curve
+                        tension: 0.4 
                     }]
                 },
                 options: {
@@ -539,7 +558,7 @@
                         },
                         y: {
                             grid: { color: '#27272a', drawBorder: false },
-                            ticks: { display: false } // Sembunyikan angka Y axis biar clean
+                            ticks: { display: false } 
                         }
                     }
                 }
