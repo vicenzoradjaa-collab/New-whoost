@@ -9,7 +9,7 @@ class CustomFooter extends HTMLElement {
                 <div class="col-span-2">
                     <a href="index.html" class="flex items-center gap-3 font-bold text-2xl text-white tracking-tight mb-6">
                         <!-- Kotak Putih dengan Sudut Membulat (rounded-xl) untuk Logo Hitam -->
-                        <div class="w-15 h-15 bg-white rounded-xl flex items-center justify-center p-1.5">
+                        <div class="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1.5">
                             <img src="asset/logob.webp" alt="Whoost Logo" class="w-full h-full object-contain">
                         </div>
                         Whoost
