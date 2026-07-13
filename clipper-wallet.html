@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js untuk Grafik Statistik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- html2canvas untuk Save Share Card -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Ganti html2canvas menjadi html-to-image agar sinkron dengan referensi -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     
     <script>
@@ -18,6 +18,9 @@
                     colors: {
                         darkBg: '#0a0a0c',
                         cardBg: '#121214',
+                        brand: {
+                            accent: '#98d4ff' // Warna accent ditambahkan dari referensi
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -34,6 +37,15 @@
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* CSS Gradient Card Share dari Referensi */
+        .bg-premium-card {
+            background-color: #050505;
+            background-image: 
+                radial-gradient(circle at 10% 0%, rgba(152, 212, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 100%, rgba(152, 212, 255, 0.08) 0%, transparent 40%),
+                linear-gradient(135deg, #0f1012 0%, #050505 100%);
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -243,63 +255,74 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL 2: SHARE CARD PENDAPATAN             -->
+    <!-- MODAL 2: SHARE CARD PENDAPATAN (DIPERBARUI)-->
     <!-- ========================================== -->
-    <div id="shareModal" class="fixed inset-0 z-[999] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="toggleModal('shareModal')"></div>
-        <div class="relative z-10 w-[85%] max-w-sm flex flex-col items-center transform scale-95 transition-transform duration-300 modal-content">
+    <div id="shareModal" class="fixed inset-0 z-[999] bg-black/80 backdrop-blur-md opacity-0 pointer-events-none flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="relative flex flex-col items-center transform scale-95 transition-transform duration-300 modal-content">
             
-            <div class="w-full flex justify-between items-center mb-4 px-2">
-                <h3 class="text-sm font-bold text-white">Share Pendapatan</h3>
-                <button onclick="toggleModal('shareModal')" class="text-zinc-400 hover:text-white transition-colors">
+            <div class="flex justify-between items-center w-full mb-3 px-2">
+                <h3 class="text-white font-bold text-sm">Share Pendapatan</h3>
+                <button onclick="toggleModal('shareModal')" aria-label="Tutup Modal" class="text-zinc-400 hover:text-white transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-
-            <!-- The Card to Capture -->
-            <!-- Menggunakan kelas bawaan tailwind gradient murni untuk keamanan html2canvas rendering -->
-            <div id="capture-card" class="w-full bg-gradient-to-br from-zinc-900 via-[#121214] to-black border border-zinc-800 rounded-[2rem] p-8 shadow-2xl flex flex-col relative overflow-hidden">
-                
-                <!-- Ornamen Halus -->
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 blur-[50px] rounded-full pointer-events-none"></div>
-                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/10 blur-[60px] rounded-full pointer-events-none"></div>
-
-                <!-- Branding -->
-                <div class="flex justify-between items-start mb-12 relative z-10">
-                    <!-- Icon dibesarkan menjadi h-10 -->
-                    <img src="asset/logow.webp" alt="Whoost" class="h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/100x40?text=WHOOST'">
-                    <span class="text-[10px] font-bold text-zinc-500 tracking-[0.2em] uppercase mt-1">whoost.id</span>
-                </div>
-
-                <!-- User Info -->
-                <div class="text-center mb-8 relative z-10">
-                    <h2 class="text-2xl font-black text-white mb-1 tracking-tight">Vicenzo Radja</h2>
-                    <p class="text-[10px] font-bold text-blue-400 tracking-[0.25em] uppercase">Whoost Clipper</p>
-                </div>
-
-                <!-- Number -->
-                <div class="text-center mb-10 relative z-10">
-                    <p class="text-[11px] font-bold text-zinc-500 tracking-[0.15em] uppercase mb-2">Total Payout</p>
-                    <h1 class="text-4xl font-black text-white mb-3 tracking-tighter">+Rp 383.314</h1>
-                    <div class="flex items-center justify-center gap-1.5 text-zinc-400">
-                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                        <span class="text-sm font-bold text-white">27.4M</span>
-                        <span class="text-xs font-semibold">Views</span>
+            
+            <!-- Share Card Container (Ukuran Persis Referensi) -->
+            <div id="share-card-container" class="rounded-3xl overflow-hidden shadow-2xl border border-zinc-800/60 w-[340px] h-[450px]">
+                <div id="capture-card" class="bg-premium-card w-full h-full relative flex flex-col p-8 box-border text-center overflow-hidden">
+                    
+                    <!-- SVG Background Abstract -->
+                    <svg class="absolute inset-0 w-full h-full opacity-[0.25] z-0 pointer-events-none" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M-50 150 C 100 -50, 250 200, 450 50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" />
+                        <path d="M-50 200 C 150 -10, 200 250, 450 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
+                        <path d="M-50 250 C 120 50, 280 280, 450 150" fill="none" stroke="rgba(152,212,255,0.08)" stroke-width="2" />
+                        <path d="M-50 300 C 180 80, 220 320, 450 200" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1" />
+                        <path d="M-50 350 C 200 120, 260 360, 450 250" fill="none" stroke="rgba(152,212,255,0.05)" stroke-width="1.5" />
+                        <path d="M-50 400 C 220 150, 240 400, 450 300" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
+                    </svg>
+                    
+                    <!-- Header Branding -->
+                    <div class="relative z-10 flex justify-between items-center w-full px-1"> 
+                        <span class="font-black text-white text-[18px] tracking-tight flex items-center italic">Whoost</span>
+                        <span class="text-[8px] text-zinc-500 font-medium tracking-[0.15em] uppercase">whoost.id</span>
+                    </div>
+                    
+                    <!-- Main Content (User & Payout) -->
+                    <div class="relative z-10 flex flex-col items-center justify-center flex-grow w-full">
+                        <div class="mb-8 w-full px-2">
+                            <h3 class="text-white font-black text-[22px] tracking-wide break-words pb-1 drop-shadow-md line-clamp-2">Vicenzo Radja</h3>
+                            <p class="text-[9px] font-extrabold text-brand-accent uppercase tracking-[0.3em] mt-1 drop-shadow-sm">Whoost Clipper</p>
+                        </div>
+                        <div class="w-full">
+                            <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.25em] mb-2">Total Payout</p>
+                            <div class="w-full px-1 overflow-hidden flex justify-center">
+                                <p class="text-[2.5rem] font-black text-white tracking-tighter drop-shadow-2xl whitespace-nowrap overflow-hidden text-ellipsis pb-1">+Rp 383.314</p>
+                            </div>
+                            <div class="flex items-center justify-center gap-1.5 mt-2 text-zinc-400">
+                                <!-- Eye Icon with Brand Accent -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-[12px] h-[12px] fill-brand-accent">
+                                    <path d="M288 32c-80.8-0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.5c.5 13.5 6.9 26 18 34.6c11.6 9 26.6 13.9 42 13.9c35.3 0 64-28.7 64-64c0-15.4-4.9-30.4-13.9-42c-8.6-11.1-21.1-17.5-34.6-18c-5.9-.2-9.3 6.2-7.5 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/>
+                                </svg>
+                                <span class="text-[12px] font-bold text-white">27.4M</span>
+                                <span class="text-[10px] ml-0.5 tracking-wide">Views</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer Date -->
+                    <div class="relative z-10 w-full mt-auto pt-6 border-t border-zinc-800/40">
+                        <p class="text-[8px] text-zinc-600 font-semibold tracking-[0.2em] uppercase">Update: 13 Juli 2026</p>
                     </div>
                 </div>
-
-                <div class="mt-auto border-t border-zinc-800/80 pt-5 text-center relative z-10">
-                    <p class="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">Update: 13 Juli 2026</p>
-                </div>
             </div>
-
-            <!-- Action Button - HTML to Image Trigger -->
-            <button id="btn-download-share" onclick="downloadShareCard()" class="mt-6 w-full py-4 bg-white text-black font-bold text-sm rounded-2xl hover:bg-zinc-200 active:scale-[0.98] transition-all flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                <span id="share-btn-text" class="flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            
+            <!-- Download Button -->
+            <div class="mt-6 w-[340px]">
+                <button id="btn-download-share" onclick="downloadShareCard()" class="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 shadow-lg text-sm disabled:opacity-70 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     Save & Share
-                </span>
-            </button>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -478,31 +501,39 @@
             }, 300);
         }
 
-        // LOGIC RENDER & DOWNLOAD SHARE CARD (HTML2CANVAS)
+        // LOGIC RENDER & DOWNLOAD SHARE CARD (HTML-TO-IMAGE SEPERTI REFERENSI)
         function downloadShareCard() {
             const card = document.getElementById('capture-card');
-            const btnText = document.getElementById('share-btn-text');
-            const originalText = btnText.innerHTML;
+            const btn = document.getElementById('btn-download-share');
+            const originalText = btn.innerHTML;
             
             // Ubah tombol jadi status loading
-            btnText.innerHTML = 'Mempersiapkan Foto...';
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...';
+            btn.disabled = true;
             
-            html2canvas(card, {
-                backgroundColor: '#0a0a0c', // Samakan dengan darkBg base agar rapi
-                scale: 3, // Skala resolusi tinggi
-                useCORS: true, // Izinkan rendering image eksternal jika ada
-            }).then(canvas => {
+            // Menggunakan library htmlToImage (kualitas pixelRatio: 3 agar HD)
+            htmlToImage.toPng(card, { 
+                quality: 1.0,
+                pixelRatio: 3, 
+                backgroundColor: '#050505',
+                style: { margin: 0, borderRadius: '0px' }
+            })
+            .then(function (dataUrl) {
                 // Buat link download otomatis
                 const link = document.createElement('a');
-                link.download = 'Whoost_Pencapaian_Clipper.png';
-                link.href = canvas.toDataURL('image/png');
+                link.download = `Whoost_Pencapaian_Vicenzo.png`;
+                link.href = dataUrl;
                 link.click();
                 
                 // Kembalikan tulisan tombol
-                btnText.innerHTML = originalText;
-            }).catch(err => {
-                alert('Terjadi kesalahan saat memproses gambar.');
-                btnText.innerHTML = originalText;
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            })
+            .catch(function (error) {
+                // Error handling
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert('Terjadi kesalahan saat menyimpan gambar. Pastikan koneksi internet lancar.');
             });
         }
 
