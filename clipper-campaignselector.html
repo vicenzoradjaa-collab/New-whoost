@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pilih Campaign - Whoost Clipper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { darkBg: '#0a0a0c', cardBg: '#121214' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
+
+    <!-- Header -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full relative">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <div>
+                <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Submit Konten</h1>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Area -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 z-0 w-full relative scroll-smooth">
+        <div class="max-w-5xl mx-auto space-y-6">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-base sm:text-lg font-semibold text-white">Campaign Aktif Kamu</h2>
+                    <p class="text-xs text-zinc-400 mt-1">Pilih campaign untuk mengunggah link videomu.</p>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="relative w-full sm:w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" id="searchInput" onkeyup="searchCampaign()" placeholder="Cari campaign..." class="w-full bg-zinc-900 border border-zinc-700 rounded-full pl-10 pr-4 py-2 text-xs sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors">
+                </div>
+            </div>
+
+            <!-- List Campaign Aktif -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="campaignList">
+                
+                <!-- Card 1 -->
+                <div class="campaign-card bg-cardBg border border-zinc-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 hover:border-zinc-500 transition-all duration-300">
+                    <div class="w-full sm:w-32 h-40 sm:h-full bg-zinc-900 rounded-xl overflow-hidden shrink-0 relative">
+                        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Brand" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute top-2 right-2 bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 rounded-full">Aktif</div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-white campaign-title">Review Sepatu Hypebeast</h3>
+                            <p class="text-[10px] sm:text-xs text-zinc-400 mt-1">SneakerZone ID</p>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] text-zinc-500 font-semibold uppercase">Rate/1K Views</span>
+                                <span class="text-xs font-bold text-emerald-400">Rp 5.000</span>
+                            </div>
+                            <a href="clipper-submit.html" class="bg-white hover:bg-zinc-200 text-black text-xs font-bold px-4 py-2 rounded-lg text-center transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                Submit Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="campaign-card bg-cardBg border border-zinc-800 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 hover:border-zinc-500 transition-all duration-300">
+                    <div class="w-full sm:w-32 h-40 sm:h-full bg-zinc-900 rounded-xl overflow-hidden shrink-0 relative">
+                        <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Brand" class="w-full h-full object-cover opacity-80">
+                        <div class="absolute top-2 right-2 bg-emerald-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-1 rounded-full">Aktif</div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sm sm:text-base font-bold text-white campaign-title">Tips Skincare Glowing</h3>
+                            <p class="text-[10px] sm:text-xs text-zinc-400 mt-1">GlowUp Beauty</p>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex flex-col">
+                                <span class="text-[9px] text-zinc-500 font-semibold uppercase">Rate/1K Views</span>
+                                <span class="text-xs font-bold text-emerald-400">Rp 4.500</span>
+                            </div>
+                            <a href="clipper-submit.html" class="bg-white hover:bg-zinc-200 text-black text-xs font-bold px-4 py-2 rounded-lg text-center transition-colors shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                                Submit Video
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Navigasi Bawah -->
+    <script> const ACTIVE_MENU = 'campaign'; </script>
+    <script src="attribute/navbarclipper.js"></script>
+
+    <!-- JS Pencarian -->
+    <script>
+        function searchCampaign() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let cards = document.getElementsByClassName('campaign-card');
+            
+            for (let i = 0; i < cards.length; i++) {
+                let title = cards[i].querySelector('.campaign-title').innerText.toLowerCase();
+                if (title.indexOf(input) > -1) {
+                    cards[i].style.display = "";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
