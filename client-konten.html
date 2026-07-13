@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konten Kampanye - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        /* Custom scrollbar umum */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        /* Sembunyikan scrollbar untuk horizontal menu platform agar rapi */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
+
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN                             -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Konten...</p>
+        </div>
+    </div>
+
+    <!-- Background Ornamen -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- HEADER (Judul & Filter Kampanye) -->
+    <header class="pt-6 pb-4 sm:pt-8 sm:pb-5 px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Konten Kampanye</h1>
+            <p class="text-[13px] sm:text-[14px] text-zinc-400 mt-1">Galeri konten kampanye yang telah disetujui</p>
+        </div>
+        
+        <!-- Filter Dropdown Kampanye (Kanan Atas) -->
+        <div class="relative w-full md:w-auto">
+            <button onclick="toggleCampaignFilter()" id="btnCampaign" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                    <span id="campaignLabel">Semua Kampanye</span>
+                </div>
+                <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            
+            <div id="dropdownCampaign" class="absolute right-0 top-full mt-2 w-full md:w-56 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
+                <button onclick="selectCampaign('Semua Kampanye')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors">Semua Kampanye</button>
+                <button onclick="selectCampaign('Promo Kemerdekaan')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Promo Kemerdekaan</button>
+                <button onclick="selectCampaign('Launching Sepatu Sport')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Launching Sepatu Sport</button>
+                <button onclick="selectCampaign('Skincare Routine')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Skincare Routine</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- FILTER PLATFORM (Scroll Horizontal seperti referensi) -->
+    <div class="px-4 sm:px-8 py-4 z-10 bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30 overflow-x-auto no-scrollbar flex items-center gap-2 sm:gap-3">
+        
+        <!-- Tab: Semua -->
+        <button onclick="setPlatform('Semua')" id="tab-Semua" class="platform-tab flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-[13px] sm:text-[14px] font-semibold transition-all duration-300 bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+            Semua
+        </button>
+
+        <!-- Tab: TikTok -->
+        <button onclick="setPlatform('TikTok')" id="tab-TikTok" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+            TikTok
+        </button>
+
+        <!-- Tab: Instagram -->
+        <button onclick="setPlatform('Instagram')" id="tab-Instagram" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            Instagram
+        </button>
+
+        <!-- Tab: YouTube -->
+        <button onclick="setPlatform('YouTube')" id="tab-YouTube" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>
+            YouTube
+        </button>
+
+        <!-- Tab: CapCut (Simulasi Logo) -->
+        <button onclick="setPlatform('CapCut')" id="tab-CapCut" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            CapCut
+        </button>
+
+        <!-- Tab: X (Twitter) -->
+        <button onclick="setPlatform('X')" id="tab-X" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X
+        </button>
+
+        <!-- Tab: Threads -->
+        <button onclick="setPlatform('Threads')" id="tab-Threads" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M16 12a4 4 0 01-8 0"></path><path d="M12 16a4 4 0 004-4"></path></svg>
+            Threads
+        </button>
+    </div>
+
+    <!-- AREA KONTEN -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-6 pb-32 z-0 scroll-smooth w-full relative">
+        
+        <!-- EMPTY STATE (Disembunyikan secara default) -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center pt-20 pb-10 px-4 text-center">
+            <div class="w-32 h-32 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mb-6 relative">
+                <svg class="w-12 h-12 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                <!-- Dekorasi -->
+                <div class="absolute -bottom-2 -right-2 bg-darkBg rounded-full p-2">
+                    <div class="w-6 h-6 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    </div>
+                </div>
+            </div>
+            <h2 class="text-lg sm:text-xl font-semibold text-white mb-2">Belum ada konten kampanye</h2>
+            <p class="text-[13px] sm:text-[14px] text-zinc-500 max-w-md mx-auto">Konten dari kreator untuk platform/kampanye ini akan muncul di sini setelah Anda menyetujuinya di menu Pengajuan.</p>
+        </div>
+
+        <!-- GRID KARTU (Hanya konten Disetujui) -->
+        <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-5 w-full transition-opacity duration-300">
+            
+            <!-- KARTU TIKTOK -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300" data-platform="TikTok" data-campaign="Promo Kemerdekaan">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
+                    <!-- Platform Badge -->
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
+                    </div>
+                    <!-- Status Disetujui (Permanent di halaman ini) -->
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+                    
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Promo Kemerdekaan Baju</p>
+                    </div>
+                </div>
+                <!-- Action Button (Karena sudah di acc, tombolnya adalah Lihat & Copy Link) -->
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
+                    <a href="#" onclick="alert('Membuka video final...'); return false;" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Lihat Video
+                    </a>
+                </div>
+            </div>
+
+            <!-- KARTU INSTAGRAM -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300" data-platform="Instagram" data-campaign="Skincare Routine">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Instagram</span>
+                    </div>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+                    
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Skincare Routine Malam</p>
+                    </div>
+                </div>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
+                    <a href="#" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Lihat Video
+                    </a>
+                </div>
+            </div>
+
+            <!-- KARTU YOUTUBE -->
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300" data-platform="YouTube" data-campaign="Promo Kemerdekaan">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YouTube</span>
+                    </div>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+                    
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Makanan Diskon Kemerdekaan</p>
+                    </div>
+                </div>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
+                    <a href="#" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Lihat Video
+                    </a>
+                </div>
+            </div>
+
+             <!-- KARTU THREADS -->
+             <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300" data-platform="Threads" data-campaign="Launching Sepatu Sport">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span>
+                    </div>
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+                    
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Thread: Kenapa Sepatu Ini Enak Dipakai</p>
+                    </div>
+                </div>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
+                    <a href="#" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors">
+                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        Lihat Konten
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT & LOGIC                         -->
+    <!-- ========================================== -->
+    <script>
+        const ACTIVE_MENU = 'konten'; // Untuk navbar client aktif
+    </script>
+    <script src="attribute/navbarclient.js"></script>
+
+    <script>
+        // State Global
+        let currentCampaign = "Semua Kampanye";
+        let currentPlatform = "Semua";
+        let allCards = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ambil semua card yang ada di DOM
+            allCards = Array.from(document.querySelectorAll('.content-card'));
+            
+            // Logika Loader hilang
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                loader.classList.add('opacity-0');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 800); 
+        });
+
+        /* ================= Filter Dropdown Kampanye ================= */
+        function toggleCampaignFilter() {
+            const dropdown = document.getElementById('dropdownCampaign');
+            dropdown.classList.toggle('hidden');
+            dropdown.classList.toggle('flex');
+        }
+
+        function selectCampaign(campaign) {
+            currentCampaign = campaign;
+            document.getElementById('campaignLabel').innerText = campaign;
+            toggleCampaignFilter();
+            applyFilters();
+        }
+
+        // Tutup dropdown jika klik di luar
+        window.addEventListener('click', function(e) {
+            const btn = document.getElementById('btnCampaign');
+            const dropdown = document.getElementById('dropdownCampaign');
+            if(btn && dropdown) {
+                if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    dropdown.classList.remove('flex');
+                }
+            }
+        });
+
+        /* ================= Filter Pill Platform ================= */
+        function setPlatform(platform) {
+            currentPlatform = platform;
+            
+            // Reset style semua tab
+            const tabs = document.querySelectorAll('.platform-tab');
+            tabs.forEach(tab => {
+                tab.className = "platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600";
+            });
+
+            // Set style tab aktif
+            const activeTab = document.getElementById(`tab-${platform}`);
+            if(activeTab) {
+                if(platform === 'Semua'){
+                     activeTab.className = "platform-tab flex-shrink-0 px-4 sm:px-6 py-2 rounded-full text-[13px] sm:text-[14px] font-semibold transition-all duration-300 bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]";
+                } else {
+                     activeTab.className = "platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-semibold transition-all duration-300 bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.1)] border-white";
+                }
+            }
+
+            applyFilters();
+        }
+
+        /* ================= Logika Saring Data & Empty State ================= */
+        function applyFilters() {
+            let visibleCount = 0;
+            const grid = document.getElementById('contentGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            // Tambahkan efek fade transisi
+            grid.classList.add('opacity-0');
+
+            setTimeout(() => {
+                allCards.forEach(card => {
+                    const cardPlatform = card.getAttribute('data-platform');
+                    const cardCampaign = card.getAttribute('data-campaign');
+
+                    const matchPlatform = (currentPlatform === 'Semua' || cardPlatform === currentPlatform);
+                    const matchCampaign = (currentCampaign === 'Semua Kampanye' || cardCampaign === currentCampaign);
+
+                    if (matchPlatform && matchCampaign) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Cek apakah ada konten yang tampil
+                if (visibleCount === 0) {
+                    grid.classList.add('hidden');
+                    grid.classList.remove('grid');
+                    emptyState.classList.remove('hidden');
+                    emptyState.classList.add('flex');
+                } else {
+                    grid.classList.remove('hidden');
+                    grid.classList.add('grid');
+                    emptyState.classList.add('hidden');
+                    emptyState.classList.remove('flex');
+                }
+
+                grid.classList.remove('opacity-0');
+            }, 200); // Tunggu sedikit agar animasi transisi terlihat
+        }
+    </script>
+</body>
+</html>
