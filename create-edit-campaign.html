@@ -70,6 +70,13 @@
     <!-- MAIN SCROLLABLE AREA -->
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full">
         
+        <div id="pageLoader" class="absolute inset-0 z-50 bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+            <div class="relative flex flex-col items-center">
+                <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+                <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            </div>
+        </div>
+
         <!-- STEP 1 -->
         <div id="step-1-container" class="block animate-[fadeIn_0.3s_ease-out] max-w-4xl mx-auto">
             <div class="text-center mb-8">
@@ -223,6 +230,7 @@
                             <label class="block text-sm font-medium text-zinc-400 mb-1">Harga per Video <span class="text-red-500">*</span></label>
                             <p class="text-[10px] sm:text-[11px] text-zinc-500 mb-3 leading-snug">Minimal harga <b>Rp 10.000</b> per video.</p>
                             <input type="text" id="price-video-input" placeholder="Nominal (Rp)" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
+                            <p id="price-error" class="hidden text-red-500 text-[11px] mt-1 font-medium">Nominal di bawah batas minimal (Rp 10.000)</p>
                         </div>
                     </div>
                 </div>
@@ -333,7 +341,23 @@
                         </div>
                     </div>
 
-                <!-- ROW 3: RINGKASAN CAMPAIGN & PEMBAYARAN (Baru ditambahkan) -->
+                <!-- ROW 3: METODE PEMBAYARAN -->
+                <div class="lg:col-span-2 bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6">
+                    <h3 class="text-lg font-bold text-white mb-4">Metode Pembayaran</h3>
+                    
+                    <label class="cursor-pointer block select-none">
+                        <input type="radio" name="payment" class="peer sr-only" checked>
+                        <div class="border border-white bg-white/5 rounded-xl p-4 transition-all max-w-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                <h4 class="font-bold text-white text-sm">Transfer Bank</h4>
+                            </div>
+                            <p class="text-[11px] text-zinc-400 leading-snug">Invoice detail dan petunjuk pembayaran akan dikirimkan otomatis ke email Anda setelah campaign dikirim.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- ROW 4: RINGKASAN CAMPAIGN & PEMBAYARAN (Baru ditambahkan) -->
                 <div class="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col space-y-4 shadow-lg relative overflow-hidden">
                     <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700"></div>
                     <h3 class="text-lg font-bold text-white mb-2">Ringkasan Campaign</h3>
@@ -369,22 +393,6 @@
                         <span class="text-base font-bold text-white">Total Tagihan</span>
                         <span id="summary-total" class="text-2xl font-bold text-green-400">Rp 0</span>
                     </div>
-                </div>
-
-                <!-- ROW 4: METODE PEMBAYARAN -->
-                <div class="lg:col-span-2 bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 mb-2">
-                    <h3 class="text-lg font-bold text-white mb-4">Metode Pembayaran</h3>
-                    
-                    <label class="cursor-pointer block">
-                        <input type="radio" name="payment" class="peer sr-only" checked>
-                        <div class="border border-white bg-white/5 rounded-xl p-4 transition-all max-w-sm">
-                            <div class="flex items-center gap-2 mb-2">
-                                <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                <h4 class="font-bold text-white text-sm">Transfer Bank</h4>
-                            </div>
-                            <p class="text-[11px] text-zinc-400 leading-snug">Invoice detail dan petunjuk pembayaran akan dikirimkan otomatis ke email Anda setelah campaign dikirim.</p>
-                        </div>
-                    </label>
                 </div>
 
             </div> <!-- End Grid -->
@@ -453,7 +461,7 @@
         const btnBack = document.getElementById('btn-back');
         const btnSpacer = document.getElementById('btn-back-spacer');
 
-        // Text Templates
+        // Text Templates (Utuh Tidak Dikurangi)
         const briefTemplateText = `Download video mentahan dari Link yang disediakan di atas.\nCari momen paling menarik yang bisa memancing perhatian penonton dalam 3 detik pertama (Hook).\nPotong video menjadi klip berdurasi ideal (15-60 detik).\nWajib tambahkan subtitle otomatis agar lebih menarik dan mudah dibaca.\n[Tambahan] Beri efek zoom atau sound effect lucu jika diperlukan.\nUpload ke akun TikTok / IG Reels milikmu dengan hashtag #Hastagbrandmu.`;
         
         const restrictionTemplateText = `Anti-Botting: Dilarang keras menggunakan view botting, ads boosting, atau pembelian views. Hanya Organic Views yang dihitung.\nOriginalitas: Dilarang keras mencuri atau melakukan re-post konten milik sesama clipper.\nManual Editing Only: Penggunaan alat editing AI otomatis (seperti Opus Clip atau sejenisnya) dilarang.\nNo Raw Reupload: Dilarang mengunggah ulang video mentah tanpa sentuhan kreativitas atau editing tambahan.\nEtika & Nama Baik: Dilarang membuat konten yang mengandung unsur SARA, ujaran kebencian, atau menjelekkan pihak tertentu.`;
@@ -465,6 +473,21 @@
         function formatCurrencyInput(e) {
             let val = parseRupiah(e.target.value);
             e.target.value = val === 0 ? '' : 'Rp ' + formatRupiah(val);
+            
+            // Validasi warna merah untuk Harga per Video (Minimal 10.000)
+            if (e.target.id === 'price-video-input') {
+                const errorText = document.getElementById('price-error');
+                if (val > 0 && val < 10000) {
+                    e.target.classList.add('text-red-500');
+                    e.target.classList.remove('text-white');
+                    errorText.classList.remove('hidden');
+                } else {
+                    e.target.classList.remove('text-red-500');
+                    e.target.classList.add('text-white');
+                    errorText.classList.add('hidden');
+                }
+            }
+            
             calculateSummary();
             validateForm();
         }
