@@ -89,7 +89,7 @@
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
             
-            <!-- SECTION 1: RINGKASAN PENDAPATAN (Berdasarkan Referensi) -->
+            <!-- SECTION 1: RINGKASAN PENDAPATAN -->
             <section>
                 <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 lg:p-8 relative hover:border-zinc-600 transition-all duration-300">
                     <div class="flex justify-between items-start mb-6">
@@ -131,13 +131,8 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                     <h2 class="text-lg font-semibold text-white">Konten Tersedia</h2>
                     <div class="flex items-center gap-3">
-                        <button class="bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-full flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)]">
-                            <!-- Icon Radar/Scan diganti -->
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg>
-                            Auto-Klaim Semua
-                        </button>
                         
-                        <!-- Filter Dropdown Container -->
+                        <!-- Filter Dropdown Container (Tombol Auto Klaim Dihapus) -->
                         <div class="relative" id="filter-container">
                             <button onclick="toggleFilter()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 p-2 rounded-full transition-colors flex items-center gap-2">
                                 <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
