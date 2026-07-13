@@ -1,21 +1,18 @@
 class CustomHeader extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-        <!-- Interactive Floating Navbar -->
+        <!-- Interactive Floating Navbar (Bagian Atas) -->
         <header id="navbar-wrapper" class="fixed top-0 left-0 w-full z-50 transition-all duration-500 pt-0 px-0">
-            <nav id="navbar-inner" class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between transition-all duration-500 border border-transparent bg-transparent rounded-none">
+            <nav id="navbar-inner" class="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-20 flex items-center justify-between transition-all duration-500 border border-transparent bg-transparent rounded-none">
+                
                 <!-- Logo Group -->
-                <a href="#" class="flex items-center gap-3 font-bold text-2xl tracking-tight text-white group">
-                    <div class="relative flex items-center w-10 h-6">
-                        <div class="absolute left-0 w-6 h-6 bg-white rounded-full group-hover:-translate-x-1 transition-transform"></div>
-                        <!-- Fake border match to blend overlapping -->
-                        <div class="absolute left-3 w-6 h-6 border-[3px] border-[#0a0a0c] rounded-full z-10 group-hover:translate-x-1 transition-transform" id="logo-border-hack"></div>
-                        <div class="absolute left-3 w-6 h-6 border-[3px] border-white bg-transparent rounded-full z-20 group-hover:translate-x-1 transition-transform"></div>
-                    </div>
-                    Whoost<sup class="text-[10px] font-normal text-zinc-400 mt-1">&reg;</sup>
+                <a href="index.html" class="flex items-center gap-2 md:gap-3 font-bold text-xl md:text-2xl tracking-tight text-white group">
+                    <!-- Ganti path src dibawah ini dengan gambar logo Anda sendiri -->
+                    <img src="asset/logow.png" alt="Logo" class="w-6 h-6 md:w-8 md:h-8 object-contain group-hover:scale-105 transition-transform" onerror="this.src='https://via.placeholder.com/32x32.png?text=W'">
+                    Whoost.id
                 </a>
 
-                <!-- Nav Links -->
+                <!-- Nav Links (Desktop Saja) -->
                 <div class="hidden lg:flex items-center gap-8 text-sm font-medium text-zinc-300">
                     <a href="index.html" class="hover:text-white transition">Home</a>
                     <a href="explore.html" class="hover:text-white transition">Explore</a>
@@ -23,32 +20,51 @@ class CustomHeader extends HTMLElement {
                     <a href="contact.html" class="hover:text-white transition">Contact</a>
                 </div>
 
-                <!-- CTA Button -->
+                <!-- CTA Button (Tampil di Desktop maupun Mobile) -->
                 <a href="login.html">
-                <button class="bg-white text-black px-7 py-3 rounded-xl font-bold text-sm hover:bg-zinc-200 transition transform hover:scale-105 duration-300 shadow-md hidden sm:block">
-                    Boost Income
-                </button>
+                    <button class="bg-white text-black px-4 py-2 md:px-7 md:py-3 rounded-lg md:rounded-xl font-bold text-xs md:text-sm hover:bg-zinc-200 transition transform hover:scale-105 duration-300 shadow-md">
+                        Boost Income
+                    </button>
                 </a>
             </nav>
         </header>
+
+        <!-- Floating Bottom Navigation (Khusus Mobile) -->
+        <div class="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
+            <div class="bg-[#121214]/90 backdrop-blur-lg border border-zinc-800 rounded-3xl px-6 py-3 flex justify-between items-center shadow-[0_10px_40px_rgba(0,0,0,0.8)]">
+                <a href="index.html" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white transition group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="text-[10px] font-medium">Home</span>
+                </a>
+                <a href="explore.html" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white transition group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <span class="text-[10px] font-medium">Explore</span>
+                </a>
+                <a href="faq.html" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white transition group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-[10px] font-medium">FAQ</span>
+                </a>
+                <a href="contact.html" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white transition group">
+                    <svg class="w-5 h-5 group-hover:scale-110 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span class="text-[10px] font-medium">Contact</span>
+                </a>
+            </div>
+        </div>
         `;
 
         // Pindahkan Script Navbar Interaktif ke sini agar langsung berjalan setelah Header dimuat
         const headerWrapper = document.getElementById('navbar-wrapper');
         const navbarInner = document.getElementById('navbar-inner');
-        const borderHack = document.getElementById('logo-border-hack');
 
         window.addEventListener('scroll', () => {
             if (window.scrollY > 20) {
                 headerWrapper.classList.add('pt-4', 'px-4', 'md:px-6');
                 navbarInner.classList.add('bg-[#0a0a0c]/80', 'backdrop-blur-xl', 'border-zinc-800', 'rounded-[2rem]', 'shadow-2xl', 'px-6', 'md:px-10');
                 navbarInner.classList.remove('bg-transparent', 'border-transparent', 'rounded-none');
-                if(borderHack) borderHack.classList.replace('border-[#0a0a0c]', 'border-[#121214]'); 
             } else {
                 headerWrapper.classList.remove('pt-4', 'px-4', 'md:px-6');
                 navbarInner.classList.remove('bg-[#0a0a0c]/80', 'backdrop-blur-xl', 'border-zinc-800', 'rounded-[2rem]', 'shadow-2xl', 'px-6', 'md:px-10');
                 navbarInner.classList.add('bg-transparent', 'border-transparent', 'rounded-none');
-                if(borderHack) borderHack.classList.replace('border-[#121214]', 'border-[#0a0a0c]');
             }
         });
     }
