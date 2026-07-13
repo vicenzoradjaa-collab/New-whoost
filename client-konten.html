@@ -61,11 +61,15 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER (Judul & Filter Kampanye) -->
+    <!-- HEADER (Logo, Judul & Filter Kampanye) -->
     <header class="pt-6 pb-4 sm:pt-8 sm:pb-5 px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Konten Kampanye</h1>
-            <p class="text-[13px] sm:text-[14px] text-zinc-400 mt-1">Galeri konten kampanye yang telah disetujui</p>
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">Konten Kampanye</h1>
+                <p class="text-[13px] sm:text-[14px] text-zinc-400 mt-1 sm:mt-0">Galeri konten kampanye yang telah disetujui</p>
+            </div>
         </div>
         
         <!-- Filter Dropdown Kampanye (Kanan Atas) -->
@@ -87,7 +91,7 @@
         </div>
     </header>
 
-    <!-- FILTER PLATFORM (Scroll Horizontal seperti referensi) -->
+    <!-- FILTER PLATFORM (Scroll Horizontal) -->
     <div class="px-4 sm:px-8 py-4 z-10 bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30 overflow-x-auto no-scrollbar flex items-center gap-2 sm:gap-3">
         
         <!-- Tab: Semua -->
@@ -111,12 +115,6 @@
         <button onclick="setPlatform('YouTube')" id="tab-YouTube" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M21.58 7.19c-.23-.86-.91-1.54-1.77-1.77C18.25 5 12 5 12 5s-6.25 0-7.81.42c-.86.23-1.54.91-1.77 1.77C2 8.75 2 12 2 12s0 3.25.42 4.81c.23.86.91 1.54 1.77 1.77C5.75 19 12 19 12 19s6.25 0 7.81-.42c.86-.23 1.54-.91 1.77-1.77C22 15.25 22 12 22 12s0-3.25-.42-4.81zM10 15V9l5.2 3-5.2 3z"/></svg>
             YouTube
-        </button>
-
-        <!-- Tab: CapCut (Simulasi Logo) -->
-        <button onclick="setPlatform('CapCut')" id="tab-CapCut" class="platform-tab flex-shrink-0 flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-[13px] sm:text-[14px] font-medium transition-all duration-300 bg-transparent text-zinc-400 border border-zinc-800 hover:text-white hover:border-zinc-600">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            CapCut
         </button>
 
         <!-- Tab: X (Twitter) -->
@@ -164,15 +162,19 @@
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
                         <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
                     </div>
-                    <!-- Status Disetujui (Permanent di halaman ini) -->
-                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+                    
+                    <!-- Label Views -->
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm text-white">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider">24.5K</span>
+                    </div>
                     
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
                         <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
                         <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Promo Kemerdekaan Baju</p>
                     </div>
                 </div>
-                <!-- Action Button (Karena sudah di acc, tombolnya adalah Lihat & Copy Link) -->
+                <!-- Action Button -->
                 <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
                     <a href="#" onclick="alert('Membuka video final...'); return false;" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors">
                         <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -189,7 +191,12 @@
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
                         <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Instagram</span>
                     </div>
-                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+
+                    <!-- Label Views -->
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm text-white">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider">12.1K</span>
+                    </div>
                     
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
                         <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p>
@@ -212,7 +219,12 @@
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
                         <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YouTube</span>
                     </div>
-                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+
+                    <!-- Label Views -->
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm text-white">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider">1.2M</span>
+                    </div>
                     
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
                         <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p>
@@ -235,7 +247,12 @@
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5">
                         <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span>
                     </div>
-                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">Disetujui</div>
+
+                    <!-- Label Views -->
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm text-white">
+                        <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider">8.4K</span>
+                    </div>
                     
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
                         <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p>
