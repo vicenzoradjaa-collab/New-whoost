@@ -46,6 +46,20 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN (NEW)                       -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <!-- Animasi Efek Glow di belakang logo -->
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <!-- Logo Whoost -->
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <!-- Teks -->
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data...</p>
+        </div>
+    </div>
+
     <!-- Background Ornamen Aman -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
@@ -287,7 +301,19 @@
             // Simpan semua referensi card saat halaman dimuat
             allCards = Array.from(document.querySelectorAll('.content-card'));
             document.getElementById('filterLabel').innerText = "Status: " + currentFilter;
+            
+            // Proses filter awal
             applyFilters();
+
+            // LOGIC HILANGKAN LOADING SCREEN
+            // Menggunakan timeout singkat (misal 1 detik) untuk mensimulasikan "fetching data"
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                loader.classList.add('opacity-0'); // Transisi smooth fade out
+                setTimeout(() => {
+                    loader.style.display = 'none'; // Benar-benar dihilangkan dari tampilan
+                }, 500); // Waktu ini sejalan dengan duration-500 di class tailwind
+            }, 1000); 
         });
 
         /* ================= Dropdown Filter ================= */
@@ -328,11 +354,13 @@
             let matchedCards = [];
 
             allCards.forEach(card => {
-                const statusBadge = card.querySelector('.status-badge').innerText.trim();
-                const creator = card.querySelector('.creator-name').innerText.toLowerCase();
-                const title = card.querySelector('.content-title').innerText.toLowerCase();
+                // PERBAIKAN BUG: menggunakan .textContent (bukan innerText) dan .toLowerCase() 
+                // agar efek CSS Uppercase tidak bentrok dengan perbandingan string filter
+                const statusBadge = card.querySelector('.status-badge').textContent.trim().toLowerCase();
+                const creator = card.querySelector('.creator-name').textContent.toLowerCase();
+                const title = card.querySelector('.content-title').textContent.toLowerCase();
 
-                const matchesFilter = (currentFilter === 'Semua' || statusBadge === currentFilter);
+                const matchesFilter = (currentFilter === 'Semua' || statusBadge === currentFilter.toLowerCase());
                 const matchesSearch = creator.includes(searchQuery) || title.includes(searchQuery);
 
                 if (matchesFilter && matchesSearch) {
