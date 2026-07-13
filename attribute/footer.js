@@ -9,7 +9,7 @@ class CustomFooter extends HTMLElement {
                 <div class="col-span-2">
                     <a href="#" class="flex items-center gap-3 font-bold text-2xl text-white tracking-tight mb-6">
                         <!-- Menggunakan iconb.webp dari folder asset -->
-                        <img src="asset/iconb.webp" alt="Whoost Logo" class="w-8 h-8 object-contain">
+                        <img src="asset/logob.webp" alt="Whoost Logo" class="w-8 h-8 object-contain">
                         Whoost
                     </a>
                     <p class="text-zinc-500 text-sm leading-relaxed max-w-sm">
