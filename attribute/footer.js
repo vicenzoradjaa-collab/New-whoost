@@ -7,8 +7,9 @@ class CustomFooter extends HTMLElement {
                 
                 <!-- Kolom 1: Brand & Deskripsi -->
                 <div class="col-span-2">
-                    <a href="#" class="flex items-center gap-2 font-bold text-2xl text-white tracking-tight mb-6">
-                        <div class="w-8 h-8 bg-white rounded flex items-center justify-center text-black text-sm font-black">W</div>
+                    <a href="#" class="flex items-center gap-3 font-bold text-2xl text-white tracking-tight mb-6">
+                        <!-- Menggunakan iconb.webp dari folder asset -->
+                        <img src="asset/iconb.webp" alt="Whoost Logo" class="w-8 h-8 object-contain">
                         Whoost
                     </a>
                     <p class="text-zinc-500 text-sm leading-relaxed max-w-sm">
@@ -40,13 +41,11 @@ class CustomFooter extends HTMLElement {
                     <h4 class="font-bold text-white mb-6">Ikuti Kami</h4>
                     <ul class="space-y-4 text-sm text-zinc-400">
                         <li>
-                            <!-- Ganti tanda '#' pada href dengan link Instagram nantinya -->
                             <a href="#" target="_blank" class="flex items-center hover:text-white transition">
                                 <i class="fab fa-instagram text-base w-6 text-left"></i> Instagram
                             </a>
                         </li>
                         <li>
-                            <!-- Ganti tanda '#' pada href dengan link Komunitas nantinya -->
                             <a href="#" target="_blank" class="flex items-center hover:text-white transition">
                                 <i class="fas fa-users text-base w-6 text-left"></i> Komunitas
                             </a>
@@ -59,7 +58,8 @@ class CustomFooter extends HTMLElement {
             <div class="max-w-7xl mx-auto px-6 border-t border-zinc-800/60 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-500 gap-4">
                 <p>&copy; 2026 Whoost. All rights reserved.</p>
                 <p>
-                    <span class="text-[#98d4ff]">Boost</span> Your Content, <span class="text-[#98d4ff]">Boost</span> Your Income!
+                    <!-- Warna biru diganti menjadi putih & dipertebal (text-white font-semibold) menyesuaikan tema B&W -->
+                    <span class="text-white font-semibold">Boost</span> Your Content, <span class="text-white font-semibold">Boost</span> Your Income!
                 </p>
             </div>
         </footer>
