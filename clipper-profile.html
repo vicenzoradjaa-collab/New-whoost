@@ -151,10 +151,14 @@
 
             <!-- 4. FORM AKUN SOSIAL MEDIA -->
             <div class="mb-10">
-                <div class="flex items-center gap-4 mb-4">
-                    <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media</h4>
+                <div class="flex items-center gap-4 mb-2">
+                    <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media Pribadi</h4>
                     <div class="h-px bg-zinc-800 w-full"></div>
                 </div>
+                <!-- Keterangan Tambahan -->
+                <p class="text-[10px] sm:text-xs text-zinc-500 mb-5 leading-relaxed">
+                    Tautkan akun sosial media pribadi milikmu yang akan digunakan untuk memposting konten campaign.
+                </p>
 
                 <div class="space-y-5">
                     <!-- Akun TikTok -->
@@ -197,14 +201,15 @@
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                             </div>
                             <select class="appearance-none w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-10 text-sm text-white outline-none transition-colors cursor-pointer">
-                                <option value="" disabled>Pilih Metode</option>
-                                <option value="BCA" selected>BCA</option>
-                                <option value="Mandiri">Mandiri</option>
-                                <option value="BNI">BNI</option>
-                                <option value="BRI">BRI</option>
-                                <option value="GoPay">GoPay</option>
-                                <option value="OVO">OVO</option>
-                                <option value="Dana">Dana</option>
+                                <!-- Styling dengan class tambahan pada option agar sinkron dengan dark theme -->
+                                <option value="" disabled class="bg-zinc-900 text-zinc-400">Pilih Metode</option>
+                                <option value="BCA" selected class="bg-zinc-900 text-white">BCA</option>
+                                <option value="Mandiri" class="bg-zinc-900 text-white">Mandiri</option>
+                                <option value="BNI" class="bg-zinc-900 text-white">BNI</option>
+                                <option value="BRI" class="bg-zinc-900 text-white">BRI</option>
+                                <option value="GoPay" class="bg-zinc-900 text-white">GoPay</option>
+                                <option value="OVO" class="bg-zinc-900 text-white">OVO</option>
+                                <option value="Dana" class="bg-zinc-900 text-white">Dana</option>
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
