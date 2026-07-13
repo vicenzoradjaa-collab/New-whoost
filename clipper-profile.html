@@ -36,6 +36,9 @@
         /* Hilangkan panah up/down pada input type number */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Trik untuk dropdown agar tidak tertutup elemen bawahnya saat terbuka */
+        .dropdown-parent:focus-within { z-index: 50; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -64,7 +67,6 @@
             <h1 class="text-base sm:text-lg font-semibold tracking-tight text-white">Profil Kamu</h1>
         </div>
         
-        <!-- Tombol Simpan di Header (Muncul di Desktop, Tersembunyi di Mobile) -->
         <button id="btn-save-header" onclick="saveProfile()" class="hidden sm:block px-5 py-2 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none shadow-[0_0_15px_rgba(255,255,255,0.15)]">
             Simpan
         </button>
@@ -73,13 +75,12 @@
     <!-- ========================================== -->
     <!-- MAIN CONTENT                               -->
     <!-- ========================================== -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full relative z-10">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full relative z-10" id="mainScroll">
         <div class="max-w-2xl mx-auto">
             
             <!-- 1. FOTO PROFIL / AVATAR -->
             <div class="flex flex-col items-center justify-center mb-10">
                 <div class="relative group cursor-pointer" onclick="alert('Membuka galeri untuk ganti foto profil')">
-                    <!-- Avatar Image Placeholder -->
                     <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center overflow-hidden group-hover:border-zinc-500 transition-colors shadow-lg relative">
                         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" alt="Avatar" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -95,7 +96,7 @@
             </div>
 
             <!-- 2. STATUS & REPUTASI (Kesehatan Profil) -->
-            <div class="mb-10">
+            <div class="mb-10 relative z-0">
                 <div class="flex items-center gap-4 mb-4">
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Status Akun</h4>
                     <div class="h-px bg-zinc-800 w-full"></div>
@@ -118,7 +119,7 @@
             </div>
 
             <!-- 3. FORM INFORMASI PRIBADI -->
-            <div class="mb-10">
+            <div class="mb-10 relative z-10">
                 <div class="flex items-center gap-4 mb-4">
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Informasi Pribadi</h4>
                     <div class="h-px bg-zinc-800 w-full"></div>
@@ -136,6 +137,17 @@
                         </div>
                     </div>
 
+                    <!-- Usia -->
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Usia</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <input type="number" value="22" placeholder="Berapa usia Anda?" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
+                        </div>
+                    </div>
+
                     <!-- No WhatsApp -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Nomor WhatsApp</label>
@@ -149,70 +161,101 @@
                 </div>
             </div>
 
-            <!-- 4. FORM AKUN SOSIAL MEDIA -->
-            <div class="mb-10">
+            <!-- 4. FORM AKUN SOSIAL MEDIA CLIPPING (DYNAMIC) -->
+            <div class="mb-10 relative z-20">
                 <div class="flex items-center gap-4 mb-2">
-                    <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media Pribadi</h4>
+                    <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media Konten</h4>
                     <div class="h-px bg-zinc-800 w-full"></div>
                 </div>
-                <!-- Keterangan Tambahan -->
                 <p class="text-[10px] sm:text-xs text-zinc-500 mb-5 leading-relaxed">
-                    Tautkan akun sosial media pribadi milikmu yang akan digunakan untuk memposting konten campaign.
+                    Tautkan akun sosial media pribadi yang akan digunakan untuk memposting atau clipping konten campaign (Bisa tambah beberapa akun).
                 </p>
 
-                <div class="space-y-5">
-                    <!-- Akun TikTok -->
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Username TikTok</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <span class="text-zinc-500 font-bold text-sm">@</span>
+                <!-- List Container -->
+                <div id="socmed-container" class="space-y-3">
+                    
+                    <!-- Row 1 (Bawaan) -->
+                    <div class="flex flex-col sm:flex-row gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl dropdown-parent relative">
+                        
+                        <!-- Custom Dropdown Platform -->
+                        <div class="relative w-full sm:w-[150px] shrink-0" id="dd-container-1">
+                            <input type="hidden" name="socmed_platform[]" value="TikTok" id="platform-val-1">
+                            <button type="button" onclick="toggleSocmedDropdown('1')" class="w-full bg-cardBg border border-zinc-700 hover:border-zinc-500 rounded-lg py-3 px-3 flex justify-between items-center text-xs text-white transition-colors">
+                                <span id="platform-text-1">TikTok</span>
+                                <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            
+                            <!-- Opsi Dropdown -->
+                            <div id="platform-options-1" class="absolute z-[100] left-0 top-full mt-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl hidden flex-col overflow-hidden py-1">
+                                <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('1', 'TikTok')">TikTok</div>
+                                <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('1', 'Instagram')">Instagram</div>
+                                <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('1', 'YouTube')">YouTube</div>
+                                <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('1', 'Threads')">Threads</div>
+                                <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('1', 'X')">X</div>
                             </div>
-                            <input type="text" value="budisantoso_tk" placeholder="username_tiktok" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
+                        </div>
+
+                        <!-- Input Username -->
+                        <div class="relative w-full flex items-center gap-2">
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-zinc-500 font-bold text-sm">@</span>
+                                </div>
+                                <input type="text" value="budisantoso_tk" placeholder="Username" class="w-full bg-cardBg border border-zinc-700 focus:border-white focus:bg-zinc-900 rounded-lg py-3 pl-8 pr-3 text-xs sm:text-sm text-white outline-none transition-colors">
+                            </div>
+                            <!-- Delete Button (Disembunyikan jika cuma 1, tapi untuk contoh dibiarkan saja bisa dihapus) -->
+                            <button type="button" onclick="this.closest('.dropdown-parent').remove()" class="p-3 shrink-0 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Hapus Akun">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Akun Instagram -->
-                    <div>
-                        <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Username Instagram</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <span class="text-zinc-500 font-bold text-sm">@</span>
-                            </div>
-                            <input type="text" placeholder="username_ig" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
-                        </div>
-                    </div>
                 </div>
+
+                <!-- Tombol Tambah Akun -->
+                <button type="button" onclick="addSocmedRow()" class="mt-4 w-full border border-dashed border-zinc-700 hover:border-zinc-400 bg-zinc-900/30 hover:bg-zinc-800 text-zinc-400 hover:text-white py-3 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah Akun Sosial Media
+                </button>
             </div>
 
             <!-- 5. INFORMASI PEMBAYARAN / PAYOUT -->
-            <div class="mb-10">
+            <div class="mb-10 relative z-10">
                 <div class="flex items-center gap-4 mb-4">
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Info Pembayaran</h4>
                     <div class="h-px bg-zinc-800 w-full"></div>
                 </div>
 
                 <div class="space-y-5">
-                    <!-- Metode Pembayaran -->
-                    <div>
+                    <!-- Metode Pembayaran (Custom Dropdown) -->
+                    <div class="dropdown-parent relative">
                         <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Bank / E-Wallet</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            </div>
-                            <select class="appearance-none w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-10 text-sm text-white outline-none transition-colors cursor-pointer">
-                                <!-- Styling dengan class tambahan pada option agar sinkron dengan dark theme -->
-                                <option value="" disabled class="bg-zinc-900 text-zinc-400">Pilih Metode</option>
-                                <option value="BCA" selected class="bg-zinc-900 text-white">BCA</option>
-                                <option value="Mandiri" class="bg-zinc-900 text-white">Mandiri</option>
-                                <option value="BNI" class="bg-zinc-900 text-white">BNI</option>
-                                <option value="BRI" class="bg-zinc-900 text-white">BRI</option>
-                                <option value="GoPay" class="bg-zinc-900 text-white">GoPay</option>
-                                <option value="OVO" class="bg-zinc-900 text-white">OVO</option>
-                                <option value="Dana" class="bg-zinc-900 text-white">Dana</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        
+                        <!-- Custom Dropdown Trigger -->
+                        <div class="relative" id="bank-container">
+                            <input type="hidden" id="bankValue" value="BCA">
+                            
+                            <button type="button" onclick="toggleBankDropdown()" class="w-full bg-cardBg border border-zinc-800 hover:border-zinc-600 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors flex justify-between items-center text-left shadow-inner">
+                                <!-- Ikon Dompet di kiri -->
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                </div>
+                                
+                                <span id="bankSelectedText">BCA</span>
+                                
+                                <!-- Ikon Chevron di Kanan -->
+                                <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+
+                            <!-- Custom Dropdown Options -->
+                            <div id="bankOptions" class="absolute z-[100] left-0 top-full mt-2 w-full bg-zinc-800 border border-zinc-700 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] hidden flex-col overflow-hidden py-1">
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('BCA')">BCA</div>
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('Mandiri')">Mandiri</div>
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('BNI')">BNI</div>
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('BRI')">BRI</div>
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('GoPay')">GoPay</div>
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('OVO')">OVO</div>
+                                <div class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white transition-colors" onclick="selectBank('Dana')">Dana</div>
                             </div>
                         </div>
                     </div>
@@ -254,7 +297,7 @@
     
     <!-- Memanggil Navbar Bawah KHUSUS CLIPPER -->
     <script>
-        const ACTIVE_MENU = 'profil'; // Identifier menu aktif untuk navbarclipper.js
+        const ACTIVE_MENU = 'profil'; 
     </script>
     <script src="attribute/navbarclipper.js"></script>
 
@@ -270,15 +313,131 @@
             }, 800); 
         });
 
-        // Simpan Profil Animasi Sederhana
+        // ==========================================
+        // CUSTOM DROPDOWN BANK
+        // ==========================================
+        const bankOptions = document.getElementById('bankOptions');
+        const bankContainer = document.getElementById('bank-container');
+
+        function toggleBankDropdown() {
+            // Sembunyikan dropdown socmed jika sedang terbuka
+            closeAllSocmedDropdowns();
+            bankOptions.classList.toggle('hidden');
+        }
+
+        function selectBank(bankName) {
+            document.getElementById('bankValue').value = bankName;
+            document.getElementById('bankSelectedText').innerText = bankName;
+            bankOptions.classList.add('hidden');
+        }
+
+        // ==========================================
+        // DYNAMIC SOCIAL MEDIA ACCOUNTS
+        // ==========================================
+        let socmedCount = 1;
+
+        function addSocmedRow() {
+            socmedCount++;
+            const container = document.getElementById('socmed-container');
+            const rowId = socmedCount;
+            
+            const div = document.createElement('div');
+            div.className = "flex flex-col sm:flex-row gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl dropdown-parent relative";
+            div.innerHTML = `
+                <!-- Custom Dropdown Platform -->
+                <div class="relative w-full sm:w-[150px] shrink-0" id="dd-container-${rowId}">
+                    <input type="hidden" name="socmed_platform[]" value="Instagram" id="platform-val-${rowId}">
+                    <button type="button" onclick="toggleSocmedDropdown('${rowId}')" class="w-full bg-cardBg border border-zinc-700 hover:border-zinc-500 rounded-lg py-3 px-3 flex justify-between items-center text-xs text-white transition-colors">
+                        <span id="platform-text-${rowId}">Instagram</span>
+                        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    
+                    <!-- Opsi Dropdown -->
+                    <div id="platform-options-${rowId}" class="socmed-opts absolute z-[100] left-0 top-full mt-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg shadow-[0_10px_40px_rgba(0,0,0,0.8)] hidden flex-col overflow-hidden py-1">
+                        <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('${rowId}', 'TikTok')">TikTok</div>
+                        <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('${rowId}', 'Instagram')">Instagram</div>
+                        <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('${rowId}', 'YouTube')">YouTube</div>
+                        <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('${rowId}', 'Threads')">Threads</div>
+                        <div class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white" onclick="selectSocmedPlatform('${rowId}', 'X')">X</div>
+                    </div>
+                </div>
+
+                <!-- Input Username -->
+                <div class="relative w-full flex items-center gap-2">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-zinc-500 font-bold text-sm">@</span>
+                        </div>
+                        <input type="text" placeholder="Username" class="w-full bg-cardBg border border-zinc-700 focus:border-white focus:bg-zinc-900 rounded-lg py-3 pl-8 pr-3 text-xs sm:text-sm text-white outline-none transition-colors">
+                    </div>
+                    <!-- Delete Button -->
+                    <button type="button" onclick="this.closest('.dropdown-parent').remove()" class="p-3 shrink-0 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Hapus Akun">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        function toggleSocmedDropdown(id) {
+            // Tutup dropdown bank
+            bankOptions.classList.add('hidden');
+            
+            const currentOpt = document.getElementById(`platform-options-${id}`);
+            const isHidden = currentOpt.classList.contains('hidden');
+            
+            // Tutup semua socmed dropdown
+            closeAllSocmedDropdowns();
+            
+            // Buka yang di-klik jika tadinya tertutup
+            if (isHidden) {
+                currentOpt.classList.remove('hidden');
+            }
+        }
+
+        function selectSocmedPlatform(id, platformName) {
+            document.getElementById(`platform-val-${id}`).value = platformName;
+            document.getElementById(`platform-text-${id}`).innerText = platformName;
+            document.getElementById(`platform-options-${id}`).classList.add('hidden');
+        }
+
+        function closeAllSocmedDropdowns() {
+            document.querySelectorAll('[id^="platform-options-"]').forEach(opt => {
+                opt.classList.add('hidden');
+            });
+        }
+
+        // ==========================================
+        // GLOBAL CLICK EVENT (Tutup Dropdown jika klik di luar)
+        // ==========================================
+        document.addEventListener('click', function(e) {
+            // Tutup Bank
+            if (bankOptions && !bankOptions.classList.contains('hidden')) {
+                if (!bankContainer.contains(e.target)) {
+                    bankOptions.classList.add('hidden');
+                }
+            }
+
+            // Tutup Socmed Dropdowns
+            document.querySelectorAll('[id^="platform-options-"]').forEach(opt => {
+                if (!opt.classList.contains('hidden')) {
+                    const parentContainer = opt.parentElement;
+                    if (!parentContainer.contains(e.target)) {
+                        opt.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // ==========================================
+        // SIMPAN & LOGOUT
+        // ==========================================
         function saveProfile() {
             const btnBottom = document.getElementById('btn-save-bottom');
             const btnHeader = document.getElementById('btn-save-header');
             
-            // Simpan status asal
             const originalBottomText = btnBottom.innerHTML;
             
-            // Berikan efek loading
             btnBottom.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
             
             [btnBottom, btnHeader].forEach(btn => {
@@ -288,9 +447,7 @@
                 }
             });
 
-            // Simulasi request save
             setTimeout(() => {
-                // Kembalikan status tombol
                 btnBottom.innerHTML = originalBottomText;
                 
                 [btnBottom, btnHeader].forEach(btn => {
@@ -304,11 +461,10 @@
             }, 1000);
         }
 
-        // Konfirmasi Logout
         function confirmLogout() {
             const isConfirmed = confirm("Apakah Anda yakin ingin keluar dari akun?");
             if (isConfirmed) {
-                window.location.href = "login.html"; // Sesuaikan dengan link login Anda
+                window.location.href = "login.html"; 
             }
         }
     </script>
