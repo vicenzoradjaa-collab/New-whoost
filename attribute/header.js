@@ -8,7 +8,7 @@ class CustomHeader extends HTMLElement {
                 <!-- Logo Group -->
                 <a href="index.html" class="flex items-center gap-2 md:gap-3 font-bold text-xl md:text-2xl tracking-tight text-white group">
                 <img src="asset/logow.webp" alt="Logo" class="w-14 h-14 md:w-16 md:h-16 object-contain group-hover:scale-105 transition-transform -mt-1" onerror="this.src='https://via.placeholder.com/32x32.png?text=W'">
-                <span class="-ml-3">Whoost.id</span>
+                <span class="-ml-6">Whoost.id</span>
                 </a>
 
                 <!-- Nav Links (Desktop Saja) -->
