@@ -8,7 +8,7 @@ class CustomFooter extends HTMLElement {
                 <!-- Kolom 1: Brand & Deskripsi -->
                 <div class="col-span-2">
                     <a href="#" class="flex items-center gap-3 font-bold text-2xl text-white tracking-tight mb-6">
-                        <!-- Kotak Putih dengan Sudut Membulat (rounded-lg) untuk Logo Hitam -->
+                        <!-- Kotak Putih dengan Sudut Membulat (rounded-xl) untuk Logo Hitam -->
                         <div class="w-9 h-9 bg-white rounded-xl flex items-center justify-center p-1.5">
                             <img src="asset/logob.webp" alt="Whoost Logo" class="w-full h-full object-contain">
                         </div>
@@ -40,16 +40,19 @@ class CustomFooter extends HTMLElement {
 
                 <!-- Kolom 4: Ikuti Kami -->
                 <div class="col-span-2 md:col-span-2 lg:col-span-2">
-                    <h4 class="font-bold text-white mb-6">Ikuti Kami</h4>
+                    <!-- Judul disesuaikan sedikit uppercase dan letter-spacing (tracking) opsional jika ingin persis seperti gambar lama -->
+                    <h4 class="font-bold text-white mb-6 uppercase tracking-wider text-sm">Ikuti Kami</h4>
                     <ul class="space-y-4 text-sm text-zinc-400">
                         <li>
                             <a href="#" target="_blank" class="flex items-center hover:text-white transition">
-                                <i class="fab fa-instagram text-base w-6 text-left"></i> Instagram
+                                <!-- Icon Instagram diperbesar sedikit agar seimbang -->
+                                <i class="fab fa-instagram text-lg w-8 text-left"></i> Instagram
                             </a>
                         </li>
                         <li>
                             <a href="#" target="_blank" class="flex items-center hover:text-white transition">
-                                <i class="fas fa-users text-base w-6 text-left"></i> Komunitas
+                                <!-- Menggunakan icon TikTok -->
+                                <i class="fab fa-tiktok text-lg w-8 text-left"></i> TikTok
                             </a>
                         </li>
                     </ul>
