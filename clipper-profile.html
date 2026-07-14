@@ -345,18 +345,18 @@
                         updateAvatarUI(currentAvatarUrl);
                     }
 
-                    // Load Social Media Array
-                    if (profile.social_accounts && Array.isArray(profile.social_accounts) && profile.social_accounts.length > 0) {
-                        profile.social_accounts.forEach(soc => {
+                    // Load Social Media Array (SESUAI DATABASE: social_media)
+                    if (profile.social_media && Array.isArray(profile.social_media) && profile.social_media.length > 0) {
+                        profile.social_media.forEach(soc => {
                             window.addSocmedRow(soc.platform, soc.username);
                         });
                     } else {
                         window.addSocmedRow(); // tambah 1 baris kosong default
                     }
 
-                    // Load Bank Accounts Array
-                    if (profile.bank_accounts && Array.isArray(profile.bank_accounts) && profile.bank_accounts.length > 0) {
-                        profile.bank_accounts.forEach(bank => {
+                    // Load Bank Accounts Array (SESUAI DATABASE: payment_info)
+                    if (profile.payment_info && Array.isArray(profile.payment_info) && profile.payment_info.length > 0) {
+                        profile.payment_info.forEach(bank => {
                             window.addBankRow(bank.bank_name, bank.account_number);
                         });
                     } else {
@@ -393,8 +393,8 @@
                 pAge = profileObj.age;
                 pWa = profileObj.whatsapp_number;
                 pAvatar = profileObj.avatar_url;
-                pSoc = (profileObj.social_accounts && profileObj.social_accounts.length > 0);
-                pBank = (profileObj.bank_accounts && profileObj.bank_accounts.length > 0);
+                pSoc = (profileObj.social_media && profileObj.social_media.length > 0);
+                pBank = (profileObj.payment_info && profileObj.payment_info.length > 0);
             } else {
                 pName = document.getElementById('input-fullname').value.trim();
                 pAge = document.getElementById('input-age').value.trim();
@@ -719,12 +719,13 @@
             showActionLoader("Menyimpan Profil...");
             
             try {
+                // SESUAIKAN DENGAN NAMA KOLOM DI DATABASE
                 const updateData = {
                     full_name: document.getElementById('input-fullname').value,
                     age: document.getElementById('input-age').value ? parseInt(document.getElementById('input-age').value) : null,
                     whatsapp_number: document.getElementById('input-wa').value,
-                    social_accounts: getSocialData(),
-                    bank_accounts: getBankData()
+                    social_media: getSocialData(),
+                    payment_info: getBankData()
                 };
                 
                 const { error } = await supabase.from('profiles').update(updateData).eq('id', currentUserId);
