@@ -1,8 +1,8 @@
 // File: autentication/auth.js
 
 // 1. Masukkan Kunci API Supabase milikmu di sini
-const SUPABASE_URL = 'https://cqbbejiwbghuntecvxtr.supabase.co'; // URL Project-mu
-const SUPABASE_KEY = 'sb_publishable_-u9Si0LbrRtiuWdiyqK8rA_XdqFEZoX'; // Ganti dengan sb_publishable_... milikmu
+const SUPABASE_URL = 'https://cqbbejiwbghuntecvxtr.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_-u9Si0LbrRtiuWdiyqK8rA_XdqFEZoX'; 
 
 // 2. Inisialisasi Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
