@@ -1,11 +1,13 @@
 // File: autentication/auth.js
 
-const SUPABASE_URL = 'https://cqbbejiwbghuntecvxtr.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_-u9Si0LbrRtiuWdiyqK8rA_XdqFEZoX'; // Ingat, ganti dengan key aslimu
+// 1. Masukkan Kunci API Supabase milikmu di sini
+const SUPABASE_URL = 'https://cqbbejiwbghuntecvxtr.supabase.co'; // URL Project-mu
+const SUPABASE_KEY = 'PASTE_PUBLISHABLE_KEY_KAMU_DI_SINI'; // Ganti dengan sb_publishable_... milikmu
 
+// 2. Inisialisasi Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// 1. Fungsi Login Google
+// 3. Fungsi Login Google
 async function loginWithGoogle() {
     const btnText = document.getElementById('login-btn-text');
     if (btnText) btnText.innerText = "Memproses...";
@@ -13,8 +15,8 @@ async function loginWithGoogle() {
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-            // Setelah login Google selesai, KEMBALI LAGI KE HALAMAN LOGIN
-            // Kenapa? Supaya script pengecekan role di bawah bisa berjalan
+            // Setelah login Google selesai, arahkan kembali ke halaman ini
+            // agar fungsi checkLoginStatus() bisa bekerja dan menentukan arah selanjutnya
             redirectTo: window.location.href 
         }
     });
@@ -25,43 +27,44 @@ async function loginWithGoogle() {
     }
 }
 
-// 2. Fungsi Pengecekan Status & Arah Halaman (Routing)
+// 4. Fungsi Pengecekan Status Login & Routing Cerdas
 async function checkLoginStatus() {
     // Ambil sesi user saat ini
     const { data: { session } } = await supabase.auth.getSession();
-
-    const currentPage = window.location.pathname.split('/').pop();
+    
+    // Dapatkan nama file halaman saat ini (misal: "login.html")
+    const currentPage = window.location.pathname.split('/').pop() || '';
 
     if (session) {
-        // JIKA USER SUDAH LOGIN
-        // Ambil data role dari akun user
+        // JIKA USER SUDAH LOGIN: Cek Role-nya
         const userRole = session.user.user_metadata?.role;
 
-        // Cek Role dan arahkan ke dashboard masing-masing
         if (userRole === 'clipper') {
+            // Jika role Clipper, paksa ke clipper-dashboard.html
             if (currentPage !== 'clipper-dashboard.html') window.location.replace('clipper-dashboard.html');
         } else if (userRole === 'brand') {
+            // Jika role Brand, paksa ke client-dashboard.html (sesuaikan nama file dashboard client-mu)
             if (currentPage !== 'client-dashboard.html') window.location.replace('client-dashboard.html');
         } else {
-            // Jika belum punya role, paksa ke halaman role.html
+            // Jika belum punya role sama sekali, paksa ke role.html
             if (currentPage !== 'role.html') window.location.replace('role.html');
         }
     } else {
-        // JIKA USER BELUM LOGIN
-        // Jika mereka mencoba masuk ke halaman terlarang (dashboard/role), tendang balik ke login
+        // JIKA USER BELUM LOGIN: Lindungi halaman tertentu
         const restrictedPages = ['role.html', 'clipper-dashboard.html', 'client-dashboard.html'];
         if (restrictedPages.includes(currentPage)) {
+            // Tendang kembali ke login
             window.location.replace('login.html');
         }
     }
 }
 
-// 3. Fungsi Menyimpan Role Permanen (dipanggil di role.html)
+// 5. Fungsi Menyimpan Role (Digunakan di role.html)
 async function saveRoleAndRedirect(selectedRole) {
     const btnText = document.getElementById('modalSubmitText');
     if(btnText) btnText.innerText = "Menyimpan...";
 
-    // Simpan role ke metadata akun Supabase
+    // Simpan data role ke metadata akun user di Supabase
     const { data, error } = await supabase.auth.updateUser({
         data: { role: selectedRole }
     });
@@ -72,6 +75,6 @@ async function saveRoleAndRedirect(selectedRole) {
         return;
     }
 
-    // Jika berhasil simpan, jalankan ulang pengecekan agar langsung diarahkan ke dashboard
+    // Jika berhasil simpan, panggil checkLoginStatus agar langsung diarahkan ke dashboard
     checkLoginStatus();
 }
