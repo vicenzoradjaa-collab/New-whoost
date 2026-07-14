@@ -59,7 +59,7 @@
             <h1 class="text-base sm:text-lg font-semibold tracking-tight text-white">Profil Bisnis</h1>
         </div>
         
-        <!-- Tombol Simpan di Header (Muncul di Desktop, Opsional di Mobile) -->
+        <!-- Tombol Simpan di Header -->
         <button id="btn-save-header" onclick="saveProfile()" class="hidden sm:block px-5 py-2 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none shadow-[0_0_15px_rgba(255,255,255,0.15)]">
             Simpan
         </button>
@@ -73,8 +73,9 @@
             
             <!-- 1. FOTO PROFIL / AVATAR -->
             <div class="flex flex-col items-center justify-center mb-10">
-                <div class="relative group cursor-pointer" onclick="alert('Membuka galeri/file explorer untuk ganti foto profil')">
-                    <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center overflow-hidden group-hover:border-zinc-500 transition-colors shadow-lg">
+                <!-- Tambah ID avatar-preview-bg untuk ganti gambar via JS -->
+                <div class="relative group cursor-pointer" onclick="alert('Fitur ganti foto profil di dalam dashboard akan segera hadir!')">
+                    <div id="avatar-preview-bg" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center overflow-hidden group-hover:border-zinc-500 transition-colors shadow-lg">
                         <svg class="w-12 h-12 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -99,12 +100,14 @@
                     <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-zinc-700 via-green-500 to-zinc-700 opacity-50"></div>
                     <div class="flex justify-between items-end mb-1">
                         <span class="text-sm font-semibold text-white">Kesehatan Profil</span>
-                        <span class="text-lg font-bold text-green-400">50%</span>
+                        <!-- ID health-text ditambahkan -->
+                        <span id="health-text" class="text-lg font-bold text-green-400">0%</span>
                     </div>
                     
                     <!-- Progress Bar Container -->
                     <div class="w-full h-2.5 sm:h-3 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
-                        <div class="h-full bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all duration-1000" style="width: 50%;"></div>
+                        <!-- ID health-bar ditambahkan -->
+                        <div id="health-bar" class="h-full bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all duration-1000" style="width: 0%;"></div>
                     </div>
 
                     <p class="text-xs text-zinc-500 leading-relaxed mt-2">Profil bisnis kredibel yang lengkap dapat menarik 3x lebih banyak Creator berkualitas. Lengkapi data Anda di bawah ini.</p>
@@ -126,7 +129,7 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                             </div>
-                            <input type="text" id="input-name" value="hagsa" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
+                            <input type="text" id="input-name" placeholder="Nama Bisnis Anda" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
                         </div>
                     </div>
 
@@ -138,11 +141,12 @@
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                             </div>
                             <select id="input-category" class="appearance-none w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-10 text-sm text-white outline-none transition-colors cursor-pointer">
-                                <option value="Fashion & Pakaian" selected>Fashion & Pakaian</option>
-                                <option value="F&B / Restoran">F&B / Restoran</option>
-                                <option value="Produk Digital / Jasa">Produk Digital / Jasa</option>
+                                <option value="Fashion & Pakaian">Fashion & Pakaian</option>
+                                <option value="Makanan & Minuman (F&B)">Makanan & Minuman (F&B)</option>
                                 <option value="Kecantikan & Skincare">Kecantikan & Skincare</option>
                                 <option value="Teknologi & Gadget">Teknologi & Gadget</option>
+                                <option value="Gaya Hidup">Gaya Hidup</option>
+                                <!-- Option tambahan digenerate lewat JS agar pas dengan yang di database -->
                             </select>
                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -167,7 +171,8 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </div>
-                            <input type="text" placeholder="Masukkan alamat lengkap bisnis" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
+                            <!-- ID input-address -->
+                            <input type="text" id="input-address" placeholder="Masukkan alamat lengkap bisnis" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
                         </div>
                     </div>
 
@@ -178,7 +183,8 @@
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                             </div>
-                            <input type="url" placeholder="https://yourbusiness.com" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
+                            <!-- ID input-website -->
+                            <input type="url" id="input-website" placeholder="https://yourbusiness.com" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
                         </div>
                     </div>
                 </div>
@@ -202,69 +208,160 @@
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
-    <!-- ========================================== -->
-    
     <!-- Memanggil Navbar Bawah -->
     <script>
-        const ACTIVE_MENU = 'profil'; // Identifier menu aktif untuk navbarclient.js
+        const ACTIVE_MENU = 'profil'; 
     </script>
     <script src="attribute/navbarclient.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Hilangkan Loading Screen
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader){
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500); 
+    <!-- ========================================== -->
+    <!-- SCRIPT SUPABASE & LOGIC                    -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        // 1. KETIKA HALAMAN DIMUAT (Ambil data)
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Cek User Session
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
                 }
-            }, 800); 
+
+                // Ambil data profil berdasarkan ID
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile) {
+                    // Isi Nama
+                    if (profile.business_name) document.getElementById('input-name').value = profile.business_name;
+                    
+                    // Isi Kategori
+                    if (profile.business_category) {
+                        const selectCat = document.getElementById('input-category');
+                        // Cek apakah kategori ada di dropdown list, jika belum buatkan secara otomatis
+                        let optionExists = Array.from(selectCat.options).some(opt => opt.value === profile.business_category);
+                        if (!optionExists) {
+                            const newOpt = document.createElement('option');
+                            newOpt.value = profile.business_category;
+                            newOpt.text = profile.business_category;
+                            selectCat.appendChild(newOpt);
+                        }
+                        selectCat.value = profile.business_category;
+                    }
+
+                    // Isi Alamat & Web
+                    if (profile.business_address) document.getElementById('input-address').value = profile.business_address;
+                    if (profile.business_website) document.getElementById('input-website').value = profile.business_website;
+
+                    // Tampilkan Gambar
+                    if (profile.avatar_url) {
+                        const avatarContainer = document.getElementById('avatar-preview-bg');
+                        avatarContainer.innerHTML = ''; // Hilangkan SVG icon
+                        avatarContainer.style.backgroundImage = `url('${profile.avatar_url}')`;
+                        avatarContainer.style.backgroundSize = 'cover';
+                        avatarContainer.style.backgroundPosition = 'center';
+                    }
+
+                    // Kalkulasi Kesehatan Profil (Total 5 Data)
+                    let filledFields = 0;
+                    if (profile.business_name) filledFields++;
+                    if (profile.business_category) filledFields++;
+                    if (profile.business_address) filledFields++;
+                    if (profile.business_website) filledFields++;
+                    if (profile.avatar_url) filledFields++;
+
+                    const healthPercentage = Math.round((filledFields / 5) * 100);
+                    
+                    document.getElementById('health-text').innerText = healthPercentage + '%';
+                    const healthBar = document.getElementById('health-bar');
+                    healthBar.style.width = healthPercentage + '%';
+                    
+                    // Ubah warna bar jika < 100% (opsional, untuk UI lebih interaktif)
+                    if(healthPercentage < 100) {
+                        healthBar.classList.replace('bg-green-500', 'bg-yellow-500');
+                        healthBar.style.boxShadow = "0 0 10px rgba(234,179,8,0.4)";
+                        document.getElementById('health-text').classList.replace('text-green-400', 'text-yellow-400');
+                    }
+                }
+            } catch (error) {
+                console.error("Gagal memuat profil:", error);
+            } finally {
+                // Sembunyikan Loading Animasi SETELAH data masuk semua
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if(loader){
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.style.display = 'none', 500); 
+                    }
+                }, 500);
+            }
         });
 
-        // Simpan Profil Animasi Sederhana
-        function saveProfile() {
+        // 2. FUNGSI SIMPAN PROFIL
+        window.saveProfile = async function() {
             const btnBottom = document.getElementById('btn-save-bottom');
             const btnHeader = document.getElementById('btn-save-header');
             
-            // Simpan status asal
             const originalBottomText = btnBottom.innerHTML;
             
-            // Berikan efek loading
-            btnBottom.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
+            // Efek Loading UI
+            btnBottom.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
             
             [btnBottom, btnHeader].forEach(btn => {
-                if(btn) {
-                    btn.classList.add('opacity-75');
-                    btn.disabled = true;
-                }
+                if(btn) { btn.classList.add('opacity-75'); btn.disabled = true; }
             });
 
-            // Simulasi request database
-            setTimeout(() => {
-                // Kembalikan status tombol
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                if(!session) throw new Error("Anda belum login");
+                
+                // Kumpulkan update terbaru
+                const updateData = {
+                    business_name: document.getElementById('input-name').value,
+                    business_category: document.getElementById('input-category').value,
+                    business_address: document.getElementById('input-address').value,
+                    business_website: document.getElementById('input-website').value,
+                };
+                
+                // Simpan ke database
+                const { error } = await supabase.from('profiles').update(updateData).eq('id', session.user.id);
+                if(error) throw error;
+                
+                alert("Perubahan profil berhasil disimpan!");
+            } catch(e) {
+                console.error(e);
+                alert("Gagal menyimpan profil: " + e.message);
+            } finally {
+                // Kembalikan tombol seperti semula
                 btnBottom.innerHTML = originalBottomText;
-                
                 [btnBottom, btnHeader].forEach(btn => {
-                    if(btn) {
-                        btn.classList.remove('opacity-75');
-                        btn.disabled = false;
-                    }
+                    if(btn) { btn.classList.remove('opacity-75'); btn.disabled = false; }
                 });
-                
-                alert("Data profil berhasil disimpan!");
-            }, 1000);
-        }
+            }
+        };
 
-        // Konfirmasi Logout
-        function confirmLogout() {
+        // 3. FUNGSI LOGOUT (REAL SUPABASE SIGNOUT)
+        window.confirmLogout = async function() {
             const isConfirmed = confirm("Apakah Anda yakin ingin keluar dari akun?");
             if (isConfirmed) {
-                window.location.href = "login.html"; // Sesuaikan dengan link login Anda
+                // Proses Sign Out Supabase
+                const { error } = await supabase.auth.signOut();
+                
+                if (error) {
+                    alert("Terjadi kesalahan saat logout: " + error.message);
+                } else {
+                    // Redirect ke login jika sukses
+                    window.location.replace("login.html");
+                }
             }
-        }
+        };
     </script>
 </body>
 </html>
