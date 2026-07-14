@@ -42,6 +42,14 @@
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
 
+    <!-- TOAST NOTIFICATION (SUKSES) -->
+    <div id="toastNotif" class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] bg-zinc-900 border border-zinc-700 shadow-2xl rounded-xl px-4 py-3 flex items-center gap-3 transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none">
+        <div id="toastIcon" class="w-8 h-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <p id="toastMessage" class="text-sm font-semibold text-white tracking-wide">Status berhasil diperbarui!</p>
+    </div>
+
     <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
@@ -271,21 +279,30 @@
             <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-4">
                 <div>
                     <h3 class="text-lg font-bold text-white">Review Payout</h3>
-                    <p class="text-xs text-zinc-400 mt-1">Pastikan transfer dilakukan sebelum ACC.</p>
+                    <p class="text-xs text-zinc-400 mt-1">Pastikan nominal transfer sesuai.</p>
                 </div>
                 <button onclick="closePayoutModal()" class="text-zinc-500 hover:text-white bg-zinc-900 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             
-            <!-- Detail Penarikan -->
+            <!-- Detail Penarikan & Kalkulasi Fee -->
             <div class="bg-zinc-900 rounded-xl p-4 mb-5 border border-zinc-800">
-                <div class="text-center mb-4">
-                    <p class="text-[11px] text-zinc-400 font-medium uppercase tracking-wider mb-1">Nominal Ditarik</p>
-                    <h2 class="text-2xl sm:text-3xl font-black text-white" id="modalAmount">Rp 0</h2>
+                <div class="flex justify-between items-center text-[13px] mb-2">
+                    <span class="text-zinc-400">Total Pengajuan (Clipper)</span>
+                    <span class="text-white font-medium" id="modalGrossAmount">Rp 0</span>
+                </div>
+                <div class="flex justify-between items-center text-[13px] mb-3">
+                    <span class="text-zinc-400">Potongan Admin (15%)</span>
+                    <span class="text-red-400 font-medium" id="modalFeeAmount">- Rp 0</span>
+                </div>
+                <div class="border-t border-dashed border-zinc-700 my-3"></div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[14px] font-bold text-white">Total Ditransfer</span>
+                    <span class="text-xl font-black text-blue-400" id="modalNetAmount">Rp 0</span>
                 </div>
                 
-                <div class="border-t border-dashed border-zinc-700 my-3"></div>
+                <div class="border-t border-zinc-800 my-4"></div>
                 
                 <div class="space-y-3">
                     <div>
@@ -309,7 +326,7 @@
             <!-- Tombol Action -->
             <div class="flex gap-3 mb-4">
                 <button id="btnSetuju" onclick="selectDecision('setuju')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all">
-                    Sudah Ditransfer
+                    Setujui & Selesai
                 </button>
                 <button id="btnTolak" onclick="selectDecision('tolak')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all">
                     Tolak Payout
@@ -335,8 +352,32 @@
             </div>
 
             <div class="flex justify-end pt-3 border-t border-zinc-800/80">
-                <button id="btnSubmitReview" class="w-full py-3 bg-white text-black rounded-xl text-[14px] font-bold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                <button id="btnSubmitReview" onclick="openConfirmModal()" class="w-full py-3 bg-white text-black rounded-xl text-[14px] font-bold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
                     Konfirmasi Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL KONFIRMASI (ARE YOU SURE)            -->
+    <!-- ========================================== -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[1000] hidden items-center justify-center opacity-0 transition-opacity duration-300 px-4">
+        <div id="confirmModalBox" class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 text-center relative overflow-hidden">
+            <!-- Glow background -->
+            <div id="confirmGlow" class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 blur-[50px] opacity-20 pointer-events-none"></div>
+            
+            <div id="confirmIcon" class="w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center border-4"></div>
+            
+            <h3 class="text-xl font-bold text-white mb-2" id="confirmTitle">Konfirmasi</h3>
+            <p class="text-[13px] text-zinc-400 mb-6 leading-relaxed" id="confirmDesc">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+            
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 py-2.5 rounded-xl border border-zinc-700 bg-zinc-800 text-white text-[13px] font-semibold hover:bg-zinc-700 transition-all">
+                    Batal
+                </button>
+                <button id="btnExecuteAction" onclick="executeConfirmAction()" class="flex-1 py-2.5 rounded-xl text-white text-[13px] font-semibold transition-all">
+                    Ya, Lanjutkan
                 </button>
             </div>
         </div>
@@ -353,7 +394,9 @@
         let currentFilter = 'Pending'; 
         let searchQuery = '';
         let activeCardElement = null;
+        let currentDecision = null;
 
+        const FEE_PERCENTAGE = 0.15; // 15% Admin Fee
         const formatRupiah = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -397,7 +440,7 @@
             allCards.forEach(card => {
                 const status = card.getAttribute('data-status');
                 const name = card.getAttribute('data-name').toLowerCase();
-                const email = card.querySelector('p').innerText.toLowerCase(); // email ada di <p> pertama
+                const email = card.querySelector('p').innerText.toLowerCase(); 
 
                 const matchesFilter = (currentFilter === 'Semua' || status === currentFilter);
                 const matchesSearch = name.includes(searchQuery) || email.includes(searchQuery);
@@ -415,13 +458,19 @@
         /* MODAL PAYOUT REVIEW */
         const payoutModal = document.getElementById('payoutModal');
         const payoutModalBox = document.getElementById('payoutModalBox');
-        let currentDecision = null;
 
         function openPayoutModal(user, bank, accNum, accName, amount, cardElement) {
             activeCardElement = cardElement;
             
+            // Kalkulasi Fee (15%)
+            const feeAmount = amount * FEE_PERCENTAGE;
+            const netAmount = amount - feeAmount;
+
             // Set Data ke Modal
-            document.getElementById('modalAmount').innerText = formatRupiah(amount);
+            document.getElementById('modalGrossAmount').innerText = formatRupiah(amount);
+            document.getElementById('modalFeeAmount').innerText = "- " + formatRupiah(feeAmount);
+            document.getElementById('modalNetAmount').innerText = formatRupiah(netAmount);
+            
             document.getElementById('modalUser').innerText = user;
             document.getElementById('modalBank').innerText = bank;
             document.getElementById('modalAccNum').innerText = accNum;
@@ -503,8 +552,82 @@
             document.getElementById('btnSubmitReview').disabled = e.target.value.trim() === '';
         });
 
-        /* ACTION SUBMIT REVIEW DARI ADMIN */
-        document.getElementById('btnSubmitReview').addEventListener('click', function() {
+
+        /* =======================================
+           MODAL KONFIRMASI & EKSEKUSI
+           ======================================= */
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalBox = document.getElementById('confirmModalBox');
+
+        function openConfirmModal() {
+            if (!activeCardElement || !currentDecision) return;
+
+            const iconContainer = document.getElementById('confirmIcon');
+            const title = document.getElementById('confirmTitle');
+            const desc = document.getElementById('confirmDesc');
+            const btnExec = document.getElementById('btnExecuteAction');
+            const glow = document.getElementById('confirmGlow');
+
+            if(currentDecision === 'setuju') {
+                glow.className = "absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-green-500 blur-[50px] opacity-20 pointer-events-none";
+                iconContainer.className = "w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-green-500/20 bg-green-500/10 text-green-500";
+                iconContainer.innerHTML = `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                title.innerText = "Setujui Payout?";
+                desc.innerHTML = `Pastikan Anda telah berhasil mentransfer <br><b class="text-white">` + document.getElementById('modalNetAmount').innerText + `</b> kepada user.`;
+                btnExec.className = "flex-1 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-[13px] font-semibold transition-all";
+            } else {
+                glow.className = "absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-500 blur-[50px] opacity-20 pointer-events-none";
+                iconContainer.className = "w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-red-500/20 bg-red-500/10 text-red-500";
+                iconContainer.innerHTML = `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                title.innerText = "Tolak Payout?";
+                desc.innerText = "Pengajuan payout ini akan ditandai sebagai Ditolak.";
+                btnExec.className = "flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[13px] font-semibold transition-all";
+            }
+
+            confirmModal.classList.remove('hidden');
+            confirmModal.classList.add('flex');
+            setTimeout(() => {
+                confirmModal.classList.remove('opacity-0');
+                confirmModalBox.classList.remove('scale-95');
+                confirmModalBox.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            confirmModal.classList.add('opacity-0');
+            confirmModalBox.classList.remove('scale-100');
+            confirmModalBox.classList.add('scale-95');
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+                confirmModal.classList.remove('flex');
+            }, 300);
+        }
+
+        function showSuccessToast(message, type) {
+            const toast = document.getElementById('toastNotif');
+            const icon = document.getElementById('toastIcon');
+            const msg = document.getElementById('toastMessage');
+
+            msg.innerText = message;
+            
+            if(type === 'success') {
+                icon.className = "w-8 h-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center shrink-0";
+                icon.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+            } else {
+                icon.className = "w-8 h-8 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center shrink-0";
+                icon.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+            }
+
+            toast.classList.remove('-translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('-translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        function executeConfirmAction() {
             if (!activeCardElement || !currentDecision) return;
 
             const badge = activeCardElement.querySelector('.status-badge');
@@ -521,6 +644,7 @@
                 btn.innerText = "Selesai";
                 btn.disabled = true;
                 
+                showSuccessToast("Payout berhasil disetujui!", "success");
             } else if (currentDecision === 'tolak') {
                 activeCardElement.setAttribute('data-status', 'Ditolak');
                 activeCardElement.classList.add('opacity-60');
@@ -531,11 +655,17 @@
                 btn.className = "action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0";
                 btn.innerText = "Ditolak";
                 btn.disabled = true;
+
+                showSuccessToast("Pengajuan payout ditolak.", "error");
             }
 
+            // Tutup semua modal
+            closeConfirmModal();
             closePayoutModal();
-            applyFilters(); // Re-filter to hide the card if filter is strictly 'Pending'
-        });
+            
+            // Re-filter (Sembunyikan card jika filter hanya menampilkan 'Pending')
+            applyFilters(); 
+        }
     </script>
 </body>
 </html>
