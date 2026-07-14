@@ -2,7 +2,7 @@
 
 // 1. Masukkan Kunci API Supabase milikmu di sini
 const SUPABASE_URL = 'https://cqbbejiwbghuntecvxtr.supabase.co'; // URL Project-mu
-const SUPABASE_KEY = 'PASTE_PUBLISHABLE_KEY_KAMU_DI_SINI'; // Ganti dengan sb_publishable_... milikmu
+const SUPABASE_KEY = 'sb_publishable_-u9Si0LbrRtiuWdiyqK8rA_XdqFEZoX'; // Ganti dengan sb_publishable_... milikmu
 
 // 2. Inisialisasi Supabase Client
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
