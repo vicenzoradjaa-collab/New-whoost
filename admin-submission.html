@@ -40,12 +40,17 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- LOADING SCREEN -->
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN (SAMA DENGAN CLIENT)        -->
+    <!-- ========================================== -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
+            <!-- Animasi Efek Glow di belakang logo -->
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <h1 class="text-3xl font-bold tracking-widest text-white z-10 animate-pulse">WHOOST ADMIN</h1>
-            <p class="mt-4 text-zinc-500 text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data Klaim...</p>
+            <!-- Logo Whoost -->
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <!-- Teks -->
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data Klaim...</p>
         </div>
     </div>
 
@@ -54,16 +59,18 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-indigo-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER -->
+    <!-- ========================================== -->
+    <!-- HEADER (SAMA DENGAN CLIENT)                -->
+    <!-- ========================================== -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
-            <h1 class="text-xl font-bold tracking-tight text-white bg-zinc-900 px-3 py-1 rounded-lg border border-zinc-800">ADMIN PANEL</h1>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            <h2 class="text-lg sm:text-xl font-semibold tracking-tight text-zinc-300">Review Klaim Views & Pembayaran</h2>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Review Klaim Pembayaran</h1>
         </div>
     </header>
 
-    <!-- TOOLBAR -->
+    <!-- TOOLBAR (Search & Filter) -->
     <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
         <div class="relative w-full md:max-w-md">
             <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -298,7 +305,7 @@
                 </button>
             </div>
 
-            <!-- Form Penolakan (Sama kaya Client) -->
+            <!-- Form Penolakan -->
             <div id="formTolak" class="hidden flex-col gap-2 mb-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
                 <label class="text-[12px] font-medium text-white mb-1">Alasan Penolakan Views:</label>
                 <label class="flex items-center gap-2 cursor-pointer group">
@@ -336,52 +343,73 @@
         const formatRupiah = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
 
         document.addEventListener('DOMContentLoaded', () => {
-            allCards = Array.from(document.querySelectorAll('.content-card'));
             
-            // Format angka saat load pertama
-            allCards.forEach(card => updateCardUI(card));
-
-            document.getElementById('filterLabel').innerText = "Status Klaim: " + currentFilter;
-            applyFilters();
-
-            // Matikan loading screen
+            // PENGAMANAN 1: Eksekusi Hilangkan Loading Screen diamankan dengan setTimeout
+            // Loader pasti akan hilang dalam 1 detik meskipun ada error di bawahnya.
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.style.display = 'none', 500);
-            }, 800); 
+                if (loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 1000); 
+
+            // PENGAMANAN 2: Try-Catch saat membaca data HTML
+            try {
+                allCards = Array.from(document.querySelectorAll('.content-card'));
+                allCards.forEach(card => updateCardUI(card));
+                
+                const filterLabel = document.getElementById('filterLabel');
+                if (filterLabel) filterLabel.innerText = "Status Klaim: " + currentFilter;
+                
+                applyFilters();
+            } catch (error) {
+                console.error("Terjadi error saat membaca data card:", error);
+            }
         });
 
         /* Memperbarui Teks UI di dalam Card berdasarkan Dataset HTML-nya */
         function updateCardUI(card) {
-            const currentViews = parseInt(card.getAttribute('data-current-views'));
-            const prevViews = parseInt(card.getAttribute('data-prev-views'));
-            const status = card.getAttribute('data-status');
-            const unpaidViews = currentViews - prevViews;
+            try {
+                const currentViews = parseInt(card.getAttribute('data-current-views') || '0');
+                const prevViews = parseInt(card.getAttribute('data-prev-views') || '0');
+                const status = card.getAttribute('data-status');
+                const unpaidViews = currentViews - prevViews;
 
-            card.querySelector('.current-views-text').innerText = formatNumber(currentViews);
-            card.querySelector('.prev-views-text').innerText = formatNumber(prevViews);
-            
-            const unpaidEl = card.querySelector('.unpaid-views-text');
-            if(unpaidViews > 0) {
-                unpaidEl.innerText = "+" + formatNumber(unpaidViews);
-                unpaidEl.className = "text-[14px] font-bold text-indigo-400 unpaid-views-text";
-            } else {
-                unpaidEl.innerText = "0 (Lunas)";
-                unpaidEl.className = "text-[14px] font-bold text-zinc-500 unpaid-views-text";
-            }
+                // Menggunakan Optional Chaining (?.) untuk mencegah error jika elemen tidak ditemukan
+                const elCurrent = card.querySelector('.current-views-text');
+                if (elCurrent) elCurrent.innerText = formatNumber(currentViews);
+                
+                const elPrev = card.querySelector('.prev-views-text');
+                if (elPrev) elPrev.innerText = formatNumber(prevViews);
+                
+                const unpaidEl = card.querySelector('.unpaid-views-text');
+                if (unpaidEl) {
+                    if(unpaidViews > 0) {
+                        unpaidEl.innerText = "+" + formatNumber(unpaidViews);
+                        unpaidEl.className = "text-[14px] font-bold text-indigo-400 unpaid-views-text";
+                    } else {
+                        unpaidEl.innerText = "0 (Lunas)";
+                        unpaidEl.className = "text-[14px] font-bold text-zinc-500 unpaid-views-text";
+                    }
+                }
 
-            // Update state tombol berdasarkan status admin
-            const btn = card.querySelector('.action-btn');
-            if(status === 'Menunggu Client') {
-                btn.disabled = true;
-                btn.className = "action-btn w-full py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed";
-                btn.innerText = "Menunggu ACC Client";
-            } else if(status === 'Selesai') {
-                btn.disabled = true;
-                btn.className = "action-btn w-full py-2 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-[13px] font-semibold cursor-not-allowed";
-                btn.innerHTML = `<span class="flex items-center justify-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Pembayaran Selesai</span>`;
-                card.classList.add('opacity-70');
+                // Update state tombol berdasarkan status admin
+                const btn = card.querySelector('.action-btn');
+                if (btn) {
+                    if(status === 'Menunggu Client') {
+                        btn.disabled = true;
+                        btn.className = "action-btn w-full py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed";
+                        btn.innerText = "Menunggu ACC Client";
+                    } else if(status === 'Selesai') {
+                        btn.disabled = true;
+                        btn.className = "action-btn w-full py-2 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-[13px] font-semibold cursor-not-allowed";
+                        btn.innerHTML = `<span class="flex items-center justify-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Pembayaran Selesai</span>`;
+                        card.classList.add('opacity-70');
+                    }
+                }
+            } catch (error) {
+                console.warn("Lewati error update UI pada 1 card:", error);
             }
         }
 
@@ -407,7 +435,8 @@
         function applyFilters() {
             allCards.forEach(card => {
                 const adminStatus = card.getAttribute('data-status');
-                const creator = card.querySelector('.creator-name').textContent.toLowerCase();
+                const creatorNameEl = card.querySelector('.creator-name');
+                const creator = creatorNameEl ? creatorNameEl.textContent.toLowerCase() : '';
 
                 const matchesFilter = (currentFilter === 'Semua' || adminStatus === currentFilter);
                 const matchesSearch = creator.includes(searchQuery);
@@ -432,13 +461,13 @@
             const card = document.getElementById(cardId);
             
             // Ambil data kalkulasi
-            const currentViews = parseInt(card.getAttribute('data-current-views'));
-            const prevViews = parseInt(card.getAttribute('data-prev-views'));
-            const cpm = parseInt(card.getAttribute('data-cpm'));
+            const currentViews = parseInt(card.getAttribute('data-current-views') || '0');
+            const prevViews = parseInt(card.getAttribute('data-prev-views') || '0');
+            const cpm = parseInt(card.getAttribute('data-cpm') || '0');
             const creator = card.querySelector('.creator-name').innerText;
             
             const unpaidViews = currentViews - prevViews;
-            const estimasiBayar = (unpaidViews / 1000) * cpm; // Rumus CPM
+            const estimasiBayar = (unpaidViews / 1000) * cpm;
 
             // Set Data ke Modal
             document.getElementById('modalCreatorName').innerText = creator;
@@ -531,19 +560,15 @@
             const card = document.getElementById(activeCardId);
 
             if (currentDecision === 'setuju') {
-                // LOGIKA INTI: Jika di-ACC bayar, Views Sebelumnya disamakan dengan Views Saat ini
                 const currentViews = card.getAttribute('data-current-views');
-                card.setAttribute('data-prev-views', currentViews); // Mencegah double claim di masa depan
+                card.setAttribute('data-prev-views', currentViews); 
                 card.setAttribute('data-status', 'Selesai');
                 
                 alert("Pembayaran berhasil dikonfirmasi. Klaim views telah di-reset untuk pembaruan berikutnya.");
             } else if (currentDecision === 'tolak') {
-                // Biarkan prev view sama, tolak klaim saat ini (kembalikan admin status ke yg lain jika perlu)
-                // Untuk contoh ini, kita set statusnya tetap Perlu review atau buat status Ditolak.
                 alert("Klaim views ditolak admin.");
             }
 
-            // Update UI card dengan data terbaru
             updateCardUI(card);
             closeReviewModal();
             applyFilters();
