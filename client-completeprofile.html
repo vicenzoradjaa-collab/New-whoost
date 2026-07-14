@@ -87,13 +87,11 @@
         <!-- Wrapper Card Utama -->
         <div class="bg-cardBg border border-zinc-800 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
             
-            <!-- Header Teks -->
             <div class="text-center mb-10 relative z-10">
                 <h1 class="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight text-white">Lengkapi Profil Bisnis</h1>
                 <p class="text-zinc-400 text-sm md:text-base">Lengkapi profil bisnismu agar terlihat profesional di mata kreator.</p>
             </div>
 
-            <!-- PERHATIKAN: form tidak langsung nge-post ke PHP/Dashboard, tapi ditahan lewat JS -->
             <form id="profileForm" class="relative z-10">
                 
                 <!-- 1. FOTO PROFIL SECTION -->
@@ -107,7 +105,7 @@
                         </div>
                     </label>
                     <input type="file" id="avatarUpload" accept="image/*" onchange="previewImage(event)">
-                    <span class="text-xs text-zinc-500 font-medium mt-3 uppercase tracking-wider">Tambah Foto</span>
+                    <span class="text-xs text-zinc-500 font-medium mt-3 uppercase tracking-wider">Tambah Foto (Maks. 1MB)</span>
                 </div>
 
                 <hr class="border-zinc-800/80 mb-10">
@@ -127,8 +125,6 @@
                         <!-- Kategori Bisnis -->
                         <div>
                             <label class="block text-sm font-semibold text-zinc-300 mb-2">Kategori Bisnis</label>
-                            
-                            <!-- PERBAIKAN: Atribut 'required' dihapus agar HTML5 tidak memblokir silent form submit -->
                             <input type="hidden" name="kategori_bisnis" id="kategoriInput">
                             
                             <div id="kategoriTrigger" onclick="openCategoryModal()" 
@@ -142,14 +138,14 @@
                         <!-- Alamat Bisnis -->
                         <div>
                             <label class="block text-sm font-semibold text-zinc-300 mb-2">Alamat Bisnis <span class="text-zinc-500 font-normal">(Opsional)</span></label>
-                            <input type="text" placeholder="Masukkan alamat bisnis" 
+                            <input type="text" id="inputAlamat" placeholder="Masukkan alamat bisnis" 
                                 class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 transition-colors">
                         </div>
 
                         <!-- Website -->
                         <div>
                             <label class="block text-sm font-semibold text-zinc-300 mb-2">Website <span class="text-zinc-500 font-normal">(Opsional)</span></label>
-                            <input type="url" placeholder="https://domainbisnis.com" 
+                            <input type="url" id="inputWebsite" placeholder="https://domainbisnis.com" 
                                 class="whoost-input w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 transition-colors">
                         </div>
                     </div>
@@ -162,7 +158,6 @@
                     <p class="text-[11px] font-bold tracking-[0.15em] text-zinc-500 mb-1 uppercase">Dari mana kamu tau Whoost?</p>
                     <p class="text-xs text-zinc-500 mb-5">Bantu kami berkembang — opsional, sekali tap.</p>
 
-                    <!-- Grid Options -->
                     <div class="flex flex-wrap gap-3">
                         <label class="cursor-pointer">
                             <input type="radio" name="source" value="instagram" class="source-radio">
@@ -231,13 +226,9 @@
     <!-- ========================================== -->
     <!-- MODAL SUCCESS LOADING                      -->
     <!-- ========================================== -->
-    <!-- Tambahan pointer-events-none agar modal tetap overlay tapi klik belakang mati -->
     <div id="successModal" class="fixed inset-0 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-500">
-        <!-- Backdrop -->
         <div class="absolute inset-0 bg-black/90 backdrop-blur-md"></div>
-        <!-- Content -->
         <div id="successContent" class="relative z-[70] flex flex-col items-center justify-center scale-90 opacity-0 transition-all duration-500">
-            <!-- Icon Check -->
             <div class="relative flex items-center justify-center w-24 h-24 mb-6">
                 <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-20"></div>
                 <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] relative z-10 scale-0 animate-[popIn_0.5s_ease-out_forwards]">
@@ -262,18 +253,32 @@
         }
     </style>
 
-    <!-- Scripts -->
+    <!-- Scripts (Telah Diubah menjadi Type Module) -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
         AOS.init({ once: true, offset: 20, duration: 800 });
 
-        // Preview Gambar
-        function previewImage(event) {
+        // Fungsi Global ditempel ke window agar terbaca oleh HTML attribute
+        window.previewImage = function(event) {
             const input = event.target;
             const previewContainer = document.getElementById('avatarPreview');
             const defaultIcon = document.getElementById('defaultIcon');
 
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // ===============================================
+                // VALIDASI UKURAN FILE (MAX 1 MB)
+                // ===============================================
+                if (file.size > 1024 * 1024) { // 1 MB = 1024 * 1024 bytes
+                    alert("Ukuran foto profil tidak boleh lebih dari 1 MB. Silakan pilih foto dengan ukuran lebih kecil!");
+                    input.value = ""; // Mengosongkan input file agar tidak tersubmit
+                    return; // Menghentikan fungsi preview
+                }
+                // ===============================================
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     if(defaultIcon) defaultIcon.style.display = 'none';
@@ -282,11 +287,10 @@
                     previewContainer.style.backgroundPosition = 'center';
                     previewContainer.style.borderStyle = 'solid';
                 }
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         }
 
-        // Kategori JS
         const categories = [
             "Fashion & Pakaian", "Makanan & Minuman (F&B)", "Kecantikan & Skincare", 
             "Teknologi & Gadget", "Gaya Hidup", "Kesehatan & Wellness", 
@@ -309,7 +313,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             `;
-            btn.onclick = () => selectCategory(cat, btn);
+            btn.onclick = () => window.selectCategory(cat, btn);
             listContainer.appendChild(btn);
         });
 
@@ -320,7 +324,7 @@
         const kategoriTrigger = document.getElementById('kategoriTrigger');
         const kategoriErrorMsg = document.getElementById('kategoriErrorMsg');
 
-        function openCategoryModal() {
+        window.openCategoryModal = function() {
             categoryModal.classList.remove('hidden');
             void categoryModal.offsetWidth;
             categoryModal.classList.remove('opacity-0');
@@ -332,7 +336,7 @@
             }
         }
 
-        function closeCategoryModal() {
+        window.closeCategoryModal = function() {
             categoryModal.classList.add('opacity-0');
             if(window.innerWidth < 768) {
                 categoryContent.classList.add('translate-y-full');
@@ -344,7 +348,7 @@
             }, 300);
         }
 
-        function selectCategory(catName, btnElement) {
+        window.selectCategory = function(catName, btnElement) {
             kategoriInput.value = catName;
             kategoriText.innerText = catName;
             kategoriText.classList.replace('text-zinc-500', 'text-white');
@@ -364,16 +368,15 @@
             closeCategoryModal();
         }
 
-        // Logic Form Submit & Trigger Popup Success
+        // FUNGSI SUBMIT KE SUPABASE
         const profileForm = document.getElementById('profileForm');
         const btnSubmit = document.getElementById('btnSubmit');
         const btnText = document.getElementById('btnText');
         const btnSpinner = document.getElementById('btnSpinner');
 
-        profileForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // Mematikan fungsi submit default agar JS bisa jalan
+        profileForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); 
 
-            // Validasi: pastikan kolom Kategori Bisnis dipilih (karena hidden ga bisa di 'required')
             if(!kategoriInput.value) {
                 kategoriTrigger.classList.add('input-error');
                 kategoriErrorMsg.classList.remove('hidden');
@@ -381,33 +384,93 @@
                 return;
             }
 
-            // 1. Tampilkan state Loading pada tombol
+            // Tampilkan Loading
             btnSubmit.setAttribute('disabled', 'true');
             btnSubmit.classList.add('opacity-70', 'cursor-not-allowed');
             btnText.innerText = "Menyimpan...";
             btnSpinner.classList.remove('hidden');
 
-            // 2. Simulasi koneksi server / menyimipan ke database (1.5 Detik)
-            setTimeout(() => {
+            try {
+                // 1. Cek User ID
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) throw new Error("Sesi tidak valid");
+                const userId = session.user.id;
+
+                // 2. Kumpulkan semua Data
+                const namaBisnis = document.getElementById('inputNama').value;
+                const kategoriBisnis = document.getElementById('kategoriInput').value;
+                const alamatBisnis = document.getElementById('inputAlamat').value;
+                const websiteBisnis = document.getElementById('inputWebsite').value;
                 
-                // 3. Tampilkan Popup Berhasil Disimpan
+                const sourceRadio = document.querySelector('input[name="source"]:checked');
+                const discoverySource = sourceRadio ? sourceRadio.value : null;
+                
+                let avatarUrl = null;
+                const avatarFile = document.getElementById('avatarUpload').files[0];
+
+                // 3. Upload File Gambar (Jika Ada)
+                if (avatarFile) {
+                    const fileExt = avatarFile.name.split('.').pop();
+                    const fileName = `${userId}-${Math.random()}.${fileExt}`;
+                    
+                    // Upload ke Supabase Storage (pastikan Anda sudah membuat bucket bernama 'avatars' secara publik)
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('avatars')
+                        .upload(fileName, avatarFile);
+                        
+                    if (!uploadError) {
+                        const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+                        avatarUrl = publicUrlData.publicUrl;
+                    } else {
+                        console.error("Gagal unggah gambar:", uploadError);
+                        // Lanjutkan menyimpan teks meski gambar gagal
+                    }
+                }
+
+                // 4. Update data ke tabel profiles
+                const updateData = {
+                    business_name: namaBisnis,
+                    business_category: kategoriBisnis,
+                    business_address: alamatBisnis,
+                    business_website: websiteBisnis,
+                    discovery_source: discoverySource,
+                    is_profile_complete: true // Mengubah status menjadi True!
+                };
+                if(avatarUrl) updateData.avatar_url = avatarUrl; // Tambahkan URL gambar jika berhasil
+
+                const { error: updateError } = await supabase
+                    .from('profiles')
+                    .update(updateData)
+                    .eq('id', userId);
+
+                if (updateError) throw updateError;
+
+                // 5. Tampilkan Modal Berhasil
                 const successModal = document.getElementById('successModal');
                 const successContent = document.getElementById('successContent');
                 
                 successModal.classList.remove('hidden');
-                void successModal.offsetWidth; // Trigger browser reflow
+                void successModal.offsetWidth; 
                 successModal.classList.remove('opacity-0');
                 
-                // Animasi Content Muncul
                 successContent.classList.remove('scale-90', 'opacity-0');
                 successContent.classList.add('scale-100', 'opacity-100');
 
-                // 4. Otomatis Pindah Halaman ke dashboard (setelah popup muncul 2.5 Detik)
+                // 6. Redirect ke Dashboard Client (Diubah dari dashboard.html ke client-dashboard.html)
                 setTimeout(() => {
-                    window.location.href = "dashboard.html";
+                    window.location.replace("client-dashboard.html");
                 }, 2500);
 
-            }, 1500);
+            } catch (error) {
+                console.error("Error Simpan Profil:", error.message);
+                alert("Gagal menyimpan profil, coba lagi. Atau pastikan Anda sudah login.");
+                
+                // Kembalikan tombol ke semula jika gagal
+                btnSubmit.removeAttribute('disabled');
+                btnSubmit.classList.remove('opacity-70', 'cursor-not-allowed');
+                btnText.innerText = "Simpan Profil";
+                btnSpinner.classList.add('hidden');
+            }
         });
     </script>
 </body>
