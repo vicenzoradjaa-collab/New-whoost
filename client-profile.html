@@ -416,8 +416,11 @@
 
                 // Hapus gambar lama dari storage JIKA ADA
                 if (currentAvatarUrl) {
-                    const oldFileName = currentAvatarUrl.split('/').pop();
-                    await supabase.storage.from('avatars').remove([oldFileName]);
+                    const oldFileName = decodeURIComponent(currentAvatarUrl.split('/').pop().split('?')[0]);
+                    const { error: removeError } = await supabase.storage.from('avatars').remove([oldFileName]);
+                    if (removeError) {
+                        console.warn("Gagal menghapus file lama di storage:", removeError);
+                    }
                 }
 
                 // Update Database
@@ -452,11 +455,15 @@
             showActionLoader("Menghapus Foto...");
             try {
                 // Hapus dari Storage
-                const oldFileName = currentAvatarUrl.split('/').pop();
-                await supabase.storage.from('avatars').remove([oldFileName]);
+                const oldFileName = decodeURIComponent(currentAvatarUrl.split('/').pop().split('?')[0]);
+                const { error: removeError } = await supabase.storage.from('avatars').remove([oldFileName]);
+                if (removeError) {
+                    console.warn("Gagal menghapus file di storage:", removeError);
+                }
 
                 // Update Database
-                await supabase.from('profiles').update({ avatar_url: null }).eq('id', currentUserId);
+                const { error: updateError } = await supabase.from('profiles').update({ avatar_url: null }).eq('id', currentUserId);
+                if (updateError) throw updateError;
                 
                 currentAvatarUrl = null;
                 updateAvatarUI(null);
