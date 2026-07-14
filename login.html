@@ -81,8 +81,8 @@
                 Silakan masuk menggunakan akun Google Anda untuk melanjutkan ke dalam dashboard.
             </p>
 
-            <!-- Tombol Masuk Google (Primary Button) -->
-            <button type="button" class="w-full bg-white text-black py-4 rounded-xl font-bold text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] group">
+            <!-- Tombol Masuk Google (DITAMBAHKAN ID: id="btn-login-google") -->
+            <button type="button" id="btn-login-google" class="w-full bg-white text-black py-4 rounded-xl font-bold text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:shadow-[0_0_25px_rgba(255,255,255,0.15)] group">
                 <svg class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -116,13 +116,72 @@
 
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts AOS Bawaan Anda -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
             once: true,
             offset: 50,
             duration: 800
+        });
+    </script>
+
+    <!-- ========================================== -->
+    <!-- SCRIPT SUPABASE UNTUK LOGIN & CEK ROLE     -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { supabase, getUserProfile } from './autentication/auth.js';
+
+        // 1. TANGKAP TOMBOL GOOGLE
+        const btnLoginGoogle = document.getElementById('btn-login-google');
+        
+        if (btnLoginGoogle) {
+            btnLoginGoogle.addEventListener('click', async (e) => {
+                e.preventDefault(); 
+                
+                // Panggil Supabase Google Auth
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        // Setelah berhasil login di popup Google, kembali ke halaman ini
+                        redirectTo: window.location.origin + '/login.html'
+                    }
+                });
+
+                if (error) {
+                    console.error("Gagal login:", error.message);
+                    alert("Gagal terhubung ke Google. Coba lagi.");
+                }
+            });
+        }
+
+        // 2. DETEKSI SETELAH GOOGLE MENGEMBALIKAN USER
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                
+                const userId = session.user.id;
+                
+                // Mengubah teks tombol agar user tahu sedang di-proses
+                if (btnLoginGoogle) {
+                    btnLoginGoogle.innerHTML = 'Memuat Data...';
+                    btnLoginGoogle.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+
+                // Cek Role di Database melalui fungsi yang kita buat di auth.js
+                const profile = await getUserProfile(userId);
+
+                if (profile && profile.role) {
+                    // JIKA SUDAH PUNYA ROLE (User Lama)
+                    if (profile.role === 'clipper') {
+                        window.location.replace('clipper-dashboard.html');
+                    } else if (profile.role === 'client') {
+                        window.location.replace('client-dashboard.html');
+                    }
+                } else {
+                    // JIKA BELUM PUNYA ROLE (User Baru banget)
+                    window.location.replace('role.html');
+                }
+            }
         });
     </script>
 </body>
