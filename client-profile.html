@@ -31,11 +31,23 @@
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- LOADING SCREEN -->
+    <!-- OVERLAY LOADING GLOBAL UNTUK UPLOAD -->
+    <div id="actionLoader" class="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <svg class="animate-spin h-10 w-10 text-white mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+        <p id="actionLoaderText" class="text-zinc-300 font-medium text-sm">Memproses...</p>
+    </div>
+
+    <!-- LOADING SCREEN AWAL -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
@@ -49,47 +61,40 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HEADER                                     -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md flex-shrink-0 w-full z-20">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-8 w-auto object-contain">
             <div class="h-4 sm:h-5 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-base sm:text-lg font-semibold tracking-tight text-white">Profil Bisnis</h1>
         </div>
-        
-        <!-- Tombol Simpan di Header -->
         <button id="btn-save-header" onclick="saveProfile()" class="hidden sm:block px-5 py-2 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none shadow-[0_0_15px_rgba(255,255,255,0.15)]">
             Simpan
         </button>
     </header>
 
-    <!-- ========================================== -->
-    <!-- MAIN CONTENT (Single Page Profile & Edit)  -->
-    <!-- ========================================== -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full relative z-10">
         <div class="max-w-2xl mx-auto">
             
             <!-- 1. FOTO PROFIL / AVATAR -->
             <div class="flex flex-col items-center justify-center mb-10">
-                <!-- Tambah ID avatar-preview-bg untuk ganti gambar via JS -->
-                <div class="relative group cursor-pointer" onclick="alert('Fitur ganti foto profil di dalam dashboard akan segera hadir!')">
+                <div class="relative group cursor-pointer" onclick="openAvatarActionModal()">
                     <div id="avatar-preview-bg" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-zinc-900 border-2 border-zinc-700 flex items-center justify-center overflow-hidden group-hover:border-zinc-500 transition-colors shadow-lg">
-                        <svg class="w-12 h-12 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                        <svg id="avatar-default-icon" class="w-12 h-12 text-zinc-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
                     </div>
-                    <!-- Icon Camera Overlapping -->
                     <div class="absolute bottom-0 right-0 w-8 h-8 bg-zinc-800 border border-zinc-700 text-white rounded-full flex items-center justify-center shadow-lg pointer-events-none">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
                     </div>
                 </div>
                 <p class="text-[11px] text-zinc-500 mt-3 font-medium">Ketuk untuk mengubah foto</p>
+                <input type="file" id="hiddenAvatarInput" accept="image/*" class="hidden" onchange="handleAvatarChange(event)">
             </div>
 
-            <!-- 2. STATUS & REPUTASI (Kesehatan Profil) -->
+            <!-- 2. STATUS & REPUTASI -->
             <div class="mb-10">
                 <div class="flex items-center gap-4 mb-4">
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Status Akun</h4>
@@ -100,17 +105,12 @@
                     <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-zinc-700 via-green-500 to-zinc-700 opacity-50"></div>
                     <div class="flex justify-between items-end mb-1">
                         <span class="text-sm font-semibold text-white">Kesehatan Profil</span>
-                        <!-- ID health-text ditambahkan -->
                         <span id="health-text" class="text-lg font-bold text-green-400">0%</span>
                     </div>
-                    
-                    <!-- Progress Bar Container -->
                     <div class="w-full h-2.5 sm:h-3 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
-                        <!-- ID health-bar ditambahkan -->
                         <div id="health-bar" class="h-full bg-green-500 rounded-full shadow-[0_0_10px_rgba(34,197,94,0.4)] transition-all duration-1000" style="width: 0%;"></div>
                     </div>
-
-                    <p class="text-xs text-zinc-500 leading-relaxed mt-2">Profil bisnis kredibel yang lengkap dapat menarik 3x lebih banyak Creator berkualitas. Lengkapi data Anda di bawah ini.</p>
+                    <p class="text-xs text-zinc-500 leading-relaxed mt-2">Profil bisnis kredibel yang lengkap dapat menarik 3x lebih banyak Creator berkualitas.</p>
                 </div>
             </div>
 
@@ -122,7 +122,6 @@
                 </div>
 
                 <div class="space-y-5">
-                    <!-- Nama Bisnis -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Nama Bisnis</label>
                         <div class="relative">
@@ -133,24 +132,16 @@
                         </div>
                     </div>
 
-                    <!-- Kategori Bisnis -->
+                    <!-- Kategori Bisnis CUSTOM DROPDOWN -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Kategori Bisnis</label>
-                        <div class="relative">
+                        <input type="hidden" id="input-category">
+                        <div onclick="openCategoryModal()" class="relative flex items-center justify-between w-full bg-cardBg border border-zinc-800 focus:border-white hover:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors cursor-pointer group">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                             </div>
-                            <select id="input-category" class="appearance-none w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-10 text-sm text-white outline-none transition-colors cursor-pointer">
-                                <option value="Fashion & Pakaian">Fashion & Pakaian</option>
-                                <option value="Makanan & Minuman (F&B)">Makanan & Minuman (F&B)</option>
-                                <option value="Kecantikan & Skincare">Kecantikan & Skincare</option>
-                                <option value="Teknologi & Gadget">Teknologi & Gadget</option>
-                                <option value="Gaya Hidup">Gaya Hidup</option>
-                                <!-- Option tambahan digenerate lewat JS agar pas dengan yang di database -->
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-500">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
+                            <span id="kategoriText" class="text-zinc-300">Pilih kategori bisnis</span>
+                            <svg class="h-4 w-4 text-zinc-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                     </div>
                 </div>
@@ -164,26 +155,22 @@
                 </div>
 
                 <div class="space-y-5">
-                    <!-- Alamat -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Alamat Bisnis</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                             </div>
-                            <!-- ID input-address -->
                             <input type="text" id="input-address" placeholder="Masukkan alamat lengkap bisnis" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
                         </div>
                     </div>
 
-                    <!-- Website -->
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Website</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                 <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
                             </div>
-                            <!-- ID input-website -->
                             <input type="url" id="input-website" placeholder="https://yourbusiness.com" class="w-full bg-cardBg border border-zinc-800 focus:border-white focus:bg-zinc-900 rounded-xl py-3.5 pl-11 pr-4 text-sm text-white outline-none transition-colors">
                         </div>
                     </div>
@@ -192,21 +179,91 @@
 
             <!-- 5. TOMBOL AKSI BAWAH -->
             <div class="space-y-4 pt-2">
-                <!-- Simpan -->
                 <button id="btn-save-bottom" onclick="saveProfile()" class="w-full px-6 py-3.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none shadow-[0_0_15px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
                     Simpan Perubahan
                 </button>
 
-                <!-- Logout -->
-                <button onclick="confirmLogout()" class="w-full px-6 py-3.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-500 text-sm font-bold hover:bg-red-500/10 hover:border-red-500/40 transition-all focus:outline-none flex items-center justify-center gap-2">
+                <button onclick="openLogoutModal()" class="w-full px-6 py-3.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-500 text-sm font-bold hover:bg-red-500/10 hover:border-red-500/40 transition-all focus:outline-none flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     Keluar Akun
                 </button>
             </div>
-
         </div>
     </main>
+
+    <!-- ========================================== -->
+    <!-- CUSTOM MODALS (UI COMPONENTS)              -->
+    <!-- ========================================== -->
+
+    <!-- 1. Modal Aksi Avatar (Ganti / Hapus) -->
+    <div id="avatarActionModal" class="fixed inset-0 z-[60] flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAvatarActionModal()"></div>
+        <div id="avatarActionContent" class="relative w-full max-w-md bg-cardBg border border-zinc-800 rounded-t-3xl p-6 transform translate-y-full transition-transform duration-300">
+            <div class="w-12 h-1 bg-zinc-800 rounded-full mx-auto mb-6"></div>
+            <h3 class="text-lg font-bold text-white mb-4 text-center">Ubah Foto Profil</h3>
+            <div class="space-y-3">
+                <button onclick="triggerAvatarUpload()" class="w-full py-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-semibold hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Pilih Foto Baru
+                </button>
+                <button onclick="processRemoveAvatar()" class="w-full py-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 font-semibold hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Hapus Foto
+                </button>
+                <button onclick="closeAvatarActionModal()" class="w-full py-3.5 rounded-xl bg-transparent text-zinc-400 font-semibold hover:text-white transition-colors mt-2">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Modal Pilih Kategori Bisnis -->
+    <div id="categoryModal" class="fixed inset-0 z-50 flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCategoryModal()"></div>
+        <div id="categoryContent" class="relative w-full max-w-md bg-cardBg border border-zinc-800 rounded-t-3xl shadow-2xl flex flex-col transform translate-y-full transition-transform duration-300 max-h-[85vh]">
+            <div class="flex items-center justify-between p-6 border-b border-zinc-800 sticky top-0 bg-cardBg z-10 rounded-t-3xl">
+                <h3 class="text-xl font-bold text-white">Kategori Bisnis</h3>
+                <button type="button" onclick="closeCategoryModal()" class="text-zinc-400 hover:text-white p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="overflow-y-auto p-2" id="categoryListContainer">
+                <!-- Generate via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Modal Pesan Kustom (Pengganti Alert) -->
+    <div id="alertModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCustomAlert()"></div>
+        <div class="relative bg-cardBg border border-zinc-800 rounded-3xl p-8 max-w-sm w-[90%] text-center shadow-2xl scale-95 transition-transform duration-300" id="alertContent">
+            <div id="alertIcon" class="w-16 h-16 bg-zinc-900 border border-zinc-700 text-white rounded-full flex items-center justify-center mx-auto mb-5">
+                <!-- SVG Icon dinamis -->
+            </div>
+            <h3 id="alertTitle" class="text-xl font-bold text-white mb-2">Pesan</h3>
+            <p id="alertMessage" class="text-zinc-400 text-sm mb-6 leading-relaxed">Isi pesan ada di sini.</p>
+            <button onclick="closeCustomAlert()" class="w-full py-3.5 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. Modal Konfirmasi (Pengganti Confirm untuk Logout dll) -->
+    <div id="confirmModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCustomConfirm()"></div>
+        <div class="relative bg-cardBg border border-zinc-800 rounded-3xl p-8 max-w-sm w-[90%] text-center shadow-2xl scale-95 transition-transform duration-300" id="confirmContent">
+            <div class="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </div>
+            <h3 id="confirmTitle" class="text-xl font-bold text-white mb-2">Keluar Akun?</h3>
+            <p id="confirmMessage" class="text-zinc-400 text-sm mb-6 leading-relaxed">Apakah Anda yakin ingin keluar dari aplikasi?</p>
+            <div class="flex gap-3">
+                <button onclick="closeCustomConfirm()" class="flex-1 py-3.5 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-bold hover:bg-zinc-800 transition-colors">Batal</button>
+                <button id="btnConfirmAction" class="flex-1 py-3.5 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors shadow-[0_0_15px_rgba(239,68,68,0.3)]">Ya, Keluar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Memanggil Navbar Bawah -->
     <script>
@@ -220,80 +277,56 @@
     <script type="module">
         import { supabase } from './authentication/auth.js';
 
-        // 1. KETIKA HALAMAN DIMUAT (Ambil data)
+        // Variabel global untuk state user
+        let currentUserId = null;
+        let currentAvatarUrl = null;
+
+        // Ikon Custom Alert
+        const iconSuccess = `<svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        const iconError = `<svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+        const iconWarning = `<svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
+
+        // ==========================================
+        // 1. INISIALISASI DATA AWAL
+        // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
+            generateCategoryList();
+
             try {
-                // Cek User Session
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                
                 if (sessionError || !session) {
                     window.location.replace('login.html');
                     return;
                 }
+                currentUserId = session.user.id;
 
-                // Ambil data profil berdasarkan ID
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('*')
-                    .eq('id', session.user.id)
+                    .eq('id', currentUserId)
                     .single();
 
                 if (profile) {
-                    // Isi Nama
                     if (profile.business_name) document.getElementById('input-name').value = profile.business_name;
-                    
-                    // Isi Kategori
-                    if (profile.business_category) {
-                        const selectCat = document.getElementById('input-category');
-                        // Cek apakah kategori ada di dropdown list, jika belum buatkan secara otomatis
-                        let optionExists = Array.from(selectCat.options).some(opt => opt.value === profile.business_category);
-                        if (!optionExists) {
-                            const newOpt = document.createElement('option');
-                            newOpt.value = profile.business_category;
-                            newOpt.text = profile.business_category;
-                            selectCat.appendChild(newOpt);
-                        }
-                        selectCat.value = profile.business_category;
-                    }
-
-                    // Isi Alamat & Web
                     if (profile.business_address) document.getElementById('input-address').value = profile.business_address;
                     if (profile.business_website) document.getElementById('input-website').value = profile.business_website;
+                    
+                    if (profile.business_category) {
+                        document.getElementById('input-category').value = profile.business_category;
+                        document.getElementById('kategoriText').innerText = profile.business_category;
+                        document.getElementById('kategoriText').classList.replace('text-zinc-300', 'text-white');
+                    }
 
-                    // Tampilkan Gambar
                     if (profile.avatar_url) {
-                        const avatarContainer = document.getElementById('avatar-preview-bg');
-                        avatarContainer.innerHTML = ''; // Hilangkan SVG icon
-                        avatarContainer.style.backgroundImage = `url('${profile.avatar_url}')`;
-                        avatarContainer.style.backgroundSize = 'cover';
-                        avatarContainer.style.backgroundPosition = 'center';
+                        currentAvatarUrl = profile.avatar_url;
+                        updateAvatarUI(currentAvatarUrl);
                     }
 
-                    // Kalkulasi Kesehatan Profil (Total 5 Data)
-                    let filledFields = 0;
-                    if (profile.business_name) filledFields++;
-                    if (profile.business_category) filledFields++;
-                    if (profile.business_address) filledFields++;
-                    if (profile.business_website) filledFields++;
-                    if (profile.avatar_url) filledFields++;
-
-                    const healthPercentage = Math.round((filledFields / 5) * 100);
-                    
-                    document.getElementById('health-text').innerText = healthPercentage + '%';
-                    const healthBar = document.getElementById('health-bar');
-                    healthBar.style.width = healthPercentage + '%';
-                    
-                    // Ubah warna bar jika < 100% (opsional, untuk UI lebih interaktif)
-                    if(healthPercentage < 100) {
-                        healthBar.classList.replace('bg-green-500', 'bg-yellow-500');
-                        healthBar.style.boxShadow = "0 0 10px rgba(234,179,8,0.4)";
-                        document.getElementById('health-text').classList.replace('text-green-400', 'text-yellow-400');
-                    }
+                    updateHealthBar(profile);
                 }
             } catch (error) {
                 console.error("Gagal memuat profil:", error);
             } finally {
-                // Sembunyikan Loading Animasi SETELAH data masuk semua
                 setTimeout(() => {
                     const loader = document.getElementById('pageLoader');
                     if(loader){
@@ -304,25 +337,229 @@
             }
         });
 
-        // 2. FUNGSI SIMPAN PROFIL
-        window.saveProfile = async function() {
-            const btnBottom = document.getElementById('btn-save-bottom');
-            const btnHeader = document.getElementById('btn-save-header');
+        // ==========================================
+        // 2. FUNGSI UPDATE UI KESEHATAN
+        // ==========================================
+        function updateHealthBar(profileObj) {
+            let filledFields = 0;
+            if (profileObj.business_name) filledFields++;
+            if (profileObj.business_category) filledFields++;
+            if (profileObj.business_address) filledFields++;
+            if (profileObj.business_website) filledFields++;
+            if (profileObj.avatar_url) filledFields++;
+
+            const healthPercentage = Math.round((filledFields / 5) * 100);
             
-            const originalBottomText = btnBottom.innerHTML;
+            document.getElementById('health-text').innerText = healthPercentage + '%';
+            const healthBar = document.getElementById('health-bar');
+            healthBar.style.width = healthPercentage + '%';
             
-            // Efek Loading UI
-            btnBottom.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
-            
-            [btnBottom, btnHeader].forEach(btn => {
-                if(btn) { btn.classList.add('opacity-75'); btn.disabled = true; }
-            });
+            if(healthPercentage < 100) {
+                healthBar.classList.replace('bg-green-500', 'bg-yellow-500');
+                healthBar.style.boxShadow = "0 0 10px rgba(234,179,8,0.4)";
+                document.getElementById('health-text').classList.replace('text-green-400', 'text-yellow-400');
+            } else {
+                healthBar.classList.replace('bg-yellow-500', 'bg-green-500');
+                healthBar.style.boxShadow = "0 0 10px rgba(34,197,94,0.4)";
+                document.getElementById('health-text').classList.replace('text-yellow-400', 'text-green-400');
+            }
+        }
+
+        // ==========================================
+        // 3. LOGIKA FOTO PROFIL (GANTI & HAPUS)
+        // ==========================================
+        window.openAvatarActionModal = function() {
+            const modal = document.getElementById('avatarActionModal');
+            const content = document.getElementById('avatarActionContent');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-full');
+        };
+
+        window.closeAvatarActionModal = function() {
+            const modal = document.getElementById('avatarActionModal');
+            const content = document.getElementById('avatarActionContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('translate-y-full');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+
+        window.triggerAvatarUpload = function() {
+            closeAvatarActionModal();
+            document.getElementById('hiddenAvatarInput').click();
+        };
+
+        window.handleAvatarChange = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validasi Max 1MB
+            if (file.size > 1024 * 1024) {
+                window.showCustomAlert("Gagal Mengunggah", "Ukuran foto profil tidak boleh lebih dari 1 MB. Silakan pilih foto dengan ukuran lebih kecil.", "error");
+                event.target.value = ""; 
+                return;
+            }
+
+            showActionLoader("Mengunggah Foto Baru...");
 
             try {
-                const { data: { session } } = await supabase.auth.getSession();
-                if(!session) throw new Error("Anda belum login");
+                const ext = file.name.split('.').pop();
+                const newFileName = `${currentUserId}-${Date.now()}.${ext}`; // Unik agar tidak menimpa file bernama sama
+
+                // Upload gambar baru
+                const { error: uploadError } = await supabase.storage.from('avatars').upload(newFileName, file);
+                if (uploadError) throw uploadError;
+
+                const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(newFileName);
+                const newUrl = publicUrlData.publicUrl;
+
+                // Hapus gambar lama dari storage JIKA ADA
+                if (currentAvatarUrl) {
+                    const oldFileName = currentAvatarUrl.split('/').pop();
+                    await supabase.storage.from('avatars').remove([oldFileName]);
+                }
+
+                // Update Database
+                const { error: updateError } = await supabase.from('profiles').update({ avatar_url: newUrl }).eq('id', currentUserId);
+                if (updateError) throw updateError;
+
+                currentAvatarUrl = newUrl;
+                updateAvatarUI(newUrl);
                 
-                // Kumpulkan update terbaru
+                // Update progres kesehatan bayangan (agar real-time tanpa refresh)
+                const mockProfile = getMockProfileState();
+                updateHealthBar(mockProfile);
+
+                window.showCustomAlert("Berhasil", "Foto profil berhasil diperbarui.", "success");
+
+            } catch (error) {
+                console.error("Gagal ubah foto:", error);
+                window.showCustomAlert("Gagal", "Terjadi kesalahan saat mengunggah foto.", "error");
+            } finally {
+                hideActionLoader();
+                event.target.value = "";
+            }
+        };
+
+        window.processRemoveAvatar = async function() {
+            closeAvatarActionModal();
+            if(!currentAvatarUrl) {
+                window.showCustomAlert("Pesan", "Anda belum memiliki foto profil.", "warning");
+                return;
+            }
+
+            showActionLoader("Menghapus Foto...");
+            try {
+                // Hapus dari Storage
+                const oldFileName = currentAvatarUrl.split('/').pop();
+                await supabase.storage.from('avatars').remove([oldFileName]);
+
+                // Update Database
+                await supabase.from('profiles').update({ avatar_url: null }).eq('id', currentUserId);
+                
+                currentAvatarUrl = null;
+                updateAvatarUI(null);
+
+                const mockProfile = getMockProfileState();
+                updateHealthBar(mockProfile);
+
+                window.showCustomAlert("Berhasil", "Foto profil telah dihapus.", "success");
+            } catch (error) {
+                console.error(error);
+                window.showCustomAlert("Gagal", "Gagal menghapus foto profil.", "error");
+            } finally {
+                hideActionLoader();
+            }
+        };
+
+        function updateAvatarUI(url) {
+            const container = document.getElementById('avatar-preview-bg');
+            const defaultIcon = document.getElementById('avatar-default-icon');
+            if(url) {
+                defaultIcon.style.display = 'none';
+                container.style.backgroundImage = `url('${url}')`;
+                container.style.backgroundSize = 'cover';
+                container.style.backgroundPosition = 'center';
+            } else {
+                defaultIcon.style.display = 'block';
+                container.style.backgroundImage = 'none';
+            }
+        }
+
+        function getMockProfileState() {
+            // Membantu update health bar secara visual berdasarkan form saat ini
+            return {
+                business_name: document.getElementById('input-name').value,
+                business_category: document.getElementById('input-category').value,
+                business_address: document.getElementById('input-address').value,
+                business_website: document.getElementById('input-website').value,
+                avatar_url: currentAvatarUrl
+            };
+        }
+
+        // ==========================================
+        // 4. LOGIKA DROPDOWN KATEGORI CUSTOM
+        // ==========================================
+        const categories = [
+            "Fashion & Pakaian", "Makanan & Minuman (F&B)", "Kecantikan & Skincare", 
+            "Teknologi & Gadget", "Gaya Hidup", "Kesehatan & Wellness", 
+            "Olahraga & Fitness", "Perjalanan & Wisata", "Gaming & Esports", 
+            "Lainnya"
+        ];
+
+        function generateCategoryList() {
+            const listContainer = document.getElementById('categoryListContainer');
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "w-full text-left px-6 py-4 flex items-center justify-between border-b border-zinc-800/50 text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors group";
+                btn.innerHTML = `
+                    <span class="text-[15px] font-medium">${cat}</span>
+                    <svg class="w-5 h-5 opacity-0 text-white transform scale-50 transition-all group-hover:scale-100 group-hover:opacity-50 check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                `;
+                btn.onclick = () => window.selectCategory(cat, btn);
+                listContainer.appendChild(btn);
+            });
+        }
+
+        window.openCategoryModal = function() {
+            const modal = document.getElementById('categoryModal');
+            const content = document.getElementById('categoryContent');
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('translate-y-full');
+        };
+
+        window.closeCategoryModal = function() {
+            const modal = document.getElementById('categoryModal');
+            const content = document.getElementById('categoryContent');
+            modal.classList.add('opacity-0');
+            content.classList.add('translate-y-full');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+
+        window.selectCategory = function(catName, btnElement) {
+            document.getElementById('input-category').value = catName;
+            const textElement = document.getElementById('kategoriText');
+            textElement.innerText = catName;
+            textElement.classList.replace('text-zinc-300', 'text-white');
+            closeCategoryModal();
+        };
+
+        // ==========================================
+        // 5. FUNGSI SIMPAN PROFIL
+        // ==========================================
+        window.saveProfile = async function() {
+            const btnBottom = document.getElementById('btn-save-bottom');
+            const originalBottomText = btnBottom.innerHTML;
+            
+            showActionLoader("Menyimpan Perubahan...");
+            
+            try {
                 const updateData = {
                     business_name: document.getElementById('input-name').value,
                     business_category: document.getElementById('input-category').value,
@@ -330,38 +567,105 @@
                     business_website: document.getElementById('input-website').value,
                 };
                 
-                // Simpan ke database
-                const { error } = await supabase.from('profiles').update(updateData).eq('id', session.user.id);
+                const { error } = await supabase.from('profiles').update(updateData).eq('id', currentUserId);
                 if(error) throw error;
                 
-                alert("Perubahan profil berhasil disimpan!");
+                // Update status kesehatan profil UI
+                updateHealthBar(getMockProfileState());
+
+                window.showCustomAlert("Tersimpan!", "Perubahan profil berhasil disimpan.", "success");
             } catch(e) {
                 console.error(e);
-                alert("Gagal menyimpan profil: " + e.message);
+                window.showCustomAlert("Gagal Menyimpan", e.message, "error");
             } finally {
-                // Kembalikan tombol seperti semula
-                btnBottom.innerHTML = originalBottomText;
-                [btnBottom, btnHeader].forEach(btn => {
-                    if(btn) { btn.classList.remove('opacity-75'); btn.disabled = false; }
-                });
+                hideActionLoader();
             }
         };
 
-        // 3. FUNGSI LOGOUT (REAL SUPABASE SIGNOUT)
-        window.confirmLogout = async function() {
-            const isConfirmed = confirm("Apakah Anda yakin ingin keluar dari akun?");
-            if (isConfirmed) {
-                // Proses Sign Out Supabase
+        // ==========================================
+        // 6. FUNGSI LOGOUT KUSTOM
+        // ==========================================
+        window.openLogoutModal = function() {
+            const modal = document.getElementById('confirmModal');
+            const content = document.getElementById('confirmContent');
+            const btnConfirm = document.getElementById('btnConfirmAction');
+            
+            document.getElementById('confirmTitle').innerText = "Keluar Akun?";
+            document.getElementById('confirmMessage').innerText = "Apakah Anda yakin ingin keluar dari aplikasi Whoost? Anda perlu masuk ulang dengan Google nanti.";
+            
+            // Re-assign fungsi ke tombol YES
+            btnConfirm.onclick = async function() {
+                closeCustomConfirm();
+                showActionLoader("Keluar Akun...");
                 const { error } = await supabase.auth.signOut();
-                
                 if (error) {
-                    alert("Terjadi kesalahan saat logout: " + error.message);
+                    hideActionLoader();
+                    window.showCustomAlert("Gagal", "Terjadi kesalahan saat logout.", "error");
                 } else {
-                    // Redirect ke login jika sukses
                     window.location.replace("login.html");
                 }
-            }
+            };
+
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
         };
+
+        // ==========================================
+        // UTILS: LOADER, ALERT & CONFIRM MODALS
+        // ==========================================
+        function showActionLoader(text) {
+            document.getElementById('actionLoaderText').innerText = text;
+            const loader = document.getElementById('actionLoader');
+            loader.classList.remove('hidden');
+            void loader.offsetWidth;
+            loader.classList.remove('opacity-0');
+        }
+        function hideActionLoader() {
+            const loader = document.getElementById('actionLoader');
+            loader.classList.add('opacity-0');
+            setTimeout(() => loader.classList.add('hidden'), 300);
+        }
+
+        window.showCustomAlert = function(title, message, type = "success") {
+            const modal = document.getElementById('alertModal');
+            const content = document.getElementById('alertContent');
+            
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            
+            const iconContainer = document.getElementById('alertIcon');
+            if(type === "success") iconContainer.innerHTML = iconSuccess;
+            else if(type === "error") iconContainer.innerHTML = iconError;
+            else iconContainer.innerHTML = iconWarning;
+
+            modal.classList.remove('hidden');
+            void modal.offsetWidth;
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        };
+
+        window.closeCustomAlert = function() {
+            const modal = document.getElementById('alertModal');
+            const content = document.getElementById('alertContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+
+        window.closeCustomConfirm = function() {
+            const modal = document.getElementById('confirmModal');
+            const content = document.getElementById('confirmContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+
     </script>
 </body>
 </html>
