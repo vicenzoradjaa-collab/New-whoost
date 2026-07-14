@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Campaign - Admin Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Custom Patterns */
+        .bg-dots-card {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
+
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN                             -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="https://via.placeholder.com/150x50/121214/FFFFFF?text=WHOOST+ADMIN" alt="Whoost Admin Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data Campaign...</p>
+        </div>
+    </div>
+
+    <!-- Background Ornamen -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- HEADER ADMIN                               -->
+    <!-- ========================================== -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <!-- Back Button for Admin -->
+            <a href="admin-dashboard.html" class="p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 transition-colors mr-1 sm:mr-2">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <div>
+                <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-white leading-tight">Kelola Campaign</h1>
+                <p class="text-[10px] sm:text-xs text-zinc-500 hidden sm:block mt-0.5">Pantau & kelola semua campaign dari client</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="hidden sm:flex items-center gap-2 mr-2">
+                <div class="text-right">
+                    <p class="text-sm font-bold text-white">Super Admin</p>
+                    <p class="text-[10px] text-zinc-400">admin@whoost.com</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border-2 border-zinc-800">AD</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- TOOLBAR (CARI, FILTER, TAMBAH)             -->
+    <!-- ========================================== -->
+    <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-wrap gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
+        <div class="flex flex-1 sm:flex-none items-center gap-3 w-full sm:w-auto">
+            <div class="relative w-full sm:w-72">
+                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" placeholder="Cari campaign atau nama client..." class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors">
+            </div>
+            <!-- Filter Button -->
+            <button class="bg-cardBg border border-zinc-800 p-2.5 rounded-xl hover:bg-zinc-800 transition-colors text-zinc-400 focus:border-blue-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+            </button>
+        </div>
+        <!-- Tombol Buat Campaign -->
+        <a href="admin-addcampaign.html" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-xl hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+            Buat Campaign
+        </a>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT AREA (GRID CAMPAIGN)          -->
+    <!-- ========================================== -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth">
+        
+        <!-- Grid System -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 z-10 relative">
+
+            <!-- KARTU 1: ACTIVE (Normal) -->
+            <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
+                
+                <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                    <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cover" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen group-hover:scale-105 transition-transform duration-500">
+                    <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">SNEAKERS</h3>
+                    <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">MID-YEAR</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-2 md:mb-3">
+                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">AD</div>
+                        <span class="text-[10px] md:text-xs font-bold text-zinc-300 transition truncate">Aero Shoes</span>
+                    </div>
+                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-green-900/50 bg-green-900/20 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                </div>
+
+                <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate transition-colors" title="Promo Sneakers Mid-Year">Promo Sneakers Mid-Year</h4>
+                
+                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                    <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">250K</span>
+                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Views</span>
+                </div>
+                
+                <!-- Badge Area -->
+                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                    <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                        <!-- Icons -->
+                        <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                        <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                    </div>
+                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Clipping</span>
+                    </div>
+                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">45 Konten</span>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
+                    <div class="flex justify-between items-end mb-1.5 md:mb-2 mt-2">
+                        <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Terpakai</span>
+                        <span class="text-[9px] md:text-xs font-black text-white">44%</span>
+                    </div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                        <div class="h-full bg-blue-500 rounded-full w-[44%] shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <a href="#" class="flex-1 bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-200 active:scale-[0.98] transition-all">
+                            Kelola
+                        </a>
+                        <a href="#" class="flex-1 bg-zinc-800 border border-zinc-700 text-white py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-700 active:scale-[0.98] transition-all">
+                            Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KARTU 2: PENDING APPROVAL (Menunggu persetujuan Admin) -->
+            <div class="bg-cardBg border border-amber-900/30 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
+                
+                <div class="w-full h-28 md:h-40 bg-amber-950/20 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                    <h3 class="text-lg md:text-2xl font-black text-amber-500/80 relative z-10 tracking-tighter">BEAUTY</h3>
+                    <p class="text-amber-500/50 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">LAUNCHING</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-2 md:mb-3">
+                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">GL</div>
+                        <span class="text-[10px] md:text-xs font-bold text-zinc-300 transition truncate">GlowUp.id</span>
+                    </div>
+                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-amber-900/50 bg-amber-900/20 text-[7px] md:text-[9px] font-bold text-amber-400 tracking-wider">PENDING</div>
+                </div>
+
+                <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate transition-colors">Launching Serum Baru</h4>
+                
+                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                    <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 5 Jt</span>
+                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Budget</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-amber-900/30 bg-amber-900/10">
+                        <span class="text-[8px] md:text-[10px] font-bold text-amber-500 uppercase tracking-wider">Butuh Review</span>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
+                    <div class="flex gap-2 mt-4">
+                        <button class="flex-1 bg-amber-500 text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-amber-400 active:scale-[0.98] transition-all">
+                            Review
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KARTU 3: COMPLETED -->
+            <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full transition-all duration-300 shadow-xl group opacity-80 hover:opacity-100">
+                
+                <div class="w-full h-28 md:h-40 bg-zinc-900 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                    <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cover" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-screen grayscale group-hover:scale-105 transition-transform duration-500">
+                    <h3 class="text-lg md:text-2xl font-black text-zinc-400 relative z-10 tracking-tighter">JACKET</h3>
+                    <p class="text-zinc-500 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">WINTER PROMO</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-2 md:mb-3">
+                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-zinc-800 text-zinc-400 font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">E</div>
+                        <span class="text-[10px] md:text-xs font-bold text-zinc-400 transition truncate">Erigo</span>
+                    </div>
+                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-blue-900/50 bg-blue-900/20 text-[7px] md:text-[9px] font-bold text-blue-400 tracking-wider">COMPLETED</div>
+                </div>
+
+                <h4 class="text-sm md:text-lg font-bold text-zinc-300 mb-1.5 md:mb-2 truncate transition-colors">Promo Jaket Musim Dingin</h4>
+                
+                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                    <span class="text-lg md:text-2xl font-extrabold text-zinc-300 tracking-tight">1.2M</span>
+                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Views</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-wider">UGC Review</span>
+                    </div>
+                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-wider">120 Konten</span>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
+                    <div class="flex justify-between items-end mb-1.5 md:mb-2 mt-2">
+                        <span class="text-[9px] md:text-xs text-zinc-500 font-semibold">Budget Terpakai</span>
+                        <span class="text-[9px] md:text-xs font-black text-blue-400">100%</span>
+                    </div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                        <div class="h-full bg-blue-500 rounded-full w-[100%] shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <a href="#" class="flex-1 bg-zinc-800 border border-zinc-700 text-zinc-300 py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-700 active:scale-[0.98] transition-all">
+                            Laporan
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KARTU 4: DIBATALKAN / CLOSED -->
+            <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 transition-all duration-300 shadow-xl group opacity-60 hover:opacity-100">
+                
+                <div class="w-full h-28 md:h-40 bg-[#120808] rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cover" class="absolute inset-0 w-full h-full object-cover opacity-20 grayscale mix-blend-screen group-hover:scale-105 transition-transform duration-500">
+                    <h3 class="text-lg md:text-2xl font-black text-zinc-500 relative z-10 tracking-tighter">SKINCARE</h3>
+                    <p class="text-zinc-600 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">NIGHT ROUTINE</p>
+                </div>
+
+                <div class="flex justify-between items-center mb-2 md:mb-3">
+                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-zinc-800 text-white font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">W</div>
+                        <span class="text-[10px] md:text-xs font-bold text-zinc-500 transition truncate">Wardah</span>
+                    </div>
+                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-red-900/50 bg-red-900/20 text-[7px] md:text-[9px] font-bold text-red-500 tracking-wider">CANCELED</div>
+                </div>
+
+                <h4 class="text-sm md:text-lg font-bold text-zinc-400 mb-1.5 md:mb-2 truncate transition-colors">Review Skincare Malam</h4>
+                
+                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                    <span class="text-lg md:text-2xl font-extrabold text-zinc-500 tracking-tight">0</span>
+                    <span class="text-zinc-600 text-[9px] md:text-xs font-bold">Total Views</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800/50 bg-zinc-900/30">
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-600 uppercase tracking-wider">0 Konten</span>
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
+                    <div class="flex justify-between items-end mb-1.5 md:mb-2 mt-2">
+                        <span class="text-[9px] md:text-xs text-zinc-600 font-semibold">Budget Terpakai</span>
+                        <span class="text-[9px] md:text-xs font-black text-zinc-600">0%</span>
+                    </div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-3 md:mb-4">
+                        <div class="h-full bg-zinc-700 rounded-full w-[0%]"></div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button class="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-500 py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-800 hover:text-zinc-300 active:scale-[0.98] transition-all">
+                            Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animasi Loading Screen
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 800);
+        });
+    </script>
+</body>
+</html>
