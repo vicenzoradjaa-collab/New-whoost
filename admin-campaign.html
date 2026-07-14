@@ -42,8 +42,8 @@
 
         /* Custom Patterns */
         .bg-dots-card {
-            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 16px 16px;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 12px 12px;
         }
     </style>
 </head>
@@ -55,7 +55,8 @@
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <img src="https://via.placeholder.com/150x50/121214/FFFFFF?text=WHOOST+ADMIN" alt="Whoost Admin Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <!-- Logo diperbaiki ke asset/logow.webp -->
+            <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
             <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data Campaign...</p>
         </div>
     </div>
@@ -121,198 +122,188 @@
         <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 z-10 relative">
 
             <!-- KARTU 1: ACTIVE (Normal) -->
-            <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
-                
-                <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+            <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Promo Sneakers Mid-Year">
+                <div class="w-full h-24 md:h-32 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
                     <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cover" class="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-screen group-hover:scale-105 transition-transform duration-500">
-                    <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">SNEAKERS</h3>
-                    <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">MID-YEAR</p>
+                    <h3 class="text-base md:text-xl font-black text-white relative z-10 tracking-tighter">SNEAKERS</h3>
+                    <p class="text-zinc-400 font-black text-[7px] md:text-[9px] tracking-[0.2em] relative z-10 mt-0.5">MID-YEAR</p>
                 </div>
-
                 <div class="flex justify-between items-center mb-2 md:mb-3">
-                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">AD</div>
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-300 transition truncate">Aero Shoes</span>
+                    <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                        <div class="w-5 h-5 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px]">AD</div>
+                        <span class="text-[9px] md:text-[11px] font-bold text-zinc-300 hover:text-white transition truncate">Aero Shoes</span>
                     </div>
-                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-green-900/50 bg-green-900/20 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    <div class="shrink-0 px-1.5 py-0.5 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[8px] font-bold text-green-400 tracking-wider">ACTIVE</div>
                 </div>
-
-                <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate transition-colors" title="Promo Sneakers Mid-Year">Promo Sneakers Mid-Year</h4>
-                
-                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                    <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">250K</span>
-                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Views</span>
+                <h4 class="text-xs md:text-sm font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Promo Sneakers Mid-Year">Promo Sneakers Mid-Year</h4>
+                <div class="mb-3 flex items-baseline gap-1">
+                    <span class="text-sm md:text-lg font-extrabold text-white tracking-tight">Rp 3.000</span>
+                    <span class="text-zinc-500 text-[8px] md:text-[10px] font-bold">/ 1k views</span>
                 </div>
-                
-                <!-- Badge Area -->
-                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                    <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <!-- Icons -->
-                        <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                        <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                <div class="flex flex-wrap items-center gap-1.5 mb-4">
+                    <div class="flex items-center gap-1 px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                        <!-- IG Icon -->
+                        <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                        <!-- TikTok Icon -->
+                        <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
                     </div>
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Clipping</span>
-                    </div>
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">45 Konten</span>
+                    <div class="flex items-center px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[7px] md:text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Fashion</span>
                     </div>
                 </div>
-
-                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
-                    <div class="flex justify-between items-end mb-1.5 md:mb-2 mt-2">
-                        <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Terpakai</span>
-                        <span class="text-[9px] md:text-xs font-black text-white">44%</span>
+                <div class="mt-auto pt-2">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[8px] md:text-[10px] text-zinc-400 font-semibold">Budget Tersisa</span>
+                        <span class="text-[8px] md:text-[10px] font-black text-white">44%</span>
                     </div>
-                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                        <div class="h-full bg-blue-500 rounded-full w-[44%] shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3">
+                        <div class="h-full bg-white rounded-full w-[44%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
                     </div>
-                    
-                    <div class="flex gap-2">
-                        <a href="#" class="flex-1 bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-200 active:scale-[0.98] transition-all">
-                            Kelola
-                        </a>
-                        <a href="#" class="flex-1 bg-zinc-800 border border-zinc-700 text-white py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-700 active:scale-[0.98] transition-all">
-                            Edit
-                        </a>
+                    <div class="grid grid-cols-2 gap-1.5 md:gap-2">
+                        <button class="w-full bg-zinc-900 border border-zinc-700 text-white py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:bg-zinc-800 transition-all">Kelola</button>
+                        <button class="w-full bg-zinc-800 border border-zinc-600 text-white py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:border-blue-500 hover:text-blue-400 transition-all flex items-center justify-center gap-1">
+                            <svg class="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- KARTU 2: PENDING APPROVAL (Menunggu persetujuan Admin) -->
-            <div class="bg-cardBg border border-amber-900/30 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-300 shadow-xl group">
-                
-                <div class="w-full h-28 md:h-40 bg-amber-950/20 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+            <!-- KARTU 2: PENDING APPROVAL -->
+            <div class="w-full campaign-card bg-cardBg border border-amber-900/30 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="Launching Serum Baru">
+                <div class="w-full h-24 md:h-32 bg-amber-950/20 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
-                    <h3 class="text-lg md:text-2xl font-black text-amber-500/80 relative z-10 tracking-tighter">BEAUTY</h3>
-                    <p class="text-amber-500/50 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">LAUNCHING</p>
+                    <h3 class="text-base md:text-xl font-black text-amber-500/80 relative z-10 tracking-tighter">BEAUTY</h3>
+                    <p class="text-amber-500/50 font-black text-[7px] md:text-[9px] tracking-[0.2em] relative z-10 mt-0.5">LAUNCHING</p>
                 </div>
-
                 <div class="flex justify-between items-center mb-2 md:mb-3">
-                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">GL</div>
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-300 transition truncate">GlowUp.id</span>
+                    <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                        <div class="w-5 h-5 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px]">GL</div>
+                        <span class="text-[9px] md:text-[11px] font-bold text-zinc-300 hover:text-white transition truncate">GlowUp.id</span>
                     </div>
-                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-amber-900/50 bg-amber-900/20 text-[7px] md:text-[9px] font-bold text-amber-400 tracking-wider">PENDING</div>
+                    <div class="shrink-0 px-1.5 py-0.5 rounded-full border border-amber-900/50 bg-amber-900/20 text-[7px] md:text-[8px] font-bold text-amber-400 tracking-wider">PENDING</div>
                 </div>
-
-                <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate transition-colors">Launching Serum Baru</h4>
-                
-                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                    <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 5 Jt</span>
-                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Budget</span>
+                <h4 class="text-xs md:text-sm font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Launching Serum Baru">Launching Serum Baru</h4>
+                <div class="mb-3 flex items-baseline gap-1">
+                    <span class="text-sm md:text-lg font-extrabold text-white tracking-tight">Rp 5.000</span>
+                    <span class="text-zinc-500 text-[8px] md:text-[10px] font-bold">/ 1k views</span>
                 </div>
-                
-                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-amber-900/30 bg-amber-900/10">
-                        <span class="text-[8px] md:text-[10px] font-bold text-amber-500 uppercase tracking-wider">Butuh Review</span>
+                <div class="flex flex-wrap items-center gap-1.5 mb-4">
+                    <div class="flex items-center gap-1 px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                        <!-- IG Icon -->
+                        <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                        <!-- TikTok Icon -->
+                        <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                    </div>
+                    <div class="flex items-center px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[7px] md:text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Beauty</span>
                     </div>
                 </div>
-
-                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
-                    <div class="flex gap-2 mt-4">
-                        <button class="flex-1 bg-amber-500 text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-amber-400 active:scale-[0.98] transition-all">
-                            Review
+                <div class="mt-auto pt-2">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[8px] md:text-[10px] text-zinc-400 font-semibold">Budget Tersisa</span>
+                        <span class="text-[8px] md:text-[10px] font-black text-white">100%</span>
+                    </div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3">
+                        <div class="h-full bg-white rounded-full w-[100%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5 md:gap-2">
+                        <button class="w-full bg-zinc-900 border border-zinc-700 text-white py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:bg-zinc-800 transition-all">Review</button>
+                        <button class="w-full bg-zinc-800 border border-zinc-600 text-white py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:border-blue-500 hover:text-blue-400 transition-all flex items-center justify-center gap-1">
+                            <svg class="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- KARTU 3: COMPLETED -->
-            <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full transition-all duration-300 shadow-xl group opacity-80 hover:opacity-100">
-                
-                <div class="w-full h-28 md:h-40 bg-zinc-900 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+            <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer opacity-80 hover:opacity-100" data-title="Promo Jaket Musim Dingin">
+                <div class="w-full h-24 md:h-32 bg-zinc-900 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
                     <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cover" class="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-screen grayscale group-hover:scale-105 transition-transform duration-500">
-                    <h3 class="text-lg md:text-2xl font-black text-zinc-400 relative z-10 tracking-tighter">JACKET</h3>
-                    <p class="text-zinc-500 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">WINTER PROMO</p>
+                    <h3 class="text-base md:text-xl font-black text-zinc-400 relative z-10 tracking-tighter">JACKET</h3>
+                    <p class="text-zinc-500 font-black text-[7px] md:text-[9px] tracking-[0.2em] relative z-10 mt-0.5">WINTER PROMO</p>
                 </div>
-
                 <div class="flex justify-between items-center mb-2 md:mb-3">
-                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-zinc-800 text-zinc-400 font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">E</div>
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-400 transition truncate">Erigo</span>
+                    <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                        <div class="w-5 h-5 shrink-0 rounded-full bg-zinc-800 text-zinc-400 font-extrabold flex items-center justify-center text-[8px]">E</div>
+                        <span class="text-[9px] md:text-[11px] font-bold text-zinc-400 hover:text-zinc-300 transition truncate">Erigo</span>
                     </div>
-                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-blue-900/50 bg-blue-900/20 text-[7px] md:text-[9px] font-bold text-blue-400 tracking-wider">COMPLETED</div>
+                    <div class="shrink-0 px-1.5 py-0.5 rounded-full border border-blue-900/50 bg-blue-900/20 text-[7px] md:text-[8px] font-bold text-blue-400 tracking-wider">COMPLETED</div>
                 </div>
-
-                <h4 class="text-sm md:text-lg font-bold text-zinc-300 mb-1.5 md:mb-2 truncate transition-colors">Promo Jaket Musim Dingin</h4>
-                
-                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                    <span class="text-lg md:text-2xl font-extrabold text-zinc-300 tracking-tight">1.2M</span>
-                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Views</span>
+                <h4 class="text-xs md:text-sm font-bold text-zinc-300 mb-1.5 md:mb-2 truncate group-hover:text-white transition-colors" title="Promo Jaket Musim Dingin">Promo Jaket Musim Dingin</h4>
+                <div class="mb-3 flex items-baseline gap-1">
+                    <span class="text-sm md:text-lg font-extrabold text-zinc-300 tracking-tight">Rp 2.500</span>
+                    <span class="text-zinc-500 text-[8px] md:text-[10px] font-bold">/ 1k views</span>
                 </div>
-                
-                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-wider">UGC Review</span>
+                <div class="flex flex-wrap items-center gap-1.5 mb-4">
+                    <div class="flex items-center gap-1 px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                        <!-- IG & TikTok Icon -->
+                        <svg class="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                        <svg class="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
                     </div>
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-500 uppercase tracking-wider">120 Konten</span>
+                    <div class="flex items-center px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                        <span class="text-[7px] md:text-[9px] font-bold text-zinc-500 uppercase tracking-wider">E-Commerce</span>
                     </div>
                 </div>
-
-                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
-                    <div class="flex justify-between items-end mb-1.5 md:mb-2 mt-2">
-                        <span class="text-[9px] md:text-xs text-zinc-500 font-semibold">Budget Terpakai</span>
-                        <span class="text-[9px] md:text-xs font-black text-blue-400">100%</span>
+                <div class="mt-auto pt-2">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[8px] md:text-[10px] text-zinc-500 font-semibold">Budget Tersisa</span>
+                        <span class="text-[8px] md:text-[10px] font-black text-zinc-400">0%</span>
                     </div>
-                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                        <div class="h-full bg-blue-500 rounded-full w-[100%] shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3">
+                        <div class="h-full bg-zinc-700 rounded-full w-[0%]"></div>
                     </div>
-                    
-                    <div class="flex gap-2">
-                        <a href="#" class="flex-1 bg-zinc-800 border border-zinc-700 text-zinc-300 py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-700 active:scale-[0.98] transition-all">
-                            Laporan
-                        </a>
+                    <div class="grid grid-cols-2 gap-1.5 md:gap-2">
+                        <button class="w-full bg-zinc-900 border border-zinc-700 text-zinc-300 py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:bg-zinc-800 transition-all">Laporan</button>
+                        <button class="w-full bg-zinc-800 border border-zinc-700 text-zinc-400 py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:border-blue-500 hover:text-blue-400 transition-all flex items-center justify-center gap-1">
+                            <svg class="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- KARTU 4: DIBATALKAN / CLOSED -->
-            <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 transition-all duration-300 shadow-xl group opacity-60 hover:opacity-100">
-                
-                <div class="w-full h-28 md:h-40 bg-[#120808] rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+            <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer opacity-60 hover:opacity-100" data-title="Review Skincare Malam">
+                <div class="w-full h-24 md:h-32 bg-[#120808] rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
                     <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
                     <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Cover" class="absolute inset-0 w-full h-full object-cover opacity-20 grayscale mix-blend-screen group-hover:scale-105 transition-transform duration-500">
-                    <h3 class="text-lg md:text-2xl font-black text-zinc-500 relative z-10 tracking-tighter">SKINCARE</h3>
-                    <p class="text-zinc-600 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">NIGHT ROUTINE</p>
+                    <h3 class="text-base md:text-xl font-black text-zinc-500 relative z-10 tracking-tighter">SKINCARE</h3>
+                    <p class="text-zinc-600 font-black text-[7px] md:text-[9px] tracking-[0.2em] relative z-10 mt-0.5">NIGHT ROUTINE</p>
                 </div>
-
                 <div class="flex justify-between items-center mb-2 md:mb-3">
-                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-zinc-800 text-white font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">W</div>
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-500 transition truncate">Wardah</span>
+                    <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                        <div class="w-5 h-5 shrink-0 rounded-full bg-zinc-800 text-zinc-400 font-extrabold flex items-center justify-center text-[8px]">W</div>
+                        <span class="text-[9px] md:text-[11px] font-bold text-zinc-500 hover:text-zinc-400 transition truncate">Wardah</span>
                     </div>
-                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-red-900/50 bg-red-900/20 text-[7px] md:text-[9px] font-bold text-red-500 tracking-wider">CANCELED</div>
+                    <div class="shrink-0 px-1.5 py-0.5 rounded-full border border-red-900/50 bg-red-900/20 text-[7px] md:text-[8px] font-bold text-red-500 tracking-wider">CANCELED</div>
                 </div>
-
-                <h4 class="text-sm md:text-lg font-bold text-zinc-400 mb-1.5 md:mb-2 truncate transition-colors">Review Skincare Malam</h4>
-                
-                <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                    <span class="text-lg md:text-2xl font-extrabold text-zinc-500 tracking-tight">0</span>
-                    <span class="text-zinc-600 text-[9px] md:text-xs font-bold">Total Views</span>
+                <h4 class="text-xs md:text-sm font-bold text-zinc-400 mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Review Skincare Malam">Review Skincare Malam</h4>
+                <div class="mb-3 flex items-baseline gap-1">
+                    <span class="text-sm md:text-lg font-extrabold text-zinc-500 tracking-tight">Rp 2.000</span>
+                    <span class="text-zinc-600 text-[8px] md:text-[10px] font-bold">/ 1k views</span>
                 </div>
-                
-                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800/50 bg-zinc-900/30">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-600 uppercase tracking-wider">0 Konten</span>
+                <div class="flex flex-wrap items-center gap-1.5 mb-4">
+                    <div class="flex items-center gap-1 px-1.5 py-1 rounded-md border border-zinc-800/50 bg-zinc-900/30">
+                        <!-- IG Icon Only -->
+                        <svg class="w-3 h-3 text-zinc-500" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                    </div>
+                    <div class="flex items-center px-1.5 py-1 rounded-md border border-zinc-800/50 bg-zinc-900/30">
+                        <span class="text-[7px] md:text-[9px] font-bold text-zinc-600 uppercase tracking-wider">Health</span>
                     </div>
                 </div>
-
-                <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
-                    <div class="flex justify-between items-end mb-1.5 md:mb-2 mt-2">
-                        <span class="text-[9px] md:text-xs text-zinc-600 font-semibold">Budget Terpakai</span>
-                        <span class="text-[9px] md:text-xs font-black text-zinc-600">0%</span>
+                <div class="mt-auto pt-2">
+                    <div class="flex justify-between items-end mb-1.5">
+                        <span class="text-[8px] md:text-[10px] text-zinc-600 font-semibold">Budget Tersisa</span>
+                        <span class="text-[8px] md:text-[10px] font-black text-zinc-500">100%</span>
                     </div>
-                    <div class="w-full h-1 md:h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-3 md:mb-4">
-                        <div class="h-full bg-zinc-700 rounded-full w-[0%]"></div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-900 rounded-full overflow-hidden mb-3">
+                        <div class="h-full bg-zinc-700 rounded-full w-[100%]"></div>
                     </div>
-
-                    <div class="flex gap-2">
-                        <button class="flex-1 bg-zinc-900 border border-zinc-800 text-zinc-500 py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm text-center hover:bg-zinc-800 hover:text-zinc-300 active:scale-[0.98] transition-all">
-                            Hapus
+                    <div class="grid grid-cols-2 gap-1.5 md:gap-2">
+                        <button class="w-full bg-zinc-900 border border-zinc-800 text-zinc-500 py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:border-red-900 hover:text-red-400 transition-all">Hapus</button>
+                        <button class="w-full bg-zinc-800 border border-zinc-800 text-zinc-500 py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:border-blue-900 hover:text-blue-400 transition-all flex items-center justify-center gap-1">
+                            <svg class="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg> Edit
                         </button>
                     </div>
                 </div>
