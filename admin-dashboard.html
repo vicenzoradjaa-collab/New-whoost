@@ -32,7 +32,6 @@
             overflow: hidden;
         }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
@@ -40,17 +39,20 @@
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Pattern Dots untuk Card Campaign */
+        .bg-dots-card {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 12px 12px;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
 
-    <!-- ========================================== -->
-    <!-- LOADING SCREEN                             -->
-    <!-- ========================================== -->
+    <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <!-- Menggunakan placeholder sebagai ganti asset/logow.webp agar tampil di preview -->
             <img src="https://via.placeholder.com/150x50/121214/FFFFFF?text=WHOOST+ADMIN" alt="Whoost Admin Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
             <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Otentikasi Admin...</p>
         </div>
@@ -61,9 +63,7 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HEADER ADMIN                               -->
-    <!-- ========================================== -->
+    <!-- HEADER ADMIN -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="https://via.placeholder.com/150x50/121214/FFFFFF?text=WHOOST+ADMIN" alt="Whoost Admin" class="h-6 sm:h-10 w-auto object-contain">
@@ -71,17 +71,13 @@
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Panel Admin</h1>
         </div>
         <div class="flex items-center gap-3">
-            <!-- Profil Admin -->
             <div class="hidden sm:flex items-center gap-2 mr-2">
                 <div class="text-right">
                     <p class="text-sm font-bold text-white">Super Admin</p>
                     <p class="text-[10px] text-zinc-400">admin@whoost.com</p>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border-2 border-zinc-800">
-                    AD
-                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border-2 border-zinc-800">AD</div>
             </div>
-            <!-- Notifikasi -->
             <button onclick="toggleNotif()" class="relative p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-blue-500 hover:text-blue-400 transition-colors tooltip">
                 <svg class="w-5 h-5 text-zinc-400 hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                 <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-blue-500 border-2 border-darkBg rounded-full"></span>
@@ -89,42 +85,27 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
-    <!-- MAIN CONTENT AREA                          -->
-    <!-- ========================================== -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-20 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
             
-            <!-- SECTION 1: RINGKASAN DATA (METRIK ADMIN) -->
+            <!-- SECTION 1: RINGKASAN DATA -->
             <section>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                    <!-- Total Payout -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-blue-500 transition-colors duration-300 relative group">
-                        <div class="flex justify-between items-start mb-1 sm:mb-2">
-                            <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Total Payouts</p>
-                        </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-blue-500 transition-colors duration-300">
+                        <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Payouts</p>
                         <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">Rp 45.2M</h3>
-                        <p class="text-[10px] sm:text-xs text-emerald-400 mt-2 font-medium flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                            +12% Bulan ini
-                        </p>
                     </div>
-
-                    <!-- Butuh Persetujuan -->
                     <div class="bg-cardBg border border-blue-900/50 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-blue-500 transition-colors duration-300 relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none"></div>
                         <p class="text-[10px] sm:text-[11px] font-medium text-blue-400 uppercase tracking-wide mb-1 sm:mb-2 relative z-10">Menunggu Approval</p>
                         <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white relative z-10">142<span class="text-sm font-normal text-zinc-500 ml-1">Konten</span></h3>
                         <div class="absolute top-4 right-4 w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
                     </div>
-                    
-                    <!-- Kampanye Aktif -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Kampanye Aktif</p>
                         <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">24</h3>
                     </div>
-
-                    <!-- Total Clippers -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Clippers</p>
                         <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">8,405</h3>
@@ -134,124 +115,250 @@
 
             <!-- SECTION 2: MENU CEPAT ADMIN -->
             <section>
-                <h2 class="text-sm font-semibold mb-3 text-zinc-300 uppercase tracking-wide">Aksi Cepat</h2>
-                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 sm:gap-4">
-                    <!-- Tambah Campaign -->
-                    <a href="admin-addcampaign.html" class="flex flex-col items-center justify-center p-4 rounded-xl bg-blue-600/10 border border-blue-600/30 hover:border-blue-500 hover:bg-blue-600/20 transition-all group">
-                        <svg class="w-6 h-6 text-blue-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
-                        <span class="text-[10px] sm:text-xs font-semibold text-center text-blue-400">Buat Campaign</span>
+                <h2 class="text-sm font-semibold mb-3 text-zinc-300 uppercase tracking-wide">Menu Cepat</h2>
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
+                    <!-- Kelola Campaign -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Kelola Campaign</span>
                     </a>
-                    <!-- Review Konten -->
-                    <a href="#" class="flex flex-col items-center justify-center p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
-                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span class="text-[10px] sm:text-xs font-medium text-center text-zinc-400 group-hover:text-white">Review Konten</span>
+                    <!-- Review Submission -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
+                        <div class="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">142</div>
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Review Submission</span>
                     </a>
                     <!-- Request Payout -->
-                    <a href="#" class="flex flex-col items-center justify-center p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
-                        <div class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">12</div>
-                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span class="text-[10px] sm:text-xs font-medium text-center text-zinc-400 group-hover:text-white">Request Payout</span>
+                    <a href="#" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
+                        <div class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">12</div>
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Request Payout</span>
                     </a>
-                    <!-- Kelola User -->
-                    <a href="#" class="flex flex-col items-center justify-center p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
-                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        <span class="text-[10px] sm:text-xs font-medium text-center text-zinc-400 group-hover:text-white">Kelola Users</span>
+                    <!-- Kelola Clipper -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Kelola Clipper</span>
                     </a>
-                    <!-- Pengaturan -->
-                    <a href="#" class="hidden md:flex flex-col items-center justify-center p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
-                        <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        <span class="text-[10px] sm:text-xs font-medium text-center text-zinc-400 group-hover:text-white">Pengaturan</span>
+                    <!-- Kelola Client -->
+                    <a href="#" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Kelola Client</span>
                     </a>
                 </div>
             </section>
 
-            <!-- SECTION 3: RECENT SUBMISSIONS (BUTUH APPROVAL) -->
+            <!-- SECTION 3: KONTEN MEMBUTUHKAN PERSETUJUAN (GRID) -->
             <section>
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">Menunggu Persetujuan</h2>
-                    <a href="#" class="text-[12px] sm:text-[13px] font-medium text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
+                    <h2 class="text-sm md:text-lg font-semibold text-white">Menunggu Persetujuan</h2>
+                    <a href="#" class="text-[11px] sm:text-[13px] font-medium text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
                         Lihat Semua (142)
                     </a>
                 </div>
 
-                <!-- Table/List Data -->
-                <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden">
-                    <!-- Item 1 -->
-                    <div class="p-4 sm:p-5 border-b border-zinc-800/80 hover:bg-zinc-900/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                                <img src="https://ui-avatars.com/api/?name=Budi+Santoso&background=27272a&color=fff" alt="User" class="w-full h-full rounded-full">
+                <!-- Grid Data: 2 Kolom Mobile, 4-5 Kolom Desktop -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+                    
+                    <!-- CARD 1 -->
+                    <div id="card-1" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span>
+                                <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
                             </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white">Budi Santoso <span class="text-[10px] font-normal text-zinc-500 ml-2">5 Menit lalu</span></h4>
-                                <p class="text-xs text-zinc-400 mt-1">Submit link untuk <span class="text-white font-medium">ENHYPEN Jakarta (Presale)</span></p>
-                                <a href="https://tiktok.com/@budis/video/123" target="_blank" class="text-[11px] text-blue-400 hover:underline flex items-center gap-1 mt-1.5 w-max">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                    tiktok.com/@budis/video/123456789
-                                </a>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 md:w-auto w-full justify-end">
-                            <button class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-red-500/10 border border-red-500/50 hover:bg-red-500 hover:text-white transition-colors">Tolak</button>
-                            <button class="px-4 py-2 rounded-lg text-xs font-semibold text-black bg-white hover:bg-zinc-200 transition-colors">Setujui</button>
-                        </div>
-                    </div>
-
-                    <!-- Item 2 -->
-                    <div class="p-4 sm:p-5 border-b border-zinc-800/80 hover:bg-zinc-900/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                                <img src="https://ui-avatars.com/api/?name=Siti+Amina&background=27272a&color=fff" alt="User" class="w-full h-full rounded-full">
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white">Siti Amina <span class="text-[10px] font-normal text-zinc-500 ml-2">15 Menit lalu</span></h4>
-                                <p class="text-xs text-zinc-400 mt-1">Submit link untuk <span class="text-white font-medium">The Keranjang Bali</span></p>
-                                <a href="#" target="_blank" class="text-[11px] text-blue-400 hover:underline flex items-center gap-1 mt-1.5 w-max">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                    youtube.com/shorts/abcdefgh
-                                </a>
+                            <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
+                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                                <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
+                                <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 md:w-auto w-full justify-end">
-                            <button class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-red-500/10 border border-red-500/50 hover:bg-red-500 hover:text-white transition-colors">Tolak</button>
-                            <button class="px-4 py-2 rounded-lg text-xs font-semibold text-black bg-white hover:bg-zinc-200 transition-colors">Setujui</button>
+                        <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                            <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
+                            </a>
+                            <button onclick="openReviewModal('card-1')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
                         </div>
                     </div>
 
-                    <!-- Item 3 -->
-                    <div class="p-4 sm:p-5 hover:bg-zinc-900/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                                <img src="https://ui-avatars.com/api/?name=Reza+Ardiansyah&background=27272a&color=fff" alt="User" class="w-full h-full rounded-full">
+                    <!-- CARD 2 -->
+                    <div id="card-2" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1517400508447-f8dd518b86db?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-500"></span>
+                                <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YouTube</span>
                             </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white">Reza Ardiansyah <span class="text-[10px] font-normal text-zinc-500 ml-2">1 Jam lalu</span></h4>
-                                <p class="text-xs text-zinc-400 mt-1">Submit link untuk <span class="text-white font-medium">BSI Hasanah Card</span></p>
-                                <a href="#" target="_blank" class="text-[11px] text-blue-400 hover:underline flex items-center gap-1 mt-1.5 w-max">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                                    instagram.com/reels/xyz123
-                                </a>
+                            <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
+                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                                <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@siti_amina</p>
+                                <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">The Keranjang Bali Oleh-oleh</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 md:w-auto w-full justify-end">
-                            <button class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-red-500/10 border border-red-500/50 hover:bg-red-500 hover:text-white transition-colors">Tolak</button>
-                            <button class="px-4 py-2 rounded-lg text-xs font-semibold text-black bg-white hover:bg-zinc-200 transition-colors">Setujui</button>
+                        <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                            <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
+                            </a>
+                            <button onclick="openReviewModal('card-2')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
                         </div>
                     </div>
+
+                    <!-- CARD 3 -->
+                    <div id="card-3" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-purple-500"></span>
+                                <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Instagram</span>
+                            </div>
+                            <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
+                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                                <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@reza_ardiansyah</p>
+                                <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Promo BSI Hasanah Card</p>
+                            </div>
+                        </div>
+                        <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                            <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
+                            </a>
+                            <button onclick="openReviewModal('card-3')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
+                        </div>
+                    </div>
+
+                    <!-- CARD 4 -->
+                    <div id="card-4" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
+                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span>
+                                <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
+                            </div>
+                            <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
+                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                                <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@concert_freak</p>
+                                <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">ENHYPEN Jakarta Hype</p>
+                            </div>
+                        </div>
+                        <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                            <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
+                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
+                            </a>
+                            <button onclick="openReviewModal('card-4')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- SECTION 4: KAMPANYE AKTIF (GRID) -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm md:text-lg font-semibold text-white">Kampanye Aktif</h2>
+                    <a href="#" class="text-[11px] sm:text-[13px] font-medium text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
+                        Lihat Semua (24)
+                    </a>
+                </div>
+
+                <!-- Grid Data: 2 Kolom Mobile, 3-4 Kolom Desktop -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                    
+                    <!-- KARTU KAMPANYE 1 -->
+                    <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="ENHYPEN Jakarta (Presale)">
+                        <div class="w-full h-24 md:h-32 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                            <h3 class="text-base md:text-xl font-black text-white relative z-10 tracking-tighter">ENHYPEN</h3>
+                            <p class="text-zinc-400 font-black text-[7px] md:text-[9px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
+                        </div>
+                        <div class="flex justify-between items-center mb-2 md:mb-3">
+                            <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                                <div class="w-5 h-5 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px]">PK</div>
+                                <span class="text-[9px] md:text-[11px] font-bold text-zinc-300 hover:text-white transition truncate">PK Entertain...</span>
+                            </div>
+                            <div class="shrink-0 px-1.5 py-0.5 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[8px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                        </div>
+                        <h4 class="text-xs md:text-sm font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="ENHYPEN Jakarta (Presale)">ENHYPEN Jakarta (Presale)</h4>
+                        <div class="mb-3 flex items-baseline gap-1">
+                            <span class="text-sm md:text-lg font-extrabold text-white tracking-tight">Rp 3.000</span>
+                            <span class="text-zinc-500 text-[8px] md:text-[10px] font-bold">/ 1k views</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 mb-4">
+                            <!-- Social Icons -->
+                            <div class="flex items-center gap-1 px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                                <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                                <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                            </div>
+                            <!-- Niche -->
+                            <div class="flex items-center px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                                <span class="text-[7px] md:text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Entertainment</span>
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-2">
+                            <div class="flex justify-between items-end mb-1.5">
+                                <span class="text-[8px] md:text-[10px] text-zinc-400 font-semibold">Budget Tersisa</span>
+                                <span class="text-[8px] md:text-[10px] font-black text-white">44%</span>
+                            </div>
+                            <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3">
+                                <div class="h-full bg-white rounded-full w-[44%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                            </div>
+                            <button class="w-full bg-zinc-900 border border-zinc-700 text-white py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:bg-zinc-800 transition-all">Kelola Campaign</button>
+                        </div>
+                    </div>
+
+                    <!-- KARTU KAMPANYE 2 -->
+                    <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="The Keranjang Bali">
+                        <div class="w-full h-24 md:h-32 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                            <h3 class="text-base md:text-xl font-black text-white relative z-10 tracking-tighter">THE KERANJANG</h3>
+                            <p class="text-zinc-400 font-black text-[7px] md:text-[9px] tracking-[0.2em] relative z-10 mt-0.5">UGC REVIEW</p>
+                        </div>
+                        <div class="flex justify-between items-center mb-2 md:mb-3">
+                            <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                                <div class="w-5 h-5 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px]">TK</div>
+                                <span class="text-[9px] md:text-[11px] font-bold text-zinc-300 hover:text-white transition truncate">The Keranjang</span>
+                            </div>
+                            <div class="shrink-0 px-1.5 py-0.5 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[8px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                        </div>
+                        <h4 class="text-xs md:text-sm font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="Wisatawan Sambut Oleh-oleh">Wisatawan Sambut Oleh-oleh</h4>
+                        <div class="mb-3 flex items-baseline gap-1">
+                            <span class="text-sm md:text-lg font-extrabold text-white tracking-tight">Rp 2.500</span>
+                            <span class="text-zinc-500 text-[8px] md:text-[10px] font-bold">/ 1k views</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 mb-4">
+                            <div class="flex items-center gap-1 px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                                <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                                <svg class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                            </div>
+                            <div class="flex items-center px-1.5 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
+                                <span class="text-[7px] md:text-[9px] font-bold text-zinc-400 uppercase tracking-wider">E-Commerce</span>
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-2">
+                            <div class="flex justify-between items-end mb-1.5">
+                                <span class="text-[8px] md:text-[10px] text-zinc-400 font-semibold">Budget Tersisa</span>
+                                <span class="text-[8px] md:text-[10px] font-black text-white">78%</span>
+                            </div>
+                            <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3">
+                                <div class="h-full bg-white rounded-full w-[78%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                            </div>
+                            <button class="w-full bg-zinc-900 border border-zinc-700 text-white py-1.5 rounded-lg font-bold text-[9px] md:text-[11px] hover:bg-zinc-800 transition-all">Kelola Campaign</button>
+                        </div>
+                    </div>
+
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- POPUP NOTIFIKASI MODAL (ADMIN)             -->
-    <!-- ========================================== -->
+    <!-- POPUP NOTIFIKASI MODAL -->
     <div id="notifModal" class="fixed inset-0 z-[999] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="toggleNotif()"></div>
-        
         <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] shadow-2xl relative z-10 w-[90%] max-w-md max-h-[85vh] flex flex-col transform scale-95 transition-transform duration-300 overflow-hidden" id="notifContent">
-            
+            <!-- (Isi notifikasi sama seperti versi admin yang tadi) -->
             <div class="flex justify-between items-center p-5 border-b border-zinc-800/80 bg-zinc-900/50">
                 <div class="flex items-center gap-2">
                     <h3 class="text-base sm:text-lg font-bold text-white tracking-wide">Notifikasi Sistem</h3>
@@ -261,62 +368,36 @@
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            
             <div class="overflow-y-auto p-2 sm:p-3 space-y-1 custom-scrollbar">
-                
-                <!-- Notif: Request Payout -->
                 <div class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <div>
                         <h4 class="text-sm font-bold text-white mb-1">Permintaan Payout Baru</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">User <b class="text-white">Ahmad F.</b> meminta penarikan dana sebesar <b class="text-amber-400">Rp 500.000</b>. Mohon segera diproses.</p>
-                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">3 menit yang lalu</span>
+                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">User <b class="text-white">Ahmad F.</b> meminta penarikan dana sebesar <b class="text-amber-400">Rp 500.000</b>.</p>
                     </div>
                 </div>
-
-                <!-- Notif: Budget Campaign Menipis -->
-                <div class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-500/10 text-red-400 flex items-center justify-center shrink-0 border border-red-500/20">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-1">Peringatan Budget Campaign</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Budget campaign <b class="text-white">The Keranjang Bali</b> tersisa kurang dari 10% (Rp 250.000). Pertimbangkan untuk top-up.</p>
-                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">1 jam yang lalu</span>
-                    </div>
-                </div>
-
             </div>
-            
             <div class="p-3 border-t border-zinc-800 bg-zinc-900/30 text-center">
                 <a href="#" class="text-xs font-semibold text-blue-400 hover:text-white transition-colors">Tandai semua dibaca</a>
             </div>
-            
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
-    <!-- ========================================== -->
+    <!-- SCRIPT -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Animasi Loading Screen
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 loader.classList.add('opacity-0'); 
-                setTimeout(() => {
-                    loader.style.display = 'none'; 
-                }, 500); 
+                setTimeout(() => { loader.style.display = 'none'; }, 500); 
             }, 1200); 
         });
 
-        // Toggle Modal Notifikasi
         function toggleNotif() {
             const modal = document.getElementById('notifModal');
             const content = document.getElementById('notifContent');
-            
             if (modal.classList.contains('opacity-0')) {
                 modal.classList.remove('opacity-0', 'pointer-events-none');
                 content.classList.remove('scale-95');
@@ -326,6 +407,11 @@
                 content.classList.remove('scale-100');
                 content.classList.add('scale-95');
             }
+        }
+
+        // Placeholder logic untuk button Review
+        function openReviewModal(cardId) {
+            alert("Membuka form persetujuan (Approve/Reject) untuk " + cardId);
         }
     </script>
 </body>
