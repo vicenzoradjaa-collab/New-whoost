@@ -1,37 +1,71 @@
-// Menggunakan CDN Supabase khusus untuk Vanilla JS (HTML murni)
+// authentication/auth.js
+
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// ==========================================
-// TODO: GANTI 2 BARIS DI BAWAH INI DENGAN DATA PROJECT SUPABASE ANDA
-// (Bisa diambil di dashboard Supabase -> Settings -> API)
-// ==========================================
+// Kredensial Supabase Anda
 const supabaseUrl = 'https://cqbbejiwbghuntecvxtr.supabase.co'; 
 const supabaseKey = 'sb_publishable_-u9Si0LbrRtiuWdiyqK8rA_XdqFEZoX'; 
 
-// Inisialisasi mesin Supabase agar bisa dipakai di file lain
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ==========================================
-// FUNGSI BANTUAN UNTUK MENGECEK PROFIL & ROLE USER
+// FUNGSI UTAMA ALUR LOGIN & ROUTING
 // ==========================================
-export async function getUserProfile(userId) {
-    try {
-        // Minta Supabase mencarikan data role di tabel 'profiles' berdasarkan ID user
-        const { data, error } = await supabase
+export async function routeUserFlow() {
+    // 1. Cek apakah user sudah login di browser ini
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+        // JIKA BELUM LOGIN -> Arahkan ke halaman login.html
+        window.location.href = 'login.html';
+        return; 
+    }
+
+    // ==========================================
+    // 2. JIKA SUDAH LOGIN -> Cek data profilnya
+    // ==========================================
+    const user = session.user;
+    
+    // Coba ambil data dari tabel 'profiles'
+    let { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    // Jika terjadi error karena data tidak ditemukan, berarti INI USER BARU
+    if (!profile) {
+        // Buatkan baris data kosong untuk user ini di tabel profiles
+        const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
-            .select('role')
-            .eq('id', userId)
-            .single(); // Kita pakai .single() karena 1 user = 1 profil
+            .insert([{ id: user.id, email: user.email }])
+            .select()
+            .single();
+            
+        if (insertError) {
+            console.error("Gagal membuat profil baru:", insertError.message);
+            return;
+        }
+        profile = newProfile;
+    }
+
+    // ==========================================
+    // 3. LOGIKA ARAH HALAMAN (ROUTING)
+    // ==========================================
+    if (!profile.role) {
+        // Kondisi A: Belum pilih role (User baru)
+        window.location.href = 'role.html';
         
-        if (error) {
-            console.error("Gagal mengambil data profil:", error.message);
-            return null;
+    } else if (profile.role === 'client' || profile.role === 'brand') {
+        // Kondisi B: Role adalah Client/Brand
+        if (profile.is_profile_complete === true) {
+            window.location.href = 'client-dashboard.html';
+        } else {
+            window.location.href = 'client-completeprofile.html';
         }
         
-        // Akan mengembalikan object, contoh: { role: 'clipper' } atau { role: null }
-        return data; 
-    } catch (error) {
-        console.error("Sistem error saat cek profil:", error.message);
-        return null;
+    } else if (profile.role === 'clipper') {
+        // Kondisi C: Role adalah Clipper/Kreator
+        window.location.href = 'clipper-dashboard.html';
     }
 }
