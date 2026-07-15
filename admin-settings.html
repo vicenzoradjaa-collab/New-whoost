@@ -69,56 +69,79 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER ADMIN -->
+    <!-- HEADER ADMIN (PROFIL KANAN DIHAPUS) -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Pengaturan Sistem</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:flex items-center gap-2 mr-2">
-                <div class="text-right">
-                    <p class="text-sm font-bold text-white">Super Admin</p>
-                    <p class="text-[10px] text-zinc-400">admin@whoost.com</p>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border-2 border-zinc-800">AD</div>
-            </div>
-        </div>
     </header>
 
-    <!-- MAIN CONTENT (SETTINGS FORM) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 sm:py-8 pb-28 z-0 scroll-smooth w-full relative">
-        <div class="max-w-5xl mx-auto flex flex-col lg:flex-row gap-6 sm:gap-8">
+        <div class="max-w-3xl mx-auto w-full">
             
-            <!-- MENU SAMPING (TABS NAV) -->
-            <div class="w-full lg:w-64 shrink-0 flex flex-row lg:flex-col gap-2 overflow-x-auto hide-scrollbar border-b lg:border-b-0 lg:border-r border-zinc-800/80 pb-4 lg:pb-0 lg:pr-6">
-                <button onclick="switchTab('fee-setting', this)" class="tab-link w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600/10 text-blue-400 font-semibold transition-colors shrink-0 whitespace-nowrap text-left">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Biaya & Komisi
+            <!-- LIST MENU UTAMA (BERJEJER KE BAWAH) -->
+            <div id="setting-menu-list" class="flex flex-col gap-4">
+                
+                <button onclick="openSetting('fee-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Biaya & Komisi</h3>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Atur potongan admin (fee) untuk deposit client, penarikan clipper, dan batas minimal payout.</p>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
-                <button onclick="switchTab('general-setting', this)" class="tab-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors shrink-0 whitespace-nowrap text-left">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    Konfigurasi Umum
+
+                <button onclick="openSetting('general-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-300 group-hover:bg-blue-600/10 group-hover:text-blue-400 flex items-center justify-center shrink-0 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Konfigurasi Umum</h3>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Pengaturan dasar profil platform, email/wa bantuan, tautan komunitas, dan sosial media.</p>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
-                <button onclick="switchTab('security-setting', this)" class="tab-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors shrink-0 whitespace-nowrap text-left">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    Keamanan
+
+                <button onclick="openSetting('security-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-300 group-hover:bg-blue-600/10 group-hover:text-blue-400 flex items-center justify-center shrink-0 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white mb-1 group-hover:text-blue-400 transition-colors">Keamanan</h3>
+                            <p class="text-xs text-zinc-400 leading-relaxed">Ubah kata sandi (password) Super Admin untuk menjaga keamanan akun Anda.</p>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-zinc-500 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
 
-            <!-- AREA KONTEN SETTING -->
-            <div class="flex-1 space-y-8 sm:space-y-10 relative">
+            <!-- AREA KONTEN SETTING YANG TERBUKA -->
+            <div id="setting-content-area" class="hidden flex-col gap-6 w-full fade-in">
+                
+                <!-- TOMBOL KEMBALI -->
+                <button onclick="backToMenu()" class="flex items-center gap-2 text-zinc-400 hover:text-white font-medium text-sm transition-colors w-fit bg-zinc-900/50 hover:bg-zinc-800 px-4 py-2 rounded-xl border border-zinc-800">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    Kembali ke Menu
+                </button>
                 
                 <!-- SECTION 1: BIAYA & KOMISI -->
-                <section id="fee-setting" class="setting-section block">
+                <section id="fee-setting" class="setting-section hidden">
                     <div class="mb-4">
-                        <h2 class="text-lg font-bold text-white mb-1">Pengaturan Biaya & Komisi (Fee)</h2>
-                        <p class="text-xs text-zinc-400">Atur potongan admin untuk setiap transaksi yang terjadi di platform.</p>
+                        <h2 class="text-xl font-bold text-white mb-1">Pengaturan Biaya & Komisi</h2>
+                        <p class="text-sm text-zinc-400">Atur potongan admin untuk setiap transaksi yang terjadi di platform.</p>
                     </div>
                     
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-6">
-                        
                         <!-- Fee Payout Clipper -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-300 mb-2">Potongan Payout Clipper</label>
@@ -126,7 +149,6 @@
                             <div class="flex relative">
                                 <input type="number" value="15" class="w-full bg-zinc-900 border-y border-l border-zinc-700 rounded-l-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                                 
-                                <!-- Custom Dropdown Theme -->
                                 <button type="button" onclick="toggleDropdown('dropdown-clipper')" id="btn-dropdown-clipper" class="bg-zinc-800 border-y border-r border-zinc-700 rounded-r-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none flex items-center justify-between w-36 hover:bg-zinc-700 transition-colors">
                                     <span id="label-dropdown-clipper">Persen (%)</span>
                                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -147,7 +169,6 @@
                             <div class="flex relative">
                                 <input type="number" value="0" class="w-full bg-zinc-900 border-y border-l border-zinc-700 rounded-l-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                                 
-                                <!-- Custom Dropdown Theme -->
                                 <button type="button" onclick="toggleDropdown('dropdown-client')" id="btn-dropdown-client" class="bg-zinc-800 border-y border-r border-zinc-700 rounded-r-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none flex items-center justify-between w-36 hover:bg-zinc-700 transition-colors">
                                     <span id="label-dropdown-client">Rupiah (Rp)</span>
                                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -170,21 +191,19 @@
                                 <input type="number" value="50000" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                         </div>
-
                     </div>
                 </section>
 
                 <!-- SECTION 2: KONFIGURASI UMUM -->
                 <section id="general-setting" class="setting-section hidden">
                     <div class="mb-4">
-                        <h2 class="text-lg font-bold text-white mb-1">Konfigurasi Umum</h2>
-                        <p class="text-xs text-zinc-400">Pengaturan dasar platform, kontak bantuan, dan tautan sosial media.</p>
+                        <h2 class="text-xl font-bold text-white mb-1">Konfigurasi Umum</h2>
+                        <p class="text-sm text-zinc-400">Pengaturan dasar platform, kontak bantuan, dan tautan sosial media.</p>
                     </div>
                     
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-6">
-                        
                         <!-- Kontak Bantuan -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-zinc-300 mb-2">Email Bantuan (Support)</label>
                                 <input type="email" value="support@whoost.com" placeholder="email@contoh.com" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
@@ -203,8 +222,10 @@
                             <input type="url" value="https://discord.gg/whoost" placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                         </div>
 
+                        <div class="border-t border-zinc-800/80"></div>
+
                         <!-- Link Sosmed -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-zinc-300 mb-2 flex items-center gap-2">
                                     <svg class="w-4 h-4 text-pink-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg> Instagram
@@ -224,19 +245,17 @@
                                 <input type="url" value="https://youtube.com/@whoost" placeholder="https://youtube.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                         </div>
-
                     </div>
                 </section>
 
                 <!-- SECTION 3: KEAMANAN -->
                 <section id="security-setting" class="setting-section hidden">
                     <div class="mb-4">
-                        <h2 class="text-lg font-bold text-white mb-1">Keamanan</h2>
-                        <p class="text-xs text-zinc-400">Atur keamanan akun Super Admin Anda.</p>
+                        <h2 class="text-xl font-bold text-white mb-1">Keamanan</h2>
+                        <p class="text-sm text-zinc-400">Atur keamanan akun Super Admin Anda.</p>
                     </div>
                     
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-6">
-                        
                         <div>
                             <h4 class="text-sm font-medium text-zinc-300 mb-4">Ganti Password Admin</h4>
                             <div class="space-y-4">
@@ -249,11 +268,11 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </section>
 
-                <div class="pt-4 pb-12 flex justify-end">
+                <!-- TOMBOL SIMPAN -->
+                <div class="pt-6 border-t border-zinc-800/80 flex justify-end">
                     <button id="btnSaveAll" onclick="saveSettings()" class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4 hidden spinner-icon animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         <span id="saveBtnText">Simpan Pengaturan</span>
@@ -266,7 +285,7 @@
 
     <!-- SCRIPT -->
     <script>
-        const ACTIVE_MENU = 'setting';
+        const ACTIVE_MENU = 'settings';
     </script>
     <script src="attribute/navbaradmin.js"></script>
 
@@ -282,34 +301,43 @@
             }, 1000); 
         });
 
-        // 1. LOGIKA TAB MENU
-        function switchTab(tabId, element) {
-            // Sembunyikan semua section
+        // 1. LOGIKA MENU (LIST -> DETAIL SETTING)
+        function openSetting(sectionId) {
+            // Sembunyikan list menu awal
+            document.getElementById('setting-menu-list').classList.add('hidden');
+            
+            // Sembunyikan semua konten section terlebih dahulu
             document.querySelectorAll('.setting-section').forEach(sec => {
                 sec.classList.add('hidden');
                 sec.classList.remove('block');
             });
-            
-            // Tampilkan section yang dipilih
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById(tabId).classList.add('block');
 
-            // Reset style semua tombol tab
-            document.querySelectorAll('.tab-link').forEach(link => {
-                link.classList.remove('bg-blue-600/10', 'text-blue-400', 'font-semibold');
-                link.classList.add('text-zinc-400', 'hover:bg-zinc-900', 'hover:text-white');
-            });
+            // Tampilkan wrapper konten dan section spesifik
+            document.getElementById('setting-content-area').classList.remove('hidden');
+            document.getElementById('setting-content-area').classList.add('flex');
             
-            // Beri style aktif pada tombol yang diklik
-            element.classList.add('bg-blue-600/10', 'text-blue-400', 'font-semibold');
-            element.classList.remove('text-zinc-400', 'hover:bg-zinc-900', 'hover:text-white');
+            const targetSec = document.getElementById(sectionId);
+            if(targetSec) {
+                targetSec.classList.remove('hidden');
+                targetSec.classList.add('block');
+            }
         }
 
-        // 2. LOGIKA CUSTOM DROPDOWN (PENGGANTI <select>)
+        // 2. FUNGSI KEMBALI KE MENU
+        function backToMenu() {
+            // Sembunyikan area konten spesifik
+            document.getElementById('setting-content-area').classList.add('hidden');
+            document.getElementById('setting-content-area').classList.remove('flex');
+            
+            // Tampilkan kembali list menu awal
+            document.getElementById('setting-menu-list').classList.remove('hidden');
+            document.getElementById('setting-menu-list').classList.add('flex');
+        }
+
+        // 3. LOGIKA CUSTOM DROPDOWN (PENGGANTI <select>)
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             if (dropdown.classList.contains('hidden')) {
-                // Tutup dropdown lain yang mungkin sedang terbuka
                 closeAllDropdowns();
                 dropdown.classList.remove('hidden');
                 dropdown.classList.add('flex');
@@ -350,7 +378,7 @@
             });
         });
 
-        // 3. LOGIKA SAVE & TOAST
+        // 4. LOGIKA SAVE & TOAST
         function saveSettings() {
             const btn = document.getElementById('btnSaveAll');
             const spinner = btn.querySelector('.spinner-icon');
