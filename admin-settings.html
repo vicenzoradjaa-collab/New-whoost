@@ -78,8 +78,8 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 sm:py-8 pb-28 z-0 scroll-smooth w-full relative">
+    <!-- MAIN CONTENT (DITAMBAH PADDING BAWAH AGAR TIDAK TERTUTUP NAVBAR) -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 sm:py-8 pb-32 sm:pb-40 z-0 scroll-smooth w-full relative">
         <div class="max-w-3xl mx-auto w-full">
             
             <!-- LIST MENU UTAMA (BERJEJER KE BAWAH) -->
@@ -272,7 +272,7 @@
                 </section>
 
                 <!-- TOMBOL SIMPAN -->
-                <div class="pt-6 border-t border-zinc-800/80 flex justify-end">
+                <div class="pt-6 pb-24 border-t border-zinc-800/80 flex justify-end">
                     <button id="btnSaveAll" onclick="saveSettings()" class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4 hidden spinner-icon animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         <span id="saveBtnText">Simpan Pengaturan</span>
@@ -285,7 +285,7 @@
 
     <!-- SCRIPT -->
     <script>
-        const ACTIVE_MENU = 'settings';
+        const ACTIVE_MENU = 'setting';
     </script>
     <script src="attribute/navbaradmin.js"></script>
 
