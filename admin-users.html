@@ -51,32 +51,22 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER ADMIN -->
+    <!-- HEADER ADMIN (DIPERBARUI) -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
-            <a href="admin-dashboard.html" class="mr-2 text-zinc-400 hover:text-white transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </a>
             <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/100x40?text=WHOOST'">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Kelola Pengguna</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:flex items-center gap-2 mr-2">
-                <div class="text-right">
-                    <p class="text-sm font-bold text-white">Super Admin</p>
-                    <p class="text-[10px] text-zinc-400">admin@whoost.com</p>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border-2 border-zinc-800">AD</div>
-            </div>
-        </div>
+        <!-- Area info admin dihapus sesuai permintaan -->
+        <div></div>
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-20 z-0 scroll-smooth w-full relative">
         <div class="max-w-6xl mx-auto space-y-6">
             
-            <!-- CONTROLS: TABS & SEARCH -->
+            <!-- CONTROLS: TABS, DROPDOWN & SEARCH -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 
                 <!-- Tabs -->
@@ -89,12 +79,28 @@
                     </button>
                 </div>
 
-                <!-- Search -->
-                <div class="relative w-full md:w-72">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <!-- Filters & Search (DIPERBARUI) -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    
+                    <!-- Dropdown Status Filter -->
+                    <div class="relative w-full sm:w-auto">
+                        <select id="statusFilter" onchange="filterUsers()" class="appearance-none block w-full sm:w-40 pl-3 pr-10 py-2 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer hover:border-zinc-600">
+                            <option value="all">Semua Status</option>
+                            <option value="active">Active</option>
+                            <option value="banned">Banned</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
                     </div>
-                    <input type="text" id="searchInput" onkeyup="filterUsers()" placeholder="Cari nama atau gmail..." class="block w-full pl-10 pr-3 py-2 border border-zinc-800 rounded-lg leading-5 bg-cardBg text-zinc-300 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
+
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-72">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="searchInput" onkeyup="filterUsers()" placeholder="Cari nama atau gmail..." class="block w-full pl-10 pr-3 py-2 border border-zinc-800 rounded-lg leading-5 bg-cardBg text-zinc-300 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors">
+                    </div>
                 </div>
             </div>
 
@@ -120,7 +126,7 @@
                 <div id="emptyState" class="hidden flex-col items-center justify-center py-12 px-4 text-center">
                     <svg class="w-12 h-12 text-zinc-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <h3 class="text-sm font-semibold text-zinc-300">Pengguna tidak ditemukan</h3>
-                    <p class="text-xs text-zinc-500 mt-1">Coba gunakan kata kunci pencarian yang lain.</p>
+                    <p class="text-xs text-zinc-500 mt-1">Coba gunakan kata kunci pencarian atau filter yang lain.</p>
                 </div>
             </div>
 
@@ -132,7 +138,6 @@
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeModal('confirmModal')"></div>
         <div id="confirmModalContent" class="bg-cardBg border border-zinc-800 rounded-2xl shadow-2xl relative z-10 w-[90%] max-w-sm p-6 flex flex-col transform modal-content-inactive transition-transform duration-300">
             <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border border-red-500/20 mx-auto" id="modalIconContainer">
-                <!-- Icon will be swapped based on action -->
                 <svg id="modalIcon" class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
             <h3 id="confirmTitle" class="text-lg font-bold text-white text-center mb-2">Konfirmasi Blokir</h3>
@@ -194,9 +199,10 @@
                 tabClipper.className = "flex-1 md:w-32 px-4 py-2 text-sm font-medium rounded-md transition-all duration-300 text-zinc-400 hover:text-white";
             }
 
-            // Reset search & render
+            // Reset search input & dropdown (kembali ke default tiap ganti tab)
             document.getElementById('searchInput').value = '';
-            renderTable(usersData[currentTab]);
+            document.getElementById('statusFilter').value = 'all';
+            filterUsers();
         }
 
         // MERENDER TABEL
@@ -255,13 +261,20 @@
             }
         }
 
-        // FILTER / SEARCH PENGGUNA
+        // FILTER / SEARCH PENGGUNA (TERMASUK DROPDOWN)
         function filterUsers() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filteredData = usersData[currentTab].filter(user => 
-                user.name.toLowerCase().includes(query) || 
-                user.email.toLowerCase().includes(query)
-            );
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value; // 'all', 'active', 'banned'
+            
+            const filteredData = usersData[currentTab].filter(user => {
+                // Filter by name / email
+                const matchSearch = user.name.toLowerCase().includes(searchQuery) || user.email.toLowerCase().includes(searchQuery);
+                // Filter by dropdown status
+                const matchStatus = statusFilter === 'all' || user.status === statusFilter;
+                
+                return matchSearch && matchStatus;
+            });
+
             renderTable(filteredData);
         }
 
@@ -316,7 +329,7 @@
             // Tutup modal konfirmasi
             closeModal('confirmModal');
 
-            // Render ulang tabel (menerapkan filter search yang aktif)
+            // Render ulang tabel (menerapkan filter search dan filter dropdown yang aktif)
             filterUsers();
 
             // Setup & tampilkan modal sukses
@@ -329,7 +342,7 @@
             
             setTimeout(() => {
                 openModal('successModal');
-            }, 300); // delay dikit nunggu modal confirm hilang
+            }, 300); // delay nunggu transisi modal konfirmasi hilang
         }
 
         // SISTEM MODAL (OPEN/CLOSE)
@@ -359,7 +372,8 @@
 
         // INITIALIZE
         document.addEventListener('DOMContentLoaded', () => {
-            renderTable(usersData.clipper);
+            // Render list dengan memanggil fungsi filter agar sinkron dengan dropdown default
+            filterUsers();
         });
 
         // NAVBAR ACTIVE STATE
