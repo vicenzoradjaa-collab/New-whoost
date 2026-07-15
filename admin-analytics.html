@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performa Analytics - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
+        * { -webkit-tap-highlight-color: transparent !important; outline: none; }
+        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom Donut Chart Base */
+        .donut-ring { stroke: #27272a; stroke-width: 3.5; fill: transparent; }
+        .donut-segment { stroke: #22c55e; stroke-width: 3.5; fill: transparent; stroke-linecap: round; }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
+
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN                             -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Analytics...</p>
+        </div>
+    </div>
+
+    <!-- Background Ornamen Aman -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- HEADER                                     -->
+    <!-- ========================================== -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <!-- Mengembalikan Logo di Pojok Kiri Atas -->
+        <div class="flex items-center gap-3 sm:gap-4 relative z-10">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Performa Analytics</h1>
+        </div>
+
+        <div class="relative z-10">
+            <button onclick="alert('Mendownload laporan berformat CSV/PDF...')" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-xs sm:text-sm font-semibold hover:bg-zinc-800 transition-colors focus:outline-none flex items-center gap-2 shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span class="hidden sm:inline">Export</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAIN DASHBOARD AREA                        -->
+    <!-- ========================================== -->
+    <!-- pb-32 memberikan ruang ekstra agar tidak tertutup nav bottom -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full relative z-10">
+        <div class="max-w-6xl mx-auto space-y-8">
+
+            <!-- 1. TOP CARDS (Total Views & Total Budget) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- TOTAL VIEWS CARD -->
+                <div class="md:col-span-2 bg-gradient-to-br from-zinc-900 to-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col relative overflow-hidden group shadow-lg">
+                    <div class="flex justify-between items-start mb-10 relative z-10">
+                        <div>
+                            <h2 class="text-sm font-bold text-zinc-400 tracking-widest uppercase mb-1">Total Views</h2>
+                            <p class="text-[10px] text-zinc-500">*Hanya views dari konten yang disetujui</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-10 relative z-10">
+                        <h1 class="text-6xl sm:text-7xl font-black text-white tracking-tight">0</h1>
+                    </div>
+
+                    <!-- Progress Bar Budget -->
+                    <div class="mt-auto w-full relative z-10">
+                        <div class="flex justify-between text-xs font-semibold text-zinc-400 mb-2">
+                            <span>Budget Terpakai</span>
+                            <span class="text-white">100%</span>
+                        </div>
+                        <div class="w-full h-1.5 sm:h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
+                            <div class="h-full bg-green-500 w-full rounded-full transition-all duration-1000"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-[11px] sm:text-xs">
+                            <span class="text-zinc-500 font-medium">Rp 3.000.000 / Rp 3.000.000</span>
+                            <span class="text-green-400 font-bold">Sisa Rp 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOTAL BUDGET CARD -->
+                <div class="md:col-span-1 bg-green-500/5 border border-green-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-center items-start relative overflow-hidden shadow-lg">
+                    <!-- Ornamen background blur -->
+                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 blur-[40px] rounded-full pointer-events-none"></div>
+                    
+                    <h2 class="text-sm font-bold text-green-500 tracking-widest uppercase mb-4 relative z-10">Total Budget</h2>
+                    <h1 class="text-4xl sm:text-5xl font-black text-green-400 tracking-tight relative z-10">Rp 0</h1>
+                </div>
+
+            </div>
+
+            <!-- 2. QUICK STATS ROW -->
+            <div class="grid grid-cols-3 gap-4 sm:gap-6 py-4">
+                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors shadow-sm">
+                    <h3 class="text-3xl font-black text-white mb-1">1</h3>
+                    <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Campaign</p>
+                </div>
+                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors shadow-sm">
+                    <h3 class="text-3xl font-black text-white mb-1">0</h3>
+                    <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Aktif</p>
+                </div>
+                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center hover:border-zinc-700 transition-colors shadow-sm">
+                    <h3 class="text-3xl font-black text-white mb-1">0</h3>
+                    <p class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Konten</p>
+                </div>
+            </div>
+
+            <!-- 3. PLATFORM BREAKDOWN -->
+            <div>
+                <!-- Bagian Header Platform dengan Filter Campaign Custom -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-4 px-1">
+                    <h2 class="text-lg font-bold text-white tracking-tight">Platform Distribution</h2>
+                    
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        
+                        <!-- CUSTOM DROPDOWN FILTER CAMPAIGN -->
+                        <div class="relative w-full sm:w-64" id="campaignDropdownContainer">
+                            <button id="campaignDropdownBtn" onclick="toggleCampaignDropdown()" class="flex items-center justify-between w-full pl-3 pr-3 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs sm:text-sm font-medium rounded-xl focus:outline-none focus:border-zinc-600 transition-colors cursor-pointer hover:bg-zinc-800">
+                                <span id="campaignSelectedText" class="truncate">Semua Campaign</span>
+                                <svg class="w-4 h-4 text-zinc-500 transition-transform duration-200 shrink-0 ml-2" id="campaignDropdownIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            
+                            <!-- Dropdown Menu Item -->
+                            <div id="campaignDropdownMenu" class="absolute z-[60] w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-xl shadow-xl opacity-0 invisible transform scale-95 transition-all duration-200 origin-top-right overflow-hidden">
+                                <div class="py-1">
+                                    <div onclick="selectCampaign('all', 'Semua Campaign')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group border-b border-zinc-800/50">
+                                        <span class="truncate">Semua Campaign</span>
+                                        <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div onclick="selectCampaign('1', 'Promo Diskon Akhir Tahun')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
+                                        <span class="truncate">Promo Diskon Akhir Tahun</span>
+                                        <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div onclick="selectCampaign('2', 'Launching Produk Baru')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
+                                        <span class="truncate">Launching Produk Baru</span>
+                                        <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div onclick="selectCampaign('3', 'Review Influencer 2026')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
+                                        <span class="truncate">Review Influencer 2026</span>
+                                        <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <span class="text-xs font-semibold text-zinc-500 ml-auto sm:ml-0">0 Total Views</span>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8 md:gap-16 lg:gap-24 shadow-lg">
+                    
+                    <!-- Donut Chart Left -->
+                    <div class="relative w-48 h-48 sm:w-56 sm:h-56 shrink-0 flex items-center justify-center">
+                        <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90 drop-shadow-2xl">
+                            <!-- Background Ring Empty -->
+                            <path class="donut-ring" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <!-- Placeholder untuk data terisi (Stroke Dasharray) -->
+                            <!-- <path class="donut-segment" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" /> -->
+                        </svg>
+                        
+                        <!-- Inner Text Content -->
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="text-3xl font-black text-white">0</span>
+                            <span class="text-xs font-medium text-zinc-500 mt-1">views</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Platform List Right -->
+                    <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-x-8 sm:gap-y-2">
+                        
+                        <!-- TikTok -->
+                        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-900 border border-transparent transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700 group-hover:bg-cyan-400 transition-colors"></div>
+                                <svg class="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                                <span class="text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors">TikTok</span>
+                            </div>
+                            <span class="text-sm font-bold text-zinc-600">0</span>
+                        </div>
+
+                        <!-- Instagram -->
+                        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-900 border border-transparent transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700 group-hover:bg-pink-500 transition-colors"></div>
+                                <svg class="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                                <span class="text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors">Instagram</span>
+                            </div>
+                            <span class="text-sm font-bold text-zinc-600">0</span>
+                        </div>
+
+                        <!-- YouTube -->
+                        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-900 border border-transparent transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700 group-hover:bg-red-500 transition-colors"></div>
+                                <svg class="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                <span class="text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors">YouTube</span>
+                            </div>
+                            <span class="text-sm font-bold text-zinc-600">0</span>
+                        </div>
+
+                        <!-- Facebook -->
+                        <div class="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-900 border border-transparent transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700 group-hover:bg-blue-500 transition-colors"></div>
+                                <svg class="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                <span class="text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors">Facebook</span>
+                            </div>
+                            <span class="text-sm font-bold text-zinc-600">0</span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT & LOGIC                         -->
+    <!-- ========================================== -->
+    
+    <!-- Memanggil Navbar Bawah -->
+    <script>
+        const ACTIVE_MENU = 'performa'; // Identifier menu aktif
+    </script>
+    <script src="attribute/navbarclient.js"></script>
+
+    <script>
+        // Logika Dropdown Campaign Custom
+        let currentCampaignFilter = 'all';
+
+        function toggleCampaignDropdown() {
+            const menu = document.getElementById('campaignDropdownMenu');
+            const icon = document.getElementById('campaignDropdownIcon');
+            
+            if (menu.classList.contains('invisible')) {
+                // Buka Dropdown
+                menu.classList.remove('invisible', 'opacity-0', 'scale-95');
+                menu.classList.add('visible', 'opacity-100', 'scale-100');
+                icon.classList.add('rotate-180');
+            } else {
+                // Tutup Dropdown
+                closeCampaignDropdown();
+            }
+        }
+
+        function closeCampaignDropdown() {
+            const menu = document.getElementById('campaignDropdownMenu');
+            const icon = document.getElementById('campaignDropdownIcon');
+            if(menu && icon) {
+                menu.classList.add('invisible', 'opacity-0', 'scale-95');
+                menu.classList.remove('visible', 'opacity-100', 'scale-100');
+                icon.classList.remove('rotate-180');
+            }
+        }
+
+        function selectCampaign(value, textName) {
+            currentCampaignFilter = value;
+            document.getElementById('campaignSelectedText').textContent = textName;
+            
+            // Sembunyikan semua checkmark
+            ['all', '1', '2', '3'].forEach(id => {
+                const check = document.getElementById('check-camp-' + id);
+                if(check) check.classList.add('hidden');
+            });
+            
+            // Tampilkan yang terpilih
+            const selectedCheck = document.getElementById('check-camp-' + value);
+            if(selectedCheck) selectedCheck.classList.remove('hidden');
+
+            closeCampaignDropdown();
+        }
+
+        // Click outside untuk menutup dropdown
+        document.addEventListener('click', (event) => {
+            const container = document.getElementById('campaignDropdownContainer');
+            if (container && !container.contains(event.target)) {
+                closeCampaignDropdown();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inisialisasi indikator dropdown saat pertama buka
+            const defaultCheck = document.getElementById('check-camp-all');
+            if(defaultCheck) defaultCheck.classList.remove('hidden');
+
+            // LOGIC HILANGKAN LOADING SCREEN
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                if(loader){
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                    }, 500); 
+                }
+            }, 1000); 
+        });
+    </script>
+</body>
+</html>
