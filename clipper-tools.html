@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-[#0a0a0c]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools Produksi Konten - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style> body { font-family: 'Inter', sans-serif; color: white; } </style>
+</head>
+<body class="flex flex-col h-screen">
+    
+    <header class="py-8 px-8 max-w-7xl mx-auto w-full">
+        <div class="flex items-center gap-4 mb-4">
+            <a href="clipper-hub.html" class="text-zinc-400 hover:text-white">← Kembali</a>
+        </div>
+        <h1 class="text-3xl font-bold mb-2">Tools Produksi Konten</h1>
+        <p class="text-zinc-400">Kumpulan tools pilihan untuk meningkatkan efisiensi kerja Anda dalam membuat konten viral.</p>
+
+        <!-- Search & Filter -->
+        <div class="mt-6">
+            <div class="relative w-full mb-4">
+                <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" placeholder="Cari nama tool atau kegunaan..." class="w-full bg-[#121214] border border-zinc-800 rounded-xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-zinc-500 text-white">
+            </div>
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                <button class="px-4 py-1.5 rounded-full border border-blue-500 bg-blue-900/20 text-blue-400 text-sm whitespace-nowrap">Semua</button>
+                <button class="px-4 py-1.5 rounded-full border border-zinc-800 hover:bg-zinc-800 text-zinc-400 text-sm whitespace-nowrap">HOT TOOLS</button>
+                <button class="px-4 py-1.5 rounded-full border border-zinc-800 hover:bg-zinc-800 text-zinc-400 text-sm whitespace-nowrap">Timestamp Finder</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 px-8 pb-20 max-w-7xl mx-auto w-full">
+        <!-- Grid Tools -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Tool 1 -->
+            <div class="bg-[#121214] border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between hover:border-zinc-600 transition">
+                <div>
+                    <div class="w-full h-32 rounded-lg bg-zinc-800 mb-4 overflow-hidden">
+                        <!-- Ini gambar uploadannya -->
+                        <img src="https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?w=500&q=80" alt="Thumbnail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="border border-red-900 bg-red-900/20 text-red-500 text-[10px] px-2 py-1 rounded font-bold tracking-wider">🔥 HOT TOOLS</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Whoost Tiktok Downloader</h3>
+                    <p class="text-sm text-zinc-400 mb-6">Download video TikTok tanpa watermark dengan kualitas HD secara cepat dan mudah.</p>
+                </div>
+                <a href="https://snaptik.app" target="_blank" class="w-full bg-[#93c5fd] hover:bg-blue-300 text-black font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    Gunakan Tools <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+
+            <!-- Tool 2 -->
+            <div class="bg-[#121214] border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between hover:border-zinc-600 transition">
+                <div>
+                    <div class="w-full h-32 rounded-lg bg-zinc-800 mb-4 overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=500&q=80" alt="Thumbnail" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="border border-purple-900 bg-purple-900/20 text-purple-400 text-[10px] px-2 py-1 rounded font-bold tracking-wider">AI TOOLS</span>
+                    </div>
+                    <h3 class="text-lg font-bold mb-2">Whoost Caption Generator</h3>
+                    <p class="text-sm text-zinc-400 mb-6">Buat caption viral otomatis sesuai brief platform dan audiens targetmu.</p>
+                </div>
+                <a href="https://chatgpt.com" target="_blank" class="w-full bg-[#93c5fd] hover:bg-blue-300 text-black font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                    Gunakan Tools <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>
