@@ -1,109 +1,138 @@
 <!DOCTYPE html>
-<html lang="id" class="bg-[#0a0a0c]">
+<html lang="id" class="bg-darkBg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trik & Rahasia - Whoost</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style> body { font-family: 'Inter', sans-serif; color: white; } </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { darkBg: '#0a0a0c', cardBg: '#121214' }, fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+    </script>
+    <style>
+        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        .prose p { margin-bottom: 1rem; line-height: 1.6; }
+        .prose ul { margin-left: 1.5rem; list-style-type: disc; margin-bottom: 1rem; }
+    </style>
 </head>
-<body class="flex flex-col h-screen">
+<body class="flex flex-col h-full relative">
 
-    <header class="py-8 px-8 max-w-7xl mx-auto w-full">
-        <div class="flex items-center gap-4 mb-4">
-            <a href="clipper-hub.html" class="text-zinc-400 hover:text-white" id="btn-back">← Kembali</a>
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Tips...</p>
         </div>
-        <h1 class="text-3xl font-bold mb-2">Trik & Rahasia Algoritma</h1>
-        <p class="text-zinc-400">Bacaan singkat 3-5 menit untuk meningkatkan retensi dan views konten Anda.</p>
+    </div>
+
+    <header class="h-20 sm:h-24 flex items-center px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4 max-w-7xl mx-auto w-full">
+            <button id="btn-back" onclick="window.location.href='clipper-blog.html'" class="p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 hover:bg-zinc-800 transition-colors">
+                <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div class="h-5 sm:h-6 w-px bg-zinc-800"></div>
+            <h1 class="text-lg sm:text-xl font-semibold tracking-tight text-white">Trik & Rahasia Algoritma</h1>
+        </div>
     </header>
 
-    <main class="flex-1 px-8 pb-20 max-w-7xl mx-auto w-full relative">
-        
-        <!-- =================================== -->
-        <!-- VIEW 1: GRID LIST TIPS              -->
-        <!-- =================================== -->
-        <div id="view-list" class="block">
-            <!-- Filter -->
-            <div class="flex gap-2 mb-6">
-                <button class="px-4 py-1.5 rounded-full border border-blue-500 bg-blue-900/20 text-blue-400 text-sm">Semua</button>
-                <button class="px-4 py-1.5 rounded-full border border-zinc-800 bg-[#121214] text-zinc-400 text-sm">Kasus Studi</button>
-                <button class="px-4 py-1.5 rounded-full border border-zinc-800 bg-[#121214] text-zinc-400 text-sm">Algoritma</button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- Card Tip -->
-                <div class="bg-[#121214] border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between hover:border-zinc-600 transition">
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-[10px] px-2 py-1 border border-purple-900 text-purple-400 rounded tracking-wider uppercase">Kasus Studi</span>
-                            <span class="text-xs text-zinc-500 flex items-center gap-1">👁️ 37x dibaca</span>
-                        </div>
-                        <h3 class="text-xl font-bold mb-3 line-clamp-2">Cara Mengatasi Shadow Ban di TikTok</h3>
-                        <p class="text-sm text-zinc-400 mb-6 line-clamp-3">Menembus "Kutukan" View 0!! Pernah nggak sih, kamu sudah begadang buat edit video, tapi pas di upload... yang nonton cuma 0?</p>
-                    </div>
-                    
-                    <div>
-                        <div class="border-t border-zinc-800 my-4"></div>
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-xs">T</div>
-                                <span class="text-xs text-zinc-400">Tim Whoost</span>
-                            </div>
-                            <span class="text-xs text-zinc-500">INFO TIPS</span>
-                        </div>
-                        <button onclick="bacaArtikel('Cara Mengatasi Shadow Ban di TikTok')" class="w-full bg-[#1e1e20] hover:bg-zinc-700 border border-zinc-700 text-white font-medium py-2.5 rounded-xl flex items-center justify-center gap-2 transition">
-                            📖 Baca Tips
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- =================================== -->
-        <!-- VIEW 2: BACA ARTIKEL (Bentuk Blog)  -->
-        <!-- =================================== -->
-        <div id="view-artikel" class="hidden max-w-3xl mx-auto bg-[#121214] border border-zinc-800 rounded-2xl p-8">
-            <button onclick="tutupArtikel()" class="text-sm text-zinc-400 hover:text-white mb-6 flex items-center gap-2">
-                <span>← Kembali ke Daftar Tips</span>
-            </button>
-            <span class="text-[10px] px-2 py-1 border border-purple-900 bg-purple-900/20 text-purple-400 rounded mb-4 inline-block">Kasus Studi</span>
-            <h2 id="judul-artikel" class="text-3xl font-black mb-4">Judul Artikel</h2>
-            <div class="flex items-center gap-3 mb-8 pb-6 border-b border-zinc-800">
-                <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-sm">T</div>
-                <div>
-                    <p class="text-sm font-medium">Tim Whoost</p>
-                    <p class="text-xs text-zinc-500">Dipublikasikan hari ini</p>
-                </div>
-            </div>
+    <main class="flex-1 overflow-y-auto overflow-x-hidden p-6 sm:p-8 pb-32 w-full relative">
+        <div class="max-w-7xl mx-auto">
             
-            <!-- Isi Bacaan -->
-            <div class="prose prose-invert prose-zinc max-w-none text-zinc-300">
-                <p>Menembus "Kutukan" View 0!! Pernah nggak sih, kamu sudah begadang buat edit video, tapi pas di upload... yang nonton cuma 0?</p>
-                <p>Ini adalah masalah yang sering disebut sebagai <strong>Shadowban</strong>. Berikut adalah 3 cara mengatasinya:</p>
-                <ul>
-                    <li>Jangan spam upload. Beri jeda minimal 2 jam antar video.</li>
-                    <li>Pastikan tidak ada watermark dari platform lain.</li>
-                    <li>Gunakan audio yang sedang trending namun belum overused.</li>
-                </ul>
-            </div>
-        </div>
+            <!-- GRID LIST TIPS -->
+            <div id="view-list" class="block">
+                <p class="text-sm text-zinc-400 mb-6">Bacaan singkat 3-5 menit untuk meroketkan konten Anda hari ini.</p>
+                <div class="flex gap-2 overflow-x-auto pb-4 mb-4 hide-scrollbar">
+                    <button class="px-4 py-1.5 rounded-full border border-blue-500 bg-blue-900/20 text-blue-400 text-xs font-semibold whitespace-nowrap">Semua</button>
+                    <button class="px-4 py-1.5 rounded-full border border-zinc-800 bg-cardBg text-zinc-400 text-xs font-semibold whitespace-nowrap">Kasus Studi</button>
+                    <button class="px-4 py-1.5 rounded-full border border-zinc-800 bg-cardBg text-zinc-400 text-xs font-semibold whitespace-nowrap">Algoritma</button>
+                </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Card -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-6 flex flex-col justify-between hover:border-zinc-600 transition">
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] px-2 py-1 border border-purple-900 text-purple-400 rounded tracking-wider uppercase font-semibold">Kasus Studi</span>
+                                <span class="text-xs text-zinc-500 flex items-center gap-1 font-medium">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    37x dibaca
+                                </span>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-3 line-clamp-2">Cara Mengatasi Shadow Ban di TikTok</h3>
+                            <p class="text-xs text-zinc-400 mb-6 line-clamp-3">Menembus "Kutukan" View 0!! Pernah nggak sih, kamu sudah begadang buat edit video, tapi pas di upload... yang nonton cuma 0?</p>
+                        </div>
+                        <div>
+                            <div class="border-t border-zinc-800/80 my-4"></div>
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs font-bold border border-zinc-700">T</div>
+                                    <span class="text-xs text-zinc-400">Tim Whoost</span>
+                                </div>
+                                <span class="text-[10px] font-bold text-zinc-600 tracking-wider">INFO TIPS</span>
+                            </div>
+                            <button onclick="bacaArtikel('Cara Mengatasi Shadow Ban di TikTok')" class="w-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-sm font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                Baca Tips
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BACA ARTIKEL (Bentuk Blog) -->
+            <div id="view-artikel" class="hidden max-w-3xl mx-auto bg-cardBg border border-zinc-800 rounded-2xl p-6 sm:p-10 shadow-2xl">
+                <span class="text-[10px] px-2 py-1 border border-purple-900 bg-purple-900/20 text-purple-400 font-bold rounded mb-4 inline-block tracking-wider">KASUS STUDI</span>
+                <h2 id="judul-artikel" class="text-2xl sm:text-4xl font-black mb-4 tracking-tight leading-tight">Judul Artikel</h2>
+                <div class="flex items-center gap-3 mb-8 pb-6 border-b border-zinc-800/80">
+                    <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-sm font-black border border-zinc-700">T</div>
+                    <div>
+                        <p class="text-sm font-bold text-white">Tim Whoost</p>
+                        <p class="text-[11px] text-zinc-500">Dipublikasikan hari ini • Bacaan 3 menit</p>
+                    </div>
+                </div>
+                
+                <div class="prose text-sm sm:text-base text-zinc-300">
+                    <p>Menembus "Kutukan" View 0!! Pernah nggak sih, kamu sudah begadang buat edit video, tapi pas di upload... yang nonton cuma 0?</p>
+                    <p>Ini adalah masalah yang sering disebut sebagai <strong>Shadowban</strong>. Terkadang algoritma membatasi konten kita karena alasan keamanan. Berikut adalah 3 cara mengatasinya secara efektif:</p>
+                    <ul>
+                        <li>Jangan spam upload. Beri jeda minimal 2-4 jam antar video.</li>
+                        <li>Pastikan tidak ada watermark samar dari platform lain.</li>
+                        <li>Gunakan audio yang sedang trending namun belum overused di library asli.</li>
+                    </ul>
+                    <p>Tetap konsisten dan jangan menyerah walau views sedang sepi, karena algoritma selalu mencari momentum yang pas untuk meledakkan kontenmu!</p>
+                </div>
+            </div>
+
+        </div>
     </main>
 
+    <script> const ACTIVE_MENU = 'blog'; </script>
+    <script src="attribute/navbarclipper.js"></script>
+
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                loader.classList.add('opacity-0'); 
+                setTimeout(() => loader.style.display = 'none', 500); 
+            }, 800); 
+        });
+
+        // Logika Perpindahan Grid ke Artikel
         function bacaArtikel(judul) {
             document.getElementById('view-list').classList.add('hidden');
             document.getElementById('view-artikel').classList.remove('hidden');
             document.getElementById('judul-artikel').innerText = judul;
-            document.getElementById('btn-back').onclick = tutupArtikel; // Ubah fungsi tombol back header
+            document.getElementById('btn-back').onclick = tutupArtikel; // Ubah fungsi back di header
         }
 
         function tutupArtikel() {
             document.getElementById('view-artikel').classList.add('hidden');
             document.getElementById('view-list').classList.remove('hidden');
-            document.getElementById('btn-back').onclick = function() { window.location.href='clipper-hub.html' };
+            document.getElementById('btn-back').onclick = function() { window.location.href='clipper-blog.html' };
         }
     </script>
 </body>
