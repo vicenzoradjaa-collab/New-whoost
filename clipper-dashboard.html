@@ -23,7 +23,6 @@
         }
     </script>
     <style>
-        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
         html, body {
             background-color: #0a0a0c;
             color: white;
@@ -33,17 +32,12 @@
             overflow: hidden;
         }
         
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-
-        /* Hide scrollbar for horizontal scroll areas */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Pattern Dots untuk Card Campaign */
         .bg-dots-card {
             background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px);
             background-size: 12px 12px;
@@ -52,9 +46,7 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- ========================================== -->
-    <!-- LOADING SCREEN                             -->
-    <!-- ========================================== -->
+    <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
@@ -63,41 +55,33 @@
         </div>
     </div>
 
-    <!-- Background Ornamen Aman -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-20%] left-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HEADER                                     -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Dashboard</h1>
         </div>
-        <!-- Ikon Notifikasi (Berfungsi) -->
         <button onclick="toggleNotif()" class="relative p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 transition-colors tooltip" title="Notifikasi">
             <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-            <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-darkBg rounded-full"></span>
+            <span id="notif-dot" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-darkBg rounded-full hidden"></span>
         </button>
     </header>
 
-    <!-- ========================================== -->
-    <!-- MAIN CONTENT AREA                          -->
-    <!-- ========================================== -->
+    <!-- MAIN CONTENT AREA -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
             
             <!-- SECTION 1: RINGKASAN AKUN -->
             <section>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                    <!-- Total Penghasilan -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300 relative group">
                         <div class="flex justify-between items-start mb-1 sm:mb-2">
                             <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide">Total Penghasilan</p>
-                            <!-- Tombol Mata (Sensor) -->
                             <button onclick="toggleSensor()" class="text-zinc-500 hover:text-white transition-colors focus:outline-none">
                                 <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -105,25 +89,22 @@
                                 </svg>
                             </button>
                         </div>
-                        <h3 id="total-penghasilan" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white transition-all">Rp 1.5M</h3>
+                        <h3 id="total-penghasilan" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white transition-all">Rp 0</h3>
                     </div>
 
-                    <!-- Bisa Dicairkan -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Bisa Dicairkan</p>
-                        <h3 id="bisa-dicairkan" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white transition-all">Rp 250K</h3>
+                        <h3 id="bisa-dicairkan" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white transition-all">Rp 0</h3>
                     </div>
                     
-                    <!-- Total Views -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Views</p>
-                        <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">142.5K</h3>
+                        <h3 id="total-views" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">0</h3>
                     </div>
 
-                    <!-- Total Video -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Video</p>
-                        <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">37</h3>
+                        <h3 id="total-video" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">0</h3>
                     </div>
                 </div>
             </section>
@@ -132,33 +113,27 @@
             <section>
                 <h2 class="text-sm font-semibold mb-3 text-zinc-300 uppercase tracking-wide">Menu Cepat</h2>
                 <div class="grid grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4">
-                    <!-- Menu 1 -->
                     <a href="clipper-claim.html" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Klaim Views</span>
                     </a>
-                    <!-- Menu 2 -->
                     <a href="clipper-subscription.html" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
                         <div class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">PRO</div>
                         <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                         <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Akses VIP</span>
                     </a>
-                    <!-- Menu 3 -->
                     <a href="clipper-campaignselector.html" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
                         <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Submit Konten</span>
                     </a>
-                    <!-- Menu 4 -->
                     <a href="clipper-wallet.html" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Wallet</span>
                     </a>
-                    <!-- Menu 5 -->
                     <a href="clipper-leaderboard.html" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Leaderboard</span>
                     </a>
-                    <!-- Menu 6 -->
                     <a href="clipper-blog.html" class="flex flex-col items-center justify-center p-3 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-6 h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         <span class="text-[9px] sm:text-[10px] font-medium text-center text-zinc-400 group-hover:text-white">Alat Tempur</span>
@@ -166,10 +141,9 @@
                 </div>
             </section>
 
-            <!-- SECTION 3: CAMPAIGN AKTIF KAMU (Horizontal Scroll) -->
+            <!-- SECTION 3: CAMPAIGN AKTIF KAMU -->
             <section>
                 <div class="flex items-center justify-between mb-4">
-                    <!-- PERUBAHAN DISINI: Kampanye Tersedia diubah menjadi Campaign Aktif Kamu -->
                     <h2 class="text-lg font-semibold text-white">Campaign Aktif Kamu</h2>
                     <a href="clipper-campaignselector.html" class="text-[12px] sm:text-[13px] font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
                         Lihat Semua
@@ -177,206 +151,255 @@
                     </a>
                 </div>
 
-                <div class="flex gap-4 sm:gap-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
-                    
-                    <!-- KARTU KAMPANYE 1 -->
-                    <div class="snap-center flex-shrink-0 w-[280px] md:w-[320px] campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="ENHYPEN Jakarta (Presale)">
-                        <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
-                            <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">ENHYPEN</h3>
-                            <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
-                        </div>
-                        <div class="flex justify-between items-center mb-2 md:mb-3">
-                            <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                                <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">PK</div>
-                                <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">PK Entertain...</span>
-                            </div>
-                            <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
-                        </div>
-                        <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="ENHYPEN Jakarta (Presale)">ENHYPEN Jakarta (Presale)</h4>
-                        <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                            <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 3.000</span>
-                            <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                            <!-- Social Icons -->
-                            <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            </div>
-                            <!-- Niche -->
-                            <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                                <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Entertainment</span>
-                            </div>
-                        </div>
-                        <div class="mt-auto pt-2 md:pt-4">
-                            <div class="flex justify-between items-end mb-1.5 md:mb-2">
-                                <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
-                                <span class="text-[9px] md:text-xs font-black text-white">44%</span>
-                            </div>
-                            <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                                <div class="h-full bg-white rounded-full w-[44%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                            </div>
-                            <!-- PERUBAHAN DISINI: Tombol Daftar Campaign diubah jadi link Submit Video -->
-                            <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KAMPANYE 2 -->
-                    <div class="snap-center flex-shrink-0 w-[280px] md:w-[320px] campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="The Keranjang Bali">
-                        <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
-                            <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">THE KERANJANG</h3>
-                            <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">UGC REVIEW</p>
-                        </div>
-                        <div class="flex justify-between items-center mb-2 md:mb-3">
-                            <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                                <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">TK</div>
-                                <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">The Keranjang</span>
-                            </div>
-                            <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
-                        </div>
-                        <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="The Keranjang Bali">Wisatawan Sambut Oleh-oleh</h4>
-                        <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                            <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">Rp 2.500</span>
-                            <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                            <!-- Social Icons -->
-                            <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            </div>
-                            <!-- Niche -->
-                            <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                                <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">E-Commerce</span>
-                            </div>
-                        </div>
-                        <div class="mt-auto pt-2 md:pt-4">
-                            <div class="flex justify-between items-end mb-1.5 md:mb-2">
-                                <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
-                                <span class="text-[9px] md:text-xs font-black text-white">78%</span>
-                            </div>
-                            <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                                <div class="h-full bg-white rounded-full w-[78%] shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                            </div>
-                            <!-- PERUBAHAN DISINI: Tombol Daftar Campaign diubah jadi link Submit Video -->
-                            <a href="clipper-submit.html" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
-                        </div>
-                    </div>
-
+                <div id="campaign-container" class="flex gap-4 sm:gap-5 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-4">
+                    <p class="text-sm text-zinc-500 py-8 px-4" id="campaign-empty">Memuat data campaign...</p>
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- POPUP NOTIFIKASI MODAL                     -->
-    <!-- ========================================== -->
+    <!-- POPUP NOTIFIKASI MODAL -->
     <div id="notifModal" class="fixed inset-0 z-[999] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
-        <!-- Overlay Background -->
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="toggleNotif()"></div>
         
-        <!-- Modal Content -->
         <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] shadow-2xl relative z-10 w-[90%] max-w-md max-h-[85vh] flex flex-col transform scale-95 transition-transform duration-300 overflow-hidden" id="notifContent">
             
-            <!-- Header Notifikasi -->
             <div class="flex justify-between items-center p-5 border-b border-zinc-800/80 bg-zinc-900/50">
                 <div class="flex items-center gap-2">
                     <h3 class="text-base sm:text-lg font-bold text-white tracking-wide">Notifikasi</h3>
-                    <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3 Baru</span>
+                    <span id="notif-count" class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full hidden">0 Baru</span>
                 </div>
                 <button onclick="toggleNotif()" class="text-zinc-500 hover:text-white transition-colors bg-zinc-800/50 hover:bg-zinc-800 p-1.5 rounded-full">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             
-            <!-- Body Notifikasi (Scrollable) -->
-            <div class="overflow-y-auto p-2 sm:p-3 space-y-1 custom-scrollbar">
-                
-                <!-- Notif: Pencairan Berhasil -->
-                <div class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-1">Pencairan Berhasil! 🎉</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Dana sebesar <b class="text-emerald-400">Rp 250.000</b> telah dikirimkan ke rekening BCA Anda. Terima kasih atas kerja kerasnya!</p>
-                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">10 menit yang lalu</span>
-                    </div>
-                </div>
-
-                <!-- Notif: Update Campaign -->
-                <div class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-1">Update Campaign Tersedia</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Campaign <b class="text-white">ENHYPEN Jakarta</b> baru saja menambah budget sebesar 10jt. Yuk submit lebih banyak video!</p>
-                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">2 jam yang lalu</span>
-                    </div>
-                </div>
-
-                <!-- Notif: Konten Disetujui -->
-                <div class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-1">Link Konten Disetujui</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Link konten TikTok untuk campaign <b class="text-white">The Keranjang Bali</b> telah diapprove admin. Anda sudah bisa mulai klaim views.</p>
-                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">Kemarin, 14:30</span>
-                    </div>
-                </div>
-
-                <!-- Notif: Pengumuman Admin -->
-                <div class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
-                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-white mb-1">Pengumuman Admin</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Terdapat perbaikan sistem pada hari Minggu pukul 00:00 - 02:00 WIB. Proses klaim akan tertunda sementara.</p>
-                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">10 Jul 2026</span>
-                    </div>
-                </div>
-
+            <div id="notif-list" class="overflow-y-auto p-2 sm:p-3 space-y-1 custom-scrollbar">
+                <p class="text-xs text-center text-zinc-500 py-4">Memuat notifikasi...</p>
             </div>
             
-            <!-- Footer Notifikasi -->
             <div class="p-3 border-t border-zinc-800 bg-zinc-900/30 text-center">
-                <a href="#" class="text-xs font-semibold text-zinc-400 hover:text-white transition-colors">Tandai semua dibaca</a>
+                <a href="#" onclick="markAllAsRead()" class="text-xs font-semibold text-zinc-400 hover:text-white transition-colors">Tandai semua dibaca</a>
             </div>
-            
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
-    <!-- ========================================== -->
-    
-    <script>
-        const ACTIVE_MENU = 'beranda'; 
-    </script>
+    <!-- JAVASCRIPT & LOGIC NAVBAR -->
+    <script>const ACTIVE_MENU = 'beranda';</script>
     <script src="attribute/navbarclipper.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // LOGIC HILANGKAN LOADING SCREEN
+    <!-- SCRIPT UTAMA (MODULE) MENGGUNAKAN AUTH.JS -->
+    <script type="module">
+        // IMPORT DARI AUTH.JS (Sesuaikan path folder jika perlu, misal '../authentication/auth.js')
+        import { supabase } from './authentication/auth.js';
+
+        let realEarnings = 0;
+        let realWithdrawable = 0;
+        let isSensorActive = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Animasi Loading Halaman
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 loader.classList.add('opacity-0'); 
-                setTimeout(() => {
-                    loader.style.display = 'none'; 
-                }, 500); 
-            }, 1000); 
+                setTimeout(() => loader.style.display = 'none', 500); 
+            }, 1000);
+
+            // Menjalankan Sinkronisasi
+            await syncDashboardData();
         });
 
-        // LOGIC SENSOR PENGHASILAN (MATA)
-        let isSensorActive = false;
-        function toggleSensor() {
+        async function syncDashboardData() {
+            // Ambil session Google yang sedang login menggunakan supabase yang di-import
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                // Jika belum login, redirect ke login atau beri peringatan
+                console.warn("User belum login!");
+                window.location.replace('login.html'); // Sesuaikan dengan file login Anda
+                return;
+            }
+            
+            const userId = session.user.id;
+
+            // Load secara paralel
+            await Promise.all([
+                loadUserStats(userId),
+                loadActiveCampaigns(userId),
+                loadNotifications(userId)
+            ]);
+        }
+
+        async function loadUserStats(userId) {
+            const { data, error } = await supabase
+                .from('clipper_stats')
+                .select('*')
+                .eq('user_id', userId)
+                .single();
+
+            if (data) {
+                realEarnings = data.total_earnings || 0;
+                realWithdrawable = data.withdrawable || 0;
+                
+                document.getElementById('total-penghasilan').innerText = formatRupiahK(realEarnings);
+                document.getElementById('bisa-dicairkan').innerText = formatRupiahK(realWithdrawable);
+                document.getElementById('total-views').innerText = formatK(data.total_views || 0);
+                document.getElementById('total-video').innerText = data.total_videos || 0;
+            } else {
+                document.getElementById('total-penghasilan').innerText = 'Rp 0';
+                document.getElementById('bisa-dicairkan').innerText = 'Rp 0';
+            }
+        }
+
+        async function loadActiveCampaigns(userId) {
+            const { data: userCampaigns, error } = await supabase
+                .from('user_campaigns')
+                .select(`
+                    campaign_id,
+                    campaigns (id, title, brand_name, brand_initial, niche, budget_total, budget_remaining, reward_per_1k, status)
+                `)
+                .eq('user_id', userId)
+                .eq('campaigns.status', 'ACTIVE'); 
+
+            const container = document.getElementById('campaign-container');
+            const activeCampaigns = userCampaigns ? userCampaigns.filter(uc => uc.campaigns !== null).map(uc => uc.campaigns) : [];
+
+            if (!activeCampaigns || activeCampaigns.length === 0) {
+                container.innerHTML = `<p class="text-sm text-zinc-500 py-8 px-4">Kamu belum bergabung di campaign yang aktif saat ini.</p>`;
+                return;
+            }
+
+            let html = '';
+            activeCampaigns.forEach(camp => {
+                const percentage = Math.round((camp.budget_remaining / camp.budget_total) * 100);
+                const titleFirstWord = camp.title.split(' ')[0].toUpperCase();
+                
+                html += `
+                <div class="snap-center flex-shrink-0 w-[280px] md:w-[320px] campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" data-title="${camp.title}">
+                    <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
+                        <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter">${titleFirstWord}</h3>
+                        <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">CLIPPING</p>
+                    </div>
+                    <div class="flex justify-between items-center mb-2 md:mb-3">
+                        <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
+                            <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">${camp.brand_initial || 'WH'}</div>
+                            <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">${camp.brand_name}</span>
+                        </div>
+                        <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-[7px] md:text-[9px] font-bold text-green-400 tracking-wider">ACTIVE</div>
+                    </div>
+                    <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="${camp.title}">${camp.title}</h4>
+                    <div class="mb-3 md:mb-4 flex items-baseline gap-1">
+                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(camp.reward_per_1k)}</span>
+                        <span class="text-zinc-500 text-[9px] md:text-xs font-bold">/ 1k views</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
+                        <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                             <svg class="w-3 h-3 md:w-3.5 md:h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                        </div>
+                        <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                            <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${camp.niche}</span>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-2 md:pt-4">
+                        <div class="flex justify-between items-end mb-1.5 md:mb-2">
+                            <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
+                            <span class="text-[9px] md:text-xs font-black text-white">${percentage}%</span>
+                        </div>
+                        <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
+                            <div class="h-full bg-white rounded-full" style="width: ${percentage}%;" class="shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        </div>
+                        <a href="clipper-submit.html?id=${camp.id}" class="w-full bg-white text-black py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all block text-center">Submit Video</a>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        async function loadNotifications(userId) {
+            const { data: notifs, error } = await supabase
+                .from('notifications')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            const container = document.getElementById('notif-list');
+            const dotBadge = document.getElementById('notif-dot');
+            const countBadge = document.getElementById('notif-count');
+
+            if (!notifs || notifs.length === 0) {
+                container.innerHTML = `<p class="text-xs text-center text-zinc-500 py-4">Tidak ada notifikasi.</p>`;
+                dotBadge.classList.add('hidden');
+                countBadge.classList.add('hidden');
+                return;
+            }
+
+            const unreadCount = notifs.filter(n => !n.is_read).length;
+            
+            if (unreadCount > 0) {
+                dotBadge.classList.remove('hidden');
+                countBadge.classList.remove('hidden');
+                countBadge.innerText = `${unreadCount} Baru`;
+            } else {
+                dotBadge.classList.add('hidden');
+                countBadge.classList.add('hidden');
+            }
+
+            let html = '';
+            notifs.forEach(notif => {
+                let colorClass = 'text-blue-400 bg-blue-500/10 border-blue-500/20'; 
+                let iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                
+                if(notif.type === 'success') {
+                    colorClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+                    iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+                } else if(notif.type === 'approved') {
+                    colorClass = 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
+                    iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>';
+                } else if(notif.type === 'warning') {
+                    colorClass = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+                    iconSvg = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path>';
+                }
+
+                const dateObj = new Date(notif.created_at);
+                const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+
+                html += `
+                <div onclick="window.markAsRead('${notif.id}')" class="p-3 sm:p-4 rounded-xl hover:bg-zinc-900 transition-colors flex gap-3 sm:gap-4 items-start cursor-pointer border border-transparent hover:border-zinc-800 ${!notif.is_read ? 'bg-zinc-900/50' : ''}">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 border ${colorClass}">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${iconSvg}</svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white mb-1 ${!notif.is_read ? 'animate-pulse' : ''}">${notif.title}</h4>
+                        <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">${notif.message}</p>
+                        <span class="text-[9px] text-zinc-500 mt-2 block font-medium">${dateStr}</span>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        /* --- FUNGSI KLIK & GLOBAL WINDOW EXPORT --- */
+        // Di dalam module, kita harus memasukkan fungsi ke object "window" 
+        // agar tombol di HTML (onclick="...") bisa memanggilnya.
+        
+        window.markAsRead = async function(notifId) {
+            await supabase.from('notifications').update({ is_read: true }).eq('id', notifId);
+            const { data: { session } } = await supabase.auth.getSession();
+            if(session) loadNotifications(session.user.id);
+        };
+
+        window.markAllAsRead = async function() {
+            const { data: { session } } = await supabase.auth.getSession();
+            if(session) {
+                await supabase.from('notifications').update({ is_read: true }).eq('user_id', session.user.id);
+                loadNotifications(session.user.id);
+            }
+        };
+
+        window.toggleSensor = function() {
             isSensorActive = !isSensorActive;
             const totalElement = document.getElementById('total-penghasilan');
             const cairElement = document.getElementById('bisa-dicairkan');
@@ -389,31 +412,39 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
                 `;
             } else {
-                totalElement.innerText = 'Rp 1.5M';
-                cairElement.innerText = 'Rp 250K';
+                totalElement.innerText = formatRupiahK(realEarnings);
+                cairElement.innerText = formatRupiahK(realWithdrawable);
                 iconElement.innerHTML = `
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                 `;
             }
-        }
+        };
 
-        // LOGIC POPUP NOTIFIKASI
-        function toggleNotif() {
+        window.toggleNotif = function() {
             const modal = document.getElementById('notifModal');
             const content = document.getElementById('notifContent');
             
             if (modal.classList.contains('opacity-0')) {
-                // Munculkan Popup
                 modal.classList.remove('opacity-0', 'pointer-events-none');
                 content.classList.remove('scale-95');
                 content.classList.add('scale-100');
             } else {
-                // Tutup Popup
                 modal.classList.add('opacity-0', 'pointer-events-none');
                 content.classList.remove('scale-100');
                 content.classList.add('scale-95');
             }
+        };
+
+        function formatRupiahK(num) {
+            if(num >= 1000000) return 'Rp ' + (num/1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+            if(num >= 1000) return 'Rp ' + (num/1000).toFixed(1).replace(/\.0$/, '') + 'K';
+            return 'Rp ' + num;
+        }
+
+        function formatK(num) {
+            if(num >= 1000) return (num/1000).toFixed(1).replace(/\.0$/, '') + 'K';
+            return num;
         }
     </script>
 </body>
