@@ -5,104 +5,230 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Campaign - Whoost Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script>tailwind.config = { theme: { extend: { colors: { darkBg: '#0a0a0c', cardBg: '#121214' } } } }</script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = { theme: { extend: { colors: { darkBg: '#0a0a0c', cardBg: '#121214' } } } }
+    </script>
     <style>
-        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; }
+        * { -webkit-tap-highlight-color: transparent !important; outline: none; }
+        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="antialiased flex flex-col relative w-full h-full">
 
-    <header class="h-20 flex items-center px-8 border-b border-zinc-800 bg-darkBg sticky top-0 z-20">
-        <a href="admin-campaign.html" class="mr-4 text-zinc-400 hover:text-white">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </a>
-        <h1 class="text-xl font-bold">Edit Campaign</h1>
+    <!-- HEADER -->
+    <header class="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <a href="admin-campaign.html" class="p-2 -ml-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors focus:outline-none">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+            </a>
+            <h1 class="text-base sm:text-lg font-semibold tracking-tight">Edit Campaign</h1>
+        </div>
+        
+        <!-- STATUS CHANGER DI HEADER -->
+        <div class="flex items-center gap-3">
+            <label class="text-sm font-medium text-zinc-400 hidden sm:block">Status:</label>
+            <select id="status-select" class="bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-xl px-4 py-2 text-white font-bold cursor-pointer outline-none text-sm">
+                <option value="ACTIVE">🚀 ACTIVE</option>
+                <option value="HOLDING">⏳ HOLDING</option>
+                <option value="CLOSED">✅ CLOSED</option>
+            </select>
+        </div>
     </header>
 
-    <main class="flex-1 p-8 max-w-4xl mx-auto w-full pb-32">
-        <form id="edit-form" class="space-y-6">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full">
+        <div class="max-w-6xl mx-auto">
             
-            <!-- STATUS CARD -->
-            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl">
-                <label class="block text-sm font-medium text-zinc-400 mb-2">Ubah Status Campaign <span class="text-red-500">*</span></label>
-                <select id="status-select" class="w-full bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white font-bold cursor-pointer outline-none">
-                    <option value="ACTIVE">🚀 ACTIVE (Berjalan)</option>
-                    <option value="HOLDING">⏳ HOLDING (Ditahan/Antrean)</option>
-                    <option value="CLOSED">✅ CLOSED (Selesai)</option>
-                </select>
-            </div>
-
-            <!-- INFO DASAR -->
-            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl space-y-4">
-                <h3 class="text-lg font-bold border-b border-zinc-800 pb-2">Detail Dasar</h3>
-                <div>
-                    <label class="block text-sm text-zinc-400 mb-1">Nama Brand</label>
-                    <input type="text" id="brand" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+            <!-- FULL WIDTH TOP: BANNER UPLOAD 16:9 -->
+            <div class="w-full bg-cardBg border border-zinc-800 rounded-2xl p-5 mb-6 max-w-3xl mx-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-white">Banner Campaign <span class="text-red-500">*</span></h3>
+                    <span class="text-[10px] text-zinc-500 font-medium bg-zinc-900 px-2 py-1 rounded">Rasio 16:9</span>
                 </div>
-                <div>
-                    <label class="block text-sm text-zinc-400 mb-1">Judul Campaign</label>
-                    <input type="text" id="title" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Tipe (clipping / ugc)</label>
-                        <input type="text" id="type" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                
+                <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="handleBannerUpload(event)">
+                
+                <div id="banner-upload-box" onclick="triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
+                    <img id="banner-preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
+                    <div class="absolute inset-0 bg-black/40 hidden z-10 group-hover:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-white font-bold text-sm bg-black/60 px-4 py-2 rounded-lg">Ganti Gambar</span>
                     </div>
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Niche/Kategori</label>
-                        <input type="text" id="niche" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                    
+                    <div id="banner-icon-container" class="z-0 flex flex-col items-center">
+                        <div id="banner-icon" class="w-12 h-12 bg-zinc-800 text-zinc-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-all">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <p id="banner-text" class="text-sm font-semibold text-white mb-1">Klik untuk Upload Banner</p>
                     </div>
                 </div>
             </div>
 
-            <!-- ANGGARAN -->
-            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl space-y-4">
-                <h3 class="text-lg font-bold border-b border-zinc-800 pb-2">Anggaran & Keuangan</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Total Budget Awal (Rp)</label>
-                        <input type="number" id="budget_total" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Budget Tersisa (Rp)</label>
-                        <input type="number" id="budget_remaining" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Tarif per 1k views (Rp)</label>
-                        <input type="number" id="reward_per_1k" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-zinc-400 mb-1">Harga per Video (Rp)</label>
-                        <input type="number" id="price_per_video" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white">
-                    </div>
-                </div>
-            </div>
+            <!-- LAYOUT DUA KOLOM SAMA RATA (ITEMS-STRETCH) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                
+                <!-- KOLOM KIRI -->
+                <div class="flex flex-col gap-6">
+                    
+                    <!-- Info Dasar -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
+                        <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Informasi Dasar & Kategori</h3>
+                        
+                        <label class="block text-sm font-medium text-cyan-400 mb-1">Hubungkan ke Akun Client</label>
+                        <select id="client-select" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4 outline-none cursor-pointer">
+                            <option value="">-- Tidak dihubungkan (Hanya di Admin) --</option>
+                        </select>
 
-            <!-- KONTEN & INSTRUKSI -->
-            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl space-y-4">
-                <h3 class="text-lg font-bold border-b border-zinc-800 pb-2">Brief Konten</h3>
-                <div>
-                    <label class="block text-sm text-zinc-400 mb-1">Brief Instruksi</label>
-                    <textarea id="brief" rows="4" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white resize-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm text-zinc-400 mb-1">Link Banner Image URL</label>
-                    <input type="text" id="banner_url" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white">
-                </div>
-            </div>
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Tipe Campaign</label>
+                                <select id="type-select" onchange="updateNicheOptions()" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none cursor-pointer">
+                                    <option value="clipping">Clipping</option>
+                                    <option value="ugc">UGC</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Kategori (Niche)</label>
+                                <select id="niche-select" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none cursor-pointer">
+                                    <!-- Diisi oleh JS -->
+                                </select>
+                            </div>
+                        </div>
 
-            <div class="pt-6">
-                <button type="submit" id="btn-save" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all">Simpan Perubahan</button>
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Nama Brand / Client</label>
+                        <input id="brand-input" type="text" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Judul Campaign</label>
+                        <input id="title-input" type="text" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Deadline Campaign</label>
+                        <input id="deadline-input" type="date" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
+                    </div>
+
+                    <!-- Platform & Links -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
+                        <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Platform & Link Materi</h3>
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-2">Platform Target</label>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <button type="button" onclick="togglePlatform('tiktok')" id="btn-plat-tiktok" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">TikTok</button>
+                            <button type="button" onclick="togglePlatform('ig')" id="btn-plat-ig" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">IG Reels</button>
+                            <button type="button" onclick="togglePlatform('yt')" id="btn-plat-yt" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">YT Shorts</button>
+                        </div>
+
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Link Video Bahan / Aset</label>
+                        <div id="video-links-container" class="space-y-2 mb-3"></div>
+                        <button type="button" onclick="openLinkModal()" class="w-full py-3 mt-auto rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Tambah Link Materi (Drive / YouTube)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KOLOM KANAN -->
+                <div class="flex flex-col gap-6 h-full">
+                    
+                    <!-- Budget -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col">
+                        <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Anggaran & Keuangan</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Total Budget Awal</label>
+                                <input type="text" id="budget_total" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1 flex items-center gap-1">
+                                    Budget Tersisa
+                                    <span class="tooltip cursor-help" title="Dihitung otomatis oleh sistem berdasarkan jumlah views dari video kreator yang sudah di-approve."><svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
+                                </label>
+                                <!-- READONLY KARENA OTOMATIS -->
+                                <input type="text" id="budget_remaining" readonly class="w-full bg-zinc-950 border border-zinc-800/50 rounded-xl px-4 py-3 text-sm text-zinc-500 cursor-not-allowed select-none">
+                                <p class="text-[9px] text-amber-500 mt-1">*Otomatis dipotong sistem saat video di-acc.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Tarif per 1k views</label>
+                                <input type="text" id="reward_per_1k" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Harga per Video</label>
+                                <input type="text" id="price_per_video" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brief -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
+                        <label class="text-sm font-medium text-zinc-400 mb-2">Instruksi / Brief Konten</label>
+                        <textarea id="brief-input" rows="5" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none mb-4 flex-1"></textarea>
+
+                        <label class="text-sm font-medium text-zinc-400 mb-2">Larangan (Restrictions)</label>
+                        <textarea id="restriction-input" rows="5" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none mt-auto flex-1"></textarea>
+                    </div>
+
+                </div>
             </div>
-        </form>
+        </div>
     </main>
 
+    <!-- BOTTOM ACTION BAR -->
+    <div class="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-darkBg/95 backdrop-blur-md px-4 sm:px-8 py-4 z-40 flex items-center justify-end">
+        <button id="btn-save" class="w-full max-w-[200px] px-5 py-3 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition-colors shadow-[0_0_15px_rgba(37,99,235,0.3)] focus:outline-none">
+            Simpan Perubahan
+        </button>
+    </div>
+
+    <!-- MODAL LINK -->
+    <div id="linkModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-md p-6 transform scale-95 transition-transform relative" id="linkModalContent">
+            <h3 class="text-lg font-bold text-white mb-4">Tambah Link Materi</h3>
+            <input type="url" id="linkModalInput" placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none mb-6 transition-colors">
+            <div class="flex justify-end gap-3">
+                <button onclick="closeModal('linkModal', 'linkModalContent')" class="px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none">Batal</button>
+                <button onclick="submitLink()" class="px-5 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
     <script type="module">
         import { supabase } from './authentication/auth.js';
 
         const urlParams = new URLSearchParams(window.location.search);
         const campaignId = urlParams.get('id');
+        
+        let uploadedBannerUrl = null;
+        let selectedPlatforms = { tiktok: false, ig: false, yt: false };
+        let linksData = [];
+        let currentPaymentType = 'views';
+
+        // Niche Options
+        const niches = {
+            clipping: ['WhaleClipping', 'Brand', 'Music', 'Podcast', 'Stream', 'Film', 'Tourism', 'Show', 'Entertainment'],
+            ugc: ['Produk Digital', 'Produk Fisik', 'FnB']
+        };
+
+        window.updateNicheOptions = function(selectedValue = '') {
+            const type = document.getElementById('type-select').value;
+            const nicheSelect = document.getElementById('niche-select');
+            nicheSelect.innerHTML = '';
+            
+            niches[type].forEach(n => {
+                const opt = document.createElement('option');
+                opt.value = n;
+                opt.innerText = n;
+                if(n === selectedValue) opt.selected = true;
+                nicheSelect.appendChild(opt);
+            });
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
             if(!campaignId) {
@@ -111,8 +237,27 @@
                 return;
             }
 
-            // Ambil data campaign
+            await fetchClientAccounts();
+            await fetchCampaignData();
+        });
+
+        async function fetchClientAccounts() {
+            const selectEl = document.getElementById('client-select');
+            const { data, error } = await supabase.from('profiles').select('id, email, business_name, full_name').in('role', ['client', 'brand']);
+            
+            if (!error && data && data.length > 0) {
+                let html = '<option value="">-- Tidak dihubungkan (Hanya di Admin) --</option>';
+                data.forEach(client => {
+                    const displayName = client.business_name || client.full_name || client.email;
+                    html += `<option value="${client.id}">${displayName} (${client.email})</option>`;
+                });
+                selectEl.innerHTML = html;
+            }
+        }
+
+        async function fetchCampaignData() {
             const { data, error } = await supabase.from('campaigns').select('*').eq('id', campaignId).single();
+            
             if(error || !data) {
                 alert("Data campaign tidak ditemukan!");
                 window.location.replace('admin-campaign.html');
@@ -121,39 +266,176 @@
 
             // Populate Form
             document.getElementById('status-select').value = data.status || 'HOLDING';
-            document.getElementById('brand').value = data.brand_name || '';
-            document.getElementById('title').value = data.title || '';
-            document.getElementById('type').value = data.type || '';
-            document.getElementById('niche').value = data.niche || '';
-            document.getElementById('budget_total').value = data.budget_total || 0;
-            document.getElementById('budget_remaining').value = data.budget_remaining || 0;
-            document.getElementById('reward_per_1k').value = data.reward_per_1k || 0;
-            document.getElementById('price_per_video').value = data.price_per_video || 0;
-            document.getElementById('brief').value = data.brief || '';
-            document.getElementById('banner_url').value = data.banner_url || '';
-        });
+            if(data.client_id) document.getElementById('client-select').value = data.client_id;
+            
+            document.getElementById('type-select').value = data.type || 'clipping';
+            window.updateNicheOptions(data.niche);
+            
+            document.getElementById('brand-input').value = data.brand_name || '';
+            document.getElementById('title-input').value = data.title || '';
+            if(data.deadline) document.getElementById('deadline-input').value = data.deadline;
+            
+            document.getElementById('budget_total').value = 'Rp ' + (data.budget_total || 0).toLocaleString('id-ID');
+            document.getElementById('budget_remaining').value = 'Rp ' + (data.budget_remaining || 0).toLocaleString('id-ID'); // Readonly
+            
+            document.getElementById('reward_per_1k').value = 'Rp ' + (data.reward_per_1k || 0).toLocaleString('id-ID');
+            document.getElementById('price_per_video').value = 'Rp ' + (data.price_per_video || 0).toLocaleString('id-ID');
+            
+            document.getElementById('brief-input').value = data.brief || '';
+            document.getElementById('restriction-input').value = data.restrictions || '';
 
-        document.getElementById('edit-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            // Platforms
+            if(data.platforms && Array.isArray(data.platforms)) {
+                if(data.platforms.includes('tiktok')) window.togglePlatform('tiktok');
+                if(data.platforms.includes('instagram')) window.togglePlatform('ig');
+                if(data.platforms.includes('youtube')) window.togglePlatform('yt');
+            }
+
+            // Links
+            if(data.video_links && Array.isArray(data.video_links)) {
+                linksData = data.video_links;
+                renderLinks();
+            }
+
+            // Banner
+            if(data.banner_url) {
+                uploadedBannerUrl = data.banner_url;
+                const preview = document.getElementById('banner-preview');
+                preview.src = uploadedBannerUrl;
+                preview.classList.remove('hidden');
+                document.getElementById('banner-icon-container').classList.add('hidden');
+                document.getElementById('banner-text').innerText = "Banner Terpasang";
+            }
+        }
+
+        // --- UPLOAD BANNER ---
+        window.triggerUpload = function() { document.getElementById('banner-file').click(); };
+        window.handleBannerUpload = async function(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const textEl = document.getElementById('banner-text');
+            textEl.innerText = "Mengupload ke Supabase...";
+            textEl.classList.add('text-amber-400');
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `campaigns/banner_${Date.now()}_${Math.random().toString(36).substring(2,7)}.${fileExt}`;
+
+            const { data, error } = await supabase.storage.from('avatars').upload(fileName, file);
+
+            if(error) {
+                alert("Upload error: " + error.message);
+                textEl.innerText = "Gagal upload!";
+                textEl.classList.remove('text-amber-400');
+                textEl.classList.add('text-red-500');
+                return;
+            }
+
+            const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(fileName);
+            uploadedBannerUrl = publicUrlData.publicUrl;
+
+            const preview = document.getElementById('banner-preview');
+            preview.src = uploadedBannerUrl;
+            preview.classList.remove('hidden');
+            document.getElementById('banner-icon-container').classList.add('hidden');
+        };
+
+        // --- LINKS MANAJEMEN ---
+        window.openLinkModal = function() {
+            document.getElementById('linkModalInput').value = '';
+            document.getElementById('linkModal').classList.remove('hidden'); 
+            document.getElementById('linkModal').classList.add('flex');
+            setTimeout(() => { document.getElementById('linkModal').classList.remove('opacity-0'); document.getElementById('linkModalContent').classList.remove('scale-95'); }, 10);
+        };
+        window.closeModal = function(modalId, contentId) {
+            document.getElementById(modalId).classList.add('opacity-0'); document.getElementById(contentId).classList.add('scale-95');
+            setTimeout(() => { document.getElementById(modalId).classList.add('hidden'); document.getElementById(modalId).classList.remove('flex'); }, 300);
+        };
+        window.submitLink = function() {
+            const val = document.getElementById('linkModalInput').value.trim();
+            if(val) { linksData.push(val); renderLinks(); closeModal('linkModal', 'linkModalContent'); }
+        };
+        window.removeLink = function(idx) {
+            linksData.splice(idx, 1); renderLinks();
+        };
+        function renderLinks() {
+            const container = document.getElementById('video-links-container');
+            container.innerHTML = '';
+            linksData.forEach((link, idx) => {
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between p-3 bg-zinc-900 border border-zinc-700 rounded-xl mb-2';
+                el.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        <a href="${link}" target="_blank" class="text-[13px] text-zinc-300 hover:text-white truncate">${link}</a>
+                    </div>
+                    <button type="button" onclick="removeLink(${idx})" class="text-zinc-500 hover:text-red-500 p-1 ml-2 transition-colors focus:outline-none"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
+                container.appendChild(el);
+            });
+        }
+
+        // --- PLATFORM TOGGLE ---
+        window.togglePlatform = function(platform) {
+            selectedPlatforms[platform] = !selectedPlatforms[platform];
+            const btn = document.getElementById('btn-plat-' + platform);
+            if(selectedPlatforms[platform]) {
+                btn.classList.add('bg-white', 'text-black', 'border-white');
+                btn.classList.remove('bg-zinc-900', 'text-zinc-400', 'border-zinc-700');
+            } else {
+                btn.classList.remove('bg-white', 'text-black', 'border-white');
+                btn.classList.add('bg-zinc-900', 'text-zinc-400', 'border-zinc-700');
+            }
+        };
+
+        // --- FORMAT CURRENCY ---
+        function parseRupiah(val) { return parseInt(val.replace(/[^0-9]/g, '')) || 0; }
+        function formatInput(e) {
+            let val = parseRupiah(e.target.value);
+            e.target.value = val === 0 ? '' : 'Rp ' + val.toLocaleString('id-ID');
+        }
+        document.getElementById('budget_total').addEventListener('input', formatInput);
+        document.getElementById('reward_per_1k').addEventListener('input', formatInput);
+        document.getElementById('price_per_video').addEventListener('input', formatInput);
+
+        // --- SAVE TO SUPABASE ---
+        document.getElementById('btn-save').addEventListener('click', async () => {
             const btn = document.getElementById('btn-save');
             btn.innerText = 'Menyimpan...';
             btn.disabled = true;
 
-            const updateData = {
+            const bName = document.getElementById('brand-input').value.trim();
+            const bInit = bName.substring(0,2).toUpperCase();
+            
+            const platforms = [];
+            if(selectedPlatforms.tiktok) platforms.push('tiktok');
+            if(selectedPlatforms.ig) platforms.push('instagram');
+            if(selectedPlatforms.yt) platforms.push('youtube');
+            
+            const clientId = document.getElementById('client-select').value;
+
+            const payload = {
                 status: document.getElementById('status-select').value,
-                brand_name: document.getElementById('brand').value,
-                title: document.getElementById('title').value,
-                type: document.getElementById('type').value,
-                niche: document.getElementById('niche').value,
-                budget_total: parseInt(document.getElementById('budget_total').value),
-                budget_remaining: parseInt(document.getElementById('budget_remaining').value),
-                reward_per_1k: parseInt(document.getElementById('reward_per_1k').value),
-                price_per_video: parseInt(document.getElementById('price_per_video').value),
-                brief: document.getElementById('brief').value,
-                banner_url: document.getElementById('banner_url').value
+                client_id: clientId ? clientId : null,
+                type: document.getElementById('type-select').value,
+                niche: document.getElementById('niche-select').value,
+                brand_name: bName,
+                brand_initial: bInit,
+                title: document.getElementById('title-input').value.trim(),
+                deadline: document.getElementById('deadline-input').value,
+                brief: document.getElementById('brief-input').value.trim(),
+                restrictions: document.getElementById('restriction-input').value.trim(),
+                budget_total: parseRupiah(document.getElementById('budget_total').value),
+                reward_per_1k: parseRupiah(document.getElementById('reward_per_1k').value),
+                price_per_video: parseRupiah(document.getElementById('price_per_video').value),
+                platforms: platforms,
+                video_links: linksData,
             };
 
-            const { error } = await supabase.from('campaigns').update(updateData).eq('id', campaignId);
+            if (uploadedBannerUrl) {
+                payload.banner_url = uploadedBannerUrl;
+            }
+
+            const { error } = await supabase.from('campaigns').update(payload).eq('id', campaignId);
 
             if(error) {
                 alert("Gagal update data: " + error.message);
