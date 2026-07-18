@@ -3,37 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Campaign - Whoost</title>
+    <title>Buat Campaign - Whoost Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        darkBg: '#0a0a0c',
-                        cardBg: '#121214',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { darkBg: '#0a0a0c', cardBg: '#121214' } } } }
     </script>
     <style>
-        /* Hilangkan efek hitam-hitam saat tap di HP */
         * { -webkit-tap-highlight-color: transparent !important; outline: none; }
         html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Custom Selection Styles for Cards */
         .card-selectable { border-color: #27272a; transition: all 0.3s ease; }
         .card-selectable.selected { border-color: white; background-color: rgba(255, 255, 255, 0.05); }
         .card-selectable:hover:not(.selected) { border-color: #52525b; }
@@ -44,769 +28,319 @@
     <!-- HEADER & STEPPER -->
     <header class="h-16 sm:h-20 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
-            <a href="client-campaign.html" class="p-2 -ml-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors focus:outline-none">
+            <a href="admin-campaign.html" class="p-2 -ml-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors focus:outline-none">
                 <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
             </a>
-            <h1 class="text-base sm:text-lg font-semibold tracking-tight">Buat Campaign Baru</h1>
+            <h1 class="text-base sm:text-lg font-semibold tracking-tight">Buat Campaign Baru (Admin)</h1>
         </div>
 
         <div class="hidden md:flex items-center gap-2">
-            <div class="flex items-center gap-2">
-                <div id="step-dot-1" class="w-6 h-6 rounded-full bg-white text-black text-[11px] font-bold flex items-center justify-center">1</div>
-                <span id="step-text-1" class="text-sm font-medium text-white">Tipe</span>
-            </div>
+            <div class="flex items-center gap-2"><div id="step-dot-1" class="w-6 h-6 rounded-full bg-white text-black text-[11px] font-bold flex items-center justify-center">1</div><span id="step-text-1" class="text-sm font-medium text-white">Tipe</span></div>
             <div class="w-8 h-px bg-zinc-700 mx-1"></div>
-            <div class="flex items-center gap-2">
-                <div id="step-dot-2" class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-500 text-[11px] font-bold flex items-center justify-center transition-colors">2</div>
-                <span id="step-text-2" class="text-sm font-medium text-zinc-500 transition-colors">Kategori</span>
-            </div>
+            <div class="flex items-center gap-2"><div id="step-dot-2" class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-500 text-[11px] font-bold flex items-center justify-center transition-colors">2</div><span id="step-text-2" class="text-sm font-medium text-zinc-500 transition-colors">Kategori</span></div>
             <div class="w-8 h-px bg-zinc-700 mx-1"></div>
-            <div class="flex items-center gap-2">
-                <div id="step-dot-3" class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-500 text-[11px] font-bold flex items-center justify-center transition-colors">3</div>
-                <span id="step-text-3" class="text-sm font-medium text-zinc-500 transition-colors">Detail Form</span>
-            </div>
+            <div class="flex items-center gap-2"><div id="step-dot-3" class="w-6 h-6 rounded-full bg-zinc-800 text-zinc-500 text-[11px] font-bold flex items-center justify-center transition-colors">3</div><span id="step-text-3" class="text-sm font-medium text-zinc-500 transition-colors">Detail Form</span></div>
         </div>
     </header>
 
-    <!-- MAIN SCROLLABLE AREA -->
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full">
         
-        <div id="pageLoader" class="absolute inset-0 z-50 bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
-            <div class="relative flex flex-col items-center">
-                <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-                <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
-            </div>
-        </div>
-
         <!-- STEP 1 -->
         <div id="step-1-container" class="block animate-[fadeIn_0.3s_ease-out] max-w-4xl mx-auto">
             <div class="text-center mb-8">
                 <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Pilih Tipe Campaign</h2>
-                <p class="text-sm text-zinc-400">Pilih model distribusi yang paling sesuai dengan target Anda.</p>
             </div>
-
             <div class="flex justify-center mb-8">
                 <div class="bg-zinc-900 border border-zinc-800 p-1 rounded-full flex gap-1 shadow-inner w-max">
-                    <button id="toggle-views" onclick="setPaymentType('views')" class="px-6 py-2 rounded-full bg-white text-black text-xs font-semibold shadow-sm transition-all focus:outline-none">Bayar per Views</button>
-                    <button id="toggle-video" onclick="setPaymentType('video')" class="px-6 py-2 rounded-full text-zinc-400 hover:text-white text-xs font-semibold transition-all focus:outline-none">Bayar per Video</button>
+                    <button id="toggle-views" onclick="setPaymentType('views')" class="px-6 py-2 rounded-full bg-white text-black text-xs font-semibold transition-all">Bayar per Views</button>
+                    <button id="toggle-video" onclick="setPaymentType('video')" class="px-6 py-2 rounded-full text-zinc-400 hover:text-white text-xs font-semibold transition-all">Bayar per Video</button>
                 </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div onclick="selectType('clipping', this)" class="card-selectable bg-cardBg border rounded-2xl p-6 cursor-pointer group flex flex-col relative overflow-hidden">
-                    <div class="absolute top-4 right-4 bg-zinc-800 text-white text-[9px] font-bold px-2 py-1 rounded uppercase tracking-wider">Populer</div>
-                    <div class="w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
+                <div onclick="selectType('clipping', this)" class="card-selectable bg-cardBg border rounded-2xl p-6 cursor-pointer group flex flex-col relative">
                     <h3 class="text-lg font-bold text-white mb-2">Viral Distribution (Clipping)</h3>
-                    <p class="text-[13px] text-zinc-400 leading-relaxed">Kreator memotong video mentahan Anda dan menyebarkannya secara masif ke ribuan akun media sosial mereka untuk viralitas instan.</p>
+                    <p class="text-[13px] text-zinc-400">Kreator memotong video mentahan Anda dan menyebarkannya ke medsos.</p>
                 </div>
-                
-                <div onclick="selectType('ugc', this)" class="card-selectable bg-cardBg border rounded-2xl p-6 cursor-pointer group flex flex-col relative overflow-hidden">
-                    <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </div>
+                <div onclick="selectType('ugc', this)" class="card-selectable bg-cardBg border rounded-2xl p-6 cursor-pointer group flex flex-col relative">
                     <h3 class="text-lg font-bold text-white mb-2">User Generated Content (UGC)</h3>
-                    <p class="text-[13px] text-zinc-400 leading-relaxed">Kreator membuat konten autentik orisinal untuk mereview produk fisik, produk digital, restoran, atau layanan Anda.</p>
+                    <p class="text-[13px] text-zinc-400">Kreator membuat konten autentik orisinal untuk mereview produk.</p>
                 </div>
             </div>
         </div>
 
         <!-- STEP 2 -->
-        <div id="step-2-container" class="hidden animate-[fadeIn_0.3s_ease-out] max-w-4xl mx-auto">
-            <div class="text-center mb-8">
-                <h2 id="step-2-title" class="text-2xl sm:text-3xl font-bold text-white mb-2">Pilih Kategori</h2>
-                <p class="text-sm text-zinc-400">Pilih niche yang paling merepresentasikan materi kampanye Anda.</p>
+        <div id="step-2-container" class="hidden animate-[fadeIn_0.3s_ease-out] max-w-5xl mx-auto">
+            <div class="text-center mb-8"><h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Pilih Kategori (Niche)</h2></div>
+
+            <!-- Kategori Clipping (10 Sesuai Gambar) -->
+            <div id="category-clipping-options" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                <div onclick="selectCategory('All Content', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">All Content</h4></div>
+                <div onclick="selectCategory('WhaleClipping', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">WhaleClipping</h4></div>
+                <div onclick="selectCategory('Brand', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Brand</h4></div>
+                <div onclick="selectCategory('Music', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Music</h4></div>
+                <div onclick="selectCategory('Podcast', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Podcast</h4></div>
+                <div onclick="selectCategory('Stream', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Stream</h4></div>
+                <div onclick="selectCategory('Film', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Film</h4></div>
+                <div onclick="selectCategory('Tourism', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Tourism</h4></div>
+                <div onclick="selectCategory('Show', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Show</h4></div>
+                <div onclick="selectCategory('Entertainment', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Entertainment</h4></div>
             </div>
 
-            <div id="category-clipping-options" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div onclick="selectCategory('Brand Promo', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex items-start gap-4">
-                    <div class="w-10 h-10 bg-zinc-800 text-white rounded-lg flex items-center justify-center shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
-                    <div><h4 class="text-sm font-bold text-white mb-1">Brand Promo / Marketing</h4><p class="text-[11px] text-zinc-400">Kreator sebar materi iklanmu secara masif.</p></div>
-                </div>
-                <div onclick="selectCategory('Podcast', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex items-start gap-4">
-                    <div class="w-10 h-10 bg-zinc-800 text-white rounded-lg flex items-center justify-center shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg></div>
-                    <div><h4 class="text-sm font-bold text-white mb-1">Podcast / Video Panjang</h4><p class="text-[11px] text-zinc-400">Potong dan sebar momen terbaik podcastmu.</p></div>
-                </div>
-                <div onclick="selectCategory('Webinar', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex items-start gap-4">
-                    <div class="w-10 h-10 bg-zinc-800 text-white rounded-lg flex items-center justify-center shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg></div>
-                    <div><h4 class="text-sm font-bold text-white mb-1">Webinar / Edu-Course</h4><p class="text-[11px] text-zinc-400">Sebar 'daging' materi untuk memancing leads baru.</p></div>
-                </div>
-                <div onclick="selectCategory('Film', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex items-start gap-4">
-                    <div class="w-10 h-10 bg-zinc-800 text-white rounded-lg flex items-center justify-center shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg></div>
-                    <div><h4 class="text-sm font-bold text-white mb-1">Film / Series Promo</h4><p class="text-[11px] text-zinc-400">Klip trailer filmmu untuk bantu viralkan masuk FYP.</p></div>
-                </div>
-            </div>
-
+            <!-- Kategori UGC -->
             <div id="category-ugc-options" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div onclick="selectCategory('Produk Digital', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex flex-col items-center text-center">
-                    <div class="w-12 h-12 bg-zinc-800 text-white rounded-lg flex items-center justify-center mb-3 shrink-0"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
-                    <h4 class="text-sm font-bold text-white mb-1">Produk Digital / Jasa</h4>
-                    <p class="text-[11px] text-zinc-400 leading-relaxed">Review user asli tingkatkan Social Proof.</p>
-                </div>
-                <div onclick="selectCategory('Produk Fisik', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex flex-col items-center text-center">
-                    <div class="w-12 h-12 bg-zinc-800 text-white rounded-lg flex items-center justify-center mb-3 shrink-0"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg></div>
-                    <h4 class="text-sm font-bold text-white mb-1">Produk Fisik</h4>
-                    <p class="text-[11px] text-zinc-400 leading-relaxed">Kirim sampel atau biarkan kreator review barangnya.</p>
-                </div>
-                <div onclick="selectCategory('FnB', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer flex flex-col items-center text-center">
-                    <div class="w-12 h-12 bg-zinc-800 text-white rounded-lg flex items-center justify-center mb-3 shrink-0"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z"></path></svg></div>
-                    <h4 class="text-sm font-bold text-white mb-1">F&B / Restoran</h4>
-                    <p class="text-[11px] text-zinc-400 leading-relaxed">Review makanan yang menggugah selera audiens.</p>
-                </div>
+                <div onclick="selectCategory('Produk Digital', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Produk Digital / Jasa</h4></div>
+                <div onclick="selectCategory('Produk Fisik', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Produk Fisik</h4></div>
+                <div onclick="selectCategory('FnB', this)" class="card-selectable bg-cardBg border rounded-xl p-5 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">F&B / Restoran</h4></div>
             </div>
         </div>
 
         <!-- STEP 3 -->
         <div id="step-3-container" class="hidden animate-[fadeIn_0.3s_ease-out] max-w-6xl mx-auto">
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-6">
                 
-                <!-- ROW 1: BANNER & BUDGET -->
-                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col h-full">
-                    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-                        <h3 class="text-lg font-bold text-white">Banner Campaign <span class="text-red-500">*</span></h3>
-                        <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium">Wajib 16:9 • Min. 1280x720px</span>
-                    </div>
-                    <button id="btn-upload-banner" type="button" onclick="handleBannerUpload()" class="w-full flex-1 min-h-[200px] border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center group focus:outline-none">
-                        <div id="banner-icon" class="w-10 h-10 sm:w-12 sm:h-12 bg-zinc-800 text-zinc-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 group-hover:text-white transition-all shrink-0">
-                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <p id="banner-text" class="text-sm font-semibold text-white mb-1">Upload Banner</p>
-                        <p id="banner-subtext" class="text-[11px] text-zinc-500">Format JPG/PNG, Max 5MB</p>
-                    </button>
-                </div>
-
-                <!-- Budget & Target -->
-                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col h-full space-y-5">
-                    <h3 class="text-lg font-bold text-white mb-1">Budget & Deadline</h3>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Deadline Campaign <span class="text-red-500">*</span></label>
-                        <input id="deadline-input" type="date" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
-                    </div>
-
-                    <!-- Layout Views -->
-                    <div id="budget-views-section" class="flex flex-col space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-400 mb-2">Rekomendasi Budget</label>
-                            <div class="flex overflow-x-auto snap-x gap-3 pt-3 pb-3 -mt-3 hide-scrollbar">
-                                <div class="shrink-0 snap-start bg-zinc-900 border border-zinc-800 rounded-xl p-3 min-w-[130px] cursor-pointer hover:border-zinc-500 transition-colors" onclick="setBudget('1500000', this)">
-                                    <p class="text-[10px] text-zinc-500 mb-1">Coba Pasar</p>
-                                    <p class="text-sm font-bold text-white">Rp 1.500.000</p>
-                                </div>
-                                <div class="shrink-0 snap-start bg-zinc-900 border border-zinc-500 rounded-xl p-3 min-w-[130px] cursor-pointer relative" onclick="setBudget('3000000', this)">
-                                    <div class="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">🔥 Rekomendasi</div>
-                                    <p class="text-[10px] text-zinc-400 mb-1">Standar</p>
-                                    <p class="text-sm font-bold text-white">Rp 3.000.000</p>
-                                </div>
-                                <div class="shrink-0 snap-start bg-zinc-900 border border-zinc-800 rounded-xl p-3 min-w-[130px] cursor-pointer hover:border-zinc-500 transition-colors" onclick="setBudget('5000000', this)">
-                                    <p class="text-[10px] text-zinc-500 mb-1">Jangkauan Luas</p>
-                                    <p class="text-sm font-bold text-white">Rp 5.000.000</p>
-                                </div>
-                                <div class="shrink-0 snap-start bg-zinc-900 border border-zinc-800 rounded-xl p-3 min-w-[130px] cursor-pointer hover:border-zinc-500 transition-colors" onclick="setBudget('12500000', this)">
-                                    <p class="text-[10px] text-zinc-500 mb-1">High Growth</p>
-                                    <p class="text-sm font-bold text-white">Rp 12.500.000</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-400 mb-2">Budget Custom <span class="text-red-500">*</span></label>
-                            <input type="text" id="custom-budget" placeholder="Saran: Rp 5.000.000++" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
-                        </div>
-                        <div class="mt-auto">
-                            <label class="block text-sm font-medium text-zinc-400 mb-1">Tarif per 1000 Views (CPM) <span class="text-red-500">*</span></label>
-                            <p class="text-[10px] sm:text-[11px] text-zinc-500 mb-3 leading-snug">Rekomendasi: Rp 3.000 - Rp 17.000 per 1.000 views.</p>
-                            <input type="text" id="cpm-input" placeholder="Nominal (Rp)" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
-                        </div>
-                    </div>
-
-                    <!-- Layout Video -->
-                    <div id="budget-video-section" class="hidden flex flex-col space-y-5">
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-400 mb-2">Target Jumlah Video <span class="text-red-500">*</span></label>
-                            <input type="number" id="target-video-input" placeholder="Contoh: 15" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
-                        </div>
-                        <div class="mt-auto">
-                            <label class="block text-sm font-medium text-zinc-400 mb-1">Harga per Video <span class="text-red-500">*</span></label>
-                            <p class="text-[10px] sm:text-[11px] text-zinc-500 mb-3 leading-snug">Minimal harga <b>Rp 10.000</b> per video.</p>
-                            <input type="text" id="price-video-input" placeholder="Nominal (Rp)" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none transition-colors">
-                            <p id="price-error" class="hidden text-red-500 text-[11px] mt-1 font-medium">Nominal di bawah batas minimal (Rp 10.000)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ROW 2: INFO DASAR & TARGET -->
-                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col h-full space-y-5">
-                    <h3 class="text-lg font-bold text-white mb-2">Informasi Dasar</h3>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Judul Campaign <span class="text-red-500">*</span></label>
-                        <input id="title-input" type="text" placeholder="Contoh: Promo Diskon Sepatu Akhir Tahun" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-colors">
-                    </div>
-                    
-                    <div>
-                        <div class="flex justify-between mb-2">
-                            <label class="text-sm font-medium text-zinc-400">Deskripsi Singkat</label>
-                            <span class="text-[10px] text-zinc-600">0/300 karakter</span>
-                        </div>
-                        <textarea rows="3" placeholder="Jelaskan tujuan campaign semenarik mungkin..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-colors resize-none"></textarea>
-                    </div>
-                    
-                    <div>
-                        <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
-                            <label class="text-sm font-medium text-zinc-400">Instruksi / Brief Konten <span class="text-red-500">*</span></label>
-                            <button type="button" onclick="fillBriefTemplate()" class="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 focus:outline-none">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                Pakai Template
-                            </button>
-                        </div>
-                        <textarea id="brief-input" rows="6" placeholder="Ketik manual instruksi edit & distribusinya di sini..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-colors resize-none"></textarea>
-                    </div>
-                    
-                    <div class="mt-auto">
-                        <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
-                            <label class="text-sm font-medium text-zinc-400">Larangan (Restrictions) <span class="text-red-500">*</span></label>
-                            <button type="button" onclick="fillRestrictionTemplate()" class="text-[11px] font-semibold text-red-400 hover:text-red-300 border border-red-500/30 bg-red-500/10 px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 focus:outline-none">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                Pakai Template
-                            </button>
-                        </div>
-                        <textarea id="restriction-input" rows="5" placeholder="Contoh: Dilarang sebut merek kompetitor..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-colors resize-none"></textarea>
-                    </div>
-                </div>
-
-                <!-- Target & Links & Metode -->
-                <div class="flex flex-col gap-6 sm:gap-8 h-full">
-                    
-                    <!-- Target Box -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col space-y-5">
-                        <h3 class="text-lg font-bold text-white mb-2">Target Platform & Link</h3>
+                <!-- KOLOM KIRI -->
+                <div class="flex flex-col gap-6">
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col">
+                        <h3 class="text-lg font-bold text-white mb-4">Informasi Dasar & Brand</h3>
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Nama Brand / Client <span class="text-red-500">*</span></label>
+                        <input id="brand-input" type="text" placeholder="Contoh: Aero Shoes" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
                         
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-400 mb-3">Platform Target <span class="text-red-500">*</span></label>
-                            <div class="flex flex-wrap gap-2">
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" id="platform-tiktok" class="peer sr-only">
-                                    <div class="px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold peer-checked:bg-white peer-checked:text-black peer-checked:border-white transition-colors flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                                        TikTok
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" id="platform-ig" class="peer sr-only">
-                                    <div class="px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold peer-checked:bg-white peer-checked:text-black peer-checked:border-white transition-colors flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                                        Instagram
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="checkbox" id="platform-yt" class="peer sr-only">
-                                    <div class="px-4 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold peer-checked:bg-white peer-checked:text-black peer-checked:border-white transition-colors flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                                        YT Shorts
-                                    </div>
-                                </label>
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Judul Campaign <span class="text-red-500">*</span></label>
+                        <input id="title-input" type="text" placeholder="Contoh: Promo Diskon Sepatu Akhir Tahun" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Deadline Campaign <span class="text-red-500">*</span></label>
+                        <input id="deadline-input" type="date" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Deskripsi Singkat</label>
+                        <textarea id="desc-input" rows="2" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none"></textarea>
+                    </div>
+
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5">
+                        <h3 class="text-lg font-bold text-white mb-4">Instruksi & Larangan</h3>
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Instruksi / Brief Konten <span class="text-red-500">*</span></label>
+                        <textarea id="brief-input" rows="4" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4 resize-none"></textarea>
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Larangan (Restrictions) <span class="text-red-500">*</span></label>
+                        <textarea id="restriction-input" rows="3" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- KOLOM KANAN -->
+                <div class="flex flex-col gap-6">
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5">
+                        <h3 class="text-lg font-bold text-white mb-4">Budget & Target</h3>
+                        <div id="budget-views-section" class="flex flex-col space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Total Budget <span class="text-red-500">*</span></label>
+                                <input type="text" id="custom-budget" placeholder="Rp 5.000.000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
                             </div>
-
-                            <div class="mt-4">
-                                <label class="block text-sm font-medium text-zinc-400 mb-2">Durasi Klip (Opsional)</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <svg class="h-4 w-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    </div>
-                                    <input type="text" placeholder="Contoh: 15-30 detik" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl py-3 pl-10 pr-4 text-sm text-white outline-none transition-colors">
-                                </div>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Tarif per 1000 Views (CPM) <span class="text-red-500">*</span></label>
+                                <input type="text" id="cpm-input" placeholder="Rp 3.000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
                             </div>
+                        </div>
 
-                            <!-- Links Area -->
-                            <div id="bahan-clipping-section" class="mt-4">
-                                <label class="block text-sm font-medium text-zinc-400 mb-1">Link Video UTAMA (Bahan) <span class="text-red-500">*</span></label>
-                                <p class="text-[10px] sm:text-[11px] text-zinc-500 mb-3 leading-snug">Masukkan link video durasi panjang (YouTube/Drive) yang akan dipotong kreator.</p>
-                                
-                                <div id="video-links-container" class="space-y-2 mb-3"></div>
-
-                                <button type="button" onclick="openLinkModal('video')" class="w-full py-3 rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-500 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                    Tambah Link Video
-                                </button>
+                        <div id="budget-video-section" class="hidden flex flex-col space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Target Jumlah Video <span class="text-red-500">*</span></label>
+                                <input type="number" id="target-video-input" placeholder="15" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
                             </div>
-                            
-                            <div class="mt-auto pt-4">
-                                <label class="block text-sm font-medium text-zinc-400 mb-1">Link Aset BRANDING (Opsional)</label>
-                                <p class="text-[10px] sm:text-[11px] text-zinc-500 mb-3 leading-snug">Upload file pendukung seperti Logo Transparan, Video Intro/Outro ke GDrive/Dropbox.</p>
-                                
-                                <div id="asset-links-container" class="space-y-2 mb-3"></div>
-
-                                <button type="button" onclick="openLinkModal('asset')" class="w-full py-3 rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 hover:border-zinc-500 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                    Tambah Link Aset
-                                </button>
+                            <div>
+                                <label class="block text-sm font-medium text-zinc-400 mb-1">Harga per Video <span class="text-red-500">*</span></label>
+                                <input type="text" id="price-video-input" placeholder="Rp 50.000" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Metode Pembayaran Box -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 mt-auto">
-                        <h3 class="text-lg font-bold text-white mb-4">Metode Pembayaran</h3>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col">
+                        <h3 class="text-lg font-bold text-white mb-4">Platform & Link</h3>
+                        <label class="block text-sm font-medium text-zinc-400 mb-2">Platform Target <span class="text-red-500">*</span></label>
+                        <div class="flex gap-2 mb-4">
+                            <label><input type="checkbox" id="platform-tiktok" value="tiktok" class="mr-1"> TikTok</label>
+                            <label><input type="checkbox" id="platform-ig" value="instagram" class="mr-1 ml-3"> IG Reels</label>
+                            <label><input type="checkbox" id="platform-yt" value="youtube" class="mr-1 ml-3"> YT Shorts</label>
+                        </div>
+
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Link Video Bahan (Pisahkan koma)</label>
+                        <input type="text" id="video-links" placeholder="https://drive..., https://yt..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
                         
-                        <label class="relative block cursor-pointer select-none group focus:outline-none" style="-webkit-tap-highlight-color: transparent;">
-                            <input type="radio" name="payment" class="peer sr-only" checked>
-                            <div class="border-2 border-zinc-700 bg-zinc-900 peer-checked:border-white peer-checked:bg-white/10 rounded-xl p-4 transition-all w-full focus:outline-none">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                    <h4 class="font-bold text-white text-sm">Transfer Bank</h4>
-                                </div>
-                                <p class="text-[11px] text-zinc-400 leading-snug">Invoice detail dan petunjuk pembayaran akan dikirimkan otomatis ke email Anda setelah campaign dikirim.</p>
-                            </div>
-                        </label>
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Link Banner Campaign (Opsional)</label>
+                        <input type="text" id="banner-url" placeholder="https://... image.jpg" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white">
                     </div>
+                </div>
 
-                </div> <!-- End of Right Column Items -->
-
-            </div> <!-- End Main Grid 50/50 -->
-
-            <!-- KOTAK BARU FULL WIDTH: RINGKASAN CAMPAIGN & PEMBAYARAN -->
-            <div class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col space-y-4 shadow-lg relative overflow-hidden mt-2">
-                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-zinc-700 via-zinc-500 to-zinc-700"></div>
-                <h3 class="text-lg font-bold text-white mb-2">Ringkasan Campaign & Pembayaran</h3>
-                
-                <div class="flex justify-between items-center text-sm">
-                    <span class="text-zinc-400">Budget Konten</span>
-                    <span id="summary-budget" class="font-semibold text-white">Rp 0</span>
-                </div>
-                
-                <div class="flex justify-between items-center text-sm">
-                    <span class="text-zinc-400">Sistem</span>
-                    <span id="summary-system" class="font-semibold text-white">Bayar per Views</span>
-                </div>
-                
-                <div class="flex justify-between items-center text-sm">
-                    <span id="summary-target-label" class="text-zinc-400">Potensi Total Views</span>
-                    <span id="summary-target-value" class="font-bold text-white">0 Views</span>
-                </div>
-                
-                <div class="flex justify-between items-center text-sm">
-                    <div class="flex items-center gap-1.5 text-zinc-400">
-                        <span>Service & Protection Fee (15%)</span>
-                        <button type="button" onclick="openFeeModal()" class="text-zinc-500 hover:text-white transition-colors focus:outline-none">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"></path></svg>
-                        </button>
-                    </div>
-                    <span id="summary-fee" class="font-semibold text-white">Rp 0</span>
-                </div>
-                
-                <hr class="border-zinc-800 my-2">
-                
-                <div class="flex justify-between items-center">
-                    <span class="text-base font-bold text-white">Total Tagihan</span>
-                    <span id="summary-total" class="text-2xl font-bold text-green-400">Rp 0</span>
-                </div>
             </div>
-
-        </div> <!-- End Step 3 Wrapper -->
+        </div>
     </main>
 
     <!-- BOTTOM ACTION BAR -->
     <div class="fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-darkBg/95 backdrop-blur-md px-4 sm:px-8 py-4 z-40 flex items-center justify-between gap-4">
-        <button id="btn-back" onclick="prevStep()" class="hidden px-5 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-800 transition-colors focus:outline-none">
-            Kembali
-        </button>
+        <button id="btn-back" onclick="prevStep()" class="hidden px-5 py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-800 transition-colors">Kembali</button>
         <div id="btn-back-spacer" class="block w-[88px]"></div> 
-        
-        <button id="btn-next" onclick="nextStep()" class="w-full max-w-[200px] px-5 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors ml-auto shadow-[0_0_15px_rgba(255,255,255,0.15)] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none" disabled>
-            Lanjut
-        </button>
+        <button id="btn-next" class="w-full max-w-[200px] px-5 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors ml-auto shadow-[0_0_15px_rgba(255,255,255,0.15)] disabled:opacity-50" disabled>Lanjut</button>
     </div>
 
-    <!-- MODAL LINK -->
-    <div id="linkModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-md p-6 transform scale-95 transition-transform relative" id="linkModalContent">
-            <h3 id="linkModalTitle" class="text-lg font-bold text-white mb-4">Tambah Link</h3>
-            <input type="url" id="linkModalInput" placeholder="https://" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none mb-6 transition-colors">
-            <div class="flex justify-end gap-3">
-                <button onclick="closeModal('linkModal', 'linkModalContent')" class="px-5 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none">Batal</button>
-                <button onclick="submitLink()" class="px-5 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none">Simpan</button>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
 
-    <!-- MODAL FEE EXPLANATION -->
-    <div id="feeModal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 transform scale-95 transition-transform relative" id="feeModalContent">
-            <h3 class="text-lg font-bold text-white mb-3">Apa itu Service & Protection Fee?</h3>
-            <p class="text-sm text-zinc-400 leading-relaxed mb-6">Biaya ini menjamin keamanan dana (Escrow) dan kualitas hasil. Dana Anda ditahan sistem dan hanya cair ke kreator jika konten sesuai brief. Tim kami juga melakukan pengecekan manual untuk memastikan traffic bebas bot.</p>
-            <button onclick="closeModal('feeModal', 'feeModalContent')" class="w-full px-5 py-2.5 rounded-xl bg-zinc-800 text-white text-sm font-bold hover:bg-zinc-700 transition-colors focus:outline-none">Mengerti</button>
-        </div>
-    </div>
-
-    <!-- MODAL SUKSES (WHATSAPP) -->
-    <div id="successModal" class="fixed inset-0 z-[110] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform" id="successModalContent">
-            <div class="w-16 h-16 bg-green-500/20 text-green-400 border border-green-500/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-            <h3 class="text-xl font-bold text-white mb-2">Campaign Tersimpan!</h3>
-            <p class="text-[13px] text-zinc-400 mb-6 leading-relaxed">Data Anda telah masuk ke sistem. Silakan konfirmasi ke Admin untuk proses review dan menerbitkan tagihan/invoice pembayaran.</p>
-            <button onclick="sendToAdminWA()" class="w-full px-5 py-3 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                Konfirmasi ke WA Admin
-            </button>
-        </div>
-    </div>
-
-    <!-- SCRIPT LOGIC -->
-    <script>
-        // Data State
         let currentStep = 1;
         let campaignType = null;
         let campaignCategory = null;
         let paymentType = 'views'; 
-        let isBannerUploaded = false;
-        const FEE_PERCENTAGE = 0.15; // 15% fee protection
 
-        // Elemen Tombol UI
-        const btnNext = document.getElementById('btn-next');
-        const btnBack = document.getElementById('btn-back');
-        const btnSpacer = document.getElementById('btn-back-spacer');
-
-        // Text Templates (Utuh Tidak Dikurangi)
-        const briefTemplateText = `Download video mentahan dari Link yang disediakan di atas.\nCari momen paling menarik yang bisa memancing perhatian penonton dalam 3 detik pertama (Hook).\nPotong video menjadi klip berdurasi ideal (15-60 detik).\nWajib tambahkan subtitle otomatis agar lebih menarik dan mudah dibaca.\n[Tambahan] Beri efek zoom atau sound effect lucu jika diperlukan.\nUpload ke akun TikTok / IG Reels milikmu dengan hashtag #Hastagbrandmu.`;
-        
-        const restrictionTemplateText = `Anti-Botting: Dilarang keras menggunakan view botting, ads boosting, atau pembelian views. Hanya Organic Views yang dihitung.\nOriginalitas: Dilarang keras mencuri atau melakukan re-post konten milik sesama clipper.\nManual Editing Only: Penggunaan alat editing AI otomatis (seperti Opus Clip atau sejenisnya) dilarang.\nNo Raw Reupload: Dilarang mengunggah ulang video mentah tanpa sentuhan kreativitas atau editing tambahan.\nEtika & Nama Baik: Dilarang membuat konten yang mengandung unsur SARA, ujaran kebencian, atau menjelekkan pihak tertentu.`;
-
-        // Format Uang Helper
-        function formatRupiah(val) { return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
-        function parseRupiah(val) { return parseInt(val.replace(/[^0-9]/g, '')) || 0; }
-        
-        function formatCurrencyInput(e) {
-            let val = parseRupiah(e.target.value);
-            e.target.value = val === 0 ? '' : 'Rp ' + formatRupiah(val);
-            
-            // Validasi warna merah untuk Harga per Video (Minimal 10.000)
-            if (e.target.id === 'price-video-input') {
-                const errorText = document.getElementById('price-error');
-                if (val > 0 && val < 10000) {
-                    e.target.classList.add('text-red-500');
-                    e.target.classList.remove('text-white');
-                    errorText.classList.remove('hidden');
-                } else {
-                    e.target.classList.remove('text-red-500');
-                    e.target.classList.add('text-white');
-                    errorText.classList.add('hidden');
-                }
-            }
-            
-            calculateSummary();
+        window.setPaymentType = function(type) {
+            paymentType = type;
+            document.getElementById('toggle-views').className = type === 'views' ? "px-6 py-2 rounded-full bg-white text-black text-xs font-semibold" : "px-6 py-2 rounded-full text-zinc-400 hover:text-white text-xs font-semibold";
+            document.getElementById('toggle-video').className = type === 'video' ? "px-6 py-2 rounded-full bg-white text-black text-xs font-semibold" : "px-6 py-2 rounded-full text-zinc-400 hover:text-white text-xs font-semibold";
+            document.getElementById('budget-views-section').classList.toggle('hidden', type !== 'views');
+            document.getElementById('budget-video-section').classList.toggle('hidden', type !== 'video');
             validateForm();
-        }
+        };
 
-        // Listener Init
-        document.addEventListener('DOMContentLoaded', () => {
-            // Loader
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader){
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500);
-                }
-            }, 500);
+        window.selectType = function(type, el) {
+            campaignType = type;
+            document.querySelectorAll('#step-1-container .card-selectable').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('btn-next').disabled = false;
+        };
 
-            // Listener Input Angka & Validasi real-time
-            document.getElementById('custom-budget').addEventListener('input', formatCurrencyInput);
-            document.getElementById('cpm-input').addEventListener('input', formatCurrencyInput);
-            document.getElementById('price-video-input').addEventListener('input', formatCurrencyInput);
-            document.getElementById('target-video-input').addEventListener('input', () => { calculateSummary(); validateForm(); });
+        window.selectCategory = function(cat, el) {
+            campaignCategory = cat;
+            document.querySelectorAll('#step-2-container .card-selectable').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('btn-next').disabled = false;
+        };
 
-            ['title-input', 'deadline-input', 'brief-input', 'restriction-input', 'platform-tiktok', 'platform-ig', 'platform-yt'].forEach(id => {
-                document.getElementById(id).addEventListener('input', validateForm);
-                document.getElementById(id).addEventListener('change', validateForm);
-            });
+        document.getElementById('btn-next').addEventListener('click', async () => {
+            if (currentStep === 1) {
+                document.getElementById('step-1-container').classList.add('hidden');
+                document.getElementById('step-2-container').classList.remove('hidden');
+                document.getElementById('category-clipping-options').classList.toggle('hidden', campaignType !== 'clipping');
+                document.getElementById('category-ugc-options').classList.toggle('hidden', campaignType !== 'ugc');
+                currentStep = 2;
+                document.getElementById('btn-next').disabled = !campaignCategory;
+            } else if (currentStep === 2) {
+                document.getElementById('step-2-container').classList.add('hidden');
+                document.getElementById('step-3-container').classList.remove('hidden');
+                currentStep = 3;
+                document.getElementById('btn-next').innerText = 'Simpan & Publish';
+                validateForm();
+            } else if (currentStep === 3) {
+                await submitToSupabase();
+            }
+            updateUI();
         });
 
-        function handleBannerUpload() {
-            setTimeout(() => {
-                isBannerUploaded = true;
-                document.getElementById('banner-text').innerText = "Banner_Campaign_Fix.png";
-                document.getElementById('banner-text').classList.add("text-green-400");
-                document.getElementById('banner-text').classList.remove("text-white");
-                document.getElementById('banner-subtext').innerText = "Berhasil diupload (2.4MB)";
-                
-                const btn = document.getElementById('btn-upload-banner');
-                btn.classList.add("border-green-500/50", "bg-green-500/10");
-                btn.classList.remove("border-zinc-700", "bg-zinc-900/50");
-
-                const icon = document.getElementById('banner-icon');
-                icon.classList.add("bg-green-500/20", "text-green-400");
-                icon.classList.remove("bg-zinc-800", "text-zinc-400");
-                
-                validateForm();
-            }, 500);
-        }
-
-        function fillBriefTemplate() { document.getElementById('brief-input').value = briefTemplateText; validateForm(); }
-        function fillRestrictionTemplate() { document.getElementById('restriction-input').value = restrictionTemplateText; validateForm(); }
-
-        function calculateSummary() {
-            let budget = 0;
-            let targetText = "0 Views";
-
-            if (paymentType === 'views') {
-                const b = parseRupiah(document.getElementById('custom-budget').value);
-                const cpm = parseRupiah(document.getElementById('cpm-input').value);
-                budget = b;
-                if (b > 0 && cpm > 0) {
-                    targetText = Math.floor((b / cpm) * 1000).toLocaleString('id-ID') + "+ Views";
-                }
-            } else {
-                const target = parseInt(document.getElementById('target-video-input').value) || 0;
-                const price = parseRupiah(document.getElementById('price-video-input').value);
-                budget = target * price;
-                targetText = target + " Video";
+        window.prevStep = function() {
+            if (currentStep === 2) {
+                document.getElementById('step-2-container').classList.add('hidden');
+                document.getElementById('step-1-container').classList.remove('hidden');
+                currentStep = 1;
+                document.getElementById('btn-next').disabled = false;
+            } else if (currentStep === 3) {
+                document.getElementById('step-3-container').classList.add('hidden');
+                document.getElementById('step-2-container').classList.remove('hidden');
+                currentStep = 2;
+                document.getElementById('btn-next').innerText = 'Lanjut';
             }
+            updateUI();
+        };
 
-            const fee = budget * FEE_PERCENTAGE;
-            const total = budget + fee;
-
-            document.getElementById('summary-system').innerText = paymentType === 'views' ? 'Bayar per Views' : 'Bayar per Video';
-            document.getElementById('summary-target-label').innerText = paymentType === 'views' ? 'Potensi Total Views' : 'Target Jumlah Video';
-            
-            document.getElementById('summary-budget').innerText = 'Rp ' + formatRupiah(budget);
-            document.getElementById('summary-target-value').innerText = targetText;
-            document.getElementById('summary-fee').innerText = 'Rp ' + formatRupiah(fee);
-            document.getElementById('summary-total').innerText = 'Rp ' + formatRupiah(total);
+        function updateUI() {
+            document.getElementById('btn-back').classList.toggle('hidden', currentStep === 1);
+            document.getElementById('btn-back-spacer').classList.toggle('hidden', currentStep !== 1);
+            for(let i=1; i<=3; i++){
+                document.getElementById('step-dot-'+i).className = currentStep >= i ? "w-6 h-6 rounded-full bg-white text-black text-[11px] font-bold flex items-center justify-center" : "w-6 h-6 rounded-full bg-zinc-800 text-zinc-500 text-[11px] font-bold flex items-center justify-center";
+                document.getElementById('step-text-'+i).className = currentStep >= i ? "text-sm font-medium text-white" : "text-sm font-medium text-zinc-500";
+            }
         }
+
+        // Format Currency Helpers
+        function parseRupiah(val) { return parseInt(val.replace(/[^0-9]/g, '')) || 0; }
+        function formatInput(e) {
+            let val = parseRupiah(e.target.value);
+            e.target.value = val === 0 ? '' : 'Rp ' + val.toLocaleString('id-ID');
+            validateForm();
+        }
+        document.getElementById('custom-budget').addEventListener('input', formatInput);
+        document.getElementById('cpm-input').addEventListener('input', formatInput);
+        document.getElementById('price-video-input').addEventListener('input', formatInput);
+        
+        ['brand-input','title-input','deadline-input','brief-input','restriction-input','platform-tiktok','platform-ig','platform-yt','target-video-input'].forEach(id => {
+            document.getElementById(id).addEventListener('input', validateForm);
+            document.getElementById(id).addEventListener('change', validateForm);
+        });
 
         function validateForm() {
             if (currentStep !== 3) return;
-
             let isValid = true;
-            if (!isBannerUploaded) isValid = false;
-            if (!document.getElementById('deadline-input').value) isValid = false;
-            if (!document.getElementById('title-input').value.trim()) isValid = false;
-            if (!document.getElementById('brief-input').value.trim()) isValid = false;
-            if (!document.getElementById('restriction-input').value.trim()) isValid = false;
-
+            if(!document.getElementById('brand-input').value.trim()) isValid = false;
+            if(!document.getElementById('title-input').value.trim()) isValid = false;
+            if(!document.getElementById('deadline-input').value) isValid = false;
+            if(!document.getElementById('brief-input').value.trim()) isValid = false;
+            if(!document.getElementById('restriction-input').value.trim()) isValid = false;
+            
             const pt = document.getElementById('platform-tiktok').checked;
             const pi = document.getElementById('platform-ig').checked;
             const py = document.getElementById('platform-yt').checked;
-            if (!pt && !pi && !py) isValid = false;
-
-            if (campaignType === 'clipping' && linksData.video.length === 0) isValid = false;
+            if(!pt && !pi && !py) isValid = false;
 
             if (paymentType === 'views') {
-                const b = parseRupiah(document.getElementById('custom-budget').value);
-                const c = parseRupiah(document.getElementById('cpm-input').value);
-                if (b <= 0 || c <= 0) isValid = false;
+                if(parseRupiah(document.getElementById('custom-budget').value) <= 0) isValid = false;
+                if(parseRupiah(document.getElementById('cpm-input').value) <= 0) isValid = false;
             } else {
-                const tv = parseInt(document.getElementById('target-video-input').value) || 0;
-                const pv = parseRupiah(document.getElementById('price-video-input').value);
-                // Wajib minimal harga video Rp 10.000
-                if (tv <= 0 || pv < 10000) isValid = false;
+                if((parseInt(document.getElementById('target-video-input').value)||0) <= 0) isValid = false;
+                if(parseRupiah(document.getElementById('price-video-input').value) < 10000) isValid = false;
             }
-
-            btnNext.disabled = !isValid;
+            document.getElementById('btn-next').disabled = !isValid;
         }
 
-        function setPaymentType(type) {
-            paymentType = type;
-            const btnViews = document.getElementById('toggle-views');
-            const btnVideo = document.getElementById('toggle-video');
+        async function submitToSupabase() {
+            const btn = document.getElementById('btn-next');
+            btn.innerText = 'Menyimpan...';
+            btn.disabled = true;
 
-            if (type === 'views') {
-                btnViews.className = "px-6 py-2 rounded-full bg-white text-black text-xs font-semibold shadow-sm transition-all focus:outline-none";
-                btnVideo.className = "px-6 py-2 rounded-full text-zinc-400 hover:text-white text-xs font-semibold transition-all focus:outline-none";
-                document.getElementById('budget-views-section').classList.remove('hidden');
-                document.getElementById('budget-video-section').classList.add('hidden');
-            } else {
-                btnVideo.className = "px-6 py-2 rounded-full bg-white text-black text-xs font-semibold shadow-sm transition-all focus:outline-none";
-                btnViews.className = "px-6 py-2 rounded-full text-zinc-400 hover:text-white text-xs font-semibold transition-all focus:outline-none";
-                document.getElementById('budget-views-section').classList.add('hidden');
-                document.getElementById('budget-video-section').classList.remove('hidden');
-            }
-            if (currentStep === 3) {
-                calculateSummary();
-                validateForm();
-            }
-        }
-
-        function selectType(type, element) {
-            campaignType = type;
-            document.querySelectorAll('#step-1-container .card-selectable').forEach(c => c.classList.remove('selected'));
-            element.classList.add('selected');
-            btnNext.disabled = false;
-        }
-
-        function selectCategory(cat, element) {
-            campaignCategory = cat;
-            document.querySelectorAll('#step-2-container .card-selectable').forEach(c => c.classList.remove('selected'));
-            element.classList.add('selected');
-            btnNext.disabled = false;
-        }
-
-        function nextStep() {
-            if (currentStep === 1 && campaignType) {
-                document.getElementById('step-1-container').classList.add('hidden');
-                document.getElementById('step-1-container').classList.remove('block');
-                document.getElementById('step-2-container').classList.remove('hidden');
-                document.getElementById('step-2-container').classList.add('block');
-                
-                if (campaignType === 'clipping') {
-                    document.getElementById('category-clipping-options').classList.remove('hidden');
-                    document.getElementById('category-ugc-options').classList.add('hidden');
-                    document.getElementById('bahan-clipping-section').classList.remove('hidden');
-                } else {
-                    document.getElementById('category-clipping-options').classList.add('hidden');
-                    document.getElementById('category-ugc-options').classList.remove('hidden');
-                    document.getElementById('bahan-clipping-section').classList.add('hidden');
-                }
-                currentStep = 2;
-                updateUI();
-                btnNext.disabled = !campaignCategory; 
-            } else if (currentStep === 2 && campaignCategory) {
-                document.getElementById('step-2-container').classList.add('hidden');
-                document.getElementById('step-2-container').classList.remove('block');
-                document.getElementById('step-3-container').classList.remove('hidden');
-                document.getElementById('step-3-container').classList.add('block');
-                currentStep = 3;
-                updateUI();
-            } else if (currentStep === 3) {
-                openModal('successModal', 'successModalContent');
-            }
-        }
-
-        function prevStep() {
-            if (currentStep === 2) {
-                document.getElementById('step-2-container').classList.add('hidden');
-                document.getElementById('step-2-container').classList.remove('block');
-                document.getElementById('step-1-container').classList.remove('hidden');
-                document.getElementById('step-1-container').classList.add('block');
-                currentStep = 1;
-                btnNext.disabled = false;
-            } else if (currentStep === 3) {
-                document.getElementById('step-3-container').classList.add('hidden');
-                document.getElementById('step-3-container').classList.remove('block');
-                document.getElementById('step-2-container').classList.remove('hidden');
-                document.getElementById('step-2-container').classList.add('block');
-                currentStep = 2;
-                btnNext.innerText = 'Lanjut';
-            }
-            updateUI();
-        }
-
-        function updateUI() {
-            if (currentStep === 1) {
-                btnBack.classList.add('hidden');
-                btnSpacer.classList.remove('hidden');
-            } else {
-                btnBack.classList.remove('hidden');
-                btnSpacer.classList.add('hidden');
-            }
-
-            const dots = [document.getElementById('step-dot-1'), document.getElementById('step-dot-2'), document.getElementById('step-dot-3')];
-            const txts = [document.getElementById('step-text-1'), document.getElementById('step-text-2'), document.getElementById('step-text-3')];
-
-            for(let i=1; i<3; i++){
-                dots[i].className = "w-6 h-6 rounded-full bg-zinc-800 text-zinc-500 text-[11px] font-bold flex items-center justify-center transition-colors";
-                txts[i].className = "text-sm font-medium text-zinc-500 transition-colors";
-            }
-            if (currentStep >= 2) {
-                dots[1].className = "w-6 h-6 rounded-full bg-white text-black text-[11px] font-bold flex items-center justify-center transition-colors";
-                txts[1].className = "text-sm font-medium text-white transition-colors";
-            }
-            if (currentStep >= 3) {
-                dots[2].className = "w-6 h-6 rounded-full bg-white text-black text-[11px] font-bold flex items-center justify-center transition-colors";
-                txts[2].className = "text-sm font-medium text-white transition-colors";
-                btnNext.innerText = 'Buat Campaign';
-                calculateSummary();
-                validateForm();
-            }
-        }
-
-        function setBudget(amount, element) {
-            document.getElementById('custom-budget').value = 'Rp ' + parseInt(amount).toLocaleString('id-ID');
-            Array.from(element.parentElement.children).forEach(el => {
-                el.classList.remove('border-white', 'bg-white/5');
-                el.classList.add('border-zinc-800', 'bg-zinc-900');
-            });
-            element.classList.remove('border-zinc-800', 'bg-zinc-900');
-            element.classList.add('border-white', 'bg-white/5');
-            calculateSummary();
-            validateForm();
-        }
-
-        // FUNGSI MODAL MULTIPURPOSE
-        function openModal(modalId, contentId) {
-            const m = document.getElementById(modalId);
-            const c = document.getElementById(contentId);
-            m.classList.remove('hidden'); m.classList.add('flex');
-            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
-        }
-        function closeModal(modalId, contentId) {
-            const m = document.getElementById(modalId);
-            const c = document.getElementById(contentId);
-            m.classList.add('opacity-0'); c.classList.add('scale-95');
-            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
-        }
-
-        function openFeeModal() { openModal('feeModal', 'feeModalContent'); }
-
-        // MANAJEMEN LINK DINAMIS
-        let currentLinkType = '';
-        let linksData = { video: [], asset: [] };
-
-        function openLinkModal(type) {
-            currentLinkType = type;
-            document.getElementById('linkModalTitle').innerText = type === 'video' ? 'Tambah Link Video Utama' : 'Tambah Link Aset Branding';
-            document.getElementById('linkModalInput').value = '';
-            openModal('linkModal', 'linkModalContent');
-        }
-
-        function submitLink() {
-            const val = document.getElementById('linkModalInput').value.trim();
-            if(val) {
-                linksData[currentLinkType].push(val);
-                renderLinks(currentLinkType);
-                validateForm();
-                closeModal('linkModal', 'linkModalContent');
-            }
-        }
-
-        function removeLink(type, idx) {
-            linksData[type].splice(idx, 1);
-            renderLinks(type);
-            validateForm();
-        }
-
-        function renderLinks(type) {
-            const container = document.getElementById(type === 'video' ? 'video-links-container' : 'asset-links-container');
-            container.innerHTML = '';
-            linksData[type].forEach((link, idx) => {
-                const el = document.createElement('div');
-                el.className = 'flex items-center justify-between p-3 bg-zinc-900 border border-zinc-700 rounded-xl mb-2';
-                el.innerHTML = `
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        <a href="${link}" target="_blank" class="text-[13px] text-zinc-300 hover:text-white hover:underline truncate">${link}</a>
-                    </div>
-                    <button type="button" onclick="removeLink('${type}', ${idx})" class="text-zinc-500 hover:text-red-500 p-1 ml-2 transition-colors focus:outline-none">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>`;
-                container.appendChild(el);
-            });
-        }
-
-        // WHATSAPP API & REDIRECT
-        function sendToAdminWA() {
-            const title = document.getElementById('title-input').value;
-            const sys = document.getElementById('summary-system').innerText;
-            const tgt = document.getElementById('summary-target-value').innerText;
-            const tot = document.getElementById('summary-total').innerText;
+            const bName = document.getElementById('brand-input').value.trim();
+            const bInit = bName.substring(0,2).toUpperCase();
+            const bTotal = paymentType === 'views' ? parseRupiah(document.getElementById('custom-budget').value) : ((parseInt(document.getElementById('target-video-input').value)||0) * parseRupiah(document.getElementById('price-video-input').value));
             
-            const msg = `Halo Admin Whoost, saya telah membuat campaign baru.\n\n*Judul:* ${title}\n*Kategori:* ${campaignCategory}\n*Sistem:* ${sys}\n*Target:* ${tgt}\n*Estimasi Tagihan:* ${tot}\n\nMohon di-review agar saya bisa segera melakukan pembayaran. Terima kasih.`;
-            const encoded = encodeURIComponent(msg);
+            const platforms = [];
+            if(document.getElementById('platform-tiktok').checked) platforms.push('tiktok');
+            if(document.getElementById('platform-ig').checked) platforms.push('instagram');
+            if(document.getElementById('platform-yt').checked) platforms.push('youtube');
             
-            window.open('https://wa.me/6281532538960?text=' + encoded, '_blank');
-            window.location.href = 'client-campaign.html';
+            const vLinks = document.getElementById('video-links').value.split(',').map(s=>s.trim()).filter(s=>s);
+
+            const { data, error } = await supabase.from('campaigns').insert([{
+                type: campaignType,
+                niche: campaignCategory,
+                payment_type: paymentType,
+                brand_name: bName,
+                brand_initial: bInit,
+                title: document.getElementById('title-input').value.trim(),
+                deadline: document.getElementById('deadline-input').value,
+                description: document.getElementById('desc-input').value.trim(),
+                brief: document.getElementById('brief-input').value.trim(),
+                restrictions: document.getElementById('restriction-input').value.trim(),
+                budget_total: bTotal,
+                budget_remaining: bTotal,
+                reward_per_1k: paymentType === 'views' ? parseRupiah(document.getElementById('cpm-input').value) : 0,
+                target_video: paymentType === 'video' ? parseInt(document.getElementById('target-video-input').value) : 0,
+                price_per_video: paymentType === 'video' ? parseRupiah(document.getElementById('price-video-input').value) : 0,
+                platforms: platforms,
+                video_links: vLinks,
+                banner_url: document.getElementById('banner-url').value.trim() || null,
+                status: 'HOLDING' // Default masuk antrian/holding
+            }]);
+
+            if(error) {
+                alert("Gagal menyimpan: " + error.message);
+                btn.innerText = 'Simpan & Publish';
+                btn.disabled = false;
+            } else {
+                alert("Campaign berhasil dibuat!");
+                window.location.replace('admin-campaign.html');
+            }
         }
     </script>
 </body>
