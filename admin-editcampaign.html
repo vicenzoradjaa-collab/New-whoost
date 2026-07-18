@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Campaign - Whoost Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>tailwind.config = { theme: { extend: { colors: { darkBg: '#0a0a0c', cardBg: '#121214' } } } }</script>
+    <style>
+        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="h-20 flex items-center px-8 border-b border-zinc-800 bg-darkBg sticky top-0 z-20">
+        <a href="admin-campaign.html" class="mr-4 text-zinc-400 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
+        <h1 class="text-xl font-bold">Edit Campaign</h1>
+    </header>
+
+    <main class="flex-1 p-8 max-w-4xl mx-auto w-full pb-32">
+        <form id="edit-form" class="space-y-6">
+            
+            <!-- STATUS CARD -->
+            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl">
+                <label class="block text-sm font-medium text-zinc-400 mb-2">Ubah Status Campaign <span class="text-red-500">*</span></label>
+                <select id="status-select" class="w-full bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-xl px-4 py-3 text-white font-bold cursor-pointer outline-none">
+                    <option value="ACTIVE">🚀 ACTIVE (Berjalan)</option>
+                    <option value="HOLDING">⏳ HOLDING (Ditahan/Antrean)</option>
+                    <option value="CLOSED">✅ CLOSED (Selesai)</option>
+                </select>
+            </div>
+
+            <!-- INFO DASAR -->
+            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl space-y-4">
+                <h3 class="text-lg font-bold border-b border-zinc-800 pb-2">Detail Dasar</h3>
+                <div>
+                    <label class="block text-sm text-zinc-400 mb-1">Nama Brand</label>
+                    <input type="text" id="brand" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-zinc-400 mb-1">Judul Campaign</label>
+                    <input type="text" id="title" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Tipe (clipping / ugc)</label>
+                        <input type="text" id="type" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Niche/Kategori</label>
+                        <input type="text" id="niche" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANGGARAN -->
+            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl space-y-4">
+                <h3 class="text-lg font-bold border-b border-zinc-800 pb-2">Anggaran & Keuangan</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Total Budget Awal (Rp)</label>
+                        <input type="number" id="budget_total" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Budget Tersisa (Rp)</label>
+                        <input type="number" id="budget_remaining" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Tarif per 1k views (Rp)</label>
+                        <input type="number" id="reward_per_1k" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-zinc-400 mb-1">Harga per Video (Rp)</label>
+                        <input type="number" id="price_per_video" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white">
+                    </div>
+                </div>
+            </div>
+
+            <!-- KONTEN & INSTRUKSI -->
+            <div class="bg-cardBg border border-zinc-800 p-6 rounded-2xl space-y-4">
+                <h3 class="text-lg font-bold border-b border-zinc-800 pb-2">Brief Konten</h3>
+                <div>
+                    <label class="block text-sm text-zinc-400 mb-1">Brief Instruksi</label>
+                    <textarea id="brief" rows="4" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-zinc-400 mb-1">Link Banner Image URL</label>
+                    <input type="text" id="banner_url" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white">
+                </div>
+            </div>
+
+            <div class="pt-6">
+                <button type="submit" id="btn-save" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all">Simpan Perubahan</button>
+            </div>
+        </form>
+    </main>
+
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignId = urlParams.get('id');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if(!campaignId) {
+                alert("ID Campaign tidak ditemukan!");
+                window.location.replace('admin-campaign.html');
+                return;
+            }
+
+            // Ambil data campaign
+            const { data, error } = await supabase.from('campaigns').select('*').eq('id', campaignId).single();
+            if(error || !data) {
+                alert("Data campaign tidak ditemukan!");
+                window.location.replace('admin-campaign.html');
+                return;
+            }
+
+            // Populate Form
+            document.getElementById('status-select').value = data.status || 'HOLDING';
+            document.getElementById('brand').value = data.brand_name || '';
+            document.getElementById('title').value = data.title || '';
+            document.getElementById('type').value = data.type || '';
+            document.getElementById('niche').value = data.niche || '';
+            document.getElementById('budget_total').value = data.budget_total || 0;
+            document.getElementById('budget_remaining').value = data.budget_remaining || 0;
+            document.getElementById('reward_per_1k').value = data.reward_per_1k || 0;
+            document.getElementById('price_per_video').value = data.price_per_video || 0;
+            document.getElementById('brief').value = data.brief || '';
+            document.getElementById('banner_url').value = data.banner_url || '';
+        });
+
+        document.getElementById('edit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save');
+            btn.innerText = 'Menyimpan...';
+            btn.disabled = true;
+
+            const updateData = {
+                status: document.getElementById('status-select').value,
+                brand_name: document.getElementById('brand').value,
+                title: document.getElementById('title').value,
+                type: document.getElementById('type').value,
+                niche: document.getElementById('niche').value,
+                budget_total: parseInt(document.getElementById('budget_total').value),
+                budget_remaining: parseInt(document.getElementById('budget_remaining').value),
+                reward_per_1k: parseInt(document.getElementById('reward_per_1k').value),
+                price_per_video: parseInt(document.getElementById('price_per_video').value),
+                brief: document.getElementById('brief').value,
+                banner_url: document.getElementById('banner_url').value
+            };
+
+            const { error } = await supabase.from('campaigns').update(updateData).eq('id', campaignId);
+
+            if(error) {
+                alert("Gagal update data: " + error.message);
+                btn.innerText = 'Simpan Perubahan';
+                btn.disabled = false;
+            } else {
+                alert("Perubahan berhasil disimpan!");
+                window.location.replace('admin-campaign.html');
+            }
+        });
+    </script>
+</body>
+</html>
