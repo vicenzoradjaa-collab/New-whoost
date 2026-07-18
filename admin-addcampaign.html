@@ -70,7 +70,7 @@
         <div id="step-2-container" class="hidden animate-[fadeIn_0.3s_ease-out] max-w-5xl mx-auto">
             <div class="text-center mb-8"><h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Pilih Kategori (Niche)</h2></div>
 
-            <!-- Kategori Clipping (Tanpa All Content) -->
+            <!-- Kategori Clipping -->
             <div id="category-clipping-options" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 <div onclick="selectCategory('WhaleClipping', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">WhaleClipping</h4></div>
                 <div onclick="selectCategory('Brand', this)" class="card-selectable bg-cardBg border rounded-xl p-4 cursor-pointer text-center"><h4 class="text-sm font-bold text-white">Brand</h4></div>
@@ -95,13 +95,12 @@
         <div id="step-3-container" class="hidden animate-[fadeIn_0.3s_ease-out] max-w-6xl mx-auto">
             
             <!-- FULL WIDTH TOP: BANNER UPLOAD 16:9 -->
-            <div class="w-full bg-cardBg border border-zinc-800 rounded-2xl p-5 mb-6">
+            <div class="w-full bg-cardBg border border-zinc-800 rounded-2xl p-5 mb-6 max-w-3xl mx-auto">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-bold text-white">Banner Campaign <span class="text-red-500">*</span></h3>
                     <span class="text-[10px] text-zinc-500 font-medium bg-zinc-900 px-2 py-1 rounded">Rasio 16:9</span>
                 </div>
                 
-                <!-- Input File Hidden -->
                 <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="handleBannerUpload(event)">
                 
                 <div id="banner-upload-box" onclick="triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
@@ -120,11 +119,11 @@
                 </div>
             </div>
 
-            <!-- TWO COLUMNS EQUAL HEIGHT -->
+            <!-- LAYOUT DUA KOLOM SAMA RATA (ITEMS-STRETCH) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                 
-                <!-- KOLOM KIRI (Info Dasar & Platform) -->
-                <div class="flex flex-col gap-6 h-full">
+                <!-- KOLOM KIRI (Info Dasar & Budget) -->
+                <div class="flex flex-col gap-6">
                     
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
                         <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Informasi Dasar</h3>
@@ -144,33 +143,10 @@
                         <input id="deadline-input" type="date" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white mb-4">
                         
                         <label class="block text-sm font-medium text-zinc-400 mb-1">Deskripsi Singkat</label>
-                        <textarea id="desc-input" rows="2" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none"></textarea>
+                        <textarea id="desc-input" rows="2" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none mt-auto"></textarea>
                     </div>
 
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
-                        <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Platform & Link Materi</h3>
-                        
-                        <label class="block text-sm font-medium text-zinc-400 mb-2">Platform Target <span class="text-red-500">*</span></label>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            <button type="button" onclick="togglePlatform('tiktok')" id="btn-plat-tiktok" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">TikTok</button>
-                            <button type="button" onclick="togglePlatform('ig')" id="btn-plat-ig" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">IG Reels</button>
-                            <button type="button" onclick="togglePlatform('yt')" id="btn-plat-yt" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">YT Shorts</button>
-                        </div>
-
-                        <label class="block text-sm font-medium text-zinc-400 mb-1">Link Video Bahan / Aset</label>
-                        <div id="video-links-container" class="space-y-2 mb-3"></div>
-                        <button type="button" onclick="openLinkModal()" class="w-full py-3 mt-auto rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            Tambah Link Materi (Drive / YouTube)
-                        </button>
-                    </div>
-
-                </div>
-
-                <!-- KOLOM KANAN (Budget & Brief) -->
-                <div class="flex flex-col gap-6 h-full">
-                    
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col">
                         <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Budget & Target</h3>
                         
                         <div id="budget-views-section" class="flex flex-col space-y-4">
@@ -196,6 +172,29 @@
                         </div>
                     </div>
 
+                </div>
+
+                <!-- KOLOM KANAN (Platform & Brief) -->
+                <div class="flex flex-col gap-6 h-full">
+                    
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col">
+                        <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Platform & Link Materi</h3>
+                        
+                        <label class="block text-sm font-medium text-zinc-400 mb-2">Platform Target <span class="text-red-500">*</span></label>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <button type="button" onclick="togglePlatform('tiktok')" id="btn-plat-tiktok" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">TikTok</button>
+                            <button type="button" onclick="togglePlatform('ig')" id="btn-plat-ig" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">IG Reels</button>
+                            <button type="button" onclick="togglePlatform('yt')" id="btn-plat-yt" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">YT Shorts</button>
+                        </div>
+
+                        <label class="block text-sm font-medium text-zinc-400 mb-1">Link Video Bahan / Aset</label>
+                        <div id="video-links-container" class="space-y-2 mb-3"></div>
+                        <button type="button" onclick="openLinkModal()" class="w-full py-3 rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            Tambah Link Materi (Drive / YouTube)
+                        </button>
+                    </div>
+
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-sm font-medium text-zinc-400">Instruksi / Brief Konten <span class="text-red-500">*</span></label>
@@ -203,7 +202,7 @@
                                 Pakai Template
                             </button>
                         </div>
-                        <textarea id="brief-input" rows="4" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none mb-4"></textarea>
+                        <textarea id="brief-input" rows="4" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none mb-6 flex-1"></textarea>
 
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-sm font-medium text-zinc-400">Larangan (Restrictions) <span class="text-red-500">*</span></label>
@@ -211,7 +210,7 @@
                                 Pakai Template
                             </button>
                         </div>
-                        <textarea id="restriction-input" rows="4" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none mt-auto"></textarea>
+                        <textarea id="restriction-input" rows="4" class="w-full bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white resize-none flex-1"></textarea>
                     </div>
 
                 </div>
@@ -262,15 +261,28 @@
         // 1. Fetch Akun Client untuk Dropdown
         async function fetchClientAccounts() {
             const selectEl = document.getElementById('client-select');
-            const { data, error } = await supabase.from('profiles').select('id, email, business_name, full_name').in('role', ['client', 'brand']);
             
-            if (!error && data && data.length > 0) {
-                let html = '<option value="">-- Tidak dihubungkan (Hanya di Admin) --</option>';
-                data.forEach(client => {
-                    const displayName = client.business_name || client.full_name || client.email;
-                    html += `<option value="${client.id}">${displayName} (${client.email})</option>`;
-                });
-                selectEl.innerHTML = html;
+            try {
+                const { data, error } = await supabase.from('profiles').select('id, email, business_name, full_name').in('role', ['client', 'brand']);
+                
+                if (error) {
+                    console.error("Gagal load client:", error);
+                    selectEl.innerHTML = '<option value="">-- Gagal memuat data client --</option>';
+                    return;
+                }
+
+                if (data && data.length > 0) {
+                    let html = '<option value="">-- Tidak dihubungkan (Hanya di Admin) --</option>';
+                    data.forEach(client => {
+                        const displayName = client.business_name || client.full_name || client.email;
+                        html += `<option value="${client.id}">${displayName} (${client.email})</option>`;
+                    });
+                    selectEl.innerHTML = html;
+                } else {
+                    selectEl.innerHTML = '<option value="">-- Belum ada user Client terdaftar --</option>';
+                }
+            } catch (err) {
+                console.error("Error fetching clients:", err);
             }
         }
 
@@ -295,7 +307,7 @@
             const fileExt = file.name.split('.').pop();
             const fileName = `campaigns/banner_${Date.now()}_${Math.random().toString(36).substring(2,7)}.${fileExt}`;
 
-            // Proses Upload
+            // Proses Upload ke Bucket avatars
             const { data, error } = await supabase.storage
                 .from('avatars')
                 .upload(fileName, file);
@@ -441,7 +453,7 @@
             if (currentStep !== 3) return;
             let isValid = true;
             
-            // Client Select tidak divalidasi karena opsional
+            // Client Select TIDAK DIVALIDASI KARENA OPSIONAL
             if(!uploadedBannerUrl) isValid = false;
             if(!document.getElementById('brand-input').value.trim()) isValid = false;
             if(!document.getElementById('title-input').value.trim()) isValid = false;
@@ -523,9 +535,9 @@
             if(selectedPlatforms.yt) platforms.push('youtube');
             
             const clientId = document.getElementById('client-select').value;
-
-            const { data, error } = await supabase.from('campaigns').insert([{
-                client_id: clientId ? clientId : null, // Opsional
+            
+            // Build Payload
+            const payload = {
                 type: campaignType,
                 niche: campaignCategory,
                 payment_type: paymentType,
@@ -543,16 +555,23 @@
                 price_per_video: paymentType === 'video' ? parseRupiah(document.getElementById('price-video-input').value) : 0,
                 platforms: platforms,
                 video_links: linksData,
-                banner_url: uploadedBannerUrl, // Diambil dari Supabase Storage
+                banner_url: uploadedBannerUrl,
                 status: 'ACTIVE'
-            }]);
+            };
+
+            // Masukkan client_id jika admin memilihnya
+            if (clientId) {
+                payload.client_id = clientId;
+            }
+
+            const { data, error } = await supabase.from('campaigns').insert([payload]);
 
             if(error) {
                 alert("Gagal menyimpan: " + error.message);
                 btn.innerText = 'Simpan & Publish';
                 btn.disabled = false;
             } else {
-                alert("Campaign berhasil dibuat!");
+                alert("Campaign berhasil dibuat dan tersimpan!");
                 window.location.replace('admin-campaign.html');
             }
         }
