@@ -2,7 +2,8 @@
 <html lang="id" class="bg-darkBg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta tag diperbarui untuk mencegah auto-zoom di HP -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Campaigns - Whoost Clipper</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -24,7 +25,6 @@
         }
     </script>
     <style>
-        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
         html, body {
             background-color: #0a0a0c;
             color: white;
@@ -34,34 +34,28 @@
             overflow: hidden;
         }
         
-        /* Custom scrollbar untuk main area */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
-        /* Custom scrollbar for dropdown menus */
         .dropdown-menu::-webkit-scrollbar { width: 5px; }
         .dropdown-menu::-webkit-scrollbar-track { background: #18181b; }
         .dropdown-menu::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
         .dropdown-menu::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
-        /* Custom Patterns */
         .bg-dots-card {
             background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 16px 16px;
         }
 
-        /* Filter utilities */
         .load-hidden { display: none !important; }
         .filter-hidden { display: none !important; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- ========================================== -->
-    <!-- LOADING SCREEN                             -->
-    <!-- ========================================== -->
+    <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
@@ -70,46 +64,39 @@
         </div>
     </div>
 
-    <!-- Background Ornamen Aman -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HEADER                                     -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full relative">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Campaign</h1>
         </div>
-        <!-- Ikon Notifikasi Dihapus Sesuai Permintaan -->
     </header>
 
-    <!-- ========================================== -->
-    <!-- MAIN CONTENT AREA                          -->
-    <!-- ========================================== -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-[1400px] mx-auto min-h-screen">
             
             <!-- Top Bar: Search & Filters -->
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-10 z-40 relative">
                 
-                <!-- Search Bar -->
+                <!-- Search Bar (Font text-base mencegah auto-zoom) -->
                 <div class="relative w-full lg:w-[400px]">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <input id="searchInput" type="text" placeholder="Cari Campaign..." class="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-500 focus:bg-zinc-900 rounded-full py-3 pl-12 pr-6 text-sm text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
+                    <input id="searchInput" type="text" placeholder="Cari Campaign..." class="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-500 focus:bg-zinc-900 rounded-full py-3 pl-12 pr-6 text-base text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
                 </div>
 
                 <!-- Filters -->
                 <div class="flex flex-wrap gap-3 w-full lg:w-auto">
                     
-                    <!-- 1. Category Dropdown -->
                     <div class="relative inline-block text-left filter-dropdown" id="dropdown-category">
                         <button onclick="window.toggleDropdown('menu-category')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                             <span id="label-category">All Categories</span>
@@ -124,7 +111,6 @@
                         </div>
                     </div>
 
-                    <!-- 2. Content Dropdown -->
                     <div class="relative inline-block text-left filter-dropdown" id="dropdown-content">
                         <button onclick="window.toggleDropdown('menu-content')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                             <span id="label-content">All Content</span>
@@ -146,7 +132,6 @@
                         </div>
                     </div>
 
-                    <!-- 3. Status Dropdown (Coming Soon Dihapus) -->
                     <div class="relative inline-block text-left filter-dropdown" id="dropdown-status">
                         <button onclick="window.toggleDropdown('menu-status')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                             <span id="label-status">Semua Status</span>
@@ -165,7 +150,6 @@
                 </div>
             </div>
 
-            <!-- Title Section -->
             <h1 class="text-4xl md:text-5xl font-extrabold mb-8 tracking-tight">All Campaign</h1>
 
             <!-- Grid Cards Dinamis -->
@@ -202,32 +186,21 @@
     
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-    <!-- Panggil Bottom Navbar Navbar Clipper -->
     <script>const ACTIVE_MENU = 'campaign';</script>
     <script src="attribute/navbarclipper.js"></script>
 
     <script type="module">
         import { supabase } from './authentication/auth.js';
 
-        // Filter State
-        let activeFilters = {
-            search: '',
-            category: 'All Categories',
-            content: 'All Content',
-            status: 'Semua Status'
-        };
-
-        // Pagination / Load More State
-        let currentVisible = 8; // Tampilkan 8 card diawal
+        let activeFilters = { search: '', category: 'All Categories', content: 'All Content', status: 'Semua Status' };
+        let currentVisible = 8; 
         const itemsToLoad = 8;
         
-        // Data State
         let allCampaigns = [];
         let joinedCampaignIds = [];
         let sessionUser = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Animasi Loader & AOS
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 loader.classList.add('opacity-0'); 
@@ -236,10 +209,8 @@
             
             AOS.init({ once: true, offset: 50, duration: 800 });
 
-            // Mulai Sinkronisasi
             await initData();
             
-            // Binding Input Search
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 activeFilters.search = e.target.value.toLowerCase();
                 applyFilters();
@@ -247,18 +218,15 @@
         });
 
         async function initData() {
-            // 1. Cek Sesi
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 sessionUser = session.user;
-                // Fetch campaign apa saja yang user sudah join
                 const { data: joined } = await supabase.from('user_campaigns').select('campaign_id').eq('user_id', sessionUser.id);
                 if (joined) {
                     joinedCampaignIds = joined.map(j => j.campaign_id);
                 }
             }
 
-            // 2. Fetch Semua Campaign (Tampilkan Active, Hold, Closed) - Default Sort Terbaru
             const { data, error } = await supabase
                 .from('campaigns')
                 .select('*')
@@ -276,18 +244,15 @@
 
         function applyFilters() {
             const grid = document.getElementById('campaign-grid');
-            grid.innerHTML = ''; // Kosongkan grid
+            grid.innerHTML = ''; 
 
             let filtered = allCampaigns.filter(camp => {
-                // Map status dari DB ke Teks Filter UI
                 let statText = 'Active';
                 if(camp.status === 'HOLDING') statText = 'Hold';
                 if(camp.status === 'CLOSED') statText = 'Closed';
 
-                // Map type dari DB ke Kategori UI
                 let typeText = camp.type === 'ugc' ? 'UGC' : 'Clipping';
 
-                // Pengecekan Filter
                 const matchSearch = activeFilters.search === '' || camp.title.toLowerCase().includes(activeFilters.search) || camp.brand_name.toLowerCase().includes(activeFilters.search);
                 const matchCat = activeFilters.category === 'All Categories' || typeText === activeFilters.category;
                 const matchCont = activeFilters.content === 'All Content' || camp.niche === activeFilters.content;
@@ -307,10 +272,7 @@
                 noDataAlert.classList.add('hidden');
             }
 
-            // Render Sesuai Batas Visible (Load More)
             let isFilteringActive = activeFilters.search !== '' || activeFilters.category !== 'All Categories' || activeFilters.content !== 'All Content' || activeFilters.status !== 'Semua Status';
-            
-            // Jika lagi nyari/filter, tampilkan semua yg cocok. Jika tidak, batasi dengan currentVisible
             const displayLimit = isFilteringActive ? filtered.length : currentVisible;
             
             let html = '';
@@ -320,21 +282,19 @@
 
             grid.innerHTML = html;
 
-            // Atur Load More Button
             if (!isFilteringActive && filtered.length > currentVisible) {
                 loadMoreContainer.style.display = 'flex';
             } else {
                 loadMoreContainer.style.display = 'none';
             }
 
-            setTimeout(() => AOS.refresh(), 100); // Trigger ulang animasi
+            setTimeout(() => AOS.refresh(), 100);
         }
 
         function generateCardHTML(camp, index) {
-            // Styling Status
             let statusColor = 'border-zinc-700 bg-zinc-800/40 text-green-400';
             let statText = 'ACTIVE';
-            let overlayOpacity = 'opacity-50'; // Background image
+            let overlayOpacity = 'opacity-100'; 
 
             if (camp.status === 'HOLDING') {
                 statusColor = 'border-yellow-900/50 bg-yellow-900/20 text-yellow-500';
@@ -342,26 +302,23 @@
             } else if (camp.status === 'CLOSED') {
                 statusColor = 'border-red-900/50 bg-red-900/20 text-red-500';
                 statText = 'CLOSED';
-                overlayOpacity = 'opacity-20 grayscale'; // Redup jika tutup
+                overlayOpacity = 'opacity-50 grayscale'; 
             }
 
-            // Harga
             const price = camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k;
             const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
             const priceLabel = camp.payment_type === 'video' ? '/ video' : '/ 1k views';
 
-            // Icons
             let platformIcons = '';
             if (camp.platforms && Array.isArray(camp.platforms)) {
-                if (camp.platforms.includes('tiktok')) platformIcons += `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
-                if (camp.platforms.includes('instagram')) platformIcons += `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
-                if (camp.platforms.includes('youtube')) platformIcons += `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+                if (camp.platforms.includes('tiktok')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+                if (camp.platforms.includes('instagram')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+                if (camp.platforms.includes('youtube')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
             }
 
             const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
-            const delay = (index % 4) * 50; // Staggered animation delay
+            const delay = (index % 4) * 50; 
 
-            // Cek Status Bergabung
             const isJoined = joinedCampaignIds.includes(camp.id);
             let btnActionHTML = '';
             
@@ -375,47 +332,46 @@
 
             return `
             <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group" data-aos="fade-up" data-aos-delay="${delay}">
-                <div class="w-full h-28 md:h-40 bg-zinc-950 rounded-xl mb-3 md:mb-4 flex flex-col items-center justify-center relative overflow-hidden bg-dots-card shrink-0">
-                    <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
-                    ${camp.banner_url ? `<img src="${camp.banner_url}" class="absolute inset-0 w-full h-full object-cover mix-blend-screen group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : ''}
-                    <h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter truncate px-2 w-full text-center">${camp.brand_name.split(' ')[0].toUpperCase()}</h3>
-                    <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">${camp.type === 'ugc' ? 'UGC' : 'CLIPPING'}</p>
+                
+                <!-- Full Gambar Tanpa Teks -->
+                <div class="w-full aspect-[16/9] bg-zinc-950 rounded-xl mb-4 flex flex-col items-center justify-center relative overflow-hidden shrink-0 border border-zinc-800/50">
+                    ${camp.banner_url ? `<img src="${camp.banner_url}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<span class="text-zinc-600 text-xs font-medium">No Banner</span>`}
                 </div>
                 
+                <!-- Info Brand (Tanpa Logo Profil) & Status -->
                 <div class="flex justify-between items-center mb-2 md:mb-3">
-                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">${camp.brand_initial || 'WH'}</div>
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-300 hover:text-white transition truncate">${camp.brand_name}</span>
+                    <div class="flex items-center overflow-hidden pr-2">
+                        <span class="text-[11px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${camp.brand_name}</span>
                     </div>
-                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border text-[7px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</div>
+                    <div class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</div>
                 </div>
                 
-                <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate group-hover:text-zinc-300 transition-colors" title="${camp.title}">${camp.title}</h4>
+                <!-- Judul Diperbesar -->
+                <h4 class="text-base md:text-xl font-black text-white mb-2 md:mb-3 truncate group-hover:text-zinc-300 transition-colors" title="${camp.title}">${camp.title}</h4>
                 
                 <div class="mb-3 md:mb-4 flex items-baseline gap-1">
                     <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">${priceFormatted}</span>
-                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">${priceLabel}</span>
+                    <span class="text-zinc-500 text-[9px] md:text-xs font-medium">${priceLabel}</span>
                 </div>
                 
-                <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                    <div class="flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                <div class="flex flex-wrap items-center gap-2 mb-4">
+                    <div class="flex items-center gap-1.5 px-2 py-1 rounded-md border border-zinc-800 bg-zinc-900/50">
                         ${platformIcons || `<span class="text-[10px] text-zinc-500">-</span>`}
                     </div>
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${camp.niche}</span>
+                    <div class="flex items-center px-2 py-1 rounded-md border border-zinc-800 bg-zinc-900/80">
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-wider">${camp.niche}</span>
                     </div>
                 </div>
 
-                <div class="mt-auto pt-2 md:pt-4">
+                <div class="mt-auto pt-3 border-t border-zinc-800/50">
                     <div class="flex justify-between items-end mb-1.5 md:mb-2">
                         <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Budget Tersisa</span>
                         <span class="text-[9px] md:text-xs font-black text-white">${percentage}%</span>
                     </div>
-                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                        <div class="h-full bg-white rounded-full" style="width: ${percentage}%" class="shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                    <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-4">
+                        <div class="h-full bg-white rounded-full" style="width: ${percentage}%"></div>
                     </div>
                     
-                    <!-- DUA TOMBOL -->
                     <div class="grid grid-cols-2 gap-1.5 md:gap-2">
                         <a href="detail-campaign.html?id=${camp.id}" class="w-full bg-zinc-900 border border-zinc-700 text-white py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm hover:bg-zinc-800 transition-all flex items-center justify-center text-center focus:outline-none">Lihat Detail</a>
                         ${btnActionHTML}
@@ -424,9 +380,6 @@
             </div>`;
         }
 
-        // ==========================================
-        // SCRIPT DROPDOWNS & KLIK FILTER
-        // ==========================================
         window.toggleDropdown = function(id) {
             document.querySelectorAll('.dropdown-menu').forEach(menu => {
                 if (menu.id !== id) menu.classList.add('hidden');
@@ -453,9 +406,6 @@
             applyFilters();
         };
 
-        // ==========================================
-        // SCRIPT LOAD MORE DINAMIS
-        // ==========================================
         window.loadMoreData = function() {
             const btn = document.getElementById('load-more-btn');
             const spinner = document.getElementById('load-more-spinner');
@@ -467,34 +417,29 @@
 
             setTimeout(() => {
                 currentVisible += itemsToLoad;
-                applyFilters(); // Re-render dengan limit yang baru
+                applyFilters(); 
                 
                 btn.disabled = false;
                 spinner.classList.add('hidden');
                 btnText.innerText = 'Load More Campaigns';
-            }, 500); // Simulasi jeda loading agar terasa smooth
+            }, 500); 
         };
 
-        // ==========================================
-        // SCRIPT JOIN / DAFTAR CAMPAIGN
-        // ==========================================
+        // AKSI JOIN CAMPAIGN
         window.joinCampaign = async function(campaignId, btnElement) {
             if (!sessionUser) {
                 alert("Silakan login terlebih dahulu untuk mendaftar campaign.");
                 return;
             }
 
-            // Ubah state tombol
             btnElement.disabled = true;
             btnElement.innerText = 'Mendaftar...';
 
-            // Insert ke tabel relasi user_campaigns
             const { data, error } = await supabase.from('user_campaigns').insert([
                 { user_id: sessionUser.id, campaign_id: campaignId }
             ]);
 
             if (error) {
-                // Jika error kode 23505 = Data Unique terlanggar (sudah join)
                 if (error.code === '23505' || error.message.includes('duplicate')) {
                     alert("Anda sudah mendaftar di campaign ini sebelumnya!");
                     joinedCampaignIds.push(campaignId);
@@ -506,12 +451,10 @@
                     btnElement.disabled = false;
                 }
             } else {
-                // Berhasil join
                 joinedCampaignIds.push(campaignId);
                 btnElement.innerText = 'Sudah Bergabung';
                 btnElement.className = 'w-full bg-zinc-800 text-white py-1.5 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] md:text-sm cursor-not-allowed border border-zinc-700';
                 
-                // Alert & Opsional arahkan ke dashboard
                 if (confirm("Berhasil mendaftar! Campaign sekarang aktif di Dashboard kamu.\nApakah kamu ingin pergi ke Dashboard sekarang?")) {
                     window.location.replace('clipper-dashboard.html');
                 }
