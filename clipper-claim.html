@@ -243,10 +243,10 @@
         // ==========================================
         async function loadUserStats() {
             try {
-                // 1. Ambil seluruh submission milik user ini
+                // 1. Ambil seluruh submission milik user ini. Menambahkan views_claimed.
                 const { data: allSubs } = await supabase
                     .from('submissions')
-                    .select('status, earned, views_paid')
+                    .select('status, earned, views_paid, views_claimed')
                     .eq('user_id', sessionUser.id);
 
                 let calcEarnings = 0;
@@ -258,12 +258,18 @@
                 if (allSubs) {
                     calcVideos = allSubs.length; // Total semua video yang diajukan
                     allSubs.forEach(sub => {
+                        
                         if (sub.status === 'PENDING') {
                             p++;
                         } else if (sub.status === 'APPROVED') {
                             a++;
+                            // Pendapatan dihitung berdasar nominal bayaran riil (sudah difilter oleh rules)
                             calcEarnings += (sub.earned || 0);
-                            calcViews += (sub.views_paid || 0);
+                            
+                            // Untuk Total Views, hitung menggunakan views klaim paling mentah/asli yang diajukan user.
+                            // Meskipun yang dibayar (views_paid) cuma sebatas max claim.
+                            calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0);
+
                         } else if (sub.status === 'REJECTED') {
                             r++;
                         }
@@ -291,13 +297,17 @@
                 if (calcWithdrawable < 0) calcWithdrawable = 0;
 
                 // 3. UPDATE/UPSERT KE TABEL clipper_stats OTOMATIS
-                await supabase.from('clipper_stats').upsert({
+                const { error: upsertError } = await supabase.from('clipper_stats').upsert({
                     user_id: sessionUser.id,
                     total_earnings: calcEarnings,
                     withdrawable: calcWithdrawable,
                     total_views: calcViews,
                     total_videos: calcVideos
                 }, { onConflict: 'user_id' });
+
+                if (upsertError) {
+                    console.error("Gagal sinkronisasi data ke clipper_stats (Cek RLS Database Anda):", upsertError.message);
+                }
 
                 // 4. Perbarui UI
                 realEarnings = calcEarnings;
@@ -309,7 +319,7 @@
                 document.getElementById('ditolak-detail').innerText = r;
 
             } catch(e) {
-                console.error("Gagal sinkronisasi data ke clipper_stats:", e);
+                console.error("Gagal perhitungan:", e);
                 // Fallback (apabila perhitungan error, render data lama yang ada di db)
                 try {
                     const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
