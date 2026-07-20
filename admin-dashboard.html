@@ -268,7 +268,7 @@
         }
 
         // ==========================================
-        // 2. LOAD PENDING SUBMISSIONS
+        // 2. LOAD PENDING SUBMISSIONS DENGAN DATA VALID
         // ==========================================
         async function loadPendingSubmissions() {
             const grid = document.getElementById('pending-submissions-grid');
@@ -295,7 +295,7 @@
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
-                        id, video_link, views, earned, status, created_at,
+                        id, video_link, views_claimed, earned, status, created_at,
                         profiles ( full_name, email ),
                         campaigns ( title, brand_name )
                     `)
@@ -312,13 +312,14 @@
                 data.forEach(sub => {
                     const creatorName = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
                     const campTitle = sub.campaigns?.title || 'Unknown Campaign';
-                    const views = sub.views || 0;
+                    // Kita menggunakan views_claimed sesuai sinkronisasi database
+                    const views = sub.views_claimed || 0;
                     
                     html += `
                     <div class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
                         <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                            <!-- Image URL digenerate oleh JS extractThumbnails -->
-                            <img src="" data-video-link="${sub.video_link}" class="submission-thumb w-16 h-24 object-cover rounded-lg bg-zinc-900">
+                            <!-- Placeholder Elegan sembari ditarik Script Thumbnail -->
+                            <img src="https://placehold.co/300x450/121214/27272a?text=Memuat..." data-video-link="${sub.video_link}" class="submission-thumb w-16 h-24 object-cover rounded-lg border border-zinc-800 shrink-0">
                             <div class="flex-1 min-w-0 flex flex-col justify-center">
                                 <div class="flex items-center justify-between mb-1">
                                     <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">PENDING ACC</span>
@@ -344,7 +345,9 @@
                 });
                 
                 grid.innerHTML = html;
-                extractThumbnails(); // Jalankan script untuk menarik thumbnail dari YT/TikTok
+                
+                // Jalankan fungsi scraper Thumbnail Asli
+                extractThumbnailsAsync(); 
                 
             } catch (err) {
                 console.log("Submissions table might not exist yet.", err);
@@ -352,24 +355,43 @@
             }
         }
 
-        // FUNGSI EKSTRAK THUMBNAIL (Dipanggil setelah card di render)
-        function extractThumbnails() {
+        // FUNGSI EKSTRAK THUMBNAIL ASLI ASYNC (MICROLINK & TIKWM)
+        async function extractThumbnailsAsync() {
             const images = document.querySelectorAll('.submission-thumb');
-            images.forEach(img => {
+            for (let img of images) {
                 const url = img.getAttribute('data-video-link');
-                if(!url) return;
+                if(!url || img.getAttribute('data-loaded') === 'true') continue;
 
-                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-                if (ytMatch && ytMatch[1]) {
-                    img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-                } else if (url.includes('tiktok.com')) {
-                    img.src = 'https://images.unsplash.com/photo-1611605698335-8b1569810432?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
-                } else if (url.includes('instagram.com')) {
-                    img.src = 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
-                } else {
-                    img.src = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+                // Handle YouTube secara instan
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                        img.setAttribute('data-loaded', 'true');
+                    }
+                    continue;
                 }
-            });
+
+                // Handle TikTok / IG dengan Microlink & TikWM API
+                try {
+                    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                    const json = await res.json();
+                    
+                    if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                        img.src = json.data.image.url;
+                        img.setAttribute('data-loaded', 'true');
+                    } else if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                        const tkJson = await tkRes.json();
+                        if (tkJson.data && tkJson.data.cover) {
+                            img.src = tkJson.data.cover;
+                            img.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) { 
+                    console.log("Gagal memuat thumbnail asli untuk:", url); 
+                }
+            }
         }
 
         // ==========================================
