@@ -91,7 +91,10 @@
                     <div class="flex justify-between items-start mb-6">
                         <div>
                             <p class="text-xs sm:text-sm font-medium text-zinc-400 mb-1">Total Pendapatan Kamu</p>
-                            <h2 id="total-pendapatan" class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Rp 0</h2>
+                            <h2 id="total-pendapatan" class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+                                <!-- Animasi Loading (Skeleton Pulse) -->
+                                <span class="inline-block w-40 sm:w-56 h-8 sm:h-10 md:h-12 bg-zinc-800 rounded-lg animate-pulse"></span>
+                            </h2>
                         </div>
                         <button onclick="window.toggleSensor()" class="text-zinc-500 hover:text-white transition-colors p-2 bg-zinc-900 rounded-lg focus:outline-none">
                             <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
@@ -104,19 +107,27 @@
                     <div class="grid grid-cols-4 gap-2 sm:gap-4 text-left">
                         <div class="border-r border-zinc-800">
                             <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Saldo Tersedia</p>
-                            <p id="saldo-detail" class="text-xs sm:text-lg font-bold text-emerald-400">Rp 0</p>
+                            <p id="saldo-detail" class="text-xs sm:text-lg font-bold text-emerald-400">
+                                <span class="inline-block w-16 sm:w-24 h-4 sm:h-6 bg-zinc-800/80 rounded animate-pulse"></span>
+                            </p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
                             <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Pending (Review)</p>
-                            <p id="pending-detail" class="text-xs sm:text-lg font-bold text-amber-400">0</p>
+                            <p id="pending-detail" class="text-xs sm:text-lg font-bold text-amber-400">
+                                <span class="inline-block w-8 sm:w-12 h-4 sm:h-6 bg-zinc-800/80 rounded animate-pulse"></span>
+                            </p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
                             <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Disetujui</p>
-                            <p id="disetujui-detail" class="text-xs sm:text-lg font-bold text-blue-400">0</p>
+                            <p id="disetujui-detail" class="text-xs sm:text-lg font-bold text-blue-400">
+                                <span class="inline-block w-8 sm:w-12 h-4 sm:h-6 bg-zinc-800/80 rounded animate-pulse"></span>
+                            </p>
                         </div>
                         <div class="pl-2">
                             <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Ditolak</p>
-                            <p id="ditolak-detail" class="text-xs sm:text-lg font-bold text-red-400">0</p>
+                            <p id="ditolak-detail" class="text-xs sm:text-lg font-bold text-red-400">
+                                <span class="inline-block w-8 sm:w-12 h-4 sm:h-6 bg-zinc-800/80 rounded animate-pulse"></span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -313,7 +324,7 @@
                 realEarnings = calcEarnings;
                 realWithdrawable = calcWithdrawable;
 
-                // Render jumlah status klaim
+                // Render jumlah status klaim (otomatis menghapus skeleton)
                 document.getElementById('pending-detail').innerText = p;
                 document.getElementById('disetujui-detail').innerText = a;
                 document.getElementById('ditolak-detail').innerText = r;
@@ -330,7 +341,7 @@
                 } catch(err) {}
             }
             
-            // Refresh text UI Pendapatan
+            // Refresh text UI Pendapatan (Otomatis menghapus skeleton)
             window.toggleSensor(true); 
         }
 
