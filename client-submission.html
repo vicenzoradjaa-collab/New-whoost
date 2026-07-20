@@ -47,15 +47,12 @@
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
     <!-- ========================================== -->
-    <!-- LOADING SCREEN (NEW)                       -->
+    <!-- LOADING SCREEN                             -->
     <!-- ========================================== -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
-            <!-- Animasi Efek Glow di belakang logo -->
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <!-- Logo Whoost -->
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
-            <!-- Teks -->
             <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data...</p>
         </div>
     </div>
@@ -79,13 +76,13 @@
         <!-- Search Bar -->
         <div class="relative w-full md:max-w-md">
             <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" id="searchInput" oninput="handleSearch(event)" placeholder="Cari kreator, judul..." 
+            <input type="text" id="searchInput" oninput="window.handleSearch(event)" placeholder="Cari kreator, judul..." 
                 class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-[13px] sm:text-[14px] text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-shadow">
         </div>
 
         <!-- Filter Dropdown -->
         <div class="relative w-full md:w-auto">
-            <button onclick="toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
+            <button onclick="window.toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
                 <div class="flex items-center gap-2">
                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                     <span id="filterLabel">Status: Pending</span>
@@ -94,10 +91,10 @@
             </button>
             
             <div id="dropdownFilter" class="absolute right-0 top-full mt-2 w-full md:w-48 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                <button onclick="selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors">Semua Status</button>
-                <button onclick="selectFilter('Pending')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-amber-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Pending</button>
-                <button onclick="selectFilter('Disetujui')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-green-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Disetujui</button>
-                <button onclick="selectFilter('Ditolak')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-red-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Ditolak</button>
+                <button onclick="window.selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors">Semua Status</button>
+                <button onclick="window.selectFilter('PENDING')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-amber-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Pending</button>
+                <button onclick="window.selectFilter('APPROVED')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-green-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Disetujui</button>
+                <button onclick="window.selectFilter('REJECTED')" class="text-left px-5 py-3 text-[13px] sm:text-[14px] text-red-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Ditolak</button>
             </div>
         </div>
     </div>
@@ -106,126 +103,12 @@
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-4 pb-32 z-0 scroll-smooth w-full relative">
         
         <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-5 w-full">
-            
-            <!-- Generate 12 Cards -->
-            <!-- CARD 1 -->
-            <div id="card-1" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span>
-                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
-                    </div>
-                    <!-- Badge Status -->
-                    <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
-
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                        <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
-                        <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p>
-                    </div>
-                </div>
-                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
-                    </a>
-                    <button onclick="openReviewModal('card-1')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
-                </div>
-            </div>
-
-            <!-- CARD 2 -->
-            <div id="card-2" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">IG Reels</span>
-                    </div>
-                    <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                        <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p>
-                        <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Skincare Malam</p>
-                    </div>
-                </div>
-                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
-                    <button onclick="openReviewModal('card-2')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
-                </div>
-            </div>
-
-            <!-- CARD 3 -->
-            <div id="card-3" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span>
-                    </div>
-                    <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div>
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                        <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p>
-                        <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Unboxing Gadget Baru</p>
-                    </div>
-                </div>
-                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
-                    <button onclick="openReviewModal('card-3')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
-                </div>
-            </div>
-
-            <!-- CARD 4 (Disetujui Default) -->
-            <div id="card-4" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YT Shorts</span>
-                    </div>
-                    <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Disetujui</div>
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                        <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p>
-                        <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Vlog Makan Siang</p>
-                    </div>
-                </div>
-                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
-                    <button onclick="openReviewModal('card-4')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
-                </div>
-            </div>
-
-            <!-- CARD 5 (Ditolak Default) -->
-            <div id="card-5" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>
-                    </div>
-                    <div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-red-500/20 border border-red-500/50 text-red-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Ditolak</div>
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                        <p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
-                        <p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Tarian Produk Salah</p>
-                    </div>
-                </div>
-                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a>
-                    <button onclick="openReviewModal('card-5')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button>
-                </div>
-            </div>
-
-            <!-- CARD 6-12 (Pending Default) -->
-            <div id="card-6" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@dian_beauty</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Tutorial Makeup Kilat</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-6')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div id="card-7" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Headphone Premium Test</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-7')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div id="card-8" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@kulineran.bandung</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Kafe Hits Braga</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-8')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div id="card-9" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-9')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div id="card-10" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">IG Reels</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Skincare Malam</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-10')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div id="card-11" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Threads</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Unboxing Gadget Baru</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-11')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
-            <div id="card-12" class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300"><div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"><div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div><div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm"><span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YT Shorts</span></div><div class="status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500/20 border border-amber-500/50 text-amber-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors">Pending</div><div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><p class="creator-name text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p><p class="content-title text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Vlog Makan Siang</p></div></div><div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2"><a href="#" onclick="alert('Membuka detail konten...'); return false;" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat</a><button onclick="openReviewModal('card-12')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm">Review</button></div></div>
+            <p class="text-zinc-500 text-sm col-span-full">Memuat pengajuan...</p>
         </div>
 
-        <!-- TOMBOL LIHAT SELENGKAPNYA -->
+        <!-- TOMBOL LOAD MORE -->
         <div class="mt-8 flex justify-center w-full">
-            <button id="btnLoadMore" onclick="loadMore()" class="hidden px-5 sm:px-6 py-2.5 sm:py-3 bg-zinc-900 border border-zinc-700 hover:bg-white hover:text-black hover:border-white rounded-xl text-[13px] sm:text-[14px] font-semibold text-white transition-colors">
+            <button id="btnLoadMore" onclick="window.loadMore()" class="hidden px-5 sm:px-6 py-2.5 sm:py-3 bg-zinc-900 border border-zinc-700 hover:bg-white hover:text-black hover:border-white rounded-xl text-[13px] sm:text-[14px] font-semibold text-white transition-colors focus:outline-none">
                 Lihat Selengkapnya
             </button>
         </div>
@@ -238,18 +121,18 @@
         <div id="reviewModalBox" class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-md p-5 sm:p-6 transform scale-95 transition-transform duration-300 relative">
             <div class="flex justify-between items-center mb-5 sm:mb-6">
                 <h3 class="text-lg sm:text-xl font-semibold text-white">Review Konten</h3>
-                <button onclick="closeReviewModal()" class="text-zinc-500 hover:text-white hover:bg-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors focus:outline-none">
+                <button onclick="window.closeReviewModal()" class="text-zinc-500 hover:text-white hover:bg-zinc-800 w-8 h-8 rounded-full flex items-center justify-center transition-colors focus:outline-none">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
             <p class="text-[13px] sm:text-[14px] text-zinc-400 mb-5">Tentukan status untuk pengajuan konten ini.</p>
             
             <div class="flex gap-3 sm:gap-4 mb-5 sm:mb-6">
-                <button id="btnSetuju" onclick="selectDecision('setuju')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none">
+                <button id="btnSetuju" onclick="window.selectDecision('setuju')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     Setujui
                 </button>
-                <button id="btnTolak" onclick="selectDecision('tolak')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none">
+                <button id="btnTolak" onclick="window.selectDecision('tolak')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     Tolak
                 </button>
@@ -258,23 +141,23 @@
             <div id="formTolak" class="hidden flex-col gap-2.5 sm:gap-3 mb-5 sm:mb-6 bg-zinc-900/50 p-3 sm:p-4 rounded-xl border border-zinc-800">
                 <label class="text-[12px] sm:text-[13px] font-medium text-white mb-1">Alasan Penolakan:</label>
                 <label class="flex items-center gap-2 sm:gap-3 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Tidak sesuai brief" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="toggleCustomReason(false)">
+                    <input type="radio" name="alasan" value="Tidak sesuai brief" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="window.toggleCustomReason(false)">
                     <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Tidak sesuai brief</span>
                 </label>
                 <label class="flex items-center gap-2 sm:gap-3 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Budget habis" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="toggleCustomReason(false)">
-                    <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Budget habis</span>
+                    <input type="radio" name="alasan" value="Kualitas video buruk" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="window.toggleCustomReason(false)">
+                    <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Kualitas video buruk</span>
                 </label>
                 <label class="flex items-center gap-2 sm:gap-3 cursor-pointer group">
-                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="toggleCustomReason(true)">
+                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5 sm:w-4 sm:h-4" onchange="window.toggleCustomReason(true)">
                     <span class="text-[13px] sm:text-[14px] text-zinc-300 group-hover:text-white transition-colors">Lainnya (Isi sendiri)</span>
                 </label>
                 <textarea id="customReason" class="w-full bg-black/50 border border-zinc-700 rounded-lg p-2.5 sm:p-3 text-[12px] sm:text-[13px] text-white focus:outline-none focus:border-red-500 hidden mt-1.5 sm:mt-2 placeholder-zinc-600 resize-none" rows="3" placeholder="Ketik alasan spesifik penolakan..."></textarea>
             </div>
 
             <div class="flex justify-end gap-2 sm:gap-3 pt-4 border-t border-zinc-800/80">
-                <button onclick="closeReviewModal()" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-800 transition-colors">Batal</button>
-                <button id="btnSubmitReview" class="px-5 sm:px-6 py-2 sm:py-2.5 bg-white text-black rounded-xl text-[13px] sm:text-[14px] font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                <button onclick="window.closeReviewModal()" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
+                <button id="btnSubmitReview" onclick="window.submitReview()" class="px-5 sm:px-6 py-2 sm:py-2.5 bg-white text-black rounded-xl text-[13px] sm:text-[14px] font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none" disabled>
                     Kirim
                 </button>
             </div>
@@ -282,54 +165,227 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
+    <!-- JAVASCRIPT & LOGIC SUPABASE                -->
     <!-- ========================================== -->
-    <script>
-        const ACTIVE_MENU = 'pengajuan';
-    </script>
+    <script>const ACTIVE_MENU = 'pengajuan';</script>
     <script src="attribute/navbarclient.js"></script>
 
-    <script>
-        /* ================= Core Logic (Search, Filter, Pagination) ================= */
-        let allCards = [];
-        let currentItemCount = 12; // Load langsung 12 konten diawal
-        let currentFilter = 'Pending'; // Default filter
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        let sessionUser = null;
+        let submissionsData = [];
+        
+        let currentItemCount = 12; 
+        let currentFilter = 'PENDING'; 
         let searchQuery = '';
         let activeCardId = null;
+        let currentDecision = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Simpan semua referensi card saat halaman dimuat
-            allCards = Array.from(document.querySelectorAll('.content-card'));
-            document.getElementById('filterLabel').innerText = "Status: " + currentFilter;
-            
-            // Proses filter awal
-            applyFilters();
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Silakan login sebagai Client.");
+                window.location.replace('login.html');
+                return;
+            }
+            sessionUser = session.user;
 
-            // LOGIC HILANGKAN LOADING SCREEN
-            // Menggunakan timeout singkat (misal 1 detik) untuk mensimulasikan "fetching data"
+            await loadSubmissions();
+
+            // Sembunyikan Loader
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
-                loader.classList.add('opacity-0'); // Transisi smooth fade out
-                setTimeout(() => {
-                    loader.style.display = 'none'; // Benar-benar dihilangkan dari tampilan
-                }, 500); // Waktu ini sejalan dengan duration-500 di class tailwind
-            }, 1000); 
+                if(loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 500);
         });
 
-        /* ================= Dropdown Filter ================= */
-        function toggleFilter() {
+        // 1. Tarik Data dari Supabase (Hanya yang Client_ID nya cocok)
+        async function loadSubmissions() {
+            try {
+                const { data, error } = await supabase
+                    .from('submissions')
+                    .select(`
+                        id, video_link, status, created_at, user_id,
+                        profiles (full_name, email),
+                        campaigns!inner (id, title, client_id, platforms)
+                    `)
+                    .eq('campaigns.client_id', sessionUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                submissionsData = data || [];
+                applyFilters();
+            } catch (err) {
+                console.error("Error loading submissions:", err);
+                document.getElementById('contentGrid').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal memuat data dari server.</p>';
+            }
+        }
+
+        // 2. Logic Generate Badge Platform
+        function getPlatformInfo(url, campPlatforms) {
+            if (url.includes('tiktok.com')) return { color: 'bg-cyan-400', name: 'TikTok' };
+            if (url.includes('instagram.com')) return { color: 'bg-fuchsia-500', name: 'IG Reels' };
+            if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) return { color: 'bg-red-600', name: 'YT Shorts' };
+            return { color: 'bg-zinc-100', name: 'Link Web' };
+        }
+
+        // 3. Render Kartu HTML
+        function generateCard(sub) {
+            const creator = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
+            const title = sub.campaigns?.title || 'Campaign Dihapus';
+            const platInfo = getPlatformInfo(sub.video_link, sub.campaigns?.platforms);
+
+            // Logika Status
+            let badgeClass = 'bg-zinc-500/20 border-zinc-500/50 text-zinc-500';
+            let badgeText = 'UNKNOWN';
+            let btnReviewHTML = '';
+
+            if (sub.status === 'PENDING') {
+                badgeClass = 'bg-amber-500/20 border-amber-500/50 text-amber-500';
+                badgeText = 'Pending';
+                btnReviewHTML = `<button onclick="window.openReviewModal('${sub.id}')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm focus:outline-none">Review</button>`;
+            } else if (sub.status === 'APPROVED') {
+                badgeClass = 'bg-green-500/20 border-green-500/50 text-green-500';
+                badgeText = 'Disetujui';
+                btnReviewHTML = `<button disabled class="py-1.5 sm:py-2.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-[10px] sm:text-[13px] font-semibold cursor-not-allowed">Di-ACC</button>`;
+            } else if (sub.status === 'REJECTED') {
+                badgeClass = 'bg-red-500/20 border-red-500/50 text-red-500';
+                badgeText = 'Ditolak';
+                btnReviewHTML = `<button disabled class="py-1.5 sm:py-2.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[10px] sm:text-[13px] font-semibold cursor-not-allowed">Ditolak</button>`;
+            }
+
+            return `
+            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300 ${sub.status !== 'PENDING' ? 'opacity-80' : ''}">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group border border-zinc-800">
+                    <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="https://placehold.co/300x400/121214/27272a?text=..." class="sub-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                    
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${platInfo.color}"></span>
+                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">${platInfo.name}</span>
+                    </div>
+                    
+                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 ${badgeClass} px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">${badgeText}</div>
+
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">${creator}</p>
+                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5" title="${title}">${title}</p>
+                    </div>
+                </div>
+                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
+                    <a href="${sub.video_link}" target="_blank" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors focus:outline-none">
+                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
+                    </a>
+                    ${btnReviewHTML}
+                </div>
+            </div>`;
+        }
+
+        // 4. Menerapkan Filter & Search
+        function applyFilters() {
+            const grid = document.getElementById('contentGrid');
+            const btnLoadMore = document.getElementById('btnLoadMore');
+
+            let filtered = submissionsData.filter(sub => {
+                const creator = (sub.profiles?.full_name || sub.profiles?.email || '').toLowerCase();
+                const title = (sub.campaigns?.title || '').toLowerCase();
+                
+                const matchesFilter = (currentFilter === 'Semua' || sub.status === currentFilter);
+                const matchesSearch = creator.includes(searchQuery) || title.includes(searchQuery);
+                
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p class="text-zinc-500 text-sm col-span-full">Tidak ada pengajuan ditemukan.</p>';
+                btnLoadMore.classList.add('hidden');
+                return;
+            }
+
+            let html = '';
+            const toRender = filtered.slice(0, currentItemCount);
+            toRender.forEach(sub => {
+                html += generateCard(sub);
+            });
+            grid.innerHTML = html;
+
+            if (filtered.length > currentItemCount) {
+                btnLoadMore.classList.remove('hidden');
+            } else {
+                btnLoadMore.classList.add('hidden');
+            }
+
+            // Jalankan penarikan Thumbnail
+            extractThumbnailsAsync(toRender);
+        }
+
+        // 5. Scraper Thumbnail Dinamis (Sama dengan fitur lainnya)
+        async function extractThumbnailsAsync(items) {
+            for (let sub of items) {
+                const imgEl = document.getElementById(`thumb-${sub.id}`);
+                if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
+                
+                const url = sub.video_link;
+                if (!url) continue;
+
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        imgEl.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                        imgEl.setAttribute('data-loaded', 'true');
+                    }
+                    continue;
+                }
+
+                try {
+                    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                    const json = await res.json();
+                    
+                    if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                        imgEl.src = json.data.image.url;
+                        imgEl.setAttribute('data-loaded', 'true');
+                    } else if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                        const tkJson = await tkRes.json();
+                        if (tkJson.data && tkJson.data.cover) {
+                            imgEl.src = tkJson.data.cover;
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) {}
+            }
+        }
+
+        // GLOBAL BINDINGS
+        window.handleSearch = function(e) {
+            searchQuery = e.target.value.toLowerCase();
+            currentItemCount = 12;
+            applyFilters();
+        };
+
+        window.toggleFilter = function() {
             const dropdown = document.getElementById('dropdownFilter');
             dropdown.classList.toggle('hidden');
             dropdown.classList.toggle('flex');
-        }
+        };
 
-        function selectFilter(status) {
+        window.selectFilter = function(status) {
             currentFilter = status;
-            document.getElementById('filterLabel').innerText = "Status: " + status;
-            currentItemCount = 12; // Reset ke 12 item saat filter berubah
-            toggleFilter();
+            let displayStatus = status === 'PENDING' ? 'Pending' : (status === 'APPROVED' ? 'Disetujui' : (status === 'REJECTED' ? 'Ditolak' : 'Semua Status'));
+            document.getElementById('filterLabel').innerText = "Status: " + displayStatus;
+            window.toggleFilter();
+            currentItemCount = 12;
             applyFilters();
-        }
+        };
+
+        window.loadMore = function() {
+            currentItemCount += 12;
+            applyFilters();
+        };
 
         window.addEventListener('click', function(e) {
             const filterBtn = document.getElementById('btnFilter');
@@ -342,88 +398,11 @@
             }
         });
 
-        /* ================= Search Logic ================= */
-        function handleSearch(e) {
-            searchQuery = e.target.value.toLowerCase();
-            currentItemCount = 12; // Reset pagination saat mencari
-            applyFilters();
-        }
-
-        /* ================= Fungsi Menyaring Data ================= */
-        function applyFilters() {
-            let matchedCards = [];
-
-            allCards.forEach(card => {
-                // PERBAIKAN BUG: menggunakan .textContent (bukan innerText) dan .toLowerCase() 
-                // agar efek CSS Uppercase tidak bentrok dengan perbandingan string filter
-                const statusBadge = card.querySelector('.status-badge').textContent.trim().toLowerCase();
-                const creator = card.querySelector('.creator-name').textContent.toLowerCase();
-                const title = card.querySelector('.content-title').textContent.toLowerCase();
-
-                const matchesFilter = (currentFilter === 'Semua' || statusBadge === currentFilter.toLowerCase());
-                const matchesSearch = creator.includes(searchQuery) || title.includes(searchQuery);
-
-                if (matchesFilter && matchesSearch) {
-                    matchedCards.push(card);
-                } else {
-                    card.classList.add('hidden');
-                    card.classList.remove('flex');
-                }
-            });
-
-            // Tampilkan berdasarkan batasan "Load More" (Pagination)
-            matchedCards.forEach((card, index) => {
-                if (index < currentItemCount) {
-                    card.classList.remove('hidden');
-                    card.classList.add('flex');
-                } else {
-                    card.classList.add('hidden');
-                    card.classList.remove('flex');
-                }
-            });
-
-            // Atur tombol Load More
-            const btnLoadMore = document.getElementById('btnLoadMore');
-            if (matchedCards.length > currentItemCount) {
-                btnLoadMore.classList.remove('hidden');
-            } else {
-                btnLoadMore.classList.add('hidden');
-            }
-        }
-
-        function loadMore() {
-            currentItemCount += 12; // Tambah 12 lagi saat ditekan
-            applyFilters();
-        }
-
-        /* ================= Modal Review & Submit ================= */
-        const reviewModal = document.getElementById('reviewModal');
-        const reviewModalBox = document.getElementById('reviewModalBox');
-        let currentDecision = null;
-
-        function openReviewModal(cardId) {
-            activeCardId = cardId; // Simpan ID yang sedang di review
-            resetModalForm();
-            reviewModal.classList.remove('hidden');
-            reviewModal.classList.add('flex');
-            setTimeout(() => {
-                reviewModal.classList.remove('opacity-0');
-                reviewModalBox.classList.remove('scale-95');
-                reviewModalBox.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeReviewModal() {
-            reviewModal.classList.add('opacity-0');
-            reviewModalBox.classList.remove('scale-100');
-            reviewModalBox.classList.add('scale-95');
-            setTimeout(() => {
-                reviewModal.classList.add('hidden');
-                reviewModal.classList.remove('flex');
-            }, 300);
-        }
-
-        function resetModalForm() {
+        // ==========================================
+        // MODAL REVIEW & SUBMIT KE SUPABASE
+        // ==========================================
+        window.openReviewModal = function(subId) {
+            activeCardId = subId;
             currentDecision = null;
             document.getElementById('btnSubmitReview').disabled = true;
             document.getElementById('formTolak').classList.add('hidden');
@@ -433,14 +412,34 @@
             
             const btnSetuju = document.getElementById('btnSetuju');
             const btnTolak = document.getElementById('btnTolak');
-            
             btnSetuju.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
             btnTolak.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
-            
             document.querySelectorAll('input[name="alasan"]').forEach(radio => radio.checked = false);
-        }
 
-        function selectDecision(decision) {
+            const reviewModal = document.getElementById('reviewModal');
+            const reviewModalBox = document.getElementById('reviewModalBox');
+            reviewModal.classList.remove('hidden');
+            reviewModal.classList.add('flex');
+            setTimeout(() => {
+                reviewModal.classList.remove('opacity-0');
+                reviewModalBox.classList.remove('scale-95');
+                reviewModalBox.classList.add('scale-100');
+            }, 10);
+        };
+
+        window.closeReviewModal = function() {
+            const reviewModal = document.getElementById('reviewModal');
+            const reviewModalBox = document.getElementById('reviewModalBox');
+            reviewModal.classList.add('opacity-0');
+            reviewModalBox.classList.remove('scale-100');
+            reviewModalBox.classList.add('scale-95');
+            setTimeout(() => {
+                reviewModal.classList.add('hidden');
+                reviewModal.classList.remove('flex');
+            }, 300);
+        };
+
+        window.selectDecision = function(decision) {
             currentDecision = decision;
             const btnSetuju = document.getElementById('btnSetuju');
             const btnTolak = document.getElementById('btnTolak');
@@ -468,12 +467,11 @@
                     }
                 }
             }
-        }
+        };
 
-        function toggleCustomReason(isCustom) {
+        window.toggleCustomReason = function(isCustom) {
             const textArea = document.getElementById('customReason');
             const btnSubmit = document.getElementById('btnSubmitReview');
-            
             if (isCustom) {
                 textArea.classList.remove('hidden');
                 btnSubmit.disabled = textArea.value.trim() === '';
@@ -481,34 +479,66 @@
                 textArea.classList.add('hidden');
                 btnSubmit.disabled = false;
             }
-        }
+        };
 
         document.getElementById('customReason').addEventListener('input', function(e) {
-            const btnSubmit = document.getElementById('btnSubmitReview');
-            btnSubmit.disabled = e.target.value.trim() === '';
-        });
-
-        /* ================= Aksi Kirim Form Review ================= */
-        document.getElementById('btnSubmitReview').addEventListener('click', function() {
-            if (!activeCardId || !currentDecision) return;
-
-            const card = document.getElementById(activeCardId);
-            const badge = card.querySelector('.status-badge');
-
-            // Ubah UI Badge berdasarkan keputusan
-            if (currentDecision === 'setuju') {
-                badge.innerText = 'Disetujui';
-                badge.className = 'status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-green-500/20 border border-green-500/50 text-green-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors';
-            } else if (currentDecision === 'tolak') {
-                badge.innerText = 'Ditolak';
-                badge.className = 'status-badge absolute top-2 right-2 sm:top-3 sm:right-3 bg-red-500/20 border border-red-500/50 text-red-500 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider transition-colors';
+            if(currentDecision === 'tolak') {
+                document.getElementById('btnSubmitReview').disabled = e.target.value.trim() === '';
             }
-
-            closeReviewModal();
-            
-            // Render ulang supaya kartu pindah/hilang jika tidak sesuai filter yang sedang aktif
-            applyFilters();
         });
+
+        // SUBMIT KE SUPABASE
+        window.submitReview = async function() {
+            if (!activeCardId || !currentDecision) return;
+            
+            const btnSubmit = document.getElementById('btnSubmitReview');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Menyimpan...";
+
+            try {
+                let updateData = { status: currentDecision === 'setuju' ? 'APPROVED' : 'REJECTED' };
+                
+                if (currentDecision === 'tolak') {
+                    const checked = document.querySelector('input[name="alasan"]:checked');
+                    updateData.reject_reason = checked.value === 'lainnya' ? document.getElementById('customReason').value.trim() : checked.value;
+                } else {
+                    updateData.reject_reason = null; // Bersihkan reason jika di-acc
+                }
+
+                const { error } = await supabase.from('submissions').update(updateData).eq('id', activeCardId);
+                
+                if (error) throw error;
+
+                // Dapatkan user_id dari submissionsData lokal
+                const sub = submissionsData.find(s => s.id === activeCardId);
+                if (sub) {
+                    // Kirim Notif ke Clipper
+                    const notifTitle = currentDecision === 'setuju' ? 'Video Disetujui! ✅' : 'Video Ditolak ❌';
+                    const notifMsg = currentDecision === 'setuju' 
+                        ? `Video Anda untuk campaign "${sub.campaigns.title}" disetujui oleh Brand. Sekarang Anda bisa mulai klaim Views!`
+                        : `Video Anda untuk campaign "${sub.campaigns.title}" ditolak oleh Brand. Alasan: ${updateData.reject_reason}`;
+                        
+                    await supabase.from('notifications').insert([{
+                        user_id: sub.user_id,
+                        title: notifTitle,
+                        message: notifMsg,
+                        type: currentDecision === 'setuju' ? 'success' : 'warning'
+                    }]);
+                }
+
+                alert(`Pengajuan berhasil di-${currentDecision === 'setuju' ? 'Setujui' : 'Tolak'}.`);
+                window.closeReviewModal();
+                btnSubmit.innerText = "Kirim";
+                
+                // Refresh Tabel Data
+                await loadSubmissions();
+
+            } catch (err) {
+                alert("Terjadi kesalahan: " + err.message);
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Kirim";
+            }
+        };
     </script>
 </body>
 </html>
