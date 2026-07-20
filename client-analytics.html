@@ -23,6 +23,7 @@
         }
     </script>
     <style>
+        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
         * { -webkit-tap-highlight-color: transparent !important; outline: none; }
         html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -32,6 +33,7 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Custom Donut Chart Base */
         .donut-ring { stroke: #27272a; stroke-width: 3.5; fill: transparent; }
         .donut-segment { stroke: #22c55e; stroke-width: 3.5; fill: transparent; stroke-linecap: round; transition: stroke-dasharray 1s ease-in-out; }
     </style>
@@ -47,13 +49,14 @@
         </div>
     </div>
 
-    <!-- Background Ornamen -->
+    <!-- Background Ornamen Aman -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
 
     <!-- HEADER -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <!-- Mengembalikan Logo di Pojok Kiri Atas -->
         <div class="flex items-center gap-3 sm:gap-4 relative z-10">
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
@@ -106,6 +109,7 @@
 
                 <!-- TOTAL BUDGET CARD -->
                 <div class="md:col-span-1 bg-green-500/5 border border-green-500/20 rounded-3xl p-6 sm:p-8 flex flex-col justify-center items-start relative overflow-hidden shadow-lg">
+                    <!-- Ornamen background blur -->
                     <div class="absolute -top-10 -right-10 w-32 h-32 bg-green-500/10 blur-[40px] rounded-full pointer-events-none"></div>
                     
                     <h2 class="text-sm font-bold text-green-500 tracking-widest uppercase mb-4 relative z-10">Total Budget</h2>
@@ -132,10 +136,12 @@
 
             <!-- 3. PLATFORM BREAKDOWN -->
             <div>
+                <!-- Bagian Header Platform dengan Filter Campaign Custom -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-4 px-1">
                     <h2 class="text-lg font-bold text-white tracking-tight">Platform Distribution</h2>
                     
                     <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        
                         <!-- CUSTOM DROPDOWN FILTER CAMPAIGN -->
                         <div class="relative w-full sm:w-64" id="campaignDropdownContainer">
                             <button id="campaignDropdownBtn" onclick="window.toggleCampaignDropdown()" class="flex items-center justify-between w-full pl-3 pr-3 py-2.5 bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs sm:text-sm font-medium rounded-xl focus:outline-none focus:border-zinc-600 transition-colors cursor-pointer hover:bg-zinc-800">
@@ -143,6 +149,7 @@
                                 <svg class="w-4 h-4 text-zinc-500 transition-transform duration-200 shrink-0 ml-2" id="campaignDropdownIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
                             
+                            <!-- Dropdown Menu Item -->
                             <div id="campaignDropdownMenu" class="absolute z-[60] w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-xl shadow-xl opacity-0 invisible transform scale-95 transition-all duration-200 origin-top-right overflow-hidden">
                                 <div class="py-1" id="dropdownListContainer">
                                     <!-- Diisi secara dinamis via JS -->
@@ -163,9 +170,12 @@
                     <!-- Donut Chart Left -->
                     <div class="relative w-48 h-48 sm:w-56 sm:h-56 shrink-0 flex items-center justify-center">
                         <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90 drop-shadow-2xl">
+                            <!-- Background Ring Empty -->
                             <path class="donut-ring" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                             <path id="donutSegment" class="donut-segment" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                         </svg>
+                        
+                        <!-- Inner Text Content -->
                         <div class="absolute inset-0 flex flex-col items-center justify-center">
                             <span id="donut-text-views" class="text-2xl sm:text-3xl font-black text-white">0</span>
                             <span class="text-xs font-medium text-zinc-500 mt-1">views</span>
@@ -174,6 +184,7 @@
                     
                     <!-- Platform List Right -->
                     <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-x-8 sm:gap-y-4 content-center">
+                        
                         <!-- TikTok -->
                         <div class="flex items-center justify-between p-3 rounded-xl hover:bg-zinc-900 border border-zinc-800/50 hover:border-zinc-700 transition-all group">
                             <div class="flex items-center gap-3">
@@ -203,6 +214,7 @@
                             </div>
                             <span id="plat-yt" class="text-base font-bold text-white">0</span>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -210,9 +222,9 @@
         </div>
     </main>
 
-    <!-- SCRIPT (Navbar Client) -->
+    <!-- Memanggil Navbar Bawah -->
     <script>
-        const ACTIVE_MENU = 'performa'; 
+        const ACTIVE_MENU = 'performa';
     </script>
     <script src="attribute/navbarclient.js"></script>
 
@@ -307,7 +319,7 @@
             let budgetUsed = totalBudget - totalRemaining;
             let budgetPercent = totalBudget > 0 ? Math.round((budgetUsed / totalBudget) * 100) : 0;
 
-            // 2. Kalkulasi Data View & Konten (Hanya yang bukan PENDING / REJECTED, atau spesifik disetujui)
+            // 2. Kalkulasi Data View & Konten Disesuaikan (100% Sync dengan Menu Campaign)
             let totalViews = 0;
             let approvedContentCount = 0;
             
@@ -316,10 +328,12 @@
             let viewsYT = 0;
 
             filteredSubmissions.forEach(sub => {
-                // Dianggap disetujui jika status bukan PENDING dan bukan REJECTED
-                if (sub.status !== 'PENDING' && sub.status !== 'REJECTED') {
+                // Dianggap disetujui (Sync dgn logic halaman Campaign) = strictly 'APPROVED'
+                if (sub.status === 'APPROVED') {
                     approvedContentCount++;
-                    let v = Number(sub.views || 0);
+                    
+                    // Rumus max views_claimed dan views_paid persis seperti di client-campaign.html
+                    let v = Math.max(sub.views_claimed || 0, sub.views_paid || 0);
                     totalViews += v;
                     
                     let link = (sub.video_link || '').toLowerCase();
@@ -352,7 +366,6 @@
             document.getElementById('plat-yt').textContent = fmt.format(viewsYT);
 
             // 4. Update Donut Chart
-            // Karena ini donut dengan satu warna, kita isi persentase dominan atau full 100% bila ada view.
             const donutSegment = document.getElementById('donutSegment');
             if (totalViews > 0) {
                 donutSegment.setAttribute('stroke-dasharray', '100, 100');
@@ -442,7 +455,8 @@
                 else if (link.includes('youtube.com') || link.includes('youtu.be')) platform = 'YouTube';
 
                 const status = sub.status;
-                const views = sub.views || 0;
+                // views untuk csv juga disinkronkan ke max(claimed, paid)
+                const views = Math.max(sub.views_claimed || 0, sub.views_paid || 0);
                 const url = sub.video_link || '-';
 
                 // Escape koma pada nama string dengan quote ""
