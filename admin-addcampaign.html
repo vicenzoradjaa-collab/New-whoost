@@ -20,14 +20,14 @@
 </head>
 <body class="antialiased flex flex-col relative w-full h-full">
 
-    <!-- HEADER (flex-shrink-0 agar tetap di atas) -->
+    <!-- HEADER -->
     <header class="h-20 flex items-center px-4 sm:px-8 border-b border-zinc-800 bg-darkBg z-20 flex-shrink-0 w-full">
         <a href="admin-campaign.html" class="mr-4 text-zinc-400 hover:text-white transition-colors focus:outline-none">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </a>
         <h1 class="text-lg sm:text-xl font-bold">Buat Campaign Baru</h1>
         
-        <!-- STATUS DROPDOWN (CUSTOM) -->
+        <!-- STATUS DROPDOWN -->
         <div class="ml-auto relative custom-select-container w-40 sm:w-48">
             <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-xl px-4 py-2.5 text-sm text-white font-bold cursor-pointer flex justify-between items-center transition-colors" onclick="window.toggleSelect('status-options')">
                 <span id="status-selected-text" class="flex items-center gap-2">
@@ -35,7 +35,6 @@
                 </span>
                 <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
-            <!-- PERBAIKAN: Fungsi onclick dibuat lebih aman tanpa HTML di parameternya -->
             <div id="status-options" class="custom-select-options hidden absolute top-full right-0 mt-2 w-full bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-50 overflow-hidden">
                 <div onclick="window.selectStatus('ACTIVE')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer flex items-center gap-2 text-sm text-white font-bold"><svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ACTIVE</div>
                 <div onclick="window.selectStatus('HOLDING')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer flex items-center gap-2 text-sm text-white font-bold"><svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> HOLDING</div>
@@ -55,8 +54,8 @@
                     <h3 class="text-base font-bold text-white">Banner Campaign <span class="text-red-500">*</span></h3>
                     <span class="text-[10px] text-zinc-500 bg-zinc-900 px-2 py-1 rounded">16:9</span>
                 </div>
-                <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="handleBannerUpload(event)">
-                <div id="banner-upload-box" onclick="triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
+                <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="window.handleBannerUpload(event)">
+                <div id="banner-upload-box" onclick="window.triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
                     <img id="banner-preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
                     <div class="absolute inset-0 bg-black/40 hidden z-10 group-hover:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <span class="text-white font-bold text-sm bg-black/60 px-4 py-2 rounded-lg">Ganti Gambar</span>
@@ -139,8 +138,8 @@
                 <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-zinc-800 pb-4 gap-4">
                     <h3 class="text-base font-bold text-white">Anggaran & Keuangan</h3>
                     <div class="bg-zinc-900 border border-zinc-800 p-1 rounded-full flex gap-1 shadow-inner w-max">
-                        <button type="button" id="btn-type-views" onclick="setPaymentType('views')" class="px-5 py-1.5 rounded-full bg-white text-black text-xs font-semibold focus:outline-none">Per Views</button>
-                        <button type="button" id="btn-type-video" onclick="setPaymentType('video')" class="px-5 py-1.5 rounded-full text-zinc-400 hover:text-white text-xs font-semibold focus:outline-none">Per Video</button>
+                        <button type="button" id="btn-type-views" onclick="window.setPaymentType('views')" class="px-5 py-1.5 rounded-full bg-white text-black text-xs font-semibold focus:outline-none">Per Views</button>
+                        <button type="button" id="btn-type-video" onclick="window.setPaymentType('video')" class="px-5 py-1.5 rounded-full text-zinc-400 hover:text-white text-xs font-semibold focus:outline-none">Per Video</button>
                     </div>
                 </div>
 
@@ -303,7 +302,7 @@
                     let bName = c.business_name && c.business_name.toLowerCase() !== 'null' ? c.business_name : '';
                     let fName = c.full_name && c.full_name.toLowerCase() !== 'null' ? c.full_name : '';
                     let dName = bName || fName || c.email;
-                    html += `<div onclick="window.selectClient('${c.id}', '${dName}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-t border-zinc-700/50">${dName}</div>`;
+                    html += `<div onclick="window.selectClient('${c.id}', '${dName.replace(/'/g, "\\'")}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-t border-zinc-700/50">${dName}</div>`;
                 });
                 container.innerHTML = html;
             }
@@ -525,7 +524,7 @@
                 brand_initial: bName.substring(0,2).toUpperCase(),
                 title: bTitle,
                 deadline: document.getElementById('deadline').value,
-                description: document.getElementById('desc-input').value.trim(),
+                description: document.getElementById('brief').value.trim(),
                 budget_total: bTotal,
                 budget_remaining: bTotal,
                 payment_type: currentPaymentType,
