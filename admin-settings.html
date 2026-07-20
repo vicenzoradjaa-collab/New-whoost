@@ -69,7 +69,7 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER ADMIN (PROFIL KANAN DIHAPUS) -->
+    <!-- HEADER ADMIN -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain">
@@ -78,14 +78,14 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT (DITAMBAH PADDING BAWAH AGAR TIDAK TERTUTUP NAVBAR) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 sm:py-8 pb-32 sm:pb-40 z-0 scroll-smooth w-full relative">
         <div class="max-w-3xl mx-auto w-full">
             
-            <!-- LIST MENU UTAMA (BERJEJER KE BAWAH) -->
+            <!-- LIST MENU UTAMA -->
             <div id="setting-menu-list" class="flex flex-col gap-4">
                 
-                <button onclick="openSetting('fee-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
+                <button onclick="window.openSetting('fee-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center shrink-0">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -98,7 +98,7 @@
                     <svg class="w-5 h-5 text-zinc-500 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
-                <button onclick="openSetting('general-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
+                <button onclick="window.openSetting('general-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-300 group-hover:bg-blue-600/10 group-hover:text-blue-400 flex items-center justify-center shrink-0 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -111,7 +111,7 @@
                     <svg class="w-5 h-5 text-zinc-500 group-hover:text-blue-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
 
-                <button onclick="openSetting('security-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
+                <button onclick="window.openSetting('security-setting')" class="w-full text-left bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:border-blue-500 hover:bg-zinc-900 transition-all group">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-12 rounded-xl bg-zinc-800 text-zinc-300 group-hover:bg-blue-600/10 group-hover:text-blue-400 flex items-center justify-center shrink-0 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
@@ -125,11 +125,11 @@
                 </button>
             </div>
 
-            <!-- AREA KONTEN SETTING YANG TERBUKA -->
+            <!-- AREA KONTEN SETTING -->
             <div id="setting-content-area" class="hidden flex-col gap-6 w-full fade-in">
                 
                 <!-- TOMBOL KEMBALI -->
-                <button onclick="backToMenu()" class="flex items-center gap-2 text-zinc-400 hover:text-white font-medium text-sm transition-colors w-fit bg-zinc-900/50 hover:bg-zinc-800 px-4 py-2 rounded-xl border border-zinc-800">
+                <button onclick="window.backToMenu()" class="flex items-center gap-2 text-zinc-400 hover:text-white font-medium text-sm transition-colors w-fit bg-zinc-900/50 hover:bg-zinc-800 px-4 py-2 rounded-xl border border-zinc-800">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     Kembali ke Menu
                 </button>
@@ -147,15 +147,15 @@
                             <label class="block text-sm font-medium text-zinc-300 mb-2">Potongan Payout Clipper</label>
                             <p class="text-[11px] text-zinc-500 mb-3">Biaya yang dikenakan kepada clipper saat melakukan penarikan dana.</p>
                             <div class="flex relative">
-                                <input type="number" value="15" class="w-full bg-zinc-900 border-y border-l border-zinc-700 rounded-l-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="number" id="fee_clipper_amount" class="w-full bg-zinc-900 border-y border-l border-zinc-700 rounded-l-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                                 
-                                <button type="button" onclick="toggleDropdown('dropdown-clipper')" id="btn-dropdown-clipper" class="bg-zinc-800 border-y border-r border-zinc-700 rounded-r-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none flex items-center justify-between w-36 hover:bg-zinc-700 transition-colors">
+                                <button type="button" onclick="window.toggleDropdown('dropdown-clipper')" id="btn-dropdown-clipper" class="bg-zinc-800 border-y border-r border-zinc-700 rounded-r-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none flex items-center justify-between w-36 hover:bg-zinc-700 transition-colors">
                                     <span id="label-dropdown-clipper">Persen (%)</span>
                                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
                                 <div id="dropdown-clipper" class="absolute right-0 top-full mt-2 w-36 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                                    <button type="button" onclick="selectOption('dropdown-clipper', 'label-dropdown-clipper', 'Persen (%)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors">Persen (%)</button>
-                                    <button type="button" onclick="selectOption('dropdown-clipper', 'label-dropdown-clipper', 'Rupiah (Rp)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Rupiah (Rp)</button>
+                                    <button type="button" onclick="window.selectOption('dropdown-clipper', 'label-dropdown-clipper', 'Persen (%)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors">Persen (%)</button>
+                                    <button type="button" onclick="window.selectOption('dropdown-clipper', 'label-dropdown-clipper', 'Rupiah (Rp)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Rupiah (Rp)</button>
                                 </div>
                             </div>
                         </div>
@@ -167,15 +167,15 @@
                             <label class="block text-sm font-medium text-zinc-300 mb-2">Biaya Layanan Client (Deposit)</label>
                             <p class="text-[11px] text-zinc-500 mb-3">Biaya platform yang dikenakan kepada client saat membuat campaign.</p>
                             <div class="flex relative">
-                                <input type="number" value="0" class="w-full bg-zinc-900 border-y border-l border-zinc-700 rounded-l-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="number" id="fee_client_amount" class="w-full bg-zinc-900 border-y border-l border-zinc-700 rounded-l-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                                 
-                                <button type="button" onclick="toggleDropdown('dropdown-client')" id="btn-dropdown-client" class="bg-zinc-800 border-y border-r border-zinc-700 rounded-r-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none flex items-center justify-between w-36 hover:bg-zinc-700 transition-colors">
+                                <button type="button" onclick="window.toggleDropdown('dropdown-client')" id="btn-dropdown-client" class="bg-zinc-800 border-y border-r border-zinc-700 rounded-r-xl px-4 py-2.5 text-sm text-white font-medium focus:outline-none flex items-center justify-between w-36 hover:bg-zinc-700 transition-colors">
                                     <span id="label-dropdown-client">Rupiah (Rp)</span>
                                     <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
                                 <div id="dropdown-client" class="absolute right-0 top-full mt-2 w-36 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                                    <button type="button" onclick="selectOption('dropdown-client', 'label-dropdown-client', 'Persen (%)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors">Persen (%)</button>
-                                    <button type="button" onclick="selectOption('dropdown-client', 'label-dropdown-client', 'Rupiah (Rp)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Rupiah (Rp)</button>
+                                    <button type="button" onclick="window.selectOption('dropdown-client', 'label-dropdown-client', 'Persen (%)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors">Persen (%)</button>
+                                    <button type="button" onclick="window.selectOption('dropdown-client', 'label-dropdown-client', 'Rupiah (Rp)')" class="text-left px-4 py-3 text-sm text-white hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Rupiah (Rp)</button>
                                 </div>
                             </div>
                         </div>
@@ -188,7 +188,7 @@
                             <p class="text-[11px] text-zinc-500 mb-3">Minimal saldo yang harus dimiliki clipper sebelum bisa mengajukan penarikan.</p>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm font-medium">Rp</span>
-                                <input type="number" value="50000" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="number" id="min_payout" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                         </div>
 
@@ -200,7 +200,7 @@
                             <p class="text-[11px] text-zinc-500 mb-3">Harga yang dibayarkan oleh clipper untuk mendapatkan akses ke PRO Membership (Premium).</p>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 text-sm font-medium">Rp</span>
-                                <input type="number" value="499000" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="number" id="premium_price" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                         </div>
                     </div>
@@ -218,11 +218,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-zinc-300 mb-2">Email Bantuan (Support)</label>
-                                <input type="email" value="support@whoost.com" placeholder="email@contoh.com" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="email" id="support_email" placeholder="email@contoh.com" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-zinc-300 mb-2">Nomor WhatsApp CS</label>
-                                <input type="text" value="+6281234567890" placeholder="+628..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="text" id="support_whatsapp" placeholder="+628..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                         </div>
 
@@ -231,7 +231,7 @@
                         <!-- Link Komunitas -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-300 mb-2">Link Komunitas (Discord / Telegram)</label>
-                            <input type="url" value="https://discord.gg/whoost" placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                            <input type="url" id="community_link" placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                         </div>
 
                         <div class="border-t border-zinc-800/80"></div>
@@ -242,19 +242,19 @@
                                 <label class="block text-sm font-medium text-zinc-300 mb-2 flex items-center gap-2">
                                     <svg class="w-4 h-4 text-pink-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg> Instagram
                                 </label>
-                                <input type="url" value="https://instagram.com/whoost" placeholder="https://instagram.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="url" id="ig_link" placeholder="https://instagram.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-zinc-300 mb-2 flex items-center gap-2">
                                     <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg> TikTok
                                 </label>
-                                <input type="url" value="https://tiktok.com/@whoost" placeholder="https://tiktok.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="url" id="tiktok_link" placeholder="https://tiktok.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-zinc-300 mb-2 flex items-center gap-2">
                                     <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> YouTube
                                 </label>
-                                <input type="url" value="https://youtube.com/@whoost" placeholder="https://youtube.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
+                                <input type="url" id="yt_link" placeholder="https://youtube.com/..." class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors">
                             </div>
                         </div>
                     </div>
@@ -285,7 +285,7 @@
 
                 <!-- TOMBOL SIMPAN -->
                 <div class="pt-6 pb-24 border-t border-zinc-800/80 flex justify-end">
-                    <button id="btnSaveAll" onclick="saveSettings()" class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+                    <button id="btnSaveAll" onclick="window.saveSettings()" class="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
                         <svg class="w-4 h-4 hidden spinner-icon animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         <span id="saveBtnText">Simpan Pengaturan</span>
                     </button>
@@ -301,30 +301,52 @@
     </script>
     <script src="attribute/navbaradmin.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Loader Screen
+    <!-- LOGIKA SUPABASE & INTERAKSI (Module) -->
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        // Load data on page init
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Ambil data setting dari database Supabase
+            const { data, error } = await supabase.from('system_settings').select('*').eq('id', 1).single();
+            
+            if (data) {
+                // Mapping data database ke input di HTML
+                document.getElementById('fee_clipper_amount').value = data.fee_clipper_amount || 0;
+                document.getElementById('label-dropdown-clipper').innerText = data.fee_clipper_type || 'Persen (%)';
+                
+                document.getElementById('fee_client_amount').value = data.fee_client_amount || 0;
+                document.getElementById('label-dropdown-client').innerText = data.fee_client_type || 'Rupiah (Rp)';
+                
+                document.getElementById('min_payout').value = data.min_payout || 0;
+                document.getElementById('premium_price').value = data.premium_price || 0;
+                
+                document.getElementById('support_email').value = data.support_email || '';
+                document.getElementById('support_whatsapp').value = data.support_whatsapp || '';
+                document.getElementById('community_link').value = data.community_link || '';
+                document.getElementById('ig_link').value = data.ig_link || '';
+                document.getElementById('tiktok_link').value = data.tiktok_link || '';
+                document.getElementById('yt_link').value = data.yt_link || '';
+            }
+
+            // Loader Screen hilangkan setelah data termuat
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 if (loader) {
                     loader.classList.add('opacity-0');
                     setTimeout(() => loader.style.display = 'none', 500);
                 }
-            }, 1000); 
+            }, 500); 
         });
 
         // 1. LOGIKA MENU (LIST -> DETAIL SETTING)
-        function openSetting(sectionId) {
-            // Sembunyikan list menu awal
+        window.openSetting = function(sectionId) {
             document.getElementById('setting-menu-list').classList.add('hidden');
-            
-            // Sembunyikan semua konten section terlebih dahulu
             document.querySelectorAll('.setting-section').forEach(sec => {
                 sec.classList.add('hidden');
                 sec.classList.remove('block');
             });
 
-            // Tampilkan wrapper konten dan section spesifik
             document.getElementById('setting-content-area').classList.remove('hidden');
             document.getElementById('setting-content-area').classList.add('flex');
             
@@ -336,21 +358,19 @@
         }
 
         // 2. FUNGSI KEMBALI KE MENU
-        function backToMenu() {
-            // Sembunyikan area konten spesifik
+        window.backToMenu = function() {
             document.getElementById('setting-content-area').classList.add('hidden');
             document.getElementById('setting-content-area').classList.remove('flex');
             
-            // Tampilkan kembali list menu awal
             document.getElementById('setting-menu-list').classList.remove('hidden');
             document.getElementById('setting-menu-list').classList.add('flex');
         }
 
-        // 3. LOGIKA CUSTOM DROPDOWN (PENGGANTI <select>)
-        function toggleDropdown(dropdownId) {
+        // 3. LOGIKA CUSTOM DROPDOWN
+        window.toggleDropdown = function(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             if (dropdown.classList.contains('hidden')) {
-                closeAllDropdowns();
+                window.closeAllDropdowns();
                 dropdown.classList.remove('hidden');
                 dropdown.classList.add('flex');
             } else {
@@ -359,12 +379,12 @@
             }
         }
 
-        function selectOption(dropdownId, labelId, value) {
+        window.selectOption = function(dropdownId, labelId, value) {
             document.getElementById(labelId).innerText = value;
-            toggleDropdown(dropdownId);
+            window.toggleDropdown(dropdownId);
         }
 
-        function closeAllDropdowns() {
+        window.closeAllDropdowns = function() {
             const dropdowns = ['dropdown-clipper', 'dropdown-client'];
             dropdowns.forEach(id => {
                 const drop = document.getElementById(id);
@@ -375,7 +395,6 @@
             });
         }
 
-        // Tutup dropdown saat klik diluar area
         window.addEventListener('click', function(e) {
             const dropdowns = ['dropdown-clipper', 'dropdown-client'];
             dropdowns.forEach(id => {
@@ -390,29 +409,54 @@
             });
         });
 
-        // 4. LOGIKA SAVE & TOAST
-        function saveSettings() {
+        // 4. LOGIKA SAVE KE SUPABASE & TOAST
+        window.saveSettings = async function() {
             const btn = document.getElementById('btnSaveAll');
             const spinner = btn.querySelector('.spinner-icon');
             const btnText = document.getElementById('saveBtnText');
             
+            // Animasi Tombol
             btn.disabled = true;
             btn.classList.add('opacity-80', 'cursor-not-allowed');
             spinner.classList.remove('hidden');
             btnText.innerText = "Menyimpan...";
 
-            // Mockup delay proses save backend
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                spinner.classList.add('hidden');
-                btnText.innerText = "Simpan Pengaturan";
+            // Mengambil semua nilai dari input yang diperbarui
+            const payload = {
+                fee_clipper_amount: document.getElementById('fee_clipper_amount').value,
+                fee_clipper_type: document.getElementById('label-dropdown-clipper').innerText,
+                fee_client_amount: document.getElementById('fee_client_amount').value,
+                fee_client_type: document.getElementById('label-dropdown-client').innerText,
+                min_payout: document.getElementById('min_payout').value,
+                premium_price: document.getElementById('premium_price').value,
+                support_email: document.getElementById('support_email').value,
+                support_whatsapp: document.getElementById('support_whatsapp').value,
+                community_link: document.getElementById('community_link').value,
+                ig_link: document.getElementById('ig_link').value,
+                tiktok_link: document.getElementById('tiktok_link').value,
+                yt_link: document.getElementById('yt_link').value,
+                updated_at: new Date()
+            };
 
-                showSuccessToast();
-            }, 1500);
+            // Mengirim data Update ke Tabel Supabase (ID baris 1)
+            const { error } = await supabase
+                .from('system_settings')
+                .upsert({ id: 1, ...payload });
+
+            // Mengembalikan Tombol ke Kondisi Semula
+            btn.disabled = false;
+            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            spinner.classList.add('hidden');
+            btnText.innerText = "Simpan Pengaturan";
+
+            if (error) {
+                alert('Gagal menyimpan pengaturan: ' + error.message);
+            } else {
+                window.showSuccessToast();
+            }
         }
 
-        function showSuccessToast() {
+        window.showSuccessToast = function() {
             const toast = document.getElementById('toastNotif');
             
             toast.classList.remove('-translate-y-20', 'opacity-0');
