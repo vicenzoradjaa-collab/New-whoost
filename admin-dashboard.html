@@ -77,8 +77,8 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-20 z-0 scroll-smooth w-full relative">
+    <!-- MAIN CONTENT (Diperbarui dengan pb-32 agar tidak tertutup bottom navbar) -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
             
             <!-- SECTION 1: RINGKASAN DATA DINAMIS -->
@@ -86,26 +86,26 @@
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-blue-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Payouts</p>
-                        <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">Rp 45.2M</h3>
+                        <h3 id="stat-payouts" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">Rp 0</h3>
                     </div>
                     <div class="bg-cardBg border border-blue-900/50 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-blue-500 transition-colors duration-300 relative overflow-hidden">
                         <div class="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-transparent pointer-events-none"></div>
                         <p class="text-[10px] sm:text-[11px] font-medium text-blue-400 uppercase tracking-wide mb-1 sm:mb-2 relative z-10">Menunggu Approval</p>
-                        <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white relative z-10">142<span class="text-sm font-normal text-zinc-500 ml-1">Konten</span></h3>
-                        <div class="absolute top-4 right-4 w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
+                        <h3 class="text-xl sm:text-2xl md:text-3xl font-semibold text-white relative z-10"><span id="stat-pending-submissions">0</span><span class="text-sm font-normal text-zinc-500 ml-1">Konten</span></h3>
+                        <div id="ping-approval" class="hidden absolute top-4 right-4 w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
                     </div>
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Kampanye Aktif</p>
-                        <h3 id="stat-campaigns" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">...</h3>
+                        <h3 id="stat-campaigns" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">0</h3>
                     </div>
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center hover:border-zinc-500 transition-colors duration-300">
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mb-1 sm:mb-2">Total Clippers</p>
-                        <h3 id="stat-clippers" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">...</h3>
+                        <h3 id="stat-clippers" class="text-xl sm:text-2xl md:text-3xl font-semibold text-white">0</h3>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 2: MENU CEPAT ADMIN -->
+            <!-- SECTION 2: MENU CEPAT ADMIN (DENGAN BADGE DINAMIS) -->
             <section>
                 <h2 class="text-sm font-semibold mb-3 text-zinc-300 uppercase tracking-wide">Menu Cepat</h2>
                 <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4">
@@ -113,20 +113,24 @@
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                         <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Kelola Campaign</span>
                     </a>
+                    
                     <a href="admin-submission.html" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
-                        <div class="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">142</div>
+                        <div id="badge-review-submission" class="hidden absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">0</div>
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Review Submission</span>
                     </a>
+                    
                     <a href="admin-payout.html" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group relative">
-                        <div class="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">12</div>
+                        <div id="badge-request-payout" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">0</div>
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08-.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Request Payout</span>
                     </a>
+                    
                     <a href="admin-users.html" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Kelola User</span>
                     </a>
+                    
                     <a href="admin-analytics.html" class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-cardBg border border-zinc-800 hover:border-white hover:bg-zinc-900 transition-all group">
                         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 group-hover:text-white mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         <span class="text-[9px] sm:text-[11px] font-medium text-center text-zinc-400 group-hover:text-white">Analitik</span>
@@ -134,97 +138,21 @@
                 </div>
             </section>
 
-            <!-- SECTION 3: KONTEN MEMBUTUHKAN PERSETUJUAN (THUMBNAIL YOUTUBE OTOMATIS) -->
+            <!-- SECTION 3: KONTEN MEMBUTUHKAN PERSETUJUAN (SINKRONISASI SUPABASE) -->
             <section>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-sm md:text-lg font-semibold text-white">Menunggu Persetujuan</h2>
                     <a href="admin-submission.html" class="text-[11px] sm:text-[13px] font-medium text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1">
-                        Lihat Semua (142)
+                        Lihat Semua
                     </a>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 w-full">
-                    
-                    <!-- CARD 1 (Data YouTube) -->
-                    <div class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
-                        <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                            <!-- Image URL akan digenerate JS berdasarkan data-video-link -->
-                            <img src="" data-video-link="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="submission-thumb w-16 h-24 object-cover rounded-lg bg-zinc-900">
-                            <div class="flex-1 min-w-0 flex flex-col justify-center">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded border border-green-400/20">Client: ACC</span>
-                                    <span class="text-[10px] text-zinc-500">YouTube</span>
-                                </div>
-                                <p class="creator-name text-[13px] font-semibold text-white truncate">@johndoe_creator</p>
-                                <p class="text-[11px] text-zinc-400 truncate mt-0.5">Campaign Launching Sepatu</p>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-center text-[12px] mb-2">
-                                    <span class="text-zinc-400">Total Klaim Views:</span>
-                                    <span class="text-white font-bold">15.000</span>
-                                </div>
-                                <div class="flex justify-between items-center text-[12px] mb-3">
-                                    <span class="text-zinc-500">Sudah Dibayar (Sisa):</span>
-                                    <span class="text-zinc-400 font-semibold">5.000</span>
-                                </div>
-                                <div class="h-px w-full bg-zinc-800 mb-3"></div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[11px] font-medium text-blue-400">New Views to Pay:</span>
-                                    <span class="text-[14px] font-bold text-blue-400">+10.000</span>
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                                <button onclick="window.openReviewModal()" class="action-btn w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-blue-900/20">
-                                    Review Submission
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CARD 2 (Data TikTok) -->
-                    <div class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
-                        <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                            <!-- Image TikTok Fallback -->
-                            <img src="" data-video-link="https://www.tiktok.com/@user/video/12345678" class="submission-thumb w-16 h-24 object-cover rounded-lg bg-zinc-900 filter grayscale">
-                            <div class="flex-1 min-w-0 flex flex-col justify-center">
-                                <div class="flex items-center justify-between mb-1">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Client: PENDING</span>
-                                    <span class="text-[10px] text-zinc-500">TikTok</span>
-                                </div>
-                                <p class="creator-name text-[13px] font-semibold text-white truncate">@siti_amina</p>
-                                <p class="text-[11px] text-zinc-400 truncate mt-0.5">The Keranjang Bali Oleh-oleh</p>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-center text-[12px] mb-2">
-                                    <span class="text-zinc-400">Total Klaim Views:</span>
-                                    <span class="text-white font-bold">25.000</span>
-                                </div>
-                                <div class="flex justify-between items-center text-[12px] mb-3">
-                                    <span class="text-zinc-500">Sudah Dibayar:</span>
-                                    <span class="text-zinc-400 font-semibold">0</span>
-                                </div>
-                                <div class="h-px w-full bg-zinc-800 mb-3"></div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[11px] font-medium text-zinc-500">New Views to Pay:</span>
-                                    <span class="text-[14px] font-bold text-zinc-500">Menunggu ACC</span>
-                                </div>
-                            </div>
-                            <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                                <button disabled class="action-btn w-full py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed">
-                                    Pending Client
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
+                <div id="pending-submissions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 w-full">
+                    <p class="text-zinc-500 text-sm col-span-full">Memuat data submission...</p>
                 </div>
             </section>
 
-            <!-- SECTION 4: KAMPANYE AKTIF (SINKRON SUPABASE & STYLE TERBARU) -->
+            <!-- SECTION 4: KAMPANYE AKTIF -->
             <section>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-sm md:text-lg font-semibold text-white">Kampanye Aktif Terbaru</h2>
@@ -294,47 +222,19 @@
                 setTimeout(() => { loader.style.display = 'none'; }, 500); 
             }, 1000); 
 
-            // Ekstrak Thumbnail YouTube
-            extractThumbnails();
-
-            // Load Data Supabase
+            // Load Semua Data Secara Paralel
             await Promise.all([
-                loadStats(),
+                loadStatsAndBadges(),
+                loadPendingSubmissions(),
                 loadActiveCampaigns(),
                 loadNotifications()
             ]);
         });
 
         // ==========================================
-        // 1. EXTRACT THUMBNAIL YOUTUBE / TIKTOK
+        // 1. LOAD DATA STATISTIK & BADGES
         // ==========================================
-        function extractThumbnails() {
-            const images = document.querySelectorAll('.submission-thumb');
-            images.forEach(img => {
-                const url = img.getAttribute('data-video-link');
-                if(!url) return;
-
-                // Cek jika link YouTube
-                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-                if (ytMatch && ytMatch[1]) {
-                    // Gunakan maxresdefault atau hqdefault dari server gambar youtube
-                    img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-                } else if (url.includes('tiktok.com')) {
-                    // Fallback gambar untuk TikTok
-                    img.src = 'https://images.unsplash.com/photo-1611605698335-8b1569810432?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
-                } else if (url.includes('instagram.com')) {
-                    // Fallback gambar untuk IG
-                    img.src = 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
-                } else {
-                    img.src = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
-                }
-            });
-        }
-
-        // ==========================================
-        // 2. LOAD RINGKASAN DATA (STATS)
-        // ==========================================
-        async function loadStats() {
+        async function loadStatsAndBadges() {
             // Hitung Kampanye Aktif
             const { count: campCount } = await supabase.from('campaigns').select('*', { count: 'exact', head: true }).eq('status', 'ACTIVE');
             document.getElementById('stat-campaigns').innerText = campCount || 0;
@@ -342,6 +242,134 @@
             // Hitung Total Clippers
             const { count: clipperCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'clipper');
             document.getElementById('stat-clippers').innerText = clipperCount ? clipperCount.toLocaleString('id-ID') : 0;
+
+            // Load Total Payouts & Request Payout Badges (Cek tabel withdrawals)
+            try {
+                // Hitung total payout yg sudah dibayar
+                const { data: paidOut } = await supabase.from('withdrawals').select('amount').in('status', ['COMPLETED', 'APPROVED', 'PAID']);
+                let totalPayout = 0;
+                if (paidOut) {
+                    totalPayout = paidOut.reduce((sum, item) => sum + (item.amount || 0), 0);
+                }
+                document.getElementById('stat-payouts').innerText = totalPayout > 0 ? 'Rp ' + (totalPayout / 1000000).toFixed(1) + 'M' : 'Rp 0';
+
+                // Badge Request Payout yang pending
+                const { count: pendingPayouts } = await supabase.from('withdrawals').select('*', { count: 'exact', head: true }).eq('status', 'PENDING');
+                const badgePayout = document.getElementById('badge-request-payout');
+                if (pendingPayouts && pendingPayouts > 0) {
+                    badgePayout.innerText = pendingPayouts;
+                    badgePayout.classList.remove('hidden');
+                } else {
+                    badgePayout.classList.add('hidden');
+                }
+            } catch (err) {
+                console.log("Withdrawals table might not exist yet.", err);
+            }
+        }
+
+        // ==========================================
+        // 2. LOAD PENDING SUBMISSIONS
+        // ==========================================
+        async function loadPendingSubmissions() {
+            const grid = document.getElementById('pending-submissions-grid');
+            const statPendingText = document.getElementById('stat-pending-submissions');
+            const badgeReview = document.getElementById('badge-review-submission');
+            const pingAnim = document.getElementById('ping-approval');
+
+            try {
+                // Get pending count
+                const { count: pendingCount } = await supabase.from('submissions').select('*', { count: 'exact', head: true }).eq('status', 'PENDING');
+                
+                // Update Badge & Header Stat
+                statPendingText.innerText = pendingCount || 0;
+                if (pendingCount && pendingCount > 0) {
+                    badgeReview.innerText = pendingCount;
+                    badgeReview.classList.remove('hidden');
+                    pingAnim.classList.remove('hidden');
+                } else {
+                    badgeReview.classList.add('hidden');
+                    pingAnim.classList.add('hidden');
+                }
+
+                // Ambil data untuk Grid Card (Inner Join)
+                const { data, error } = await supabase
+                    .from('submissions')
+                    .select(`
+                        id, video_link, views, earned, status, created_at,
+                        profiles ( full_name, email ),
+                        campaigns ( title, brand_name )
+                    `)
+                    .eq('status', 'PENDING')
+                    .order('created_at', { ascending: false })
+                    .limit(4);
+
+                if (error || !data || data.length === 0) {
+                    grid.innerHTML = '<p class="text-zinc-500 text-sm col-span-full p-6 text-center border border-zinc-800 rounded-xl bg-zinc-900/30">Tidak ada submission yang menunggu persetujuan.</p>';
+                    return;
+                }
+
+                let html = '';
+                data.forEach(sub => {
+                    const creatorName = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
+                    const campTitle = sub.campaigns?.title || 'Unknown Campaign';
+                    const views = sub.views || 0;
+                    
+                    html += `
+                    <div class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
+                        <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
+                            <!-- Image URL digenerate oleh JS extractThumbnails -->
+                            <img src="" data-video-link="${sub.video_link}" class="submission-thumb w-16 h-24 object-cover rounded-lg bg-zinc-900">
+                            <div class="flex-1 min-w-0 flex flex-col justify-center">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">PENDING ACC</span>
+                                </div>
+                                <p class="creator-name text-[13px] font-semibold text-white truncate">${creatorName}</p>
+                                <p class="text-[11px] text-zinc-400 truncate mt-0.5" title="${campTitle}">${campTitle}</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center text-[12px] mb-3">
+                                    <span class="text-zinc-400">Total Klaim Views:</span>
+                                    <span class="text-white font-bold">${views.toLocaleString('id-ID')}</span>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-4 border-t border-zinc-800 flex gap-2">
+                                <button onclick="window.openReviewModal()" class="action-btn w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-blue-900/20">
+                                    Review Submission
+                                </button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+                
+                grid.innerHTML = html;
+                extractThumbnails(); // Jalankan script untuk menarik thumbnail dari YT/TikTok
+                
+            } catch (err) {
+                console.log("Submissions table might not exist yet.", err);
+                grid.innerHTML = '<p class="text-zinc-500 text-sm col-span-full p-6 text-center border border-zinc-800 rounded-xl bg-zinc-900/30">Tidak ada submission yang menunggu persetujuan.</p>';
+            }
+        }
+
+        // FUNGSI EKSTRAK THUMBNAIL (Dipanggil setelah card di render)
+        function extractThumbnails() {
+            const images = document.querySelectorAll('.submission-thumb');
+            images.forEach(img => {
+                const url = img.getAttribute('data-video-link');
+                if(!url) return;
+
+                const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                if (ytMatch && ytMatch[1]) {
+                    img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                } else if (url.includes('tiktok.com')) {
+                    img.src = 'https://images.unsplash.com/photo-1611605698335-8b1569810432?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+                } else if (url.includes('instagram.com')) {
+                    img.src = 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+                } else {
+                    img.src = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+                }
+            });
         }
 
         // ==========================================
@@ -375,7 +403,6 @@
                     if (camp.platforms.includes('youtube')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
                 }
 
-                // STYLE IDENTIK DENGAN ADMIN-CAMPAIGN
                 html += `
                 <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] p-3 md:p-4 flex flex-col h-full hover:-translate-y-1 transition-all duration-300 shadow-xl group">
                     <div class="w-full aspect-[16/9] bg-zinc-950 rounded-xl mb-4 flex flex-col items-center justify-center relative overflow-hidden shrink-0 border border-zinc-800/50">
@@ -424,7 +451,6 @@
         // 4. LOAD NOTIFIKASI
         // ==========================================
         async function loadNotifications() {
-            // Kita load notifikasi dummy khusus admin atau fetch dari DB jika ada
             const { data: notifs, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(5);
             
             const list = document.getElementById('notif-list');
