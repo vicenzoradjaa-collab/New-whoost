@@ -61,9 +61,9 @@
                     <span class="text-[10px] text-zinc-500 font-medium bg-zinc-900 px-2 py-1 rounded">Rasio 16:9</span>
                 </div>
                 
-                <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="handleBannerUpload(event)">
+                <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="window.handleBannerUpload(event)">
                 
-                <div id="banner-upload-box" onclick="triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
+                <div id="banner-upload-box" onclick="window.triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
                     <img id="banner-preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
                     <div class="absolute inset-0 bg-black/40 hidden z-10 group-hover:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <span class="text-white font-bold text-sm bg-black/60 px-4 py-2 rounded-lg">Ganti Gambar</span>
@@ -146,14 +146,14 @@
                         
                         <label class="block text-sm font-medium text-zinc-400 mb-2">Platform Target</label>
                         <div class="flex flex-wrap gap-2 mb-6">
-                            <button type="button" onclick="togglePlatform('tiktok')" id="btn-plat-tiktok" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">TikTok</button>
-                            <button type="button" onclick="togglePlatform('ig')" id="btn-plat-ig" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">IG Reels</button>
-                            <button type="button" onclick="togglePlatform('yt')" id="btn-plat-yt" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">YT Shorts</button>
+                            <button type="button" onclick="window.togglePlatform('tiktok')" id="btn-plat-tiktok" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">TikTok</button>
+                            <button type="button" onclick="window.togglePlatform('ig')" id="btn-plat-ig" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">IG Reels</button>
+                            <button type="button" onclick="window.togglePlatform('yt')" id="btn-plat-yt" class="px-5 py-2 rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-400 text-xs font-semibold transition-colors focus:outline-none">YT Shorts</button>
                         </div>
 
                         <label class="block text-sm font-medium text-zinc-400 mb-1">Link Video Bahan / Aset</label>
                         <div id="video-links-container" class="space-y-2 mb-3"></div>
-                        <button type="button" onclick="openLinkModal()" class="w-full py-3 mt-auto rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
+                        <button type="button" onclick="window.openLinkModal()" class="w-full py-3 mt-auto rounded-xl border border-dashed border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-xs font-semibold flex items-center justify-center gap-2 focus:outline-none">
                             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             Tambah Link Materi (Drive / YouTube)
                         </button>
@@ -168,8 +168,8 @@
                         <div class="flex flex-col sm:flex-row justify-between sm:items-center border-b border-zinc-800 pb-4 gap-4 mb-4">
                             <h3 class="text-lg font-bold text-white">Anggaran & Keuangan</h3>
                             <div class="bg-zinc-900 border border-zinc-800 p-1 rounded-full flex gap-1 shadow-inner w-max">
-                                <button type="button" id="btn-type-views" onclick="setPaymentType('views')" class="px-5 py-1.5 rounded-full bg-white text-black text-xs font-semibold focus:outline-none">Per Views</button>
-                                <button type="button" id="btn-type-video" onclick="setPaymentType('video')" class="px-5 py-1.5 rounded-full text-zinc-400 hover:text-white text-xs font-semibold focus:outline-none">Per Video</button>
+                                <button type="button" id="btn-type-views" onclick="window.setPaymentType('views')" class="px-5 py-1.5 rounded-full bg-white text-black text-xs font-semibold focus:outline-none">Per Views</button>
+                                <button type="button" id="btn-type-video" onclick="window.setPaymentType('video')" class="px-5 py-1.5 rounded-full text-zinc-400 hover:text-white text-xs font-semibold focus:outline-none">Per Video</button>
                             </div>
                         </div>
 
@@ -326,10 +326,10 @@
                 clientsList = data;
                 let html = `<div onclick="window.selectClient('', '-- Tidak dihubungkan (Hanya di Admin) --')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-zinc-400">-- Tidak dihubungkan (Hanya di Admin) --</div>`;
                 data.forEach(c => {
-                    let bName = c.business_name && c.business_name.toLowerCase() !== 'null' ? c.business_name : '';
-                    let fName = c.full_name && c.full_name.toLowerCase() !== 'null' ? c.full_name : '';
+                    let bName = c.business_name && String(c.business_name).toLowerCase() !== 'null' ? c.business_name : '';
+                    let fName = c.full_name && String(c.full_name).toLowerCase() !== 'null' ? c.full_name : '';
                     let dName = bName || fName || c.email;
-                    html += `<div onclick="window.selectClient('${c.id}', '${dName}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-t border-zinc-700/50 truncate">${dName}</div>`;
+                    html += `<div onclick="window.selectClient('${c.id}', '${dName.replace(/'/g, "\\'")}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-t border-zinc-700/50 truncate">${dName}</div>`;
                 });
                 selectEl.innerHTML = html;
             } else {
@@ -354,8 +354,8 @@
             if(data.client_id) {
                 const c = clientsList.find(x => x.id === data.client_id);
                 if(c) {
-                    let bName = c.business_name && c.business_name.toLowerCase() !== 'null' ? c.business_name : '';
-                    let fName = c.full_name && c.full_name.toLowerCase() !== 'null' ? c.full_name : '';
+                    let bName = c.business_name && String(c.business_name).toLowerCase() !== 'null' ? c.business_name : '';
+                    let fName = c.full_name && String(c.full_name).toLowerCase() !== 'null' ? c.full_name : '';
                     let dName = bName || fName || c.email;
                     window.selectClient(c.id, dName);
                 }
@@ -383,7 +383,7 @@
             document.getElementById('budget_remaining').value = data.budget_remaining ? 'Rp ' + data.budget_remaining.toLocaleString('id-ID') : 'Rp 0';
             
             if(payType === 'views') {
-                document.getElementById('budget_total_views').value = data.budget_total ? 'Rp ' + data.budget_total.toLocaleString('id-ID') : '';
+                // Bug fix: tidak menggunakan budget_total_views, cukup set rewardnya saja
                 document.getElementById('reward_per_1k').value = data.reward_per_1k ? 'Rp ' + data.reward_per_1k.toLocaleString('id-ID') : '';
             } else {
                 document.getElementById('target_video').value = data.target_video || '';
@@ -618,7 +618,8 @@
             btn.disabled = true;
 
             const bTotal = currentPaymentType === 'views' 
-                ? parseRupiah(document.getElementById('budget_total_views').value || document.getElementById('budget_total').value) 
+                // Bug fix: Memakai id="budget_total" agar kalkulasi budget aman
+                ? parseRupiah(document.getElementById('budget_total').value) 
                 : ((parseInt(document.getElementById('target_video').value)||0) * parseRupiah(document.getElementById('price_per_video').value));
             
             const platforms = [];
