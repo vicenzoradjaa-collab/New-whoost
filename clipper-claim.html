@@ -39,12 +39,9 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     </style>
-</head>
-<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
-
-    <!-- SCRIPT LOADER AMAN (Diletakkan di atas agar dieksekusi duluan, mencegah macet) -->
+    <!-- Mencegah Stuck Loader -->
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 if(loader) {
@@ -54,6 +51,8 @@
             }, 800);
         });
     </script>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
     <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
@@ -108,7 +107,7 @@
                             <p id="saldo-detail" class="text-xs sm:text-lg font-bold text-emerald-400">Rp 0</p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
-                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Pending</p>
+                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Pending (Review)</p>
                             <p id="pending-detail" class="text-xs sm:text-lg font-bold text-amber-400">0</p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
@@ -222,6 +221,7 @@
             }
             sessionUser = session.user;
 
+            // Load data paralel dengan error handling aman
             await Promise.all([
                 loadUserStats(),
                 loadSubmissions()
@@ -244,11 +244,12 @@
 
             // Hitung status PENDING, APPROVED, REJECTED
             try {
-                const { data: subs } = await supabase.from('submissions').select('status').eq('user_id', sessionUser.id);
+                const { data: subs } = await supabase.from('submissions').select('status, views_claimed').eq('user_id', sessionUser.id);
                 let p = 0, a = 0, r = 0;
                 if(subs) {
                     subs.forEach(s => {
-                        if(s.status === 'PENDING') p++;
+                        const hasClaimed = (s.views_claimed || 0) > 0;
+                        if(s.status === 'PENDING' && hasClaimed) p++;
                         else if(s.status === 'APPROVED') a++;
                         else if(s.status === 'REJECTED') r++;
                     });
@@ -264,7 +265,6 @@
         // ==========================================
         async function loadSubmissions() {
             try {
-                // PERBAIKAN: Menambahkan kolom type, niche, banner_url, price_per_video di join agar tidak error
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
@@ -273,7 +273,11 @@
                     `)
                     .eq('user_id', sessionUser.id);
 
-                if (error) throw error;
+                if (error) {
+                    console.error("Supabase error:", error);
+                    document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal terhubung ke database. Harap hubungi admin.</p>';
+                    return;
+                }
 
                 submissionsData = data || [];
                 
@@ -284,7 +288,7 @@
                 submissionsData.forEach(sub => {
                     if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
                         campSet.add(sub.campaigns.id);
-                        const safeTitle = (sub.campaigns.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        const safeTitle = (sub.campaigns.title || 'Tanpa Judul').replace(/'/g, "\\'").replace(/"/g, '&quot;');
                         campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${sub.campaigns.title}</div>`;
                     }
                 });
@@ -293,7 +297,8 @@
                 applyFilters();
 
             } catch(err) {
-                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal mengambil data dari database.</p>';
+                console.error("JS Error in loadSubmissions:", err);
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal memuat data.</p>';
             }
         }
 
@@ -320,7 +325,7 @@
         }
 
         function generateCard(sub, index) {
-            const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-' };
+            const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0 };
             const meta = getVideoMeta(sub.video_link);
             const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
             
@@ -329,7 +334,7 @@
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
             
             let realStatus = sub.status || 'NONE';
-            if (viewsClaimed === 0) realStatus = 'NONE';
+            if (viewsClaimed === 0 && realStatus === 'PENDING') realStatus = 'NONE'; // Fix for new un-claimed submissions
 
             let actionArea = '';
             let cardOpacityClass = 'opacity-100';
@@ -339,7 +344,7 @@
             if (realStatus === 'PENDING') {
                 actionArea = `
                     <div class="flex gap-1.5 sm:gap-2">
-                        <input type="text" value="${viewsClaimed}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
+                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
                     </div>
                     <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
                         <span>Reviewing...</span>
@@ -357,7 +362,7 @@
             else {
                 // NORMAL STATE (Bisa Klaim/Update)
                 const paidViews = sub.views_paid || 0;
-                let placeholder = paidViews > 0 ? `> ${paidViews}` : 'Jml views asli';
+                let placeholder = paidViews > 0 ? `> ${paidViews.toLocaleString('id-ID')}` : 'Jml views asli';
                 let warningText = '';
                 
                 if(isCampClosed) {
@@ -431,7 +436,7 @@
             let filtered = submissionsData.filter(sub => {
                 const viewsClaimed = sub.views_claimed || 0;
                 let realStatus = sub.status || 'NONE';
-                if (viewsClaimed === 0) realStatus = 'NONE';
+                if (viewsClaimed === 0 && realStatus === 'PENDING') realStatus = 'NONE';
                 
                 const campId = sub.campaigns ? sub.campaigns.id : null;
                 const matchCamp = currentFilter.campaign_id === 'all' || campId === currentFilter.campaign_id;
@@ -521,7 +526,7 @@
                         }
                     }
                 } else if (camp.payment_type === 'video') {
-                    // Jika bayar per video, klaim hanya divalidasi sekali (paidViews == 0)
+                    // Jika bayar per video, klaim hanya divalidasi sekali
                     if (paidViews === 0) {
                         estPayout = camp.price_per_video || 0;
                         if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
