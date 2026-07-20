@@ -159,7 +159,9 @@
 
                 <!-- Alert Kosong -->
                 <div id="no-data-alert" class="hidden text-center py-20">
-                    <p class="text-zinc-500 text-sm">Tidak ada video yang sesuai dengan filter.</p>
+                    <svg class="w-16 h-16 text-zinc-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <h3 class="text-xl font-bold text-white mb-2">Konten tidak ditemukan</h3>
+                    <p class="text-zinc-500 text-sm">Coba ubah filter yang kamu pilih.</p>
                 </div>
 
                 <!-- Load More -->
@@ -188,15 +190,25 @@
         let realWithdrawable = 0;
         let isSensorActive = false;
 
+        function getCols() {
+            const w = window.innerWidth;
+            if (w >= 1280) return 4; 
+            if (w >= 1024) return 3; 
+            return 2;                
+        }
+
         // Pagination & Filter States
         let currentFilter = { status: 'all', campaign_id: 'all', sort: 'newest' };
         let currentLimit = getCols() * 2;
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // SAFE HIDE LOADER (Dijamin hilang)
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
-                loader.classList.add('opacity-0'); 
-                setTimeout(() => loader.style.display = 'none', 500); 
+                if(loader) {
+                    loader.classList.add('opacity-0'); 
+                    setTimeout(() => loader.style.display = 'none', 500); 
+                }
             }, 800);
 
             const { data: { session } } = await supabase.auth.getSession();
@@ -217,13 +229,12 @@
         // 1. STATS (Pendapatan & Penghitungan Status)
         // ==========================================
         async function loadUserStats() {
-            // Ambil dari clipper_stats
             const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
             if (stats) {
                 realEarnings = stats.total_earnings || 0;
                 realWithdrawable = stats.withdrawable || 0;
             }
-            window.toggleSensor(true); // Panggil fungsi render agar angkanya terupdate (dengan format default)
+            window.toggleSensor(true); 
 
             // Hitung status PENDING, APPROVED, REJECTED
             const { data: subs } = await supabase.from('submissions').select('status').eq('user_id', sessionUser.id);
@@ -253,7 +264,7 @@
                 .eq('user_id', sessionUser.id);
 
             if (error) {
-                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm">Gagal mengambil data.</p>';
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm">Gagal mengambil data database.</p>';
                 return;
             }
 
@@ -266,7 +277,9 @@
             submissionsData.forEach(sub => {
                 if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
                     campSet.add(sub.campaigns.id);
-                    campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${sub.campaigns.title}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${sub.campaigns.title}">${sub.campaigns.title}</div>`;
+                    // Mencegah SyntaxError jika ada tanda kutip di judul
+                    const safeTitle = (sub.campaigns.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${sub.campaigns.title}</div>`;
                 }
             });
             document.getElementById('campaign-options').innerHTML = campOptionsHTML;
@@ -278,6 +291,7 @@
         // 3. LOGIKA RENDER & SMART THUMBNAIL
         // ==========================================
         function getVideoMeta(url) {
+            url = url || '';
             let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
             let thumbUrl = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
             
@@ -296,7 +310,8 @@
         }
 
         function generateCard(sub) {
-            const camp = sub.campaigns || {};
+            // Amankan data jika campaign terhapus
+            const camp = sub.campaigns || { id: '', title: 'Campaign Tidak Ditemukan', brand_name: '-', status: 'CLOSED', budget_remaining: 0 };
             const meta = getVideoMeta(sub.video_link);
             const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
             
@@ -304,19 +319,16 @@
             const uiViews = sub.views_claimed > 0 ? sub.views_claimed.toLocaleString('id-ID') : '-';
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
             
-            // State Rendering (PENDING, APPROVED, REJECTED, atau NORMAL/KLAIM LGI)
-            // Jika status NULL atau belum diklaim sama sekali
+            // Logic Status PENDING, APPROVED, REJECTED, atau NONE
             let realStatus = sub.status || 'NONE';
             if (sub.views_claimed === 0) realStatus = 'NONE';
 
             let actionArea = '';
             let cardOpacityClass = 'opacity-100';
 
-            // Jika campaign tutup/habis budget, user TIDAK BISA dibayar lagi tapi bisa update views
             const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
 
             if (realStatus === 'PENDING') {
-                // REVIEWING STATE
                 actionArea = `
                     <div class="flex gap-1.5 sm:gap-2">
                         <input type="text" value="${sub.views_claimed}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
@@ -327,7 +339,6 @@
                     </button>`;
             } 
             else if (realStatus === 'REJECTED') {
-                // REJECTED STATE
                 cardOpacityClass = 'opacity-70 border-red-900/30';
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
@@ -336,11 +347,13 @@
                     <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Ditolak</button>`;
             } 
             else {
-                // APPROVED ATAU BELUM KLAIM (NORMAL STATE) - Bisa input views baru
+                // NORMAL STATE (Bisa Klaim/Update)
                 let placeholder = sub.views_paid > 0 ? `> ${sub.views_paid}` : 'Total views asli';
-                
                 let warningText = '';
-                if(isCampClosed) warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
+                
+                if(isCampClosed) {
+                    warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
+                }
 
                 actionArea = `
                     ${warningText}
@@ -399,13 +412,6 @@
             </div>`;
         }
 
-        function getCols() {
-            const w = window.innerWidth;
-            if (w >= 1280) return 4; 
-            if (w >= 1024) return 3; 
-            return 2;                
-        }
-
         function applyFilters() {
             const grid = document.getElementById('cards-container');
             const alertBox = document.getElementById('no-data-alert');
@@ -415,11 +421,12 @@
 
             let filtered = submissionsData.filter(sub => {
                 let realStatus = sub.status || 'NONE';
-                if (sub.views_claimed === 0) realStatus = 'NONE'; // Belum klaim
+                if (sub.views_claimed === 0) realStatus = 'NONE';
                 
-                // Filter Campaign ID
-                const matchCamp = currentFilter.campaign_id === 'all' || sub.campaigns.id === currentFilter.campaign_id;
-                // Filter Status
+                // Mencegah error jika data campaign null
+                const campId = sub.campaigns ? sub.campaigns.id : null;
+                
+                const matchCamp = currentFilter.campaign_id === 'all' || campId === currentFilter.campaign_id;
                 const matchStatus = currentFilter.status === 'all' || realStatus === currentFilter.status;
                 
                 return matchCamp && matchStatus;
@@ -428,7 +435,7 @@
             // Sort logic
             if (currentFilter.sort === 'oldest') {
                 filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-            } else { // newest default
+            } else { 
                 filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
             }
 
@@ -464,7 +471,6 @@
             const newClaimViews = parseInt(newClaimStr);
             if (newClaimViews <= 0) return alert("Jumlah views harus lebih dari 0.");
 
-            // Temukan submission data
             const sub = submissionsData.find(s => s.id === subId);
             if (!sub) return alert("Data tidak ditemukan.");
 
@@ -487,11 +493,11 @@
                 // 1. Batasi Max Claim
                 let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
                 
-                // 2. Hitung Selisih Views (Delta) yang belum dibayar
+                // 2. Hitung Selisih Views yang belum dibayar
                 let deltaViews = effectiveViews - paidViews;
 
                 if (deltaViews > 0) {
-                    // 3. Pengecekan Penalty (75% potong = dikali 0.25)
+                    // 3. Penalty 75% potong (dikali 0.25) jika dibawah target min_views
                     let rate = cpm;
                     if (effectiveViews < minViews) {
                         rate = cpm * 0.25; 
@@ -507,7 +513,7 @@
                 }
             }
 
-            // Notifikasi Konfirmasi
+            // Konfirmasi Payout
             const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Pendapatan: Rp ${estPayout.toLocaleString('id-ID')}\n\nLanjutkan?`;
             if (!confirm(confirmMsg)) return;
 
@@ -518,7 +524,7 @@
                     views_claimed: newClaimViews,
                     est_payout: estPayout,
                     status: 'PENDING',
-                    reject_reason: null // reset reject reason if re-claiming
+                    reject_reason: null
                 })
                 .eq('id', subId);
 
@@ -526,7 +532,7 @@
                 alert("Gagal melakukan klaim: " + error.message);
             } else {
                 alert("Berhasil mengajukan klaim. Menunggu review Admin/Brand.");
-                loadSubmissions(); // Refresh UI
+                await loadSubmissions(); // Refresh UI langsung
             }
         };
 
@@ -542,7 +548,7 @@
             currentFilter.campaign_id = id;
             document.getElementById('campaign-selected-text').innerText = title;
             document.getElementById('campaign-options').classList.add('hidden');
-            currentLimit = getCols() * 2; // reset limit
+            currentLimit = getCols() * 2; 
             applyFilters();
         };
 
@@ -560,7 +566,6 @@
                 } else {
                     btn.classList.remove('bg-zinc-800', 'text-white');
                     btn.classList.add('text-zinc-400', 'hover:bg-zinc-800/50');
-                    // Balikin warna text kalau khusus
                     if(btn.classList.contains('status-PENDING')) btn.classList.add('text-amber-400');
                     if(btn.classList.contains('status-APPROVED')) btn.classList.add('text-blue-400');
                     if(btn.classList.contains('status-REJECTED')) btn.classList.add('text-red-400');
@@ -596,7 +601,6 @@
             }
         };
 
-        // Close custom dropdowns if clicked outside
         document.addEventListener('click', (e) => {
             const selContainer = document.querySelector('.custom-select-container');
             const filtContainer = document.getElementById('filter-container');
