@@ -194,7 +194,7 @@
         import { supabase } from './authentication/auth.js';
 
         let sessionUser = null;
-        let sessionFullName = 'Pengguna'; // Variabel untuk menyimpan nama user
+        let sessionFullName = 'Pengguna'; 
         let submissionsData = [];
         
         let realEarnings = 0;
@@ -239,34 +239,89 @@
         });
 
         // ==========================================
-        // 1. STATS (Pendapatan & Penghitungan Status)
+        // 1. AUTO SYNC STATS (Pendapatan & Penghitungan Status)
         // ==========================================
         async function loadUserStats() {
             try {
-                const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
-                if (stats) {
-                    realEarnings = stats.total_earnings || 0;
-                    realWithdrawable = stats.withdrawable || 0;
-                }
-            } catch(e) { console.log("User stats mungkin belum ada."); }
-            
-            window.toggleSensor(true); 
+                // 1. Ambil seluruh submission milik user ini
+                const { data: allSubs } = await supabase
+                    .from('submissions')
+                    .select('status, earned, views_paid')
+                    .eq('user_id', sessionUser.id);
 
-            // Hitung status PENDING, APPROVED, REJECTED yang akurat
-            try {
-                const { data: subs } = await supabase.from('submissions').select('status, views_claimed').eq('user_id', sessionUser.id);
+                let calcEarnings = 0;
+                let calcViews = 0;
+                let calcVideos = 0;
                 let p = 0, a = 0, r = 0;
-                if(subs) {
-                    subs.forEach(s => {
-                        if(s.status === 'PENDING') p++;
-                        else if(s.status === 'APPROVED') a++;
-                        else if(s.status === 'REJECTED') r++;
+
+                // Loop & hitung matang data berdasarkan status aslinya
+                if (allSubs) {
+                    calcVideos = allSubs.length; // Total semua video yang diajukan
+                    allSubs.forEach(sub => {
+                        if (sub.status === 'PENDING') {
+                            p++;
+                        } else if (sub.status === 'APPROVED') {
+                            a++;
+                            calcEarnings += (sub.earned || 0);
+                            calcViews += (sub.views_paid || 0);
+                        } else if (sub.status === 'REJECTED') {
+                            r++;
+                        }
                     });
                 }
+
+                // 2. Ambil total history penarikan untuk hitung withdrawable (Saldo Tersedia)
+                const { data: withdrawals } = await supabase
+                    .from('withdrawals')
+                    .select('amount, status')
+                    .eq('user_id', sessionUser.id);
+                
+                let totalWithdrawn = 0;
+                if (withdrawals) {
+                    withdrawals.forEach(w => {
+                        // Penarikan Ditolak/Gagal tidak dipotong dari saldo
+                        if (w.status !== 'REJECTED' && w.status !== 'FAILED') {
+                            totalWithdrawn += (w.amount || 0);
+                        }
+                    });
+                }
+
+                // Menentukan saldo yang bisa dicairkan
+                let calcWithdrawable = calcEarnings - totalWithdrawn;
+                if (calcWithdrawable < 0) calcWithdrawable = 0;
+
+                // 3. UPDATE/UPSERT KE TABEL clipper_stats OTOMATIS
+                await supabase.from('clipper_stats').upsert({
+                    user_id: sessionUser.id,
+                    total_earnings: calcEarnings,
+                    withdrawable: calcWithdrawable,
+                    total_views: calcViews,
+                    total_videos: calcVideos
+                }, { onConflict: 'user_id' });
+
+                // 4. Perbarui UI
+                realEarnings = calcEarnings;
+                realWithdrawable = calcWithdrawable;
+
+                // Render jumlah status klaim
                 document.getElementById('pending-detail').innerText = p;
                 document.getElementById('disetujui-detail').innerText = a;
                 document.getElementById('ditolak-detail').innerText = r;
-            } catch(e) { console.log("Gagal hitung status"); }
+
+            } catch(e) {
+                console.error("Gagal sinkronisasi data ke clipper_stats:", e);
+                // Fallback (apabila perhitungan error, render data lama yang ada di db)
+                try {
+                    const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
+                    if (stats) {
+                        realEarnings = stats.total_earnings || 0;
+                        realWithdrawable = stats.withdrawable || 0;
+                    }
+                } catch(err) {}
+            }
+            
+            // Refresh text UI Pendapatan
+            window.toggleSensor(true); 
         }
 
         // ==========================================
@@ -317,7 +372,6 @@
         function getVideoMeta(url) {
             url = url || '';
             let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
-            // Gambar Fallback Elegan
             let thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Video...';
             
             if (url.includes('tiktok.com')) {
@@ -359,9 +413,6 @@
 
             const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
 
-            // ===================================
-            // BLOCK 1: STATE REVIEW BRAND
-            // ===================================
             if (isBrandReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
                 actionArea = `
@@ -370,9 +421,6 @@
                         Menunggu ACC Brand
                     </button>`;
             } 
-            // ===================================
-            // BLOCK 2: STATE DITOLAK BRAND
-            // ===================================
             else if (isBrandRejected) {
                 cardOpacityClass = 'opacity-70 border-red-900/30';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Ditolak Brand</div>`;
@@ -382,9 +430,6 @@
                     </div>
                     <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Video Ditolak</button>`;
             }
-            // ===================================
-            // BLOCK 3: STATE REVIEW ADMIN (Klaim)
-            // ===================================
             else if (isClaimReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
                 actionArea = `
@@ -396,9 +441,6 @@
                         <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
                     </button>`;
             } 
-            // ===================================
-            // BLOCK 4: STATE DITOLAK ADMIN (Klaim)
-            // ===================================
             else if (isClaimRejected) {
                 cardOpacityClass = 'opacity-80 border-red-900/50';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
@@ -409,15 +451,11 @@
                     <input type="number" id="input-${sub.id}" placeholder="Masukkan views yang benar" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mb-2">
                     <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors">Ajukan Ulang Klaim</button>`;
             }
-            // ===================================
-            // BLOCK 5: NORMAL / ACC (Siap Klaim Baru / Klaim Update)
-            // ===================================
             else {
                 const paidViews = sub.views_paid || 0;
                 let placeholder = paidViews > 0 ? `> ${paidViews.toLocaleString('id-ID')}` : 'Jml views asli';
                 let warningText = '';
                 
-                // Overriding Badges
                 if(isCampClosed) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Closed</div>`;
                     warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
@@ -493,7 +531,6 @@
                 return matchCamp && matchStatus;
             });
 
-            // Sort logic
             if (currentFilter.sort === 'oldest') {
                 filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
             } else { 
@@ -521,11 +558,9 @@
                 loadMoreContainer.classList.add('hidden');
             }
 
-            // Jalankan Ekstraksi Thumbnail Asli di latar belakang secara Async
             window.loadThumbnails(toRender);
         }
 
-        // FUNGSI TARIK THUMBNAIL DINAMIS (Microlink API & TikWM)
         window.loadThumbnails = async function(items) {
             for (let sub of items) {
                 const imgEl = document.getElementById(`thumb-${sub.id}`);
@@ -554,9 +589,7 @@
                             imgEl.setAttribute('data-loaded', 'true');
                         }
                     }
-                } catch(e) { 
-                    console.log("Gagal memuat thumbnail asli untuk:", url); 
-                }
+                } catch(e) { }
             }
         };
 
@@ -690,7 +723,6 @@
             applyFilters();
         };
 
-        // Sensor
         window.toggleSensor = function(silent = false) {
             if(!silent) isSensorActive = !isSensorActive;
             const totalElement = document.getElementById('total-pendapatan');
