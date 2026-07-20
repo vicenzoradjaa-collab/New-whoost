@@ -36,6 +36,7 @@
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
+        /* Custom Patterns diadopsi dari Explore */
         .bg-dots-card {
             background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
             background-size: 16px 16px;
@@ -70,8 +71,8 @@
         </div>
     </header>
 
-    <!-- Toolbar: Search, Filter, Buat Campaign -->
-    <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-wrap gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
+    <!-- Toolbar: Search, Filter, Buat Campaign (Diperbarui dengan relative z-40 agar dropdown tidak tertimpa) -->
+    <div class="px-4 sm:px-8 py-4 sm:py-6 relative z-40 flex flex-wrap gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
         <div class="flex flex-1 sm:flex-none items-center gap-3 w-full sm:w-auto">
             <div class="relative w-full sm:w-64">
                 <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
@@ -106,12 +107,12 @@
     <!-- Main Content Area -->
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth">
         
-        <!-- Grid -->
-        <div id="campaignGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 z-10 relative">
+        <!-- Grid (Diperbarui dengan relative z-10) -->
+        <div id="campaignGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 relative z-10">
             <p class="text-zinc-500 text-sm col-span-full">Memuat campaign...</p>
         </div>
 
-        <div id="no-data-alert" class="hidden text-center py-20 col-span-full">
+        <div id="no-data-alert" class="hidden text-center py-20 col-span-full relative z-10">
             <svg class="w-16 h-16 text-zinc-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
             <h3 class="text-xl font-bold text-white mb-2">Tidak ada Campaign</h3>
             <p class="text-zinc-500 text-sm">Kamu belum membuat campaign atau tidak ada yang cocok dengan pencarian.</p>
@@ -198,6 +199,11 @@
             const totalContent = campSubs.length;
             const totalViews = campSubs.reduce((sum, s) => sum + Math.max(s.views_claimed || 0, s.views_paid || 0), 0);
 
+            // Logika Views atau Video
+            const isPerVideo = camp.payment_type === 'video';
+            const highlightValue = isPerVideo ? totalContent : formatK(totalViews);
+            const highlightText = isPerVideo ? 'Total Video' : 'Total Views';
+
             // Hitung persentase budget yang terpakai
             const budgetUsed = camp.budget_total - camp.budget_remaining;
             const pct = camp.budget_total > 0 ? Math.round((budgetUsed / camp.budget_total) * 100) : 0;
@@ -216,7 +222,6 @@
                 opacityClass = 'opacity-70 hover:opacity-100';
             }
 
-            const initial = camp.brand_initial || (camp.brand_name ? camp.brand_name.substring(0, 1).toUpperCase() : 'C');
             const typeText = camp.type === 'ugc' ? 'UGC' : 'Clipping';
 
             // Platform Icons
@@ -232,6 +237,13 @@
                 : `<h3 class="text-lg md:text-2xl font-black text-white relative z-10 tracking-tighter truncate w-11/12 text-center">${camp.title.substring(0, 10).toUpperCase()}</h3>
                    <p class="text-zinc-400 font-black text-[8px] md:text-[10px] tracking-[0.2em] relative z-10 mt-0.5">${typeText.toUpperCase()}</p>`;
 
+            // Hide tag "X Konten" if it's already shown as the main highlighted value
+            const tagKonten = !isPerVideo 
+                ? `<div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
+                       <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${totalContent} Konten</span>
+                   </div>` 
+                : '';
+
             return `
             <div class="bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group ${opacityClass}">
                 
@@ -241,9 +253,8 @@
                 </div>
 
                 <div class="flex justify-between items-center mb-2 md:mb-3">
-                    <div class="flex items-center gap-1.5 md:gap-2 overflow-hidden pr-2">
-                        <div class="w-5 h-5 md:w-7 md:h-7 shrink-0 rounded-full bg-white text-black font-extrabold flex items-center justify-center text-[8px] md:text-[10px]">${initial}</div>
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-300 transition truncate">${camp.brand_name || '-'}</span>
+                    <div class="flex items-center overflow-hidden pr-2">
+                        <span class="text-[11px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${camp.brand_name || '-'}</span>
                     </div>
                     ${statusBadge}
                 </div>
@@ -251,8 +262,8 @@
                 <h4 class="text-sm md:text-lg font-bold text-white mb-1.5 md:mb-2 truncate transition-colors" title="${camp.title}">${camp.title}</h4>
                 
                 <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                    <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">${formatK(totalViews)}</span>
-                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">Total Views</span>
+                    <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">${highlightValue}</span>
+                    <span class="text-zinc-500 text-[9px] md:text-xs font-bold">${highlightText}</span>
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
@@ -262,9 +273,7 @@
                     <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
                         <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${typeText}</span>
                     </div>
-                    <div class="flex items-center px-1.5 md:px-2.5 py-1 md:py-1.5 rounded-md md:rounded-lg border border-zinc-800 bg-zinc-900/50">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">${totalContent} Konten</span>
-                    </div>
+                    ${tagKonten}
                 </div>
 
                 <div class="mt-auto pt-2 md:pt-4 border-t border-zinc-800/50">
