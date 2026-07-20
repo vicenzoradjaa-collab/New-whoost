@@ -50,14 +50,22 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
+    <!-- LOADING SCREEN -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data Keuangan...</p>
+        </div>
+    </div>
+
     <!-- HEADER (Icon Lonceng Dihilangkan) -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
-                <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Wallet</h1>
         </div>
-        <!-- Area Kanan Kosong (Lonceng Notifikasi Dihapus) -->
         <div></div>
     </header>
 
@@ -70,7 +78,6 @@
                 <p class="text-zinc-400 text-sm">Kelola komisi, tarik dana, dan pamerkan pencapaian performa Anda sebagai clipper Whoost.</p>
             </div>
 
-            <!-- GRID LAYOUT (items-stretch untuk menyamakan tinggi kolom) -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                 
                 <!-- KIRI: KARTU SALDO & INFORMASI (COL-SPAN 4) -->
@@ -90,11 +97,11 @@
                             </button>
                         </div>
                         
-                        <h3 id="saldo-wallet" class="text-3xl sm:text-4xl font-bold text-white mb-6 tracking-tight">Rp 383.314.895</h3>
+                        <h3 id="saldo-wallet" class="text-3xl sm:text-4xl font-bold text-white mb-6 tracking-tight">Rp 0</h3>
                         
                         <div class="flex justify-between items-center pb-6 border-b border-zinc-800/80 mb-6">
                             <span class="text-xs text-zinc-500">Telah Sukses Dicairkan:</span>
-                            <span class="text-sm font-semibold text-white">Rp 0</span>
+                            <span id="saldo-dicairkan" class="text-sm font-semibold text-white">Rp 0</span>
                         </div>
 
                         <div class="flex gap-3">
@@ -110,17 +117,17 @@
                     <!-- Rekening Tujuan -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 hover:border-zinc-500 transition-colors">
                         <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3 block">Metode Penarikan</span>
-                        <div onclick="toggleModal('bankModal')" class="flex items-center justify-between bg-zinc-900/50 border border-zinc-800 p-3 rounded-xl cursor-pointer hover:border-zinc-600 transition-colors">
+                        <div onclick="toggleModal('bankModal')" class="flex items-center justify-between bg-zinc-900/50 border border-zinc-800 p-3 rounded-xl cursor-pointer hover:border-zinc-600 transition-colors group">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
                                 </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-white">BCA</h4>
-                                    <p class="text-xs text-zinc-500 font-mono mt-0.5">7040423031 • Vicenzo Radja</p>
+                                <div id="main-payment-info">
+                                    <h4 class="text-sm font-bold text-white">Belum Diatur</h4>
+                                    <p class="text-xs text-zinc-500 mt-0.5">Klik untuk mengatur bank/e-wallet</p>
                                 </div>
                             </div>
-                            <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <svg class="w-4 h-4 text-zinc-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                         </div>
                     </div>
 
@@ -133,7 +140,7 @@
                         <ul class="space-y-3 text-[11px] sm:text-xs text-zinc-400">
                             <li class="flex items-start gap-2">
                                 <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span>Saldo tersedia dapat dicairkan kapan saja dengan minimum penarikan <b class="text-white">Rp 100.000</b>.</span>
+                                <span>Saldo tersedia dapat dicairkan kapan saja dengan minimum penarikan <b class="text-white" id="info-min-payout">Rp 50.000</b>.</span>
                             </li>
                             <li class="flex items-start gap-2">
                                 <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -145,17 +152,16 @@
                             </li>
                             <li class="flex items-start gap-2">
                                 <svg class="w-4 h-4 text-zinc-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                <span>Setiap pencairan dikenakan biaya admin <b class="text-white">Rp 0 (Gratis)</b>.</span>
+                                <span>Setiap pencairan dikenakan biaya admin <b class="text-white" id="info-fee">Rp 0 (Gratis)</b>.</span>
                             </li>
                         </ul>
                     </div>
 
                 </div>
 
-                <!-- KANAN: RIWAYAT & STATISTIK (COL-SPAN 8, Class h-full agar sama tinggi dengan kiri) -->
+                <!-- KANAN: RIWAYAT & STATISTIK (COL-SPAN 8) -->
                 <div class="lg:col-span-8 bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col h-full">
                     
-                    <!-- Header Kanan -->
                     <div class="flex justify-between items-center mb-6">
                         <div class="flex items-center gap-2">
                             <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -167,7 +173,6 @@
                         </button>
                     </div>
 
-                    <!-- Table Header (Desktop) -->
                     <div class="hidden sm:grid grid-cols-4 gap-4 text-[10px] font-bold text-zinc-500 uppercase tracking-wider pb-3 border-b border-zinc-800/80 mb-2">
                         <div class="col-span-1">Waktu & ID</div>
                         <div class="col-span-1">Tujuan / Rekening</div>
@@ -175,10 +180,13 @@
                         <div class="col-span-1 text-right">Status</div>
                     </div>
 
-                    <!-- List Area (Empty State) -->
-                    <div class="flex-1 flex flex-col items-center justify-center text-center opacity-60 min-h-[300px]">
-                        <svg class="w-16 h-16 text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                        <p class="text-sm text-zinc-500 font-medium">Belum ada riwayat penarikan dana.</p>
+                    <!-- List Area -->
+                    <div id="withdrawal-history-container" class="flex-1 flex flex-col overflow-y-auto custom-scrollbar pr-2 space-y-2 pb-4">
+                        <!-- Akan diisi JS, ini empty state defaultnya -->
+                        <div class="flex-1 flex flex-col items-center justify-center text-center opacity-60 min-h-[300px]">
+                            <svg class="w-16 h-16 text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                            <p class="text-sm text-zinc-500 font-medium">Belum ada riwayat penarikan dana.</p>
+                        </div>
                     </div>
 
                 </div>
@@ -203,7 +211,7 @@
             <div class="p-5 space-y-5">
                 <div class="flex justify-between items-center p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
                     <span class="text-xs text-zinc-400 font-medium">Saldo Maksimal</span>
-                    <span class="text-sm font-bold text-white" id="max-withdraw-amount" data-val="383314">Rp 383.314</span>
+                    <span class="text-sm font-bold text-white" id="max-withdraw-amount" data-val="0">Rp 0</span>
                 </div>
 
                 <div>
@@ -212,7 +220,7 @@
                         <span class="absolute left-4 text-zinc-400 font-bold">Rp</span>
                         <input type="number" id="withdraw-input" class="w-full bg-darkBg border border-zinc-700 rounded-xl py-3 pl-10 pr-4 text-white font-bold focus:border-white focus:ring-1 focus:ring-white outline-none transition-all placeholder-zinc-600" placeholder="100000" oninput="calculateWithdraw()">
                     </div>
-                    <p class="text-[10px] text-zinc-500 mt-2">*Minimal penarikan Rp 100.000</p>
+                    <p id="withdraw-min-text" class="text-[10px] text-zinc-500 mt-2">*Minimal penarikan Rp 50.000</p>
                     <p id="withdraw-error" class="text-[10px] text-red-500 mt-1 hidden">Nominal tidak mencukupi atau di bawah batas minimum.</p>
                 </div>
 
@@ -228,10 +236,11 @@
                     </div>
                 </div>
 
-                <!-- Tombol Proses - Terhubung ke function processWithdrawal() -->
                 <div class="flex gap-3 pt-2">
                     <button onclick="toggleModal('withdrawModal')" class="flex-1 py-3 rounded-xl border border-zinc-700 text-zinc-300 font-bold text-sm hover:bg-zinc-800 transition-colors">Batal</button>
-                    <button id="btn-process-withdraw" disabled onclick="processWithdrawal()" class="flex-[2] py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Proses Penarikan</button>
+                    <button id="btn-process-withdraw" disabled onclick="processWithdrawal()" class="flex-[2] py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+                        <span>Proses Penarikan</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -248,12 +257,12 @@
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Penarikan Diproses!</h3>
             <p class="text-sm text-zinc-400 mb-8 leading-relaxed">Permintaan penarikan dana Anda telah masuk ke sistem dan sedang ditinjau admin. Harap tunggu 1-3 hari kerja.</p>
-            <button onclick="toggleModal('successWithdrawModal')" class="w-full py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors active:scale-[0.98]">Oke, Mengerti</button>
+            <button onclick="toggleModal('successWithdrawModal'); window.location.reload();" class="w-full py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-zinc-200 transition-colors active:scale-[0.98]">Oke, Mengerti</button>
         </div>
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL 2: SHARE CARD PENDAPATAN (DIPERBARUI)-->
+    <!-- MODAL 2: SHARE CARD PENDAPATAN             -->
     <!-- ========================================== -->
     <div id="shareModal" class="fixed inset-0 z-[999] bg-black/80 backdrop-blur-md opacity-0 pointer-events-none flex items-center justify-center p-4 transition-opacity duration-300">
         <div class="relative flex flex-col items-center transform scale-95 transition-transform duration-300 modal-content">
@@ -265,11 +274,9 @@
                 </button>
             </div>
             
-            <!-- Share Card Container (Ukuran Persis Referensi) -->
             <div id="share-card-container" class="rounded-3xl overflow-hidden shadow-2xl border border-zinc-800/60 w-[340px] h-[450px]">
                 <div id="capture-card" class="bg-premium-card w-full h-full relative flex flex-col p-8 box-border text-center overflow-hidden">
                     
-                    <!-- SVG Background Abstract -->
                     <svg class="absolute inset-0 w-full h-full opacity-[0.25] z-0 pointer-events-none" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
                         <path d="M-50 150 C 100 -50, 250 200, 450 50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" />
                         <path d="M-50 200 C 150 -10, 200 250, 450 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" />
@@ -279,42 +286,37 @@
                         <path d="M-50 400 C 220 150, 240 400, 450 300" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1" />
                     </svg>
                     
-                    <!-- Header Branding -->
                     <div class="relative z-10 flex justify-between items-center w-full px-1"> 
                         <span class="font-black text-white text-[18px] tracking-tight flex items-center italic">Whoost</span>
                         <span class="text-[8px] text-zinc-500 font-medium tracking-[0.15em] uppercase">whoost.id</span>
                     </div>
                     
-                    <!-- Main Content (User & Payout) -->
                     <div class="relative z-10 flex flex-col items-center justify-center flex-grow w-full">
                         <div class="mb-8 w-full px-2">
-                            <h3 class="text-white font-black text-[22px] tracking-wide break-words pb-1 drop-shadow-md line-clamp-2">Vicenzo Radja</h3>
+                            <h3 id="share-name" class="text-white font-black text-[22px] tracking-wide break-words pb-1 drop-shadow-md line-clamp-2">Loading...</h3>
                             <p class="text-[9px] font-extrabold text-brand-accent uppercase tracking-[0.3em] mt-1 drop-shadow-sm">Whoost Clipper</p>
                         </div>
                         <div class="w-full">
                             <p class="text-[9px] text-zinc-500 font-bold uppercase tracking-[0.25em] mb-2">Total Payout</p>
                             <div class="w-full px-1 overflow-hidden flex justify-center">
-                                <p class="text-[2.5rem] font-black text-white tracking-tighter drop-shadow-2xl whitespace-nowrap overflow-hidden text-ellipsis pb-1">+Rp 383.314</p>
+                                <p id="share-payout" class="text-[2.5rem] font-black text-white tracking-tighter drop-shadow-2xl whitespace-nowrap overflow-hidden text-ellipsis pb-1">+Rp 0</p>
                             </div>
                             <div class="flex items-center justify-center gap-1.5 mt-2 text-zinc-400">
-                                <!-- Eye Icon with Brand Accent -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="w-[12px] h-[12px] fill-brand-accent">
                                     <path d="M288 32c-80.8-0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.5c.5 13.5 6.9 26 18 34.6c11.6 9 26.6 13.9 42 13.9c35.3 0 64-28.7 64-64c0-15.4-4.9-30.4-13.9-42c-8.6-11.1-21.1-17.5-34.6-18c-5.9-.2-9.3 6.2-7.5 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/>
                                 </svg>
-                                <span class="text-[12px] font-bold text-white">572.4M</span>
+                                <span id="share-views" class="text-[12px] font-bold text-white">0</span>
                                 <span class="text-[10px] ml-0.5 tracking-wide">Views</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Footer Date -->
                     <div class="relative z-10 w-full mt-auto pt-6 border-t border-zinc-800/40">
-                        <p class="text-[8px] text-zinc-600 font-semibold tracking-[0.2em] uppercase">Update: 13 Juli 2026</p>
+                        <p id="share-date" class="text-[8px] text-zinc-600 font-semibold tracking-[0.2em] uppercase">Update: -</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Download Button -->
             <div class="mt-6 w-[340px]">
                 <button id="btn-download-share" onclick="downloadShareCard()" class="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 shadow-lg text-sm disabled:opacity-70 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -345,15 +347,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40">
                         <p class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase mb-1">Total Pendapatan</p>
-                        <h4 class="text-2xl font-bold text-white">Rp 383.314</h4>
+                        <h4 class="text-2xl font-bold text-white" id="stat-total-earn">Rp 0</h4>
                     </div>
                     <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40">
-                        <p class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase mb-1">Total Pencairan (Net)</p>
-                        <h4 class="text-2xl font-bold text-white">Rp 0</h4>
+                        <p class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase mb-1">Total Pencairan</p>
+                        <h4 class="text-2xl font-bold text-white" id="stat-total-wd">Rp 0</h4>
                     </div>
                     <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40">
                         <p class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase mb-1">Approved</p>
-                        <h4 class="text-2xl font-bold text-blue-400">70 <span class="text-sm font-medium text-zinc-500">Project</span></h4>
+                        <h4 class="text-2xl font-bold text-blue-400"><span id="stat-approved">0</span> <span class="text-sm font-medium text-zinc-500">Project</span></h4>
                     </div>
                 </div>
 
@@ -382,23 +384,13 @@
             </div>
             
             <div class="p-4 space-y-3">
-                <div class="flex items-center justify-between bg-zinc-900/80 border border-white/20 p-4 rounded-xl cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.05)] relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-white"></div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white">BCA</h4>
-                            <p class="text-xs text-zinc-400 font-mono mt-0.5">7040423031 • Vicenzo Radja</p>
-                        </div>
-                    </div>
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <div id="bank-list-container">
+                    <!-- Bank list akan dirender disini via JS -->
                 </div>
 
-                <a href="#" class="flex items-center justify-center gap-2 w-full p-4 border border-dashed border-zinc-700 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors mt-4">
+                <a href="clipper-profile.html" class="flex items-center justify-center gap-2 w-full p-4 border border-dashed border-zinc-700 rounded-xl text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors mt-4">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    <span class="text-sm font-semibold">Tambah Rekening di Profil</span>
+                    <span class="text-sm font-semibold">Kelola Rekening di Profil</span>
                 </a>
             </div>
         </div>
@@ -408,114 +400,396 @@
     <!-- ========================================== -->
     <!-- JAVASCRIPT & LOGIC                         -->
     <!-- ========================================== -->
-     <script>
-        // Ubah value ini sesuai dengan identifier menu wallet di file navbarclipper.js Anda
-        const ACTIVE_MENU = 'wallet'; 
-    </script>
+    <script>const ACTIVE_MENU = 'wallet';</script>
     <script src="attribute/navbarclipper.js"></script>
-    <!-- =================== -->
-    <script>
-        // LOGIC SENSOR SALDO KEUANGAN
+    
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        // GLOBAL STATES
+        let sessionUser = null;
+        let profileData = null;
+        let sysSettings = { min_payout: 50000, fee_amount: 0, fee_type: 'Rupiah (Rp)' };
+        let walletStats = { total_earnings: 0, withdrawable: 0, total_views: 0, withdrawn_success: 0 };
+        let currentChartLabels = [];
+        let currentChartData = [];
+        
         let isBalanceHidden = false;
-        function toggleBalance() {
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                window.location.replace('login.html');
+                return;
+            }
+            sessionUser = session.user;
+
+            // Load all data
+            await Promise.all([
+                loadSettings(),
+                loadProfileAndStats(),
+                loadWithdrawalHistory(),
+                loadChartData()
+            ]);
+
+            // Hide Loading Screen
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                if(loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 500);
+        });
+
+        // 1. Fetch System Settings
+        async function loadSettings() {
+            const { data } = await supabase.from('system_settings').select('min_payout, fee_clipper_amount, fee_clipper_type').eq('id', 1).single();
+            if(data) {
+                sysSettings.min_payout = parseFloat(data.min_payout) || 50000;
+                sysSettings.fee_amount = parseFloat(data.fee_clipper_amount) || 0;
+                sysSettings.fee_type = data.fee_clipper_type || 'Rupiah (Rp)';
+            }
+            
+            // Render Info Penting & Limit Withdraw
+            document.getElementById('info-min-payout').innerText = 'Rp ' + sysSettings.min_payout.toLocaleString('id-ID');
+            document.getElementById('withdraw-min-text').innerText = `*Minimal penarikan Rp ${sysSettings.min_payout.toLocaleString('id-ID')}`;
+            
+            if(sysSettings.fee_type.includes('%')) {
+                document.getElementById('info-fee').innerText = `${sysSettings.fee_amount}% dari nominal`;
+            } else {
+                document.getElementById('info-fee').innerText = `Rp ${sysSettings.fee_amount.toLocaleString('id-ID')}`;
+            }
+        }
+
+        // 2. Fetch Profile (Bank) & Clipper Stats
+        async function loadProfileAndStats() {
+            // Profile & Payment Info
+            const { data: profile } = await supabase.from('profiles').select('full_name, payment_info').eq('id', sessionUser.id).single();
+            profileData = profile || { full_name: 'Pengguna', payment_info: [] };
+            
+            // Parse JSONB payment_info
+            let banks = [];
+            try { 
+                banks = (typeof profileData.payment_info === 'string') ? JSON.parse(profileData.payment_info) : profileData.payment_info; 
+                if(!Array.isArray(banks)) banks = [];
+            } catch(e) { banks = []; }
+            
+            renderBankList(banks);
+
+            // Clipper Stats
+            const { data: stats } = await supabase.from('clipper_stats').select('total_earnings, withdrawable, total_views').eq('user_id', sessionUser.id).single();
+            if(stats) {
+                walletStats.total_earnings = stats.total_earnings || 0;
+                walletStats.withdrawable = stats.withdrawable || 0;
+                walletStats.total_views = stats.total_views || 0;
+            }
+
+            // Calculate Successful Withdrawals for UI display
+            const { data: wds } = await supabase.from('withdrawals').select('amount').eq('user_id', sessionUser.id).eq('status', 'SUCCESS');
+            let successWd = 0;
+            if(wds) wds.forEach(w => successWd += (w.amount || 0));
+            walletStats.withdrawn_success = successWd;
+
+            // Render UI Saldo & Sharecard
+            updateBalanceUI();
+            document.getElementById('saldo-dicairkan').innerText = 'Rp ' + successWd.toLocaleString('id-ID');
+            document.getElementById('max-withdraw-amount').innerText = 'Rp ' + walletStats.withdrawable.toLocaleString('id-ID');
+            document.getElementById('max-withdraw-amount').setAttribute('data-val', walletStats.withdrawable);
+            
+            // Sync Sharecard Info
+            document.getElementById('share-name').innerText = profileData.full_name || 'Clipper Whoost';
+            document.getElementById('share-payout').innerText = '+Rp ' + walletStats.total_earnings.toLocaleString('id-ID');
+            document.getElementById('share-views').innerText = formatK(walletStats.total_views);
+            
+            const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('share-date').innerText = 'Update: ' + new Date().toLocaleDateString('id-ID', dateOptions);
+
+            // Sync Stats Modal
+            document.getElementById('stat-total-earn').innerText = 'Rp ' + walletStats.total_earnings.toLocaleString('id-ID');
+            document.getElementById('stat-total-wd').innerText = 'Rp ' + successWd.toLocaleString('id-ID');
+        }
+
+        // 3. Render Bank List
+        function renderBankList(banks) {
+            const mainContainer = document.getElementById('main-payment-info');
+            const listContainer = document.getElementById('bank-list-container');
+
+            if(banks.length === 0) {
+                mainContainer.innerHTML = `
+                    <h4 class="text-sm font-bold text-white">Belum Diatur</h4>
+                    <p class="text-xs text-zinc-500 mt-0.5">Tambah rekening di menu Profil</p>
+                `;
+                listContainer.innerHTML = `<p class="text-xs text-zinc-500 text-center py-4">Belum ada rekening/e-wallet.</p>`;
+                return;
+            }
+
+            // Render main display (Show first bank)
+            const firstBank = banks[0];
+            mainContainer.innerHTML = `
+                <h4 class="text-sm font-bold text-white">${firstBank.bank || firstBank.bank_name || 'Bank'}</h4>
+                <p class="text-xs text-zinc-500 font-mono mt-0.5">${firstBank.account || firstBank.account_number} • ${firstBank.name || firstBank.account_name}</p>
+            `;
+
+            // Render Modal List
+            let html = '';
+            banks.forEach((b, index) => {
+                const isActive = index === 0;
+                html += `
+                <div class="flex items-center justify-between bg-zinc-900/80 border ${isActive ? 'border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]' : 'border-zinc-800'} p-4 rounded-xl relative overflow-hidden mb-3">
+                    ${isActive ? '<div class="absolute top-0 left-0 w-1 h-full bg-white"></div>' : ''}
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full ${isActive ? 'bg-white text-black' : 'bg-zinc-800 text-white'} flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">${b.bank || b.bank_name || 'Bank'}</h4>
+                            <p class="text-xs text-zinc-400 font-mono mt-0.5">${b.account || b.account_number} • ${b.name || b.account_name}</p>
+                        </div>
+                    </div>
+                    ${isActive ? '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : ''}
+                </div>`;
+            });
+            listContainer.innerHTML = html;
+        }
+
+        // 4. Fetch Withdrawal History
+        async function loadWithdrawalHistory() {
+            const { data } = await supabase.from('withdrawals')
+                .select('id, amount, status, created_at')
+                .eq('user_id', sessionUser.id)
+                .order('created_at', { ascending: false });
+
+            const container = document.getElementById('withdrawal-history-container');
+            
+            if(!data || data.length === 0) {
+                container.innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center text-center opacity-60 min-h-[300px]">
+                    <svg class="w-16 h-16 text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    <p class="text-sm text-zinc-500 font-medium">Belum ada riwayat penarikan dana.</p>
+                </div>`;
+                return;
+            }
+
+            let html = '';
+            data.forEach(item => {
+                const dateObj = new Date(item.created_at);
+                const dateStr = dateObj.toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+                const timeStr = dateObj.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+                const idShort = item.id.split('-')[0].toUpperCase();
+                
+                let statusColor, statusBg, statusText;
+                if(item.status === 'SUCCESS') { statusColor='text-emerald-400'; statusBg='bg-emerald-900/20'; statusText='Sukses'; }
+                else if(item.status === 'REJECTED' || item.status === 'FAILED') { statusColor='text-red-400'; statusBg='bg-red-900/20'; statusText='Gagal'; }
+                else { statusColor='text-amber-400'; statusBg='bg-amber-900/20'; statusText='Pending'; }
+
+                html += `
+                <div class="p-3 sm:p-4 rounded-xl border border-zinc-800/80 bg-zinc-900/30 hover:bg-zinc-900/50 transition-colors group flex flex-col sm:grid sm:grid-cols-4 gap-3 sm:gap-4 items-start sm:items-center">
+                    <div class="col-span-1">
+                        <p class="text-[10px] sm:text-xs font-bold text-white">${dateStr}, ${timeStr}</p>
+                        <p class="text-[9px] font-mono text-zinc-500 mt-0.5 uppercase">ID: #${idShort}</p>
+                    </div>
+                    <div class="col-span-1 w-full flex sm:block items-center justify-between">
+                        <span class="sm:hidden text-[10px] text-zinc-500">Tujuan:</span>
+                        <p class="text-[10px] sm:text-xs text-zinc-400 font-medium truncate">Transfer Bank</p>
+                    </div>
+                    <div class="col-span-1 w-full flex sm:block items-center justify-between">
+                        <span class="sm:hidden text-[10px] text-zinc-500">Nominal:</span>
+                        <p class="text-xs sm:text-sm font-bold text-white">Rp ${item.amount.toLocaleString('id-ID')}</p>
+                    </div>
+                    <div class="col-span-1 flex justify-end w-full">
+                        <span class="px-2 py-1 rounded-md border ${statusColor} ${statusBg} border-current border-opacity-20 text-[9px] sm:text-[10px] font-bold tracking-wide uppercase">${statusText}</span>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // 5. Fetch Chart Data (5 Bulan Terakhir dari Tabel Submissions yg APPROVED)
+        async function loadChartData() {
+            // Setup last 5 months labels
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = date.getMonth(); // 0-11
+            
+            let labelArr = [];
+            let keyArr = []; // YYYY-MM untuk grouping
+            
+            for(let i=4; i>=0; i--) {
+                let d = new Date(year, month - i, 1);
+                labelArr.push(`${months[d.getMonth()]} ${d.getFullYear()}`);
+                
+                let yStr = d.getFullYear();
+                let mStr = (d.getMonth()+1).toString().padStart(2, '0');
+                keyArr.push(`${yStr}-${mStr}`);
+            }
+            currentChartLabels = labelArr;
+
+            // Initialize empty data
+            let chartValues = [0, 0, 0, 0, 0];
+
+            // Get submissions 5 months ago
+            let startDate = new Date(year, month - 4, 1).toISOString();
+
+            const { data } = await supabase.from('submissions')
+                .select('earned, created_at')
+                .eq('user_id', sessionUser.id)
+                .eq('status', 'APPROVED')
+                .gte('created_at', startDate);
+
+            let approvedCount = 0;
+            if(data) {
+                approvedCount = data.length;
+                data.forEach(sub => {
+                    let d = new Date(sub.created_at);
+                    let k = `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,'0')}`;
+                    let idx = keyArr.indexOf(k);
+                    if(idx !== -1) {
+                        chartValues[idx] += (sub.earned || 0);
+                    }
+                });
+            }
+            
+            document.getElementById('stat-approved').innerText = approvedCount;
+            currentChartData = chartValues;
+        }
+
+        // Format Views Helper (M/K)
+        function formatK(num) {
+            if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'B';
+            if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'K';
+            return num;
+        }
+
+        // ==========================================
+        // WINDOW BOUND FUNCTIONS FOR HTML CLICKS
+        // ==========================================
+        
+        window.toggleBalance = function() {
             isBalanceHidden = !isBalanceHidden;
+            updateBalanceUI();
+        }
+
+        function updateBalanceUI() {
             const balanceEl = document.getElementById('saldo-wallet');
             const iconEl = document.getElementById('eye-icon-wallet');
 
             if (isBalanceHidden) {
                 balanceEl.innerText = 'Rp ••••••';
-                iconEl.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
-                `;
+                iconEl.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
             } else {
-                balanceEl.innerText = 'Rp 383.314';
-                iconEl.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                `;
+                balanceEl.innerText = 'Rp ' + walletStats.withdrawable.toLocaleString('id-ID');
+                iconEl.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
             }
         }
 
-        // LOGIC BUKA TUTUP MODAL
-        function toggleModal(modalId) {
+        window.toggleModal = function(modalId) {
             const modal = document.getElementById(modalId);
             const content = modal.querySelector('.modal-content');
             
             if (modal.classList.contains('opacity-0')) {
-                // Open
                 modal.classList.remove('opacity-0', 'pointer-events-none');
                 content.classList.remove('scale-95');
                 content.classList.add('scale-100');
                 
-                // init chart jika dibuka
-                if(modalId === 'statsModal' && !window.myChart) {
-                    initChart();
+                if(modalId === 'statsModal') {
+                    if(!window.myChart) {
+                        initChart();
+                    } else {
+                        window.myChart.data.labels = currentChartLabels;
+                        window.myChart.data.datasets[0].data = currentChartData;
+                        window.myChart.update();
+                    }
                 }
             } else {
-                // Close
                 modal.classList.add('opacity-0', 'pointer-events-none');
                 content.classList.remove('scale-100');
                 content.classList.add('scale-95');
             }
         }
 
-        // LOGIC KALKULASI PENARIKAN
-        function calculateWithdraw() {
+        window.calculateWithdraw = function() {
             const inputEl = document.getElementById('withdraw-input');
             const netEl = document.getElementById('withdraw-net');
+            const feeEl = document.getElementById('withdraw-fee');
             const btn = document.getElementById('btn-process-withdraw');
             const errorEl = document.getElementById('withdraw-error');
-            const maxVal = parseInt(document.getElementById('max-withdraw-amount').getAttribute('data-val'));
+            const maxVal = parseFloat(document.getElementById('max-withdraw-amount').getAttribute('data-val'));
             
             let val = parseInt(inputEl.value);
             
             if (!val || isNaN(val)) {
                 netEl.innerText = 'Rp 0';
+                feeEl.innerText = '- Rp 0';
                 btn.disabled = true;
                 errorEl.classList.add('hidden');
                 return;
             }
 
-            if (val < 100000 || val > maxVal) {
+            if (val < sysSettings.min_payout || val > maxVal) {
                 netEl.innerText = 'Rp 0';
+                feeEl.innerText = '- Rp 0';
                 btn.disabled = true;
                 errorEl.classList.remove('hidden');
             } else {
                 errorEl.classList.add('hidden');
-                btn.disabled = false;
                 
-                let formattedNet = new Intl.NumberFormat('id-ID').format(val);
-                netEl.innerText = 'Rp ' + formattedNet;
+                let fee = 0;
+                if(sysSettings.fee_type.includes('%')) {
+                    fee = Math.floor(val * (sysSettings.fee_amount / 100));
+                } else {
+                    fee = sysSettings.fee_amount;
+                }
+
+                let net = val - fee;
+                if (net < 0) net = 0;
+
+                feeEl.innerText = '- Rp ' + fee.toLocaleString('id-ID');
+                netEl.innerText = 'Rp ' + net.toLocaleString('id-ID');
+                btn.disabled = false;
             }
         }
 
-        // LOGIC PROSES PENARIKAN -> POPUP SUKSES
-        function processWithdrawal() {
-            // Tutup modal tarik dana
-            toggleModal('withdrawModal');
+        window.processWithdrawal = async function() {
+            const inputEl = document.getElementById('withdraw-input');
+            const btn = document.getElementById('btn-process-withdraw');
             
-            // Buka modal sukses setelah jeda animasi (300ms)
+            let val = parseInt(inputEl.value);
+            if (!val || isNaN(val) || val < sysSettings.min_payout || val > walletStats.withdrawable) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin text-black" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+
+            const { error } = await supabase.from('withdrawals').insert({
+                user_id: sessionUser.id,
+                amount: val,
+                status: 'PENDING'
+            });
+
+            if(error) {
+                alert('Gagal mengajukan penarikan: ' + error.message);
+                btn.innerHTML = 'Proses Penarikan';
+                btn.disabled = false;
+                return;
+            }
+
+            // Sukses
+            toggleModal('withdrawModal');
             setTimeout(() => {
                 toggleModal('successWithdrawModal');
-                
-                // Reset form penarikan ke default
-                document.getElementById('withdraw-input').value = '';
-                document.getElementById('withdraw-net').innerText = 'Rp 0';
-                document.getElementById('btn-process-withdraw').disabled = true;
             }, 300);
         }
 
-        // LOGIC RENDER & DOWNLOAD SHARE CARD (HTML-TO-IMAGE SEPERTI REFERENSI)
-        function downloadShareCard() {
+        window.downloadShareCard = function() {
             const card = document.getElementById('capture-card');
             const btn = document.getElementById('btn-download-share');
             const originalText = btn.innerHTML;
             
-            // Ubah tombol jadi status loading
             btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...';
             btn.disabled = true;
             
-            // Menggunakan library htmlToImage (kualitas pixelRatio: 3 agar HD)
             htmlToImage.toPng(card, { 
                 quality: 1.0,
                 pixelRatio: 3, 
@@ -523,25 +797,22 @@
                 style: { margin: 0, borderRadius: '0px' }
             })
             .then(function (dataUrl) {
-                // Buat link download otomatis
                 const link = document.createElement('a');
-                link.download = `Whoost_Pencapaian_Vicenzo.png`;
+                let cleanName = (profileData.full_name || 'Clipper').replace(/\s+/g, '_');
+                link.download = `Whoost_Pencapaian_${cleanName}.png`;
                 link.href = dataUrl;
                 link.click();
                 
-                // Kembalikan tulisan tombol
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             })
             .catch(function (error) {
-                // Error handling
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 alert('Terjadi kesalahan saat menyimpan gambar. Pastikan koneksi internet lancar.');
             });
         }
 
-        // LOGIC CHART.JS UNTUK STATISTIK KINERJA
         function initChart() {
             const ctx = document.getElementById('revenueChart').getContext('2d');
             let gradient = ctx.createLinearGradient(0, 0, 0, 400);
@@ -551,10 +822,10 @@
             window.myChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Mar 2026', 'Apr 2026', 'Mei 2026', 'Jun 2026', 'Jul 2026'],
+                    labels: currentChartLabels,
                     datasets: [{
                         label: 'Pendapatan',
-                        data: [0, 0, 380000, 150000, 0], 
+                        data: currentChartData, 
                         borderColor: '#60a5fa', 
                         backgroundColor: gradient,
                         borderWidth: 3,
