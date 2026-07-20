@@ -41,24 +41,18 @@
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-40 w-full relative z-0">
         <div class="max-w-5xl mx-auto space-y-6">
             
-            <!-- BANNER UPLOAD 16:9 -->
+            <!-- BANNER INFO (Kirim via WA) -->
             <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 w-full">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-base font-bold text-white">Banner Campaign <span class="text-red-500">*</span></h3>
-                    <span class="text-[10px] text-zinc-500 bg-zinc-900 px-2 py-1 rounded">16:9</span>
+                    <h3 class="text-base font-bold text-white">Banner Campaign</h3>
+                    <span class="text-[10px] text-zinc-500 bg-zinc-900 px-2 py-1 rounded">Rasio 16:9</span>
                 </div>
-                <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="window.handleBannerUpload(event)">
-                <div id="banner-upload-box" onclick="window.triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
-                    <img id="banner-preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
-                    <div class="absolute inset-0 bg-black/40 hidden z-10 group-hover:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span class="text-white font-bold text-sm bg-black/60 px-4 py-2 rounded-lg">Ganti Gambar</span>
+                <div class="w-full border-2 border-dashed border-zinc-700 bg-zinc-900/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
+                    <div class="w-12 h-12 bg-[#25D366]/20 text-[#25D366] rounded-full flex items-center justify-center mb-3">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
                     </div>
-                    <div id="banner-icon-container" class="z-0 flex flex-col items-center">
-                        <div class="w-12 h-12 bg-zinc-800 text-zinc-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-all">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </div>
-                        <p id="banner-text" class="text-sm font-semibold text-white">Klik untuk Upload Banner</p>
-                    </div>
+                    <p class="text-sm font-semibold text-white mb-1">Kirim Banner via WhatsApp</p>
+                    <p class="text-xs text-zinc-400 max-w-md mx-auto">Sistem kami mendeteksi bahwa pengiriman banner secara manual lebih efektif. Silakan lampirkan gambar banner (rasio 16:9) ke Admin di WhatsApp bersamaan dengan pesan yang akan terbuat saat menyimpan.</p>
                 </div>
             </div>
 
@@ -122,23 +116,41 @@
                     </div>
                 </div>
 
-                <!-- Bagian Per Views -->
-                <div id="budget-views-section" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Bagian Per Views (Telah Disesuaikan dengan Pilihan Preset) -->
+                <div id="budget-views-section" class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-zinc-400 mb-1">Total Budget Pengajuan (Rp) <span class="text-red-500">*</span></label>
                         <input type="text" id="budget_total_views" placeholder="Rp 5.000.000" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none currency-input">
                     </div>
+                    
                     <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-1">Tarif per 1k views (CPM) <span class="text-red-500">*</span></label>
-                        <input type="text" id="reward_per_1k" placeholder="Rp 3.000" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none currency-input">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-1">Minimal Views untuk Claim</label>
-                        <input type="text" id="min_views" placeholder="Contoh: 10.000" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none number-input">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-zinc-400 mb-1">Batas Max Claim per Konten</label>
-                        <input type="text" id="max_claim" placeholder="Contoh: 250.000" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none number-input">
+                        <label class="block text-sm font-medium text-zinc-400 mb-3">Pilih Rekomendasi Budget Cepat:</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Pilihan 1: Tester -->
+                            <div onclick="window.setBudgetPreset(1000000)" class="border border-zinc-700 hover:border-zinc-500 bg-zinc-900/80 rounded-xl p-4 cursor-pointer transition-colors group">
+                                <div class="font-bold text-white text-sm group-hover:text-blue-400 transition-colors">Tester - Rp 1.000.000</div>
+                                <div class="text-xs text-zinc-400 mt-1">Cocok untuk pengetesan market/pasar & validasi minat kreator awal.</div>
+                            </div>
+                            
+                            <!-- Pilihan 2: Basic -->
+                            <div onclick="window.setBudgetPreset(3000000)" class="border border-zinc-700 hover:border-zinc-500 bg-zinc-900/80 rounded-xl p-4 cursor-pointer transition-colors group">
+                                <div class="font-bold text-white text-sm group-hover:text-cyan-400 transition-colors">Basic - Rp 3.000.000</div>
+                                <div class="text-xs text-zinc-400 mt-1">Jangkauan audiens lebih luas dan tingkat interaksi (views) stabil.</div>
+                            </div>
+                            
+                            <!-- Pilihan 3: Pro (Rekomendasi) -->
+                            <div onclick="window.setBudgetPreset(5000000)" class="border border-green-500/50 hover:border-green-500 bg-green-500/10 rounded-xl p-4 cursor-pointer transition-colors relative">
+                                <span class="absolute -top-2.5 -right-2 bg-green-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow-lg shadow-green-900/50">Tervaforit</span>
+                                <div class="font-bold text-green-400 text-sm">Pro (Rekomendasi) - Rp 5.000.000</div>
+                                <div class="text-xs text-green-400/80 mt-1">Mendapat prioritas kreator, potensi viral sangat baik & konversi maksimal.</div>
+                            </div>
+                            
+                            <!-- Pilihan 4: Max -->
+                            <div onclick="window.setBudgetPreset(10000000)" class="border border-purple-500/50 hover:border-purple-500 bg-purple-500/10 rounded-xl p-4 cursor-pointer transition-colors group">
+                                <div class="font-bold text-purple-400 text-sm">Max / Scale - Rp 10.000.000+</div>
+                                <div class="text-xs text-purple-400/80 mt-1">Mendominasi platform sepenuhnya, exposure paling masif ke audiens luas.</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -249,7 +261,6 @@
 
         let sessionUser = null;
         let sessionData = {};
-        let uploadedBannerUrl = null;
         let selectedPlatforms = { tiktok: false, ig: false, yt: false };
         let linksData = [];
         let currentPaymentType = 'views';
@@ -407,7 +418,7 @@
         };
 
         // ==========================================
-        // FORMAT CURRENCY & NUMBER
+        // FORMAT CURRENCY & BUDGET PRESET
         // ==========================================
         function parseRupiah(val) { return parseInt(val.replace(/[^0-9]/g, '')) || 0; }
         
@@ -425,40 +436,11 @@
             });
         });
 
-        // ==========================================
-        // UPLOAD BANNER KE SUPABASE
-        // ==========================================
-        window.triggerUpload = function() { document.getElementById('banner-file').click(); };
-        window.handleBannerUpload = async function(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-
-            const textEl = document.getElementById('banner-text');
-            textEl.innerText = "Mengupload ke Supabase...";
-            textEl.classList.add('text-amber-400');
-
-            const fileExt = file.name.split('.').pop();
-            const fileName = `campaigns/banner_${Date.now()}_${Math.random().toString(36).substring(2,7)}.${fileExt}`;
-
-            // Tetap simpan di supabase storage agar link gambarnya bisa dikirim via WA
-            const { data, error } = await supabase.storage.from('avatars').upload(fileName, file);
-
-            if(error) {
-                alert("Upload error: " + error.message);
-                textEl.innerText = "Gagal upload!";
-                textEl.classList.remove('text-amber-400');
-                textEl.classList.add('text-red-500');
-                return;
-            }
-
-            const { data: pUrl } = supabase.storage.from('avatars').getPublicUrl(fileName);
-            uploadedBannerUrl = pUrl.publicUrl;
-
-            const preview = document.getElementById('banner-preview');
-            preview.src = uploadedBannerUrl;
-            preview.classList.remove('hidden');
-            document.getElementById('banner-icon-container').classList.add('hidden');
-        };
+        // Fungsi klik template budget
+        window.setBudgetPreset = function(amount) {
+            const input = document.getElementById('budget_total_views');
+            input.value = 'Rp ' + amount.toLocaleString('id-ID');
+        }
 
         // ==========================================
         // SUBMIT & GENERATE WHATSAPP MESSAGE
@@ -467,8 +449,8 @@
             const bName = document.getElementById('brand_name').value.trim();
             const bTitle = document.getElementById('title').value.trim();
             
-            if(!uploadedBannerUrl || !bName || !bTitle) {
-                alert("Banner, Nama Brand, dan Judul wajib diisi!");
+            if(!bName || !bTitle) {
+                alert("Nama Brand dan Judul Campaign wajib diisi!");
                 return;
             }
 
@@ -478,10 +460,7 @@
             
             if (isViews) {
                 const bTotalViews = document.getElementById('budget_total_views').value || 'Rp 0';
-                const cpm = document.getElementById('reward_per_1k').value || 'Rp 0';
-                const min = document.getElementById('min_views').value || '0';
-                const max = document.getElementById('max_claim').value || '0';
-                budgetString = `Sistem Bayar: Per Views\nTotal Anggaran: ${bTotalViews}\nTarif/1k Views: ${cpm}\nMin Views: ${min}\nMax Claim: ${max}`;
+                budgetString = `Sistem Bayar: Per Views\nTotal Anggaran: ${bTotalViews}\n*(Batas klaim & harga per 1K view akan didiskusikan dengan admin)*`;
             } else {
                 const targetVid = document.getElementById('target_video').value || '0';
                 const priceVid = document.getElementById('price_per_video').value || 'Rp 0';
@@ -535,7 +514,7 @@ ${budgetString}
 
 *📱 PLATFORM & ASET:*
 Target: ${platformsStr}
-Banner URL: ${uploadedBannerUrl}
+Banner: *Saya akan mengirimkan banner 16:9 secara manual di chat ini.*
 
 *🔗 LINK MATERI / BAHAN:*
 ${linksStr}
