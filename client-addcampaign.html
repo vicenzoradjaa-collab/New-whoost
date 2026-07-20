@@ -132,14 +132,12 @@
                                 <div class="text-xs text-zinc-400 mt-1">Cocok untuk pengetesan market/pasar dan validasi minat kreator awal.</div>
                                 <div class="mt-2 text-[10px] bg-zinc-800 text-zinc-300 px-2 py-1 rounded w-max border border-zinc-700">Extra: CPM Rp 2.000</div>
                             </div>
-                            
                             <!-- 5jt -->
                             <div onclick="window.setBudgetPreset(5000000)" class="border border-zinc-700 hover:border-zinc-500 bg-zinc-900/80 rounded-xl p-4 cursor-pointer transition-colors group relative">
                                 <div class="font-bold text-white text-sm group-hover:text-cyan-400 transition-colors">Basic - Rp 5 Juta</div>
                                 <div class="text-xs text-zinc-400 mt-1">Jangkauan audiens lebih luas, tingkat interaksi (views) mulai stabil.</div>
                                 <div class="mt-2 text-[10px] bg-cyan-500/10 text-cyan-400 px-2 py-1 rounded w-max border border-cyan-500/20">Extra: CPM Rp 2.500</div>
                             </div>
-                            
                             <!-- 10jt -->
                             <div onclick="window.setBudgetPreset(10000000)" class="border border-green-500/50 hover:border-green-500 bg-green-500/10 rounded-xl p-4 cursor-pointer transition-colors relative mt-2 sm:mt-0">
                                 <span class="absolute -top-2.5 -right-2 bg-green-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow-lg shadow-green-900/50">Rekomendasi</span>
@@ -147,14 +145,12 @@
                                 <div class="text-xs text-green-400/80 mt-1">Prioritas di dashboard kreator, potensi viral sangat baik & konversi optimal.</div>
                                 <div class="mt-2 text-[10px] bg-green-500/20 text-green-400 px-2 py-1 rounded w-max">Extra: CPM Rp 3.000 + Prioritas Kreator</div>
                             </div>
-                            
                             <!-- 50jt -->
                             <div onclick="window.setBudgetPreset(50000000)" class="border border-purple-500/50 hover:border-purple-500 bg-purple-500/10 rounded-xl p-4 cursor-pointer transition-colors group">
                                 <div class="font-bold text-purple-400 text-sm">Elite - Rp 50 Juta</div>
                                 <div class="text-xs text-purple-400/80 mt-1">Mendominasi platform dengan mengunci banyak kreator top tier, viral potensial masif.</div>
                                 <div class="mt-2 text-[10px] bg-purple-500/20 text-purple-400 px-2 py-1 rounded w-max">Extra: CPM Rp 5.000 + VIP Support</div>
                             </div>
-                            
                             <!-- 100jt -->
                             <div onclick="window.setBudgetPreset(100000000)" class="border border-rose-500/50 hover:border-rose-500 bg-rose-500/10 rounded-xl p-4 cursor-pointer transition-colors group relative mt-2 sm:mt-0 lg:col-span-2">
                                 <span class="absolute -top-2.5 right-4 bg-rose-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md shadow-lg shadow-rose-900/50">Scale Up</span>
@@ -257,7 +253,7 @@
                         <span class="text-cyan-400 font-bold" id="sum_views">0 Views</span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-zinc-400">Fee Platform (<span id="sum_fee_percent">10</span>%)</span>
+                        <span class="text-zinc-400" id="fee_label_views">Fee Platform (Memuat...)</span>
                         <span class="text-white font-semibold" id="sum_fee">Rp 0</span>
                     </div>
                     <div class="flex justify-between items-end text-base border-t border-zinc-800 pt-4 mt-2">
@@ -281,7 +277,7 @@
                         <span class="text-white font-semibold" id="sum_vid_sub">Rp 0</span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-zinc-400">Fee Platform (<span id="sum_vid_fee_percent">10</span>%)</span>
+                        <span class="text-zinc-400" id="fee_label_video">Fee Platform (Memuat...)</span>
                         <span class="text-white font-semibold" id="sum_vid_fee">Rp 0</span>
                     </div>
                     <div class="flex justify-between items-end text-base border-t border-zinc-800 pt-4 mt-2">
@@ -323,20 +319,21 @@
         import { supabase } from './authentication/auth.js';
 
         // ========================================================
-        // KONFIGURASI PENTING
+        // KONFIGURASI NOMOR WA ADMIN
         // ========================================================
-        const ADMIN_WA_NUMBER = "6281532538960"; 
-        const ADMIN_FEE_PERCENTAGE = 10; // Persentase Fee Platform. Ubah angka ini jika persentase berbeda (misal 15, 20).
+        let ADMIN_WA_NUMBER = "6281532538960"; 
+
+        // ========================================================
+        // VARIABEL FEE GLOBAL DARI SUPABASE
+        // ========================================================
+        let feeAmount = 0;
+        let feeType = 'Persen (%)';
 
         let sessionUser = null;
         let sessionData = {};
         let selectedPlatforms = { tiktok: false, ig: false, yt: false };
         let linksData = [];
         let currentPaymentType = 'views';
-
-        // Tampilkan persentase fee di HTML
-        document.getElementById('sum_fee_percent').innerText = ADMIN_FEE_PERCENTAGE;
-        document.getElementById('sum_vid_fee_percent').innerText = ADMIN_FEE_PERCENTAGE;
 
         const niches = {
             clipping: ['WhaleClipping', 'Brand', 'Music', 'Podcast', 'Stream', 'Film', 'Tourism', 'Show', 'Entertainment'],
@@ -363,7 +360,33 @@
             sessionData.name = profile?.business_name || profile?.full_name || sessionUser.email;
             sessionData.email = sessionUser.email;
 
+            // AMBIL DATA SETTING (FEE) DARI SUPABASE
+            const { data: settings } = await supabase.from('system_settings').select('fee_client_amount, fee_client_type, support_whatsapp').eq('id', 1).single();
+            
+            if (settings) {
+                feeAmount = settings.fee_client_amount || 0;
+                feeType = settings.fee_client_type || 'Persen (%)';
+                
+                // Gunakan nomor admin dari setting jika tersedia (menghapus tanda + agar format wa.me bekerja)
+                if (settings.support_whatsapp) {
+                    ADMIN_WA_NUMBER = settings.support_whatsapp.replace(/[^0-9]/g, '');
+                }
+            }
+
+            // Update Label Teks UI Berdasarkan Tipe Fee
+            const lblViews = document.getElementById('fee_label_views');
+            const lblVid = document.getElementById('fee_label_video');
+            if (feeType === 'Persen (%)') {
+                if(lblViews) lblViews.innerText = `Fee Platform (${feeAmount}%)`;
+                if(lblVid) lblVid.innerText = `Fee Platform (${feeAmount}%)`;
+            } else {
+                if(lblViews) lblViews.innerText = `Fee Platform (Tetap)`;
+                if(lblVid) lblVid.innerText = `Fee Platform (Tetap)`;
+            }
+
+            // Inisiasi Nilai
             window.renderNicheOptions();
+            window.calculateSummary();
 
             // Hilangkan loader
             setTimeout(() => {
@@ -497,7 +520,7 @@
         };
 
         // ==========================================
-        // FORMAT CURRENCY & KALKULASI RINGKASAN
+        // FORMAT CURRENCY & KALKULASI RINGKASAN DINAMIS
         // ==========================================
         function parseRupiah(val) { return parseInt(val.toString().replace(/[^0-9]/g, '')) || 0; }
         
@@ -516,7 +539,9 @@
                 
                 // Menghitung Estimasi Views & Biaya
                 let views = budget > 0 ? Math.floor((budget / cpm) * 1000) : 0;
-                let fee = Math.floor(budget * (ADMIN_FEE_PERCENTAGE / 100));
+                
+                // Kalkulasi Fee Client
+                let fee = feeType === 'Persen (%)' ? Math.floor(budget * (feeAmount / 100)) : Number(feeAmount);
                 let total = budget + fee;
 
                 document.getElementById('sum_budget').innerText = 'Rp ' + budget.toLocaleString('id-ID');
@@ -529,7 +554,9 @@
                 let vidPrice = parseRupiah(document.getElementById('price_per_video').value);
                 
                 let subtotal = vidCount * vidPrice;
-                let fee = Math.floor(subtotal * (ADMIN_FEE_PERCENTAGE / 100));
+
+                // Kalkulasi Fee Client
+                let fee = feeType === 'Persen (%)' ? Math.floor(subtotal * (feeAmount / 100)) : Number(feeAmount);
                 let total = subtotal + fee;
 
                 document.getElementById('sum_vid_count').innerText = vidCount.toLocaleString('id-ID') + ' Video';
@@ -583,6 +610,9 @@
             const isViews = currentPaymentType === 'views';
             let budgetString = '';
             
+            // Format Fee Platform untuk Text WA
+            let waFeeTextStr = feeType === 'Persen (%)' ? `Fee Platform (${feeAmount}%)` : `Fee Platform`;
+
             // Format Pesan Bagian Anggaran Berdasarkan Tipe
             if (isViews) {
                 let bTotal = document.getElementById('sum_budget').innerText;
@@ -595,7 +625,7 @@
 Budget Target: ${bTotal}
 Tarif CPM: ${cpm}
 Estimasi: ${views}
-Fee Platform (${ADMIN_FEE_PERCENTAGE}%): ${fee}
+${waFeeTextStr}: ${fee}
 *TOTAL PEMBAYARAN: ${total}*`;
             } else {
                 let vidCount = document.getElementById('sum_vid_count').innerText;
@@ -608,7 +638,7 @@ Fee Platform (${ADMIN_FEE_PERCENTAGE}%): ${fee}
 Target Jumlah: ${vidCount}
 Harga/Video: ${vidPrice}
 Subtotal: ${subtotal}
-Fee Platform (${ADMIN_FEE_PERCENTAGE}%): ${fee}
+${waFeeTextStr}: ${fee}
 *TOTAL PEMBAYARAN: ${total}*`;
             }
 
