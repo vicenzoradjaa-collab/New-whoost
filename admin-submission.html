@@ -2,7 +2,7 @@
 <html lang="id" class="bg-darkBg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Admin - Review Klaim Pembayaran</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -41,15 +41,12 @@
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
     <!-- ========================================== -->
-    <!-- LOADING SCREEN (SAMA DENGAN CLIENT)        -->
+    <!-- LOADING SCREEN                             -->
     <!-- ========================================== -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
-            <!-- Animasi Efek Glow di belakang logo -->
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <!-- Logo Whoost -->
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
-            <!-- Teks -->
             <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data Klaim...</p>
         </div>
     </div>
@@ -60,7 +57,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- HEADER (SAMA DENGAN CLIENT)                -->
+    <!-- HEADER                                     -->
     <!-- ========================================== -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
@@ -74,22 +71,22 @@
     <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
         <div class="relative w-full md:max-w-md">
             <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" id="searchInput" oninput="handleSearch(event)" placeholder="Cari kreator..." 
+            <input type="text" id="searchInput" oninput="window.handleSearch(event)" placeholder="Cari kreator atau campaign..." 
                 class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-[13px] sm:text-[14px] text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition-shadow">
         </div>
 
         <div class="relative w-full md:w-auto">
-            <button onclick="toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
+            <button onclick="window.toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
                 <div class="flex items-center gap-2">
                     <span id="filterLabel">Status Klaim: Perlu Review</span>
                 </div>
                 <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div id="dropdownFilter" class="absolute right-0 top-full mt-2 w-full md:w-56 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                <button onclick="selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] text-white hover:bg-zinc-800 transition-colors">Semua Status</button>
-                <button onclick="selectFilter('Perlu Review')" class="text-left px-5 py-3 text-[13px] text-indigo-400 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Perlu Review Admin</button>
-                <button onclick="selectFilter('Menunggu Client')" class="text-left px-5 py-3 text-[13px] text-amber-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Menunggu ACC Client</button>
-                <button onclick="selectFilter('Selesai')" class="text-left px-5 py-3 text-[13px] text-green-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Selesai Dibayar</button>
+                <button onclick="window.selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] text-white hover:bg-zinc-800 transition-colors">Semua Status</button>
+                <button onclick="window.selectFilter('Perlu Review')" class="text-left px-5 py-3 text-[13px] text-indigo-400 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Perlu Review Admin</button>
+                <button onclick="window.selectFilter('Menunggu Client')" class="text-left px-5 py-3 text-[13px] text-amber-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Menunggu ACC Client</button>
+                <button onclick="window.selectFilter('Selesai')" class="text-left px-5 py-3 text-[13px] text-green-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Selesai Dibayar / Ditolak</button>
             </div>
         </div>
     </div>
@@ -97,174 +94,7 @@
     <!-- MAIN GRID KONTEN -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-4 pb-32 z-0 scroll-smooth w-full relative">
         <div id="contentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 w-full">
-            
-            <!-- CARD 1: Client ACC, Siap di Review Admin (Klaim Baru) -->
-            <div id="card-1" class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300"
-                 data-cpm="15000" data-current-views="15000" data-prev-views="5000" data-status="Perlu Review">
-                <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" class="w-16 h-24 object-cover rounded-lg bg-zinc-900">
-                    <div class="flex-1 min-w-0 flex flex-col justify-center">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded border border-green-400/20">Client: ACC</span>
-                            <span class="text-[10px] text-zinc-500">TikTok</span>
-                        </div>
-                        <p class="creator-name text-[13px] font-semibold text-white truncate">@johndoe_creator</p>
-                        <p class="text-[11px] text-zinc-400 truncate mt-0.5">Campaign Launching Sepatu</p>
-                    </div>
-                </div>
-                <!-- Area Kalkulasi View -->
-                <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center text-[12px] mb-2">
-                            <span class="text-zinc-400">Total Klaim Views:</span>
-                            <span class="text-white font-bold current-views-text">15.000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[12px] mb-3">
-                            <span class="text-zinc-500">Sudah Dibayar (Sisa):</span>
-                            <span class="text-zinc-400 font-semibold prev-views-text">5.000</span>
-                        </div>
-                        <div class="h-px w-full bg-zinc-800 mb-3"></div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-[11px] font-medium text-indigo-400">New Views to Pay:</span>
-                            <span class="text-[14px] font-bold text-indigo-400 unpaid-views-text">+10.000</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                        <a href="#" onclick="alert('Membuka detail video...'); return false;" class="flex items-center justify-center gap-1 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat
-                        </a>
-                        <!-- Action Button Admin -->
-                        <button onclick="openAdminReviewModal('card-1')" class="action-btn flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-indigo-900/20">
-                            Review & Bayar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 2: Client Belum ACC (Menunggu Client) -->
-            <div id="card-2" class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300"
-                 data-cpm="20000" data-current-views="25000" data-prev-views="0" data-status="Menunggu Client">
-                <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                    <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" class="w-16 h-24 object-cover rounded-lg bg-zinc-900 filter grayscale">
-                    <div class="flex-1 min-w-0 flex flex-col justify-center">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Client: PENDING</span>
-                            <span class="text-[10px] text-zinc-500">IG Reels</span>
-                        </div>
-                        <p class="creator-name text-[13px] font-semibold text-white truncate">@sarah.style</p>
-                        <p class="text-[11px] text-zinc-400 truncate mt-0.5">Review Skincare Malam</p>
-                    </div>
-                </div>
-                <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center text-[12px] mb-2">
-                            <span class="text-zinc-400">Total Klaim Views:</span>
-                            <span class="text-white font-bold current-views-text">25.000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[12px] mb-3">
-                            <span class="text-zinc-500">Sudah Dibayar:</span>
-                            <span class="text-zinc-400 font-semibold prev-views-text">0</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                        <a href="#" onclick="alert('Membuka detail video...'); return false;" class="flex items-center justify-center gap-1 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat
-                        </a>
-                        <button disabled class="action-btn flex-1 py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed">
-                            Menunggu ACC Client
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 3: Update View (Klaim lagi setelah sebelumnya dibayar) -->
-            <div id="card-3" class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300"
-                 data-cpm="10000" data-current-views="100000" data-prev-views="75000" data-status="Perlu Review">
-                <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                    <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" class="w-16 h-24 object-cover rounded-lg bg-zinc-900">
-                    <div class="flex-1 min-w-0 flex flex-col justify-center">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded border border-green-400/20">Client: ACC</span>
-                            <span class="text-[10px] text-zinc-500">YT Shorts</span>
-                        </div>
-                        <p class="creator-name text-[13px] font-semibold text-white truncate">@foodvlogger</p>
-                        <p class="text-[11px] text-zinc-400 truncate mt-0.5">Vlog Makan Siang (Viral)</p>
-                    </div>
-                </div>
-                <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center text-[12px] mb-2">
-                            <span class="text-zinc-400">Total Klaim Views:</span>
-                            <span class="text-white font-bold current-views-text">100.000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[12px] mb-3">
-                            <span class="text-zinc-500">Sudah Dibayar (Sisa):</span>
-                            <span class="text-zinc-400 font-semibold prev-views-text">75.000</span>
-                        </div>
-                        <div class="h-px w-full bg-zinc-800 mb-3"></div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-[11px] font-medium text-indigo-400">New Views to Pay:</span>
-                            <span class="text-[14px] font-bold text-indigo-400 unpaid-views-text">+25.000</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                        <a href="#" onclick="alert('Membuka detail video...'); return false;" class="flex items-center justify-center gap-1 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat
-                        </a>
-                        <button onclick="openAdminReviewModal('card-3')" class="action-btn flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-indigo-900/20">
-                            Review & Bayar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 4: Sudah Selesai Dibayar semua selisihnya -->
-            <div id="card-4" class="content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 opacity-70"
-                 data-cpm="15000" data-current-views="50000" data-prev-views="50000" data-status="Selesai">
-                <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
-                    <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" class="w-16 h-24 object-cover rounded-lg bg-zinc-900">
-                    <div class="flex-1 min-w-0 flex flex-col justify-center">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded border border-green-400/20">Client: ACC</span>
-                            <span class="text-[10px] text-zinc-500">Threads</span>
-                        </div>
-                        <p class="creator-name text-[13px] font-semibold text-white truncate">@tech.reviewid</p>
-                        <p class="text-[11px] text-zinc-400 truncate mt-0.5">Headphone Premium Test</p>
-                    </div>
-                </div>
-                <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center text-[12px] mb-2">
-                            <span class="text-zinc-400">Total Klaim Views:</span>
-                            <span class="text-white font-bold current-views-text">50.000</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[12px] mb-3">
-                            <span class="text-zinc-500">Sudah Dibayar:</span>
-                            <span class="text-green-500 font-semibold prev-views-text">50.000</span>
-                        </div>
-                        <div class="h-px w-full bg-zinc-800 mb-3"></div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-[11px] font-medium text-zinc-500">New Views to Pay:</span>
-                            <span class="text-[14px] font-bold text-zinc-500 unpaid-views-text">0 (Lunas)</span>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                        <a href="#" onclick="alert('Membuka detail video...'); return false;" class="flex items-center justify-center gap-1 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat
-                        </a>
-                        <button disabled class="action-btn flex-1 py-2 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-[13px] font-semibold cursor-not-allowed">
-                            <span class="flex items-center justify-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Selesai
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
+            <p class="text-zinc-500 text-sm col-span-full">Memuat data submission...</p>
         </div>
     </main>
 
@@ -279,7 +109,7 @@
                     <h3 class="text-lg font-bold text-white">Review & Kalkulasi Bayaran</h3>
                     <p class="text-xs text-zinc-400 mt-1" id="modalCreatorName">@kreator</p>
                 </div>
-                <button onclick="closeReviewModal()" class="text-zinc-500 hover:text-white bg-zinc-900 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                <button onclick="window.closeReviewModal()" class="text-zinc-500 hover:text-white bg-zinc-900 w-8 h-8 rounded-full flex items-center justify-center transition-colors focus:outline-none">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -287,21 +117,31 @@
             <!-- Rincian Hitungan -->
             <div class="bg-zinc-900 rounded-xl p-4 mb-5 border border-zinc-800">
                 <div class="flex justify-between items-center text-[13px] mb-2">
-                    <span class="text-zinc-400">Total Views Saat Ini</span>
+                    <span class="text-zinc-400">Total Views Diajukan</span>
                     <span class="text-white font-semibold" id="mTotalViews">0</span>
                 </div>
+                <div class="flex justify-between items-center text-[13px] mb-2">
+                    <span class="text-zinc-400">Target Valid (Max Limit)</span>
+                    <span class="text-zinc-300 font-semibold" id="mEffectiveViews">0</span>
+                </div>
                 <div class="flex justify-between items-center text-[13px] mb-3">
-                    <span class="text-zinc-400">Riwayat Terbayar</span>
+                    <span class="text-zinc-400">Riwayat Views Terbayar</span>
                     <span class="text-red-400 font-semibold" id="mPrevViews">- 0</span>
                 </div>
                 <div class="border-t border-dashed border-zinc-700 my-3"></div>
+                
                 <div class="flex justify-between items-center text-[14px] mb-3">
-                    <span class="text-white font-medium">Views Baru (Sisa)</span>
+                    <span class="text-white font-medium">Sisa Views Dibayar</span>
                     <span class="text-indigo-400 font-bold" id="mUnpaidViews">0</span>
                 </div>
-                <div class="flex justify-between items-center text-[12px] mb-4">
-                    <span class="text-zinc-500">Rate CPM (Per 1k view)</span>
+                
+                <div class="flex justify-between items-center text-[12px] mb-1">
+                    <span class="text-zinc-500">Rate CPM Asli (Per 1k view)</span>
                     <span class="text-zinc-400" id="mCpmRate">Rp 0</span>
+                </div>
+                <div class="flex justify-between items-center text-[12px] mb-4">
+                    <span class="text-zinc-500">Rate CPM Diterapkan <span id="mPenaltyFlag" class="text-red-500 hidden">(Penalti 75% - Di bawah target)</span></span>
+                    <span class="text-amber-400 font-bold" id="mCpmApplied">Rp 0</span>
                 </div>
                 
                 <!-- TOTAL BAYARAN -->
@@ -313,32 +153,32 @@
 
             <!-- Tombol Action -->
             <div class="flex gap-3 mb-4">
-                <button id="btnSetuju" onclick="selectDecision('setuju')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all">
+                <button id="btnSetuju" onclick="window.selectDecision('setuju')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none">
                     Setujui & Bayar
                 </button>
-                <button id="btnTolak" onclick="selectDecision('tolak')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all">
+                <button id="btnTolak" onclick="window.selectDecision('tolak')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none">
                     Tolak Klaim
                 </button>
             </div>
 
-            <!-- Form Penolakan (Telah Diperbarui Sesuai Permintaan) -->
+            <!-- Form Penolakan -->
             <div id="formTolak" class="hidden flex-col gap-2 mb-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
                 <label class="text-[12px] font-medium text-white mb-2">Alasan Penolakan Views:</label>
                 
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Budget habis" class="w-3.5 h-3.5" onchange="toggleCustomReason(false)">
+                    <input type="radio" name="alasan" value="Budget habis" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(false)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Budget habis</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Tidak sesuai brief" class="w-3.5 h-3.5" onchange="toggleCustomReason(false)">
+                    <input type="radio" name="alasan" value="Tidak sesuai brief" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(false)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Tidak sesuai brief</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Indikasi views palsu/bot" class="w-3.5 h-3.5" onchange="toggleCustomReason(false)">
+                    <input type="radio" name="alasan" value="Indikasi views palsu/bot" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(false)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Indikasi views palsu/bot</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5" onchange="toggleCustomReason(true)">
+                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(true)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Lainnya (Isi manual)</span>
                 </label>
                 
@@ -346,7 +186,7 @@
             </div>
 
             <div class="flex justify-end gap-2 pt-3 border-t border-zinc-800/80">
-                <button id="btnSubmitReview" class="w-full py-3 bg-white text-black rounded-xl text-[14px] font-bold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                <button id="btnSubmitReview" onclick="window.submitReview()" class="w-full py-3 bg-white text-black rounded-xl text-[14px] font-bold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none" disabled>
                     Konfirmasi Tindakan
                 </button>
             </div>
@@ -354,162 +194,286 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
+    <!-- JAVASCRIPT & LOGIC SUPABASE                -->
     <!-- ========================================== -->
-    <script>
-        const ACTIVE_MENU = 'submission';
-    </script>
+    <script>const ACTIVE_MENU = 'submission';</script>
     <script src="attribute/navbaradmin.js"></script>
 
-    <script>
-        let allCards = [];
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        let submissionsData = [];
         let currentFilter = 'Perlu Review'; 
         let searchQuery = '';
-        let activeCardId = null;
+        let activeSubmission = null; // Menyimpan objek data yang sedang di-review
+        let calculatedPayout = 0;
+        let calculatedViewsToPay = 0;
+        let currentDecision = null;
 
-        // Utilities Format Angka
+        // Formatting utilities
         const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
         const formatRupiah = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            
-            // PENGAMANAN 1: Eksekusi Hilangkan Loading Screen diamankan dengan setTimeout
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if (loader) {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500);
-                }
-            }, 1000); 
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Silakan login sebagai admin.");
+                window.location.replace('login.html');
+                return;
+            }
 
-            // PENGAMANAN 2: Try-Catch saat membaca data HTML
-            try {
-                allCards = Array.from(document.querySelectorAll('.content-card'));
-                allCards.forEach(card => updateCardUI(card));
-                
-                const filterLabel = document.getElementById('filterLabel');
-                if (filterLabel) filterLabel.innerText = "Status Klaim: " + currentFilter;
-                
-                applyFilters();
-            } catch (error) {
-                console.error("Terjadi error saat membaca data card:", error);
+            // Load Data Submissions
+            await loadSubmissions();
+
+            // Hilangkan Loading Screen
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.style.display = 'none', 500);
             }
         });
 
-        /* Memperbarui Teks UI di dalam Card berdasarkan Dataset HTML-nya */
-        function updateCardUI(card) {
+        async function loadSubmissions() {
             try {
-                const currentViews = parseInt(card.getAttribute('data-current-views') || '0');
-                const prevViews = parseInt(card.getAttribute('data-prev-views') || '0');
-                const status = card.getAttribute('data-status');
-                const unpaidViews = currentViews - prevViews;
+                // Tarik data dengan relasi
+                const { data, error } = await supabase
+                    .from('submissions')
+                    .select(`
+                        id, user_id, campaign_id, video_link, status, created_at,
+                        views_claimed, views_paid, earned, est_payout, reject_reason,
+                        profiles ( full_name, email ),
+                        campaigns ( id, title, brand_name, reward_per_1k, min_views, max_claim, budget_remaining )
+                    `)
+                    .order('created_at', { ascending: false });
 
-                const elCurrent = card.querySelector('.current-views-text');
-                if (elCurrent) elCurrent.innerText = formatNumber(currentViews);
-                
-                const elPrev = card.querySelector('.prev-views-text');
-                if (elPrev) elPrev.innerText = formatNumber(prevViews);
-                
-                const unpaidEl = card.querySelector('.unpaid-views-text');
-                if (unpaidEl) {
-                    if(unpaidViews > 0) {
-                        unpaidEl.innerText = "+" + formatNumber(unpaidViews);
-                        unpaidEl.className = "text-[14px] font-bold text-indigo-400 unpaid-views-text";
-                    } else {
-                        unpaidEl.innerText = "0 (Lunas)";
-                        unpaidEl.className = "text-[14px] font-bold text-zinc-500 unpaid-views-text";
-                    }
-                }
-
-                // Update state tombol berdasarkan status admin
-                const btn = card.querySelector('.action-btn');
-                if (btn) {
-                    if(status === 'Menunggu Client') {
-                        btn.disabled = true;
-                        btn.className = "action-btn flex-1 py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed";
-                        btn.innerText = "Menunggu ACC Client";
-                    } else if(status === 'Selesai') {
-                        btn.disabled = true;
-                        btn.className = "action-btn flex-1 py-2 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-[13px] font-semibold cursor-not-allowed";
-                        btn.innerHTML = `<span class="flex items-center justify-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Selesai</span>`;
-                        card.classList.add('opacity-70');
-                    } else {
-                        btn.disabled = false;
-                        btn.className = "action-btn flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-indigo-900/20";
-                        btn.innerText = "Review & Bayar";
-                        card.classList.remove('opacity-70');
-                    }
-                }
-            } catch (error) {
-                console.warn("Lewati error update UI pada 1 card:", error);
+                if (error) throw error;
+                submissionsData = data || [];
+                renderGrid();
+            } catch (err) {
+                console.error("Gagal memuat data submissions", err);
+                document.getElementById('contentGrid').innerHTML = '<p class="text-red-500 text-sm">Gagal terhubung ke server.</p>';
             }
         }
 
-        /* FILTER & PENCARIAN */
-        function toggleFilter() {
+        // Tentukan Kategori Tab Filter Admin
+        function getAdminStatus(sub) {
+            if (sub.status === 'PENDING' && (sub.views_claimed || 0) === 0) return 'Menunggu Client';
+            if (sub.status === 'PENDING' && (sub.views_claimed || 0) > 0) return 'Perlu Review';
+            if (sub.status === 'APPROVED' || sub.status === 'REJECTED') return 'Selesai';
+            return 'Lainnya';
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('contentGrid');
+            grid.innerHTML = '';
+
+            let filtered = submissionsData.filter(sub => {
+                const adminStatus = getAdminStatus(sub);
+                const creator = (sub.profiles?.full_name || sub.profiles?.email || '').toLowerCase();
+                const camp = (sub.campaigns?.title || '').toLowerCase();
+
+                const matchesFilter = (currentFilter === 'Semua' || adminStatus === currentFilter);
+                const matchesSearch = creator.includes(searchQuery) || camp.includes(searchQuery);
+
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p class="text-zinc-500 text-sm col-span-full">Tidak ada data ditemukan.</p>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(sub => {
+                const creatorName = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
+                const campTitle = sub.campaigns?.title || 'Unknown Campaign';
+                
+                const currentViews = sub.views_claimed || 0;
+                const prevViews = sub.views_paid || 0;
+                const unpaidViews = currentViews > prevViews ? currentViews - prevViews : 0;
+                
+                const adminStatus = getAdminStatus(sub);
+
+                // Tentukan UI Card Berdasarkan Status Admin
+                let badgeHTML = '';
+                let actionBtnHTML = '';
+                let cardClass = 'content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300';
+
+                if (adminStatus === 'Menunggu Client') {
+                    badgeHTML = `<span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Client: PENDING</span>`;
+                    actionBtnHTML = `<button disabled class="action-btn flex-1 py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed">Menunggu ACC Client</button>`;
+                } else if (adminStatus === 'Perlu Review') {
+                    badgeHTML = `<span class="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded border border-green-400/20">Client: ACC</span>`;
+                    actionBtnHTML = `<button onclick="window.openAdminReviewModal('${sub.id}')" class="action-btn flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-indigo-900/20">Review & Bayar</button>`;
+                } else if (adminStatus === 'Selesai') {
+                    cardClass += ' opacity-70';
+                    let statusColor = sub.status === 'APPROVED' ? 'text-green-500 border-green-500/20 bg-green-500/10' : 'text-red-500 border-red-500/20 bg-red-500/10';
+                    let statusText = sub.status === 'APPROVED' ? 'Selesai Dibayar' : 'Klaim Ditolak';
+                    badgeHTML = `<span class="text-[10px] font-bold uppercase tracking-wider ${statusColor} px-1.5 py-0.5 rounded border">Status: ${sub.status}</span>`;
+                    actionBtnHTML = `<button disabled class="action-btn flex-1 py-2 ${statusColor} rounded-lg text-[13px] font-semibold cursor-not-allowed border">${statusText}</button>`;
+                }
+
+                html += `
+                <div class="${cardClass}">
+                    <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
+                        <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="https://placehold.co/100x150/121214/27272a?text=..." class="sub-thumb w-16 h-24 object-cover rounded-lg bg-zinc-900 shrink-0 border border-zinc-800">
+                        <div class="flex-1 min-w-0 flex flex-col justify-center">
+                            <div class="flex items-center justify-between mb-1">
+                                ${badgeHTML}
+                            </div>
+                            <p class="creator-name text-[13px] font-semibold text-white truncate">${creatorName}</p>
+                            <p class="text-[11px] text-zinc-400 truncate mt-0.5" title="${campTitle}">${campTitle}</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-zinc-900/30 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center text-[12px] mb-2">
+                                <span class="text-zinc-400">Total Klaim Views:</span>
+                                <span class="text-white font-bold">${formatNumber(currentViews)}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-[12px] mb-3">
+                                <span class="text-zinc-500">Sudah Dibayar (Sisa):</span>
+                                <span class="text-zinc-400 font-semibold">${formatNumber(prevViews)}</span>
+                            </div>
+                            <div class="h-px w-full bg-zinc-800 mb-3"></div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-medium ${unpaidViews > 0 ? 'text-indigo-400' : 'text-zinc-500'}">New Views to Pay:</span>
+                                <span class="text-[14px] font-bold ${unpaidViews > 0 ? 'text-indigo-400' : 'text-zinc-500'}">${unpaidViews > 0 ? '+'+formatNumber(unpaidViews) : '0 (Lunas)'}</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
+                            <a href="${sub.video_link}" target="_blank" class="flex items-center justify-center gap-1 px-3 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[13px] font-medium text-zinc-300 hover:text-white transition-colors focus:outline-none">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                Lihat
+                            </a>
+                            ${actionBtnHTML}
+                        </div>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+
+            // Panggil fungsi scraper Thumbnail Async
+            extractThumbnailsAsync();
+        }
+
+        // ==========================================
+        // AUTO EXTRACT THUMBNAILS DARI URL
+        // ==========================================
+        async function extractThumbnailsAsync() {
+            const images = document.querySelectorAll('.sub-thumb');
+            for (let img of images) {
+                const url = img.getAttribute('data-video-link');
+                if(!url || img.getAttribute('data-loaded') === 'true') continue;
+
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                        img.setAttribute('data-loaded', 'true');
+                    }
+                    continue;
+                }
+
+                try {
+                    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                    const json = await res.json();
+                    
+                    if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                        img.src = json.data.image.url;
+                        img.setAttribute('data-loaded', 'true');
+                    } else if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                        const tkJson = await tkRes.json();
+                        if (tkJson.data && tkJson.data.cover) {
+                            img.src = tkJson.data.cover;
+                            img.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) { }
+            }
+        }
+
+        // ==========================================
+        // FITUR FILTER & PENCARIAN
+        // ==========================================
+        window.toggleFilter = function() {
             const dropdown = document.getElementById('dropdownFilter');
             dropdown.classList.toggle('hidden');
             dropdown.classList.toggle('flex');
-        }
+        };
 
-        function selectFilter(status) {
+        window.selectFilter = function(status) {
             currentFilter = status;
             document.getElementById('filterLabel').innerText = "Status Klaim: " + status;
-            toggleFilter();
-            applyFilters();
-        }
+            window.toggleFilter();
+            renderGrid();
+        };
 
-        function handleSearch(e) {
+        window.handleSearch = function(e) {
             searchQuery = e.target.value.toLowerCase();
-            applyFilters();
-        }
+            renderGrid();
+        };
 
-        function applyFilters() {
-            allCards.forEach(card => {
-                const adminStatus = card.getAttribute('data-status');
-                const creatorNameEl = card.querySelector('.creator-name');
-                const creator = creatorNameEl ? creatorNameEl.textContent.toLowerCase() : '';
+        // ==========================================
+        // MODAL REVIEW & MATEMATIKA KALKULASI
+        // ==========================================
+        window.openAdminReviewModal = function(subId) {
+            activeSubmission = submissionsData.find(s => s.id === subId);
+            if (!activeSubmission) return;
 
-                const matchesFilter = (currentFilter === 'Semua' || adminStatus === currentFilter);
-                const matchesSearch = creator.includes(searchQuery);
-
-                if (matchesFilter && matchesSearch) {
-                    card.classList.remove('hidden');
-                    card.classList.add('flex');
-                } else {
-                    card.classList.add('hidden');
-                    card.classList.remove('flex');
-                }
-            });
-        }
-
-        /* MODAL ADMIN REVIEW */
-        const reviewModal = document.getElementById('reviewModal');
-        const reviewModalBox = document.getElementById('reviewModalBox');
-        let currentDecision = null;
-
-        function openAdminReviewModal(cardId) {
-            activeCardId = cardId;
-            const card = document.getElementById(cardId);
+            const camp = activeSubmission.campaigns;
+            const currentViews = activeSubmission.views_claimed || 0;
+            const prevViews = activeSubmission.views_paid || 0;
             
-            // Ambil data kalkulasi
-            const currentViews = parseInt(card.getAttribute('data-current-views') || '0');
-            const prevViews = parseInt(card.getAttribute('data-prev-views') || '0');
-            const cpm = parseInt(card.getAttribute('data-cpm') || '0');
-            const creator = card.querySelector('.creator-name').innerText;
+            // 1. Batasi klaim dengan Max Limit
+            let effectiveViews = Math.min(currentViews, camp.max_claim || 250000);
             
-            const unpaidViews = currentViews - prevViews;
-            const estimasiBayar = (unpaidViews / 1000) * cpm;
+            // 2. Tentukan Sisa Views Belum Dibayar
+            calculatedViewsToPay = effectiveViews - prevViews;
+            if (calculatedViewsToPay < 0) calculatedViewsToPay = 0;
 
-            // Set Data ke Modal
-            document.getElementById('modalCreatorName').innerText = creator;
+            // 3. Tentukan Rate & Pengecekan Penalti
+            let rate = camp.reward_per_1k || 0;
+            let isPenalized = false;
+            if (effectiveViews < (camp.min_views || 10000)) {
+                rate = rate * 0.25; // Penalti 75% -> Dibayar 25%
+                isPenalized = true;
+            }
+
+            // 4. Hitung Estimasi Total (Semua views efektif * rate saat ini)
+            let totalExpected = Math.floor((effectiveViews / 1000) * rate);
+            
+            // 5. Potong dengan Uang yang sudah didapatkan user sebelumnya
+            calculatedPayout = totalExpected - (activeSubmission.earned || 0);
+            if (calculatedPayout < 0) calculatedPayout = 0;
+
+            // 6. Batasi agar tidak melampaui Sisa Budget Brand
+            if (calculatedPayout > camp.budget_remaining) {
+                calculatedPayout = camp.budget_remaining;
+            }
+
+            // ================= Render UI Modal =================
+            const creatorName = activeSubmission.profiles?.full_name || activeSubmission.profiles?.email;
+            document.getElementById('modalCreatorName').innerText = creatorName;
             document.getElementById('mTotalViews').innerText = formatNumber(currentViews);
+            document.getElementById('mEffectiveViews').innerText = formatNumber(effectiveViews);
             document.getElementById('mPrevViews').innerText = "- " + formatNumber(prevViews);
-            document.getElementById('mUnpaidViews').innerText = formatNumber(unpaidViews);
-            document.getElementById('mCpmRate').innerText = formatRupiah(cpm);
-            document.getElementById('mTotalPay').innerText = formatRupiah(estimasiBayar);
+            document.getElementById('mUnpaidViews').innerText = formatNumber(calculatedViewsToPay);
+            
+            document.getElementById('mCpmRate').innerText = formatRupiah(camp.reward_per_1k || 0);
+            document.getElementById('mCpmApplied').innerText = formatRupiah(rate);
+            
+            const flag = document.getElementById('mPenaltyFlag');
+            if(isPenalized) flag.classList.remove('hidden');
+            else flag.classList.add('hidden');
 
+            document.getElementById('mTotalPay').innerText = formatRupiah(calculatedPayout);
+
+            // Tampilkan Modal
             resetModalForm();
+            const reviewModal = document.getElementById('reviewModal');
+            const reviewModalBox = document.getElementById('reviewModalBox');
             reviewModal.classList.remove('hidden');
             reviewModal.classList.add('flex');
             setTimeout(() => {
@@ -517,9 +481,11 @@
                 reviewModalBox.classList.remove('scale-95');
                 reviewModalBox.classList.add('scale-100');
             }, 10);
-        }
+        };
 
-        function closeReviewModal() {
+        window.closeReviewModal = function() {
+            const reviewModal = document.getElementById('reviewModal');
+            const reviewModalBox = document.getElementById('reviewModalBox');
             reviewModal.classList.add('opacity-0');
             reviewModalBox.classList.remove('scale-100');
             reviewModalBox.classList.add('scale-95');
@@ -527,7 +493,7 @@
                 reviewModal.classList.add('hidden');
                 reviewModal.classList.remove('flex');
             }, 300);
-        }
+        };
 
         function resetModalForm() {
             currentDecision = null;
@@ -545,7 +511,7 @@
             document.querySelectorAll('input[name="alasan"]').forEach(r => r.checked = false);
         }
 
-        function selectDecision(decision) {
+        window.selectDecision = function(decision) {
             currentDecision = decision;
             const btnSetuju = document.getElementById('btnSetuju');
             const btnTolak = document.getElementById('btnTolak');
@@ -571,40 +537,122 @@
                     btnSubmit.disabled = false;
                 }
             }
-        }
+        };
 
-        function toggleCustomReason(isCustom) {
+        window.toggleCustomReason = function(isCustom) {
             const textArea = document.getElementById('customReason');
             if (isCustom) textArea.classList.remove('hidden');
             else textArea.classList.add('hidden');
             
             document.getElementById('btnSubmitReview').disabled = isCustom ? (textArea.value.trim() === '') : false;
-        }
+        };
 
         document.getElementById('customReason').addEventListener('input', e => {
-            document.getElementById('btnSubmitReview').disabled = e.target.value.trim() === '';
-        });
-
-        /* ACTION SUBMIT REVIEW DARI ADMIN */
-        document.getElementById('btnSubmitReview').addEventListener('click', function() {
-            if (!activeCardId || !currentDecision) return;
-
-            const card = document.getElementById(activeCardId);
-
-            if (currentDecision === 'setuju') {
-                const currentViews = card.getAttribute('data-current-views');
-                card.setAttribute('data-prev-views', currentViews); 
-                card.setAttribute('data-status', 'Selesai');
-                
-                alert("Pembayaran berhasil dikonfirmasi. Klaim views telah di-reset untuk pembaruan berikutnya.");
-            } else if (currentDecision === 'tolak') {
-                alert("Klaim views ditolak admin.");
+            if(currentDecision === 'tolak') {
+                document.getElementById('btnSubmitReview').disabled = e.target.value.trim() === '';
             }
-
-            updateCardUI(card);
-            closeReviewModal();
-            applyFilters();
         });
+
+        // ==========================================
+        // SUBMIT TRANSAKSI KE SUPABASE
+        // ==========================================
+        window.submitReview = async function() {
+            if (!activeSubmission || !currentDecision) return;
+            
+            const btnSubmit = document.getElementById('btnSubmitReview');
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Memproses...";
+
+            try {
+                if (currentDecision === 'setuju') {
+                    // --- PROSES PERSETUJUAN & BAYAR ---
+                    
+                    // 1. Update Submissions
+                    const newViewsPaid = (activeSubmission.views_paid || 0) + calculatedViewsToPay;
+                    const newEarned = (activeSubmission.earned || 0) + calculatedPayout;
+                    
+                    await supabase.from('submissions').update({
+                        views_paid: newViewsPaid,
+                        earned: newEarned,
+                        est_payout: 0,
+                        status: 'APPROVED',
+                        reject_reason: null
+                    }).eq('id', activeSubmission.id);
+
+                    // 2. Kurangi Budget Campaigns
+                    const campId = activeSubmission.campaigns.id;
+                    const newBudget = (activeSubmission.campaigns.budget_remaining || 0) - calculatedPayout;
+                    await supabase.from('campaigns').update({
+                        budget_remaining: newBudget < 0 ? 0 : newBudget
+                    }).eq('id', campId);
+
+                    // 3. Tambahkan ke Clipper Stats (Penghasilan User)
+                    const userId = activeSubmission.user_id;
+                    const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', userId).single();
+                    
+                    if (stats) {
+                        await supabase.from('clipper_stats').update({
+                            total_earnings: (stats.total_earnings || 0) + calculatedPayout,
+                            withdrawable: (stats.withdrawable || 0) + calculatedPayout,
+                            total_views: (stats.total_views || 0) + calculatedViewsToPay
+                        }).eq('user_id', userId);
+                    } else {
+                        // Jika belum ada row, buat baru
+                        await supabase.from('clipper_stats').insert([{
+                            user_id: userId,
+                            total_earnings: calculatedPayout,
+                            withdrawable: calculatedPayout,
+                            total_views: calculatedViewsToPay,
+                            total_videos: 1
+                        }]);
+                    }
+
+                    // 4. Kirim Notifikasi ke User
+                    await supabase.from('notifications').insert([{
+                        user_id: userId,
+                        title: 'Klaim Berhasil Dicairkan! 🎉',
+                        message: `Selamat! Klaim views untuk campaign "${activeSubmission.campaigns.title}" telah disetujui. Rp ${calculatedPayout.toLocaleString('id-ID')} telah ditambahkan ke saldo Anda.`,
+                        type: 'approved'
+                    }]);
+
+                    alert("Klaim disetujui dan saldo berhasil diteruskan ke Clipper.");
+
+                } else if (currentDecision === 'tolak') {
+                    // --- PROSES PENOLAKAN ---
+                    const checked = document.querySelector('input[name="alasan"]:checked');
+                    let reason = checked.value;
+                    if (reason === 'lainnya') {
+                        reason = document.getElementById('customReason').value.trim();
+                    }
+
+                    await supabase.from('submissions').update({
+                        status: 'REJECTED',
+                        est_payout: 0,
+                        reject_reason: reason
+                    }).eq('id', activeSubmission.id);
+
+                    // Kirim Notifikasi ke User
+                    await supabase.from('notifications').insert([{
+                        user_id: activeSubmission.user_id,
+                        title: 'Klaim Views Ditolak',
+                        message: `Klaim views untuk campaign "${activeSubmission.campaigns.title}" ditolak oleh Admin. Alasan: ${reason}`,
+                        type: 'warning'
+                    }]);
+
+                    alert("Klaim berhasil ditolak dan notifikasi telah dikirim.");
+                }
+
+                // Refresh Data setelah Sukses
+                window.closeReviewModal();
+                btnSubmit.innerText = "Konfirmasi Tindakan";
+                await loadSubmissions();
+
+            } catch (err) {
+                alert("Terjadi kesalahan saat menyimpan: " + err.message);
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Konfirmasi Tindakan";
+            }
+        };
     </script>
 </body>
 </html>
