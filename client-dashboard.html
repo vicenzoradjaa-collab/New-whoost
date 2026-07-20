@@ -79,261 +79,260 @@
     <!-- ========================================== -->
     <!-- MAIN CONTENT AREA                          -->
     <!-- ========================================== -->
-    <!-- pb-32 memberikan ruang ekstra di bawah agar konten tidak tertutup oleh bottom navbar (navbarclient.js) -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-10">
             
-            <!-- SECTION 1: STATISTIK (Tanpa Total Pendaftar) -->
+            <!-- SECTION 1: STATISTIK DINAMIS -->
             <section>
                 <h2 class="text-lg font-semibold mb-4 text-white">Statistik</h2>
                 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center items-center text-center hover:border-zinc-500 transition-colors duration-300">
-                        <h3 class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2">1.2M</h3>
+                        <h3 id="stat-reach" class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2">0</h3>
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Jangkauan</p>
                         <p class="text-[9px] sm:text-[10px] text-zinc-600 mt-1 font-medium">*Hanya konten disetujui</p>
                     </div>
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center items-center text-center hover:border-zinc-500 transition-colors duration-300">
-                        <h3 class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2">45</h3>
+                        <h3 id="stat-produced" class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2">0</h3>
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Konten <br> Diproduksi</p>
                     </div>
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center items-center text-center hover:border-zinc-500 transition-colors duration-300">
-                        <h3 class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2">3</h3>
+                        <h3 id="stat-active-campaigns" class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2">0</h3>
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Campaign <br> Aktif</p>
                     </div>
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6 flex flex-col justify-center items-center text-center hover:border-zinc-500 transition-colors duration-300">
-                        <h3 class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2 text-amber-500">12</h3>
+                        <h3 id="stat-review" class="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-1 sm:mb-2 text-amber-500">0</h3>
                         <p class="text-[10px] sm:text-[11px] font-medium text-zinc-400 uppercase tracking-wide mt-1">Review <br> Diperlukan</p>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION 2: KONTEN KAMPANYE (Hanya yang Disetujui & Grid View) -->
+            <!-- SECTION 2: KONTEN KAMPANYE TERBARU (HANYA APPROVED) -->
             <section>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-white">Konten Kampanye Terbaru</h2>
-                    <!-- Tombol Semua diarahkan ke client-konten.html -->
                     <a href="client-konten.html" class="text-[12px] sm:text-[13px] font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
                         Semua
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
                     </a>
                 </div>
 
-                <!-- Menampilkan 6 Konten Terbaru secara Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5 w-full">
-                    
-                    <!-- KARTU KONTEN 1 -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                            
-                            <!-- Badge Platform Kiri Atas -->
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
-                                <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">TikTok</span>
-                            </div>
-                            
-                            <!-- Badge Views Kanan Atas -->
-                            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">45.2K</span>
-                            </div>
-
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@johndoe_creator</p>
-                                <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Campaign Launching Sepatu</p>
-                            </div>
-                        </div>
-                        <div class="mt-1.5 sm:mt-2">
-                            <!-- Link ke video aslinya -->
-                            <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KONTEN 2 -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                            
-                            <!-- Badge Platform -->
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500 flex-shrink-0"></span>
-                                <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">IG Reels</span>
-                            </div>
-                            
-                            <!-- Badge Views -->
-                            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">128K</span>
-                            </div>
-
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@sarah.style</p>
-                                <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Review Skincare Malam</p>
-                            </div>
-                        </div>
-                        <div class="mt-1.5 sm:mt-2">
-                            <!-- Link ke video aslinya -->
-                            <a href="https://www.instagram.com/reels/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KONTEN 3 -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                            
-                            <!-- Badge Platform -->
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600 flex-shrink-0"></span>
-                                <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">YT Shorts</span>
-                            </div>
-                            
-                            <!-- Badge Views -->
-                            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">12.1K</span>
-                            </div>
-
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@foodvlogger</p>
-                                <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Vlog Makan Siang</p>
-                            </div>
-                        </div>
-                        <div class="mt-1.5 sm:mt-2">
-                            <!-- Link ke video aslinya -->
-                            <a href="https://www.youtube.com/shorts/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KONTEN 4 -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                            
-                            <!-- Badge Platform -->
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-100 flex-shrink-0"></span>
-                                <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">Threads</span>
-                            </div>
-                            
-                            <!-- Badge Views -->
-                            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">5K</span>
-                            </div>
-
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@tech.reviewid</p>
-                                <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Unboxing Gadget Baru</p>
-                            </div>
-                        </div>
-                        <div class="mt-1.5 sm:mt-2">
-                            <!-- Link ke video aslinya -->
-                            <a href="https://www.threads.net/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KONTEN 5 -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1512496015851-a1fbbfc61463?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                            
-                            <!-- Badge Platform -->
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400 flex-shrink-0"></span>
-                                <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">TikTok</span>
-                            </div>
-                            
-                            <!-- Badge Views -->
-                            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">89.4K</span>
-                            </div>
-
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@fashion.guru</p>
-                                <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">OOTD Nongkrong Kekinian</p>
-                            </div>
-                        </div>
-                        <div class="mt-1.5 sm:mt-2">
-                            <!-- Link ke video aslinya -->
-                            <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- KARTU KONTEN 6 -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                            <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Video Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-                            
-                            <!-- Badge Platform -->
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500 flex-shrink-0"></span>
-                                <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">IG Reels</span>
-                            </div>
-                            
-                            <!-- Badge Views -->
-                            <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                                <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">210K</span>
-                            </div>
-
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@travel.buddies</p>
-                                <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">Hidden Gem Bali</p>
-                            </div>
-                        </div>
-                        <div class="mt-1.5 sm:mt-2">
-                            <!-- Link ke video aslinya -->
-                            <a href="https://www.instagram.com/reels/" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
-                            </a>
-                        </div>
-                    </div>
-                    
+                <!-- Menampilkan Konten Secara Dinamis -->
+                <div id="approved-content-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5 w-full">
+                    <p class="text-zinc-500 text-sm col-span-full">Memuat konten terbaru...</p>
                 </div>
             </section>
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
-    <!-- ========================================== -->
-    
-    <!-- Memanggil Navbar Bawah seperti di halaman pengajuan -->
-    <script>
-        const ACTIVE_MENU = 'beranda'; // Tentukan menu aktif, jika navbarclient.js menggunakan identifier ini
-    </script>
+    <!-- BOTTOM NAVBAR -->
+    <script>const ACTIVE_MENU = 'beranda';</script>
     <script src="attribute/navbarclient.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // LOGIC HILANGKAN LOADING SCREEN
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC & SUPABASE INTEGRATION    -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        let sessionUser = null;
+        let myCampaignIds = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Silakan login sebagai Client.");
+                window.location.replace('login.html');
+                return;
+            }
+            sessionUser = session.user;
+
+            await loadDashboardData();
+
+            // Hilangkan loader
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
-                loader.classList.add('opacity-0'); // Transisi smooth fade out
-                setTimeout(() => {
-                    loader.style.display = 'none'; // Benar-benar dihilangkan dari tampilan
-                }, 500); // Waktu transisi sejalan dengan duration-500
-            }, 1000); // Simulasi waktu loading data selama 1 detik
+                if(loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 500);
         });
+
+        // 1. Tarik & Hitung Data Dashboard
+        async function loadDashboardData() {
+            try {
+                // Ambil daftar Campaign milik Client
+                const { data: campaigns, error: campError } = await supabase
+                    .from('campaigns')
+                    .select('id, status')
+                    .eq('client_id', sessionUser.id);
+                
+                if (campError) throw campError;
+
+                myCampaignIds = campaigns ? campaigns.map(c => c.id) : [];
+                const activeCampaignCount = campaigns ? campaigns.filter(c => c.status === 'ACTIVE').length : 0;
+
+                // Update Stat: Campaign Aktif
+                document.getElementById('stat-active-campaigns').innerText = activeCampaignCount;
+
+                if (myCampaignIds.length === 0) {
+                    renderEmptyGrid();
+                    return;
+                }
+
+                // Ambil semua Submission yang terkait dengan Campaign Client ini
+                const { data: submissions, error: subError } = await supabase
+                    .from('submissions')
+                    .select(`
+                        id, video_link, status, created_at, views_claimed, views_paid,
+                        profiles (full_name, email),
+                        campaigns (title, platforms)
+                    `)
+                    .in('campaign_id', myCampaignIds)
+                    .order('created_at', { ascending: false });
+
+                if (subError) throw subError;
+
+                let totalReach = 0;
+                let approvedCount = 0;
+                let reviewNeededCount = 0;
+                let approvedSubmissions = [];
+
+                if (submissions) {
+                    submissions.forEach(sub => {
+                        if (sub.status === 'APPROVED') {
+                            approvedCount++;
+                            // Views Jangkauan menggunakan angka tertinggi antara klaim atau yg sudah dibayar
+                            totalReach += Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+                            approvedSubmissions.push(sub);
+                        } else if (sub.status === 'PENDING' && (sub.views_claimed || 0) === 0) {
+                            // Menunggu review client (karena views_claimed = 0 berarti belum diklaim ke admin)
+                            reviewNeededCount++;
+                        }
+                    });
+                }
+
+                // Update Stats
+                document.getElementById('stat-reach').innerText = formatK(totalReach);
+                document.getElementById('stat-produced').innerText = approvedCount;
+                document.getElementById('stat-review').innerText = reviewNeededCount;
+
+                // Render Grid Konten (Ambil 6 terbaru)
+                if (approvedSubmissions.length > 0) {
+                    renderGrid(approvedSubmissions.slice(0, 6));
+                } else {
+                    renderEmptyGrid();
+                }
+
+            } catch (err) {
+                console.error("Gagal load data dashboard:", err);
+                document.getElementById('approved-content-grid').innerHTML = '<p class="text-red-500 text-sm">Gagal terhubung ke database.</p>';
+            }
+        }
+
+        // 2. Format Angka K & M
+        function formatK(num) {
+            if(num >= 1000000) return (num/1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+            if(num >= 1000) return (num/1000).toFixed(1).replace(/\.0$/, '') + 'K';
+            return num.toString();
+        }
+
+        // 3. Tentukan Platform Info
+        function getPlatformInfo(url) {
+            if (url.includes('tiktok.com')) return { color: 'bg-cyan-400', name: 'TikTok' };
+            if (url.includes('instagram.com')) return { color: 'bg-fuchsia-500', name: 'IG Reels' };
+            if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) return { color: 'bg-red-600', name: 'YT Shorts' };
+            return { color: 'bg-zinc-100', name: 'Link Web' };
+        }
+
+        // 4. Render Grid HTML
+        function renderEmptyGrid() {
+            document.getElementById('approved-content-grid').innerHTML = '<p class="text-zinc-500 text-sm col-span-full">Belum ada konten yang disetujui (diproduksi).</p>';
+        }
+
+        function renderGrid(items) {
+            const grid = document.getElementById('approved-content-grid');
+            let html = '';
+
+            items.forEach(sub => {
+                const creator = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
+                const title = sub.campaigns?.title || 'Campaign Dihapus';
+                const plat = getPlatformInfo(sub.video_link);
+                const reachViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+
+                html += `
+                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
+                    <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
+                        <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="https://placehold.co/300x400/121214/27272a?text=..." alt="Video Thumbnail" class="client-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                        
+                        <!-- Badge Platform Kiri Atas -->
+                        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${plat.color} flex-shrink-0"></span>
+                            <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">${plat.name}</span>
+                        </div>
+                        
+                        <!-- Badge Views Kanan Atas -->
+                        <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">${formatK(reachViews)}</span>
+                        </div>
+
+                        <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                            <p class="text-[11px] sm:text-sm font-semibold text-white truncate">${creator}</p>
+                            <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5" title="${title}">${title}</p>
+                        </div>
+                    </div>
+                    <div class="mt-1.5 sm:mt-2">
+                        <!-- Link ke video aslinya -->
+                        <a href="${sub.video_link}" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm focus:outline-none">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
+                        </a>
+                    </div>
+                </div>`;
+            });
+
+            grid.innerHTML = html;
+            
+            // Panggil scraper thumbnail dinamis
+            extractThumbnailsAsync();
+        }
+
+        // 5. Scraper Thumbnail Otomatis
+        async function extractThumbnailsAsync() {
+            const images = document.querySelectorAll('.client-thumb');
+            for (let img of images) {
+                const url = img.getAttribute('data-video-link');
+                if(!url || img.getAttribute('data-loaded') === 'true') continue;
+
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                        img.setAttribute('data-loaded', 'true');
+                    }
+                    continue;
+                }
+
+                try {
+                    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                    const json = await res.json();
+                    
+                    if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                        img.src = json.data.image.url;
+                        img.setAttribute('data-loaded', 'true');
+                    } else if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                        const tkJson = await tkRes.json();
+                        if (tkJson.data && tkJson.data.cover) {
+                            img.src = tkJson.data.cover;
+                            img.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) {}
+            }
+        }
     </script>
 </body>
 </html>
