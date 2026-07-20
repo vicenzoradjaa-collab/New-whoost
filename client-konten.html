@@ -178,9 +178,10 @@
                 if (subs) submissionsData = subs;
             }
 
-            // 4. Render Grid dan Sembunyikan Loader
+            // 4. Render Grid
             renderGrid();
 
+            // 5. Sembunyikan Loader
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 if (loader) {
@@ -209,28 +210,53 @@
             return 'Lainnya';
         }
 
-        // Ambil thumbnail dari URL (Support YouTube otomatis)
-        function getThumbnail(url, platform) {
-            if (platform === 'YouTube') {
-                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                const match = url.match(regExp);
-                if (match && match[2].length === 11) {
-                    return `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`;
-                }
-            }
-            // Placeholder estetika default untuk IG dan TikTok
-            if (platform === 'TikTok') return 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-            if (platform === 'Instagram') return 'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-            
-            return 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-        }
-
         function getPlatformBadge(platform) {
             if(platform === 'TikTok') return `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">TikTok</span>`;
             if(platform === 'Instagram') return `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-fuchsia-500"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Instagram</span>`;
             if(platform === 'YouTube') return `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-red-600"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">YouTube</span>`;
             
             return `<span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-zinc-400"></span><span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">Video</span>`;
+        }
+
+        // ==========================================
+        // ASYNC SCRAPER THUMBNAIL DINAMIS
+        // ==========================================
+        async function extractThumbnailsAsync(items) {
+            for (let sub of items) {
+                const imgEl = document.getElementById(`thumb-${sub.id}`);
+                if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
+                
+                const url = sub.video_link;
+                if (!url) continue;
+
+                // YT Thumbnail Fast Detection
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        imgEl.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                        imgEl.setAttribute('data-loaded', 'true');
+                    }
+                    continue;
+                }
+
+                // Scrape IG & TikTok Thumbnails via API
+                try {
+                    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                    const json = await res.json();
+                    
+                    if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                        imgEl.src = json.data.image.url;
+                        imgEl.setAttribute('data-loaded', 'true');
+                    } else if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                        const tkJson = await tkRes.json();
+                        if (tkJson.data && tkJson.data.cover) {
+                            imgEl.src = tkJson.data.cover;
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) {}
+            }
         }
 
         // ==========================================
@@ -256,8 +282,9 @@
             grid.classList.add('opacity-0');
 
             setTimeout(() => {
-                grid.innerHTML = '';
+                let htmlContent = '';
                 let visibleCount = 0;
+                let renderedSubs = [];
 
                 submissionsData.forEach(sub => {
                     const campId = sub.campaign_id;
@@ -269,17 +296,18 @@
 
                     if (matchPlatform && matchCampaign) {
                         visibleCount++;
+                        renderedSubs.push(sub);
 
                         const views = Math.max(sub.views_claimed || 0, sub.views_paid || 0, sub.views || 0);
-                        const thumbUrl = getThumbnail(sub.video_link, platform);
                         const badgeHTML = getPlatformBadge(platform);
                         const creatorName = sub.profiles?.business_name || sub.profiles?.full_name || 'Kreator Whoost';
                         const campTitle = sub.campaigns?.title || 'Kampanye';
+                        const thumbPlaceholder = 'https://placehold.co/300x400/121214/27272a?text=...';
                         
-                        const cardHTML = `
+                        htmlContent += `
                             <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
                                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                                    <img src="${thumbUrl}" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="${thumbPlaceholder}" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
                                     
                                     <!-- Platform Badge -->
@@ -299,7 +327,7 @@
                                         <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">${campTitle}</p>
                                     </div>
                                 </div>
-                                <!-- Action Button -->
+                                <!-- Action Button (Membuka link asli konten) -->
                                 <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
                                     <a href="${sub.video_link}" target="_blank" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors focus:outline-none">
                                         <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -308,9 +336,10 @@
                                 </div>
                             </div>
                         `;
-                        grid.innerHTML += cardHTML;
                     }
                 });
+
+                grid.innerHTML = htmlContent;
 
                 if (visibleCount === 0) {
                     grid.classList.add('hidden');
@@ -325,11 +354,16 @@
                 }
 
                 grid.classList.remove('opacity-0');
+
+                // Jalankan fungsi pengambil Thumbnail
+                if (renderedSubs.length > 0) {
+                    extractThumbnailsAsync(renderedSubs);
+                }
             }, 200);
         }
 
         // ==========================================
-        // UI BINDINGS (Diedarkan ke window agar bisa dipanggil dari onclick HTML)
+        // UI BINDINGS
         // ==========================================
         
         window.toggleCampaignFilter = function() {
