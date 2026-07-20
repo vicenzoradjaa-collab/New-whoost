@@ -42,6 +42,19 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
+    <!-- SCRIPT LOADER AMAN (Diletakkan di atas agar dieksekusi duluan, mencegah macet) -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('pageLoader');
+                if(loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
+            }, 800);
+        });
+    </script>
+
     <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
@@ -95,7 +108,7 @@
                             <p id="saldo-detail" class="text-xs sm:text-lg font-bold text-emerald-400">Rp 0</p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
-                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Pending (Review)</p>
+                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Pending</p>
                             <p id="pending-detail" class="text-xs sm:text-lg font-bold text-amber-400">0</p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
@@ -184,7 +197,6 @@
 
         let sessionUser = null;
         let submissionsData = [];
-        let campaignsMap = {};
         
         let realEarnings = 0;
         let realWithdrawable = 0;
@@ -202,15 +214,6 @@
         let currentLimit = getCols() * 2;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // SAFE HIDE LOADER (Dijamin hilang)
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader) {
-                    loader.classList.add('opacity-0'); 
-                    setTimeout(() => loader.style.display = 'none', 500); 
-                }
-            }, 800);
-
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
                 alert("Silakan login.");
@@ -229,62 +232,69 @@
         // 1. STATS (Pendapatan & Penghitungan Status)
         // ==========================================
         async function loadUserStats() {
-            const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
-            if (stats) {
-                realEarnings = stats.total_earnings || 0;
-                realWithdrawable = stats.withdrawable || 0;
-            }
+            try {
+                const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
+                if (stats) {
+                    realEarnings = stats.total_earnings || 0;
+                    realWithdrawable = stats.withdrawable || 0;
+                }
+            } catch(e) { console.log("User stats mungkin belum ada."); }
+            
             window.toggleSensor(true); 
 
             // Hitung status PENDING, APPROVED, REJECTED
-            const { data: subs } = await supabase.from('submissions').select('status').eq('user_id', sessionUser.id);
-            let p = 0, a = 0, r = 0;
-            if(subs) {
-                subs.forEach(s => {
-                    if(s.status === 'PENDING') p++;
-                    else if(s.status === 'APPROVED') a++;
-                    else if(s.status === 'REJECTED') r++;
-                });
-            }
-            document.getElementById('pending-detail').innerText = p;
-            document.getElementById('disetujui-detail').innerText = a;
-            document.getElementById('ditolak-detail').innerText = r;
+            try {
+                const { data: subs } = await supabase.from('submissions').select('status').eq('user_id', sessionUser.id);
+                let p = 0, a = 0, r = 0;
+                if(subs) {
+                    subs.forEach(s => {
+                        if(s.status === 'PENDING') p++;
+                        else if(s.status === 'APPROVED') a++;
+                        else if(s.status === 'REJECTED') r++;
+                    });
+                }
+                document.getElementById('pending-detail').innerText = p;
+                document.getElementById('disetujui-detail').innerText = a;
+                document.getElementById('ditolak-detail').innerText = r;
+            } catch(e) { console.log("Gagal hitung status"); }
         }
 
         // ==========================================
         // 2. LOAD DATA SUBMISSIONS & CAMPAIGNS
         // ==========================================
         async function loadSubmissions() {
-            const { data, error } = await supabase
-                .from('submissions')
-                .select(`
-                    id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
-                    campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status )
-                `)
-                .eq('user_id', sessionUser.id);
+            try {
+                // PERBAIKAN: Menambahkan kolom type, niche, banner_url, price_per_video di join agar tidak error
+                const { data, error } = await supabase
+                    .from('submissions')
+                    .select(`
+                        id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
+                        campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video )
+                    `)
+                    .eq('user_id', sessionUser.id);
 
-            if (error) {
-                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm">Gagal mengambil data database.</p>';
-                return;
+                if (error) throw error;
+
+                submissionsData = data || [];
+                
+                // Build Campaign Filter Dropdown
+                const campSet = new Set();
+                let campOptionsHTML = `<div onclick="window.selectCampaign('all', 'Semua Campaign')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white">Semua Campaign</div>`;
+                
+                submissionsData.forEach(sub => {
+                    if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
+                        campSet.add(sub.campaigns.id);
+                        const safeTitle = (sub.campaigns.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                        campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${sub.campaigns.title}</div>`;
+                    }
+                });
+                document.getElementById('campaign-options').innerHTML = campOptionsHTML;
+
+                applyFilters();
+
+            } catch(err) {
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal mengambil data dari database.</p>';
             }
-
-            submissionsData = data || [];
-            
-            // Build Campaign Filter Dropdown
-            const campSet = new Set();
-            let campOptionsHTML = `<div onclick="window.selectCampaign('all', 'Semua Campaign')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white">Semua Campaign</div>`;
-            
-            submissionsData.forEach(sub => {
-                if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
-                    campSet.add(sub.campaigns.id);
-                    // Mencegah SyntaxError jika ada tanda kutip di judul
-                    const safeTitle = (sub.campaigns.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${sub.campaigns.title}</div>`;
-                }
-            });
-            document.getElementById('campaign-options').innerHTML = campOptionsHTML;
-
-            applyFilters();
         }
 
         // ==========================================
@@ -309,19 +319,17 @@
             return { platHTML, thumbUrl };
         }
 
-        function generateCard(sub) {
-            // Amankan data jika campaign terhapus
-            const camp = sub.campaigns || { id: '', title: 'Campaign Tidak Ditemukan', brand_name: '-', status: 'CLOSED', budget_remaining: 0 };
+        function generateCard(sub, index) {
+            const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-' };
             const meta = getVideoMeta(sub.video_link);
             const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
             
-            // Format Views untuk UI
-            const uiViews = sub.views_claimed > 0 ? sub.views_claimed.toLocaleString('id-ID') : '-';
+            const viewsClaimed = sub.views_claimed || 0;
+            const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
             
-            // Logic Status PENDING, APPROVED, REJECTED, atau NONE
             let realStatus = sub.status || 'NONE';
-            if (sub.views_claimed === 0) realStatus = 'NONE';
+            if (viewsClaimed === 0) realStatus = 'NONE';
 
             let actionArea = '';
             let cardOpacityClass = 'opacity-100';
@@ -331,24 +339,25 @@
             if (realStatus === 'PENDING') {
                 actionArea = `
                     <div class="flex gap-1.5 sm:gap-2">
-                        <input type="text" value="${sub.views_claimed}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
+                        <input type="text" value="${viewsClaimed}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
                     </div>
                     <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
                         <span>Reviewing...</span>
-                        <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${sub.est_payout.toLocaleString('id-ID')}</span>
+                        <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
                     </button>`;
             } 
             else if (realStatus === 'REJECTED') {
                 cardOpacityClass = 'opacity-70 border-red-900/30';
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium"><b>Ditolak:</b> ${sub.reject_reason || 'Tidak memenuhi syarat brief/kualitas.'}</p>
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak:</b> ${sub.reject_reason || 'Tidak memenuhi syarat brief/kualitas.'}</p>
                     </div>
                     <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Ditolak</button>`;
             } 
             else {
                 // NORMAL STATE (Bisa Klaim/Update)
-                let placeholder = sub.views_paid > 0 ? `> ${sub.views_paid}` : 'Total views asli';
+                const paidViews = sub.views_paid || 0;
+                let placeholder = paidViews > 0 ? `> ${paidViews}` : 'Jml views asli';
                 let warningText = '';
                 
                 if(isCampClosed) {
@@ -358,10 +367,10 @@
                 actionArea = `
                     ${warningText}
                     <div class="flex gap-1.5 sm:gap-2">
-                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none">
+                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
                     </div>
-                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none">
-                        ${sub.views_paid > 0 ? 'Klaim Update' : 'Klaim'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors">
+                        ${paidViews > 0 ? 'Klaim Update' : 'Klaim'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>`;
             }
 
@@ -420,12 +429,11 @@
             grid.innerHTML = '';
 
             let filtered = submissionsData.filter(sub => {
+                const viewsClaimed = sub.views_claimed || 0;
                 let realStatus = sub.status || 'NONE';
-                if (sub.views_claimed === 0) realStatus = 'NONE';
+                if (viewsClaimed === 0) realStatus = 'NONE';
                 
-                // Mencegah error jika data campaign null
                 const campId = sub.campaigns ? sub.campaigns.id : null;
-                
                 const matchCamp = currentFilter.campaign_id === 'all' || campId === currentFilter.campaign_id;
                 const matchStatus = currentFilter.status === 'all' || realStatus === currentFilter.status;
                 
@@ -469,7 +477,7 @@
             if (!newClaimStr) return alert("Masukkan jumlah views yang valid.");
             
             const newClaimViews = parseInt(newClaimStr);
-            if (newClaimViews <= 0) return alert("Jumlah views harus lebih dari 0.");
+            if (isNaN(newClaimViews) || newClaimViews <= 0) return alert("Jumlah views harus lebih dari 0.");
 
             const sub = submissionsData.find(s => s.id === subId);
             if (!sub) return alert("Data tidak ditemukan.");
@@ -478,47 +486,58 @@
             const paidViews = sub.views_paid || 0;
 
             if (newClaimViews <= paidViews) {
-                return alert(`Views harus lebih besar dari yang sudah dibayar (${paidViews}).`);
+                return alert(`Views baru harus lebih besar dari views yang sudah dibayar (${paidViews.toLocaleString('id-ID')}).`);
             }
 
-            // --- MULAI PERHITUNGAN MATEMATIKA ---
+            // --- MULAI PERHITUNGAN MATEMATIKA SESUAI PERMINTAAN ---
             let estPayout = 0;
             const isClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
 
-            if (!isClosed && camp.payment_type === 'views') {
-                const cpm = camp.reward_per_1k || 0;
-                const minViews = camp.min_views || 10000;
-                const maxClaim = camp.max_claim || 250000;
+            if (!isClosed) {
+                if (camp.payment_type === 'views') {
+                    const cpm = camp.reward_per_1k || 0;
+                    const minViews = camp.min_views || 10000;
+                    const maxClaim = camp.max_claim || 250000;
 
-                // 1. Batasi Max Claim
-                let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
-                
-                // 2. Hitung Selisih Views yang belum dibayar
-                let deltaViews = effectiveViews - paidViews;
+                    // 1. Batasi Max Claim
+                    let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
+                    
+                    // 2. Hitung Selisih Views (Delta) yang belum dibayar
+                    let deltaViews = effectiveViews - paidViews;
 
-                if (deltaViews > 0) {
-                    // 3. Penalty 75% potong (dikali 0.25) jika dibawah target min_views
-                    let rate = cpm;
-                    if (effectiveViews < minViews) {
-                        rate = cpm * 0.25; 
+                    if (deltaViews > 0) {
+                        // 3. Pengecekan Penalty (Potong 75% jika dibawah batas minimal -> sisa 25% atau 0.25)
+                        let rate = cpm;
+                        if (effectiveViews < minViews) {
+                            rate = cpm * 0.25; 
+                        }
+
+                        // 4. Hitung Estimasi (Delta * Rate normal/penalty)
+                        estPayout = Math.floor((deltaViews / 1000) * rate);
+
+                        // 5. Cegah melebihi sisa budget brand
+                        if (estPayout > camp.budget_remaining) {
+                            estPayout = camp.budget_remaining;
+                        }
                     }
-
-                    // 4. Hitung Payout dari Delta
-                    estPayout = Math.floor((deltaViews / 1000) * rate);
-
-                    // 5. Mencegah melebihi sisa budget
-                    if (estPayout > camp.budget_remaining) {
-                        estPayout = camp.budget_remaining;
+                } else if (camp.payment_type === 'video') {
+                    // Jika bayar per video, klaim hanya divalidasi sekali (paidViews == 0)
+                    if (paidViews === 0) {
+                        estPayout = camp.price_per_video || 0;
+                        if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
                     }
                 }
             }
 
             // Konfirmasi Payout
-            const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Pendapatan: Rp ${estPayout.toLocaleString('id-ID')}\n\nLanjutkan?`;
+            const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Pendapatan: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
             if (!confirm(confirmMsg)) return;
 
+            // Membekukan input agar tidak klik ganda
+            inputEl.disabled = true;
+
             // --- PROSES UPDATE KE SUPABASE ---
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('submissions')
                 .update({
                     views_claimed: newClaimViews,
@@ -530,6 +549,7 @@
 
             if (error) {
                 alert("Gagal melakukan klaim: " + error.message);
+                inputEl.disabled = false;
             } else {
                 alert("Berhasil mengajukan klaim. Menunggu review Admin/Brand.");
                 await loadSubmissions(); // Refresh UI langsung
