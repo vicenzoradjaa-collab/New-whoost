@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Detail Campaign - Whoost</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = { theme: { extend: { colors: { darkBg: '#0a0a0c', cardBg: '#121214' }, fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
     </script>
@@ -15,6 +15,10 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        
+        /* Custom Box Styles for Brief section */
+        .brief-box-blue { background-color: #1a2235; border-color: #2d3748; }
+        .brief-box-red { background-color: #2a1616; border-color: #4a2525; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -27,125 +31,215 @@
         </div>
     </div>
 
-    <!-- Header dengan Tombol Back -->
-    <header class="h-16 sm:h-20 flex items-center px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full gap-4">
-        <!-- Tombol back menggunakan history API agar dinamis -->
-        <button onclick="window.history.back()" class="p-2 -ml-2 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors focus:outline-none">
-            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path></svg>
+    <!-- HEADER BACK -->
+    <header class="h-16 flex items-center px-4 sm:px-8 bg-darkBg z-20 flex-shrink-0 w-full">
+        <button onclick="window.history.back()" class="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors focus:outline-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Kembali ke daftar campaign
         </button>
-        <h1 class="text-base sm:text-lg font-semibold tracking-tight">Detail Campaign</h1>
     </header>
 
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth">
-        <div class="max-w-5xl mx-auto space-y-6 sm:space-y-8">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 pb-32 scroll-smooth">
+        <div class="max-w-5xl mx-auto space-y-8 mt-4">
             
-            <!-- BANNER 16:9 FULL GAMBAR -->
-            <div class="w-full aspect-[16/9] md:h-[400px] md:aspect-auto bg-zinc-950 border border-zinc-800/80 rounded-2xl md:rounded-3xl overflow-hidden relative shadow-2xl">
-                <img id="campaign-banner" src="" alt="Banner Campaign" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105 opacity-0">
+            <!-- BANNER FULL GAMBAR -->
+            <div class="w-full aspect-[16/9] md:h-[400px] md:aspect-auto bg-zinc-900 rounded-2xl md:rounded-3xl overflow-hidden relative shadow-2xl">
+                <img id="campaign-banner" src="" alt="Banner Campaign" class="w-full h-full object-cover transition-transform duration-700 opacity-0">
                 <div id="banner-fallback" class="absolute inset-0 flex items-center justify-center text-zinc-600 text-sm font-medium">Memuat Banner...</div>
             </div>
 
-            <!-- JUDUL & TAGS (Di Bawah Banner) -->
-            <div class="mb-8">
-                <div class="flex items-center gap-2 mb-3" id="campaign-tags">
-                    <!-- Tags akan diisi JS -->
-                </div>
-                <h2 id="campaign-title" class="text-2xl sm:text-4xl md:text-5xl font-black text-white mb-3 tracking-tight">Memuat Judul...</h2>
-                <p id="campaign-desc" class="text-sm sm:text-base text-zinc-400 max-w-3xl leading-relaxed">...</p>
+            <!-- JUDUL & TAGS -->
+            <div>
+                <h1 id="campaign-title" class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4 flex flex-wrap items-center gap-3">
+                    Memuat Judul...
+                    <!-- Tags -->
+                    <span id="tag-status" class="border border-zinc-600 bg-zinc-800/50 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">STATUS</span>
+                    <span id="tag-niche" class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">NICHE</span>
+                </h1>
+                <p id="campaign-desc" class="text-sm md:text-base text-zinc-400">Lihat brief dibawah untuk melihat instruksi lengkapnya</p>
             </div>
 
-            <!-- Grid Layout Kiri Kanan -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <!-- GRID STATS & BUDGET -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                <!-- KOLOM KIRI (Main Content: Tugas, Bahan, Aturan) -->
-                <div class="lg:col-span-2 space-y-6">
+                <!-- KIRI: CAMPAIGN STATS -->
+                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6 flex flex-col">
+                    <div class="flex items-center gap-2 mb-4 border-b border-zinc-800/80 pb-4">
+                        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        <h3 class="text-base font-bold text-white">Campaign Stats</h3>
+                    </div>
                     
-                    <!-- Bahan Kampanye -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6">
-                        <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Materi & Bahan Video</h3>
-                        <div id="links-container" class="space-y-3">
-                            <p class="text-sm text-zinc-500">Memuat link...</p>
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span class="text-sm">Rate</span></div>
+                            <span id="stat-rate" class="font-bold text-white text-sm">Rp 0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> <span class="text-sm">Min. Views</span></div>
+                            <span id="stat-min-views" class="font-bold text-white text-sm">0rb</span>
+                        </div>
+                        <div class="flex justify-between items-center border-b border-zinc-800/80 pb-4">
+                            <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> <span class="text-sm">Max. Claim</span></div>
+                            <span id="stat-max-claim" class="font-bold text-white text-sm">0rb</span>
                         </div>
                     </div>
 
-                    <!-- Brief / Instruksi -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 sm:p-6">
-                        <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Instruksi Konten</h3>
-                        <div id="brief-text" class="text-[13px] sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
-                            Memuat instruksi...
+                    <div class="mb-6">
+                        <p class="text-xs text-zinc-500 mb-2">Target Platforms</p>
+                        <div id="platform-icons" class="flex flex-wrap gap-2">
+                            <!-- Platform badges diisi JS -->
                         </div>
                     </div>
 
-                    <!-- Aturan & Larangan (Peringatan) -->
-                    <div class="bg-amber-500/5 border border-amber-500/30 rounded-2xl p-5 sm:p-6">
-                        <div class="flex items-start gap-3 mb-4">
-                            <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            <div>
-                                <h3 class="text-sm font-semibold text-amber-500 uppercase tracking-wider">Aturan & Larangan</h3>
-                                <p class="text-[11px] text-zinc-400 mt-1">Wajib diikuti supaya konten kreator tidak ditolak</p>
-                            </div>
+                    <div class="mt-auto">
+                        <p class="text-xs text-zinc-500 mb-2">Required Hashtags & Mentions</p>
+                        <div id="hashtags-container" class="flex flex-wrap gap-2 mb-4">
+                            <!-- Hashtags diisi JS -->
                         </div>
-                        <div id="restriction-text" class="text-[13px] sm:text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap pl-8">
-                            Memuat larangan...
-                        </div>
+                        <button onclick="copyHashtags()" id="btn-copy" class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm font-medium text-zinc-300 hover:text-white transition-colors focus:outline-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            Copy hastag & mention
+                        </button>
                     </div>
-
                 </div>
 
-                <!-- KOLOM KANAN (Sidebar Detail) -->
-                <div class="space-y-6 sticky top-6">
+                <!-- KANAN: BUDGET & BAHAN -->
+                <div class="flex flex-col gap-6">
                     
-                    <!-- Informasi Budget & Pembayaran -->
-                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5">
-                        <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-5">Detail Kampanye</h3>
+                    <!-- Box Budget -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6">
+                        <div class="flex items-center gap-2 mb-4 border-b border-zinc-800/80 pb-4">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            <h3 class="text-base font-bold text-white">Budget</h3>
+                        </div>
+                        <div class="flex justify-between items-end mb-2">
+                            <div class="flex items-center gap-1.5 text-zinc-400 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Sisa Budget
+                            </div>
+                            <span id="budget-percentage" class="font-bold text-white text-sm">0%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3">
+                            <div id="budget-bar" class="h-full bg-blue-400 rounded-full transition-all duration-1000 w-0"></div>
+                        </div>
+                        <p class="text-[10px] text-zinc-500 italic">* Persentase budget campaign yang masih bisa di-claim.</p>
+                    </div>
+
+                    <!-- Box Bahan -->
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6 flex-1 flex flex-col">
+                        <div class="flex items-center gap-2 mb-4 border-b border-zinc-800/80 pb-4">
+                            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                            <h3 class="text-base font-bold text-white">Bahan Clipping</h3>
+                        </div>
+                        <p class="text-sm text-zinc-400 mb-6 leading-relaxed">Dapatkan referensi, file mentahan, atau panduan visual lainnya untuk bahan editingmu.</p>
                         
-                        <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800/80 text-center mb-5">
-                            <p class="text-[10px] text-zinc-500 font-medium mb-1">Tenggat Waktu</p>
-                            <p id="campaign-deadline" class="text-[13px] font-bold text-white">-</p>
-                        </div>
-
-                        <div class="bg-zinc-900 rounded-xl p-4 border border-zinc-800/80 mb-5 text-center">
-                            <p id="price-label" class="text-[11px] text-zinc-500 font-medium mb-1">Bayaran per 1K Views</p>
-                            <p id="campaign-price" class="text-2xl font-black text-white tracking-tight">Rp 0</p>
-                        </div>
-
-                        <!-- Budget Tersisa dengan Progress Bar -->
-                        <div class="mb-5">
-                            <div class="flex justify-between items-end mb-2">
-                                <span class="text-[11px] text-zinc-400 font-semibold">Budget Tersisa</span>
-                                <span id="budget-percentage" class="text-[11px] font-black text-white">0%</span>
-                            </div>
-                            <div class="w-full h-2 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
-                                <div id="budget-bar" class="h-full bg-white rounded-full transition-all duration-1000 w-0 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                            </div>
-                        </div>
-
-                        <!-- Platform yang diterima (Hanya ICON Saja) -->
-                        <div>
-                            <p class="text-[11px] text-zinc-500 font-medium mb-3 uppercase text-center">Platform yang Diperbolehkan</p>
-                            <div id="platform-icons" class="flex items-center justify-center gap-3">
-                                <!-- Icons diisi oleh JS -->
-                            </div>
-                        </div>
+                        <button onclick="openModal('bahanModal')" class="mt-auto w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-sm font-medium text-white transition-colors focus:outline-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            Lihat Bahan
+                        </button>
                     </div>
 
                 </div>
+            </div> <!-- End Grid -->
+
+            <!-- FULL WIDTH: CAMPAIGN BRIEF -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6">
+                <div class="flex items-center gap-2 mb-6 border-b border-zinc-800/80 pb-4">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <h3 class="text-base font-bold text-white">Campaign Brief</h3>
+                </div>
+
+                <!-- Box Instruksi (Biru) -->
+                <div class="brief-box-blue rounded-xl p-5 mb-6 border">
+                    <div class="flex items-start gap-3 mb-4">
+                        <div class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0 font-bold text-sm mt-0.5">i</div>
+                        <div>
+                            <h4 class="text-base font-bold text-blue-400 mb-1">Isi Konten Harus Begini!</h4>
+                            <p class="text-xs text-blue-400/70">Baca & ikuti supaya kontenmu diterima.</p>
+                        </div>
+                    </div>
+                    
+                    <ul id="brief-list" class="list-disc list-outside ml-9 space-y-2.5 text-sm text-zinc-300 mb-6">
+                        <!-- List Diisi oleh JS -->
+                    </ul>
+
+                    <button onclick="openModal('briefModal')" class="ml-9 flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-zinc-700 bg-[#121620] hover:bg-zinc-800 text-xs font-semibold text-blue-300 transition-colors focus:outline-none">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        Baca Panduan Lengkap
+                    </button>
+                </div>
+
+                <!-- Box Larangan (Merah) -->
+                <div class="brief-box-red rounded-xl p-5 border">
+                    <div class="flex items-start gap-3 mb-4">
+                        <svg class="w-6 h-6 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <div>
+                            <h4 class="text-base font-bold text-red-500 mb-1">JANGAN Lakukan Ini!</h4>
+                            <p class="text-xs text-red-500/70">Awas! Kalau melanggar, konten otomatis ditolak.</p>
+                        </div>
+                    </div>
+                    
+                    <ul id="restriction-list" class="space-y-3 text-sm text-zinc-300 ml-9">
+                        <!-- List Diisi Oleh JS -->
+                    </ul>
+                </div>
+
             </div>
         </div>
     </main>
 
+    <!-- ================= MODALS ================= -->
+
+    <!-- Modal Bahan (Links) -->
+    <div id="bahanModal" class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-lg p-6 transform scale-95 transition-transform flex flex-col max-h-[80vh]" id="bahanModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    Daftar Link Bahan
+                </h3>
+                <button onclick="closeModal('bahanModal')" class="text-zinc-500 hover:text-white transition-colors focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="modal-links-container" class="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
+                <!-- Diisi JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Panduan Lengkap (Full Brief) -->
+    <div id="briefModal" class="fixed inset-0 z-[1000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-2xl p-6 transform scale-95 transition-transform flex flex-col max-h-[85vh]" id="briefModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-zinc-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Panduan Lengkap Campaign
+                </h3>
+                <button onclick="closeModal('briefModal')" class="text-zinc-500 hover:text-white transition-colors focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="overflow-y-auto pr-2 custom-scrollbar text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap" id="modal-full-brief">
+                <!-- Diisi JS -->
+            </div>
+        </div>
+    </div>
+
+
     <script type="module">
         import { supabase } from './authentication/auth.js';
 
+        // Variabel global untuk menampung teks hashtag agar gampang dicopy
+        let copyTextString = '';
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // Animasi Loader
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.style.display = 'none', 500);
             }, 800);
 
-            // Ambil ID dari URL
             const urlParams = new URLSearchParams(window.location.search);
             const campaignId = urlParams.get('id');
 
@@ -171,17 +265,12 @@
                 return;
             }
 
-            // --- 1. UBAH URL DINAMIS ---
-            // Membuat nama campaign menjadi format slug-url dan memperbarui URL tanpa refresh
+            // 1. Dinamis URL
             const slugName = data.title.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase().replace(/-+/g, '-');
             window.history.replaceState(null, '', `?id=${data.id}&name=${slugName}`);
             document.title = `${data.title} - Whoost`;
 
-            // --- 2. POPULATE KONTEN HEADER ---
-            document.getElementById('campaign-title').innerText = data.title;
-            document.getElementById('campaign-desc').innerText = data.description || 'Tidak ada deskripsi singkat untuk campaign ini.';
-
-            // Banner 16:9
+            // 2. Banner
             const bannerImg = document.getElementById('campaign-banner');
             const fallback = document.getElementById('banner-fallback');
             if (data.banner_url) {
@@ -194,86 +283,122 @@
                 fallback.innerText = "Tidak ada banner";
             }
 
-            // Tags (Status, Tipe, Niche, Brand)
-            let statusColor = 'border-green-500/50 bg-green-500/20 text-green-500';
-            if(data.status === 'HOLDING') statusColor = 'border-yellow-500/50 bg-yellow-500/20 text-yellow-500';
-            if(data.status === 'CLOSED') statusColor = 'border-red-500/50 bg-red-500/20 text-red-500';
-
-            const typeText = data.type === 'ugc' ? 'UGC' : 'CLIPPING';
-
-            document.getElementById('campaign-tags').innerHTML = `
-                <span class="${statusColor} px-2.5 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider">${data.status}</span>
-                <span class="bg-zinc-800 border border-zinc-700 text-white px-2.5 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider">${typeText}</span>
-                <span class="bg-zinc-800 border border-zinc-700 text-zinc-300 px-2.5 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider">${data.niche}</span>
-                <span class="bg-blue-900/30 border border-blue-500/30 text-blue-400 px-2.5 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider">BY: ${data.brand_name}</span>
+            // 3. Title & Tags
+            document.getElementById('campaign-title').innerHTML = `
+                ${data.title}
+                <span class="border border-zinc-600 bg-zinc-800/50 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.status}</span>
+                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.niche}</span>
             `;
 
-            // --- 3. POPULATE MAIN CONTENT ---
-            document.getElementById('brief-text').innerText = data.brief || 'Tidak ada instruksi khusus.';
-            document.getElementById('restriction-text').innerText = data.restrictions || 'Tidak ada aturan khusus.';
+            // 4. STATS (KIRI)
+            const price = data.payment_type === 'video' ? data.price_per_video : data.reward_per_1k;
+            const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+            document.getElementById('stat-rate').innerText = `${priceFormatted} / ${data.payment_type === 'video' ? 'video' : '1k views'}`;
+            
+            // Render Fallback Min/Max jika belum ada di database
+            const minV = data.min_views ? (data.min_views / 1000) + 'rb' : '10rb';
+            const maxC = data.max_claim ? (data.max_claim / 1000) + 'rb' : '250rb';
+            document.getElementById('stat-min-views').innerText = minV;
+            document.getElementById('stat-max-claim').innerText = maxC;
 
-            // Links / Bahan
-            const linksContainer = document.getElementById('links-container');
+            // Platform Badges (KIRI)
+            let platHTML = '';
+            if (data.platforms && data.platforms.length > 0) {
+                if (data.platforms.includes('tiktok')) platHTML += `<div class="border border-zinc-700 rounded-lg px-3 py-1.5 flex items-center gap-2"><svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg><span class="text-xs font-medium">Tiktok</span></div>`;
+                if (data.platforms.includes('instagram')) platHTML += `<div class="border border-zinc-700 rounded-lg px-3 py-1.5 flex items-center gap-2"><svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg><span class="text-xs font-medium">Instagram</span></div>`;
+                if (data.platforms.includes('youtube')) platHTML += `<div class="border border-zinc-700 rounded-lg px-3 py-1.5 flex items-center gap-2"><svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg><span class="text-xs font-medium">YouTube</span></div>`;
+            }
+            document.getElementById('platform-icons').innerHTML = platHTML || '-';
+
+            // Hashtags (KIRI)
+            const htString = data.hashtags || `#${data.brand_name.replace(/\s+/g, '').toLowerCase()} #whoost`;
+            copyTextString = htString; // Simpan untuk fungsi copy
+            const htArray = htString.split(' ').filter(h => h.trim() !== '');
+            let htHTML = '';
+            htArray.forEach(ht => {
+                htHTML += `<div class="border border-zinc-700 bg-zinc-800/30 rounded-md px-2.5 py-1 text-xs text-zinc-300">${ht}</div>`;
+            });
+            document.getElementById('hashtags-container').innerHTML = htHTML;
+
+            // 5. BUDGET (KANAN)
+            const percentage = data.budget_total > 0 ? Math.round((data.budget_remaining / data.budget_total) * 100) : 0;
+            document.getElementById('budget-percentage').innerText = percentage + '%';
+            setTimeout(() => { document.getElementById('budget-bar').style.width = percentage + '%'; }, 300);
+
+            // 6. BAHAN (MODAL LINK)
+            const modalLinks = document.getElementById('modal-links-container');
             if (data.video_links && data.video_links.length > 0) {
-                let linksHTML = '';
-                data.video_links.forEach(link => {
-                    linksHTML += `
-                    <a href="${link}" target="_blank" class="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors group">
+                let mHtml = '';
+                data.video_links.forEach(l => {
+                    mHtml += `
+                    <a href="${l}" target="_blank" class="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors group">
                         <div class="flex items-center gap-4 overflow-hidden pr-4">
-                            <div class="w-10 h-10 bg-zinc-800 text-zinc-400 rounded-lg flex items-center justify-center shrink-0">
+                            <div class="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                             </div>
                             <div class="truncate">
-                                <p class="text-sm font-semibold text-white group-hover:underline truncate">${link}</p>
-                                <p class="text-[11px] text-zinc-500">Klik untuk membuka link</p>
+                                <p class="text-sm font-semibold text-white group-hover:underline truncate">${l}</p>
                             </div>
                         </div>
-                        <svg class="w-5 h-5 text-zinc-500 group-hover:text-white transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <svg class="w-5 h-5 text-zinc-500 group-hover:text-white transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>`;
                 });
-                linksContainer.innerHTML = linksHTML;
+                modalLinks.innerHTML = mHtml;
             } else {
-                linksContainer.innerHTML = `<p class="text-sm text-zinc-500">Tidak ada link materi/bahan yang dicantumkan.</p>`;
+                modalLinks.innerHTML = `<p class="text-sm text-zinc-500 text-center py-4">Tidak ada bahan yang disediakan.</p>`;
             }
 
-            // --- 4. POPULATE SIDEBAR (RIGHT) ---
-            
-            // Deadline
-            if (data.deadline) {
-                const dDate = new Date(data.deadline);
-                document.getElementById('campaign-deadline').innerText = dDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-            }
+            // 7. BRIEF & PANDUAN LENGKAP
+            // Split by newline and wrap in <li>
+            const briefLines = (data.brief || 'Ikuti panduan umum.').split('\n').filter(l => l.trim() !== '');
+            let briefHTML = '';
+            briefLines.forEach(l => { briefHTML += `<li>${l}</li>`; });
+            document.getElementById('brief-list').innerHTML = briefHTML;
 
-            // Budget Progress Bar
-            const percentage = data.budget_total > 0 ? Math.round((data.budget_remaining / data.budget_total) * 100) : 0;
-            document.getElementById('budget-percentage').innerText = percentage + '%';
-            setTimeout(() => {
-                document.getElementById('budget-bar').style.width = percentage + '%';
-            }, 300);
+            // Restriksi
+            const restrictLines = (data.restrictions || 'Jangan melanggar aturan umum.').split('\n').filter(l => l.trim() !== '');
+            let restHTML = '';
+            restrictLines.forEach(l => { 
+                restHTML += `<li class="flex items-start gap-2"><svg class="w-4 h-4 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span>${l}</span></li>`; 
+            });
+            document.getElementById('restriction-list').innerHTML = restHTML;
 
-            // Price / Harga
-            const price = data.payment_type === 'video' ? data.price_per_video : data.reward_per_1k;
-            document.getElementById('campaign-price').innerText = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
-            document.getElementById('price-label').innerText = data.payment_type === 'video' ? 'Bayaran per Video' : 'Bayaran per 1K Views';
-
-            // Platform Icons (HANYA ICON)
-            const platContainer = document.getElementById('platform-icons');
-            let platHTML = '';
-            if (data.platforms && data.platforms.length > 0) {
-                if (data.platforms.includes('tiktok')) {
-                    platHTML += `<div class="bg-zinc-900 border border-zinc-700 p-2.5 rounded-full tooltip" title="TikTok"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg></div>`;
-                }
-                if (data.platforms.includes('instagram')) {
-                    platHTML += `<div class="bg-zinc-900 border border-zinc-700 p-2.5 rounded-full tooltip" title="Instagram"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg></div>`;
-                }
-                if (data.platforms.includes('youtube')) {
-                    platHTML += `<div class="bg-zinc-900 border border-zinc-700 p-2.5 rounded-full tooltip" title="YouTube Shorts"><svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>`;
-                }
-                platContainer.innerHTML = platHTML;
-            } else {
-                platContainer.innerHTML = `<span class="text-xs text-zinc-500">-</span>`;
-            }
+            // Full Brief Modal
+            document.getElementById('modal-full-brief').innerText = data.full_brief || data.brief || 'Panduan lengkap belum ditambahkan oleh Admin.';
         }
+
+        // --- GLOBAL FUNCTIONS FOR UI ---
+        
+        window.openModal = function(id) {
+            const m = document.getElementById(id);
+            const c = document.getElementById(id + 'Content');
+            m.classList.remove('hidden'); m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+        };
+
+        window.closeModal = function(id) {
+            const m = document.getElementById(id);
+            const c = document.getElementById(id + 'Content');
+            m.classList.add('opacity-0'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+        };
+
+        window.copyHashtags = function() {
+            if(!copyTextString) return;
+            navigator.clipboard.writeText(copyTextString).then(() => {
+                const btn = document.getElementById('btn-copy');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Tersalin!`;
+                btn.classList.add('border-green-500/50', 'text-green-400');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('border-green-500/50', 'text-green-400');
+                }, 2000);
+            }).catch(err => {
+                alert("Gagal menyalin: " + err);
+            });
+        };
     </script>
 </body>
 </html>
