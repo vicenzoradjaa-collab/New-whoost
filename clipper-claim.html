@@ -154,7 +154,6 @@
                                 <div>
                                     <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Status Klaim</p>
                                     <button onclick="window.applyFilter('status', 'all')" class="filter-btn status-all w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Semua Status</button>
-                                    <button onclick="window.applyFilter('status', 'NONE')" class="filter-btn status-NONE w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">Belum Klaim / Draft</button>
                                     <button onclick="window.applyFilter('status', 'PENDING')" class="filter-btn status-PENDING w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-amber-400">Reviewing (Pending)</button>
                                     <button onclick="window.applyFilter('status', 'APPROVED')" class="filter-btn status-APPROVED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-blue-400">Disetujui</button>
                                     <button onclick="window.applyFilter('status', 'REJECTED')" class="filter-btn status-REJECTED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-red-400">Ditolak</button>
@@ -242,14 +241,13 @@
             
             window.toggleSensor(true); 
 
-            // Hitung status PENDING, APPROVED, REJECTED
+            // Hitung status PENDING, APPROVED, REJECTED yang akurat (Gabungan Review Brand & Admin)
             try {
                 const { data: subs } = await supabase.from('submissions').select('status, views_claimed').eq('user_id', sessionUser.id);
                 let p = 0, a = 0, r = 0;
                 if(subs) {
                     subs.forEach(s => {
-                        const hasClaimed = (s.views_claimed || 0) > 0;
-                        if(s.status === 'PENDING' && hasClaimed) p++;
+                        if(s.status === 'PENDING') p++;
                         else if(s.status === 'APPROVED') a++;
                         else if(s.status === 'REJECTED') r++;
                     });
@@ -308,7 +306,7 @@
         function getVideoMeta(url) {
             url = url || '';
             let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
-            let thumbUrl = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+            let thumbUrl = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80'; // Gambar Fallback Universal
             
             if (url.includes('tiktok.com')) {
                 platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
@@ -319,6 +317,7 @@
             } else if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
                 platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
                 let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                // Langsung ambil HD thumbnail untuk YouTube (Paling mudah karena URL Static)
                 if (ytMatch && ytMatch[1]) thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
             }
             return { platHTML, thumbUrl };
@@ -333,42 +332,88 @@
             const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
             
-            let realStatus = sub.status || 'NONE';
-            if (viewsClaimed === 0 && realStatus === 'PENDING') realStatus = 'NONE'; // Fix for new un-claimed submissions
+            let realStatus = sub.status || 'PENDING';
+            
+            // Boolean State Logics untuk menentukan Tampilan UI
+            let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
+            let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
+            let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0); // Siap input views perdana
+            let isClaimReview   = (realStatus === 'PENDING' && viewsClaimed > 0);
+            let isClaimRejected = (realStatus === 'REJECTED' && viewsClaimed > 0);
+            let isClaimApproved = (realStatus === 'APPROVED' && viewsClaimed > 0);
 
             let actionArea = '';
+            let badgeHTML = '';
             let cardOpacityClass = 'opacity-100';
 
             const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
 
-            if (realStatus === 'PENDING') {
+            // ===================================
+            // BLOCK 1: STATE REVIEW BRAND
+            // ===================================
+            if (isBrandReview) {
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Review Brand</div>`;
+                actionArea = `
+                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight">
+                        <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        Menunggu ACC Brand
+                    </button>`;
+            } 
+            // ===================================
+            // BLOCK 2: STATE DITOLAK BRAND
+            // ===================================
+            else if (isBrandRejected) {
+                cardOpacityClass = 'opacity-70 border-red-900/30';
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Ditolak Brand</div>`;
+                actionArea = `
+                    <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak Brand:</b> ${sub.reject_reason || 'Video tidak sesuai kriteria/brief.'}</p>
+                    </div>
+                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Video Ditolak</button>`;
+            }
+            // ===================================
+            // BLOCK 3: STATE REVIEW ADMIN (Klaim)
+            // ===================================
+            else if (isClaimReview) {
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Review Admin</div>`;
                 actionArea = `
                     <div class="flex gap-1.5 sm:gap-2">
                         <input type="text" value="${viewsClaimed.toLocaleString('id-ID')}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
                     </div>
                     <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
-                        <span>Reviewing...</span>
+                        <span>Reviewing Claim...</span>
                         <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
                     </button>`;
             } 
-            else if (realStatus === 'REJECTED') {
-                cardOpacityClass = 'opacity-70 border-red-900/30';
+            // ===================================
+            // BLOCK 4: STATE DITOLAK ADMIN (Klaim)
+            // ===================================
+            else if (isClaimRejected) {
+                cardOpacityClass = 'opacity-80 border-red-900/50';
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Klaim Ditolak</div>`;
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak:</b> ${sub.reject_reason || 'Tidak memenuhi syarat brief/kualitas.'}</p>
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak Admin:</b> ${sub.reject_reason || 'Bukti views tidak valid atau melanggar aturan.'}</p>
                     </div>
-                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-zinc-800 text-zinc-400 hover:text-white font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-700 transition-colors">Klaim Ulang</button>
-                    <input type="number" id="input-${sub.id}" placeholder="Masukkan views baru" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mt-2">
-                    `;
-            } 
+                    <input type="number" id="input-${sub.id}" placeholder="Masukkan views yang benar" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mb-2">
+                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors">Ajukan Ulang Klaim</button>`;
+            }
+            // ===================================
+            // BLOCK 5: NORMAL / ACC (Siap Klaim Baru / Klaim Update)
+            // ===================================
             else {
-                // NORMAL STATE (Bisa Klaim/Update)
                 const paidViews = sub.views_paid || 0;
                 let placeholder = paidViews > 0 ? `> ${paidViews.toLocaleString('id-ID')}` : 'Jml views asli';
                 let warningText = '';
                 
+                // Overriding Badges
                 if(isCampClosed) {
+                    badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Closed</div>`;
                     warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
+                } else if (isClaimApproved) {
+                    badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
+                } else if (isBrandApproved) {
+                    badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
 
                 actionArea = `
@@ -377,23 +422,15 @@
                         <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
                     </div>
                     <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors">
-                        ${paidViews > 0 ? 'Klaim Update' : 'Klaim'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        ${paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>`;
-            }
-
-            // Top Badge Info
-            let badgeHTML = '';
-            if (isCampClosed) {
-                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Habis/Closed</div>`;
-            } else if (realStatus === 'APPROVED') {
-                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
             }
 
             return `
             <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group ${cardOpacityClass}">
                 ${badgeHTML}
                 <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                    <img src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
+                    <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
                         ${meta.platHTML}
@@ -436,9 +473,7 @@
             grid.innerHTML = '';
 
             let filtered = submissionsData.filter(sub => {
-                const viewsClaimed = sub.views_claimed || 0;
-                let realStatus = sub.status || 'NONE';
-                if (viewsClaimed === 0 && realStatus === 'PENDING') realStatus = 'NONE';
+                let realStatus = sub.status || 'PENDING';
                 
                 const campId = sub.campaigns ? sub.campaigns.id : null;
                 const matchCamp = currentFilter.campaign_id === 'all' || campId === currentFilter.campaign_id;
@@ -463,7 +498,8 @@
             }
 
             let html = '';
-            filtered.slice(0, currentLimit).forEach((sub, i) => {
+            const toRender = filtered.slice(0, currentLimit);
+            toRender.forEach((sub, i) => {
                 html += generateCard(sub, i);
             });
             grid.innerHTML = html;
@@ -473,7 +509,44 @@
             } else {
                 loadMoreContainer.classList.add('hidden');
             }
+
+            // Jalankan Ekstraksi Thumbnail di latar belakang secara Async
+            window.loadThumbnails(toRender);
         }
+
+        // FUNGSI TARIK THUMBNAIL DINAMIS
+        window.loadThumbnails = async function(items) {
+            for (let sub of items) {
+                const imgEl = document.getElementById(`thumb-${sub.id}`);
+                if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
+                
+                const url = sub.video_link;
+                if (url.includes('tiktok.com')) {
+                    try {
+                        // Menggunakan TikWM API Gratis untuk ambil cover TikTok
+                        const res = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                        const json = await res.json();
+                        if(json.data && json.data.cover) {
+                            imgEl.src = json.data.cover;
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    } catch(e) { console.log("Gagal memuat thumbnail TikTok:", e); }
+                } 
+                else if (url.includes('instagram.com')) {
+                    try {
+                        // Menggunakan AllOrigins Proxy untuk melewati blokir CORS saat ambil Oembed Graph FB
+                        const oembedUrl = encodeURIComponent(`https://api.instagram.com/oembed/?url=${url}`);
+                        const res = await fetch(`https://api.allorigins.win/get?url=${oembedUrl}`);
+                        const json = await res.json();
+                        const data = JSON.parse(json.contents);
+                        if(data.thumbnail_url) {
+                            imgEl.src = data.thumbnail_url;
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    } catch(e) { console.log("Gagal memuat thumbnail Instagram:", e); }
+                }
+            }
+        };
 
         // ==========================================
         // 4. LOGIKA KLAIM MATEMATIS & SUPABASE
@@ -495,7 +568,7 @@
             
             // Validasi: User tidak bisa klaim jumlah views yang sama atau lebih rendah dari yang sudah diapprove
             const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
-            if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED') {
+            if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED' && maxPrevViews > 0) {
                 return alert(`Views baru harus lebih besar dari views yang sudah disetujui sebelumnya (${maxPrevViews.toLocaleString('id-ID')}).`);
             }
 
