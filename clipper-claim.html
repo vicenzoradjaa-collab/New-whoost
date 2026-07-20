@@ -2,7 +2,6 @@
 <html lang="id" class="bg-darkBg">
 <head>
     <meta charset="UTF-8">
-    <!-- Mencegah auto-zoom pada input di iOS/Mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Klaim Views - Whoost Clipper</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,7 +23,6 @@
         }
     </script>
     <style>
-        /* Mengunci body agar tidak double scroll. Scroll hanya pada <main> */
         html, body {
             background-color: #0a0a0c;
             color: white;
@@ -33,49 +31,37 @@
             margin: 0;
             overflow: hidden;
         }
-        
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-
-        /* Hide number input arrows */
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- ========================================== -->
-    <!-- LOADING SCREEN                             -->
-    <!-- ========================================== -->
+    <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="relative flex flex-col items-center">
             <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
             <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Data...</p>
         </div>
     </div>
 
-    <!-- Background Ornamen -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-10%] right-[-10%] w-[40rem] h-[40rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- HEADER                                     -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full relative">
         <div class="flex items-center gap-3 sm:gap-4">
-            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Klaim Views</h1>
         </div>
-        
         <div class="flex items-center gap-2 sm:gap-3">
             <button onclick="location.reload()" class="p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 transition-colors tooltip" title="Refresh Data">
                 <svg class="w-5 h-5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
@@ -83,9 +69,7 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
-    <!-- MAIN CONTENT AREA                          -->
-    <!-- ========================================== -->
+    <!-- MAIN CONTENT AREA -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
             
@@ -95,30 +79,32 @@
                     <div class="flex justify-between items-start mb-6">
                         <div>
                             <p class="text-xs sm:text-sm font-medium text-zinc-400 mb-1">Total Pendapatan Kamu</p>
-                            <h2 id="total-pendapatan" class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Rp 263.000</h2>
+                            <h2 id="total-pendapatan" class="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">Rp 0</h2>
                         </div>
-                        <button onclick="toggleSensor()" class="text-zinc-500 hover:text-white transition-colors p-2 bg-zinc-900 rounded-lg">
-                            <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
+                        <button onclick="window.toggleSensor()" class="text-zinc-500 hover:text-white transition-colors p-2 bg-zinc-900 rounded-lg focus:outline-none">
+                            <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </button>
                     </div>
 
                     <div class="h-px w-full bg-zinc-800 mb-6"></div>
 
-                    <div class="grid grid-cols-3 gap-4 text-left">
+                    <!-- 4 Kolom Detail -->
+                    <div class="grid grid-cols-4 gap-2 sm:gap-4 text-left">
                         <div class="border-r border-zinc-800">
-                            <p class="text-[10px] sm:text-xs text-zinc-500 font-medium uppercase mb-1">Saldo</p>
-                            <p id="saldo-detail" class="text-sm sm:text-lg font-bold text-emerald-400">Rp 20.000</p>
+                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Saldo Tersedia</p>
+                            <p id="saldo-detail" class="text-xs sm:text-lg font-bold text-emerald-400">Rp 0</p>
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
-                            <p class="text-[10px] sm:text-xs text-zinc-500 font-medium uppercase mb-1">Pending</p>
-                            <p id="pending-detail" class="text-sm sm:text-lg font-bold text-white">0</p>
+                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Pending (Review)</p>
+                            <p id="pending-detail" class="text-xs sm:text-lg font-bold text-amber-400">0</p>
+                        </div>
+                        <div class="border-r border-zinc-800 pl-2">
+                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Disetujui</p>
+                            <p id="disetujui-detail" class="text-xs sm:text-lg font-bold text-blue-400">0</p>
                         </div>
                         <div class="pl-2">
-                            <p class="text-[10px] sm:text-xs text-zinc-500 font-medium uppercase mb-1">Disetujui</p>
-                            <p id="disetujui-detail" class="text-sm sm:text-lg font-bold text-white">12</p>
+                            <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Ditolak</p>
+                            <p id="ditolak-detail" class="text-xs sm:text-lg font-bold text-red-400">0</p>
                         </div>
                     </div>
                 </div>
@@ -126,456 +112,475 @@
 
             <!-- SECTION 2: LIST KONTEN -->
             <section>
-                <!-- Header grid disejajarkan ke samping (flex-row) untuk Mobile & Desktop -->
-                <div class="flex flex-row items-center justify-between mb-6 gap-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                     <h2 class="text-base sm:text-lg font-semibold text-white">Konten Tersedia</h2>
-                    <div class="flex items-center gap-3">
+                    
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <!-- Filter Campaign -->
+                        <div class="relative custom-select-container">
+                            <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-lg px-3 py-2 text-xs text-white cursor-pointer flex justify-between items-center transition-colors min-w-[140px]" onclick="window.toggleSelect('campaign-options')">
+                                <span id="campaign-selected-text" class="truncate max-w-[120px]">Semua Campaign</span>
+                                <svg class="w-3 h-3 text-zinc-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                            <div id="campaign-options" class="custom-select-options hidden absolute top-full right-0 mt-2 w-48 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto custom-scrollbar">
+                                <!-- Diisi JS -->
+                            </div>
+                        </div>
+
+                        <!-- Filter Status & Sort -->
                         <div class="relative" id="filter-container">
-                            <button onclick="toggleFilter()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 p-2 rounded-full transition-colors flex items-center gap-2">
+                            <button onclick="window.toggleFilter()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 p-2 rounded-lg transition-colors flex items-center gap-2 focus:outline-none">
                                 <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                             </button>
-                            
                             <div id="filter-dropdown" class="absolute right-0 mt-2 w-48 bg-cardBg border border-zinc-700 rounded-xl shadow-2xl z-50 hidden flex-col p-2 gap-2">
                                 <div>
-                                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Status Klaim</p>
-                                    <button onclick="applyFilter('status', 'all')" class="filter-btn status-all w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Semua Status</button>
-                                    <button onclick="applyFilter('status', 'belum')" class="filter-btn status-belum w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">Belum di Klaim</button>
-                                    <button onclick="applyFilter('status', 'sudah')" class="filter-btn status-sudah w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">Sudah di Klaim</button>
+                                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Urutkan</p>
+                                    <button onclick="window.applyFilter('sort', 'newest')" class="filter-btn sort-newest w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Terbaru</button>
+                                    <button onclick="window.applyFilter('sort', 'oldest')" class="filter-btn sort-oldest w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">Terlama</button>
                                 </div>
                                 <div class="h-px bg-zinc-800 my-1"></div>
                                 <div>
-                                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Platform</p>
-                                    <button onclick="applyFilter('platform', 'all')" class="filter-btn platform-all w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Semua Platform</button>
-                                    <button onclick="applyFilter('platform', 'tiktok')" class="filter-btn platform-tiktok w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">TikTok</button>
-                                    <button onclick="applyFilter('platform', 'instagram')" class="filter-btn platform-instagram w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">Instagram</button>
+                                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Status Klaim</p>
+                                    <button onclick="window.applyFilter('status', 'all')" class="filter-btn status-all w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Semua Status</button>
+                                    <button onclick="window.applyFilter('status', 'NONE')" class="filter-btn status-NONE w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors">Belum Klaim / Draft</button>
+                                    <button onclick="window.applyFilter('status', 'PENDING')" class="filter-btn status-PENDING w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-amber-400">Reviewing (Pending)</button>
+                                    <button onclick="window.applyFilter('status', 'APPROVED')" class="filter-btn status-APPROVED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-blue-400">Disetujui</button>
+                                    <button onclick="window.applyFilter('status', 'REJECTED')" class="filter-btn status-REJECTED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-red-400">Ditolak</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Grid Video Cards (Grid 2 kolom di mobile) -->
-                <!-- Di-generate 12 kartu untuk memperlihatkan fitur load-more -->
+                <!-- Grid Video Cards Dinamis -->
                 <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6" id="cards-container">
-                    
-                    <!-- SCRIPT INI MENGGUNAKAN LOOPING KARTU DENGAN ISI SAMA AGAR TERLIHAT BANYAK -->
-                    <!-- KELOMPOK 1 -->
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group" data-status="belum" data-platform="tiktok">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            </div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Review Sneaker</h4>
-                                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">27 Mar 2026</p>
-                            </div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat Konten
-                        </a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div>
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Views</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-white">4.000</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Pendapatan</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-emerald-400">Rp 20.000</p>
-                                </div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors">
-                                    <button class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-2 sm:px-3 flex items-center justify-center transition-colors">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg>
-                                    </button>
-                                </div>
-                                <button class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 sm:gap-2">
-                                    Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col" data-status="sudah" data-platform="instagram">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/40 backdrop-blur-md p-1 sm:p-1.5 rounded-lg border border-white/10">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                            </div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Podcast Vol 2</h4>
-                                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">7 Mar 2026</p>
-                            </div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat Konten
-                        </a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between opacity-70">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div>
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Views</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-white">50.000</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Pendapatan</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-zinc-500">Rp 120.000</p>
-                                </div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" value="50000" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
-                                    <button disabled class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 sm:px-3 flex items-center justify-center text-zinc-600 cursor-not-allowed">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg>
-                                    </button>
-                                </div>
-                                <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2">
-                                    Pending <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-red-900/30 rounded-2xl overflow-hidden hover:border-red-900/50 transition-all duration-300 flex flex-col group relative" data-status="belum" data-platform="tiktok">
-                        <div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full flex items-center gap-1 backdrop-blur">
-                            <svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            Habis
-                        </div>
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            </div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate">VLOG Jajanan</h4>
-                                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">6 Mar 2026</p>
-                            </div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat Konten
-                        </a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between opacity-60">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div>
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Views</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-white">7.162</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Pendapatan</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-zinc-500">Rp 14.000</p>
-                                </div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
-                                    <button disabled class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 sm:px-3 flex items-center justify-center text-zinc-600 cursor-not-allowed">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg>
-                                    </button>
-                                </div>
-                                <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2">
-                                    Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group" data-status="belum" data-platform="instagram">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                            </div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Skincare Pemula</h4>
-                                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">5 Mar 2026</p>
-                            </div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat Konten
-                        </a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div>
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Views</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-white">2.288</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Pendapatan</p>
-                                    <p class="text-[10px] sm:text-sm font-bold text-emerald-400">Rp 4.000</p>
-                                </div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-400 transition-colors">
-                                    <button class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-2 sm:px-3 flex items-center justify-center transition-colors">
-                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg>
-                                    </button>
-                                </div>
-                                <button class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-1.5 sm:gap-2">
-                                    Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- AKHIR KELOMPOK 1 -->
-
-                    <!-- MENDUPLIKASI KELOMPOK UNTUK TEST LOAD MORE -->
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group" data-status="belum" data-platform="tiktok">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            </div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Review Sneaker</h4>
-                                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">27 Mar 2026</p>
-                            </div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat Konten
-                        </a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">4.000</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-emerald-400">Rp 20.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white transition-colors">
-                                    <button class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-2 sm:px-3 flex items-center justify-center transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2">Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col" data-status="sudah" data-platform="instagram">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/40 backdrop-blur-md p-1 sm:p-1.5 rounded-lg border border-white/10"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg></div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Podcast Vol 2</h4><p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">7 Mar 2026</p></div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat Konten</a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between opacity-70">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">50.000</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-zinc-500">Rp 120.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" value="50000" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
-                                    <button disabled class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 sm:px-3 flex items-center justify-center text-zinc-600 cursor-not-allowed"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2">Pending <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-red-900/30 rounded-2xl overflow-hidden hover:border-red-900/50 transition-all duration-300 flex flex-col group relative" data-status="belum" data-platform="tiktok">
-                        <div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full flex items-center gap-1 backdrop-blur"><svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>Habis</div>
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg></div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><h4 class="text-[11px] sm:text-sm font-bold text-white truncate">VLOG Jajanan</h4><p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">6 Mar 2026</p></div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat Konten</a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between opacity-60">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">7.162</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-zinc-500">Rp 14.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
-                                    <button disabled class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 sm:px-3 flex items-center justify-center text-zinc-600 cursor-not-allowed"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2">Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group" data-status="belum" data-platform="instagram">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg></div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Skincare Pemula</h4><p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">5 Mar 2026</p></div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat Konten</a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">2.288</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-emerald-400">Rp 4.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white transition-colors">
-                                    <button class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-2 sm:px-3 flex items-center justify-center transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2">Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- DUPLIKASI SATU KALI LAGI (TOTAL 12) -->
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group" data-status="belum" data-platform="tiktok">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            </div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Review Sneaker</h4>
-                                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">27 Mar 2026</p>
-                            </div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors">
-                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                            Lihat Konten
-                        </a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">4.000</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-emerald-400">Rp 20.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white transition-colors">
-                                    <button class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-2 sm:px-3 flex items-center justify-center transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2">Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col" data-status="sudah" data-platform="instagram">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/40 backdrop-blur-md p-1 sm:p-1.5 rounded-lg border border-white/10"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg></div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Podcast Vol 2</h4><p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">7 Mar 2026</p></div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat Konten</a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between opacity-70">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">50.000</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-zinc-500">Rp 120.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" value="50000" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
-                                    <button disabled class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 sm:px-3 flex items-center justify-center text-zinc-600 cursor-not-allowed"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2">Pending <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-red-900/30 rounded-2xl overflow-hidden hover:border-red-900/50 transition-all duration-300 flex flex-col group relative" data-status="belum" data-platform="tiktok">
-                        <div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full flex items-center gap-1 backdrop-blur"><svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>Habis</div>
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 grayscale group-hover:grayscale-0 transition-all duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg></div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><h4 class="text-[11px] sm:text-sm font-bold text-white truncate">VLOG Jajanan</h4><p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">6 Mar 2026</p></div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat Konten</a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between opacity-60">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">7.162</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-zinc-500">Rp 14.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
-                                    <button disabled class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 sm:px-3 flex items-center justify-center text-zinc-600 cursor-not-allowed"><svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2">Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group" data-status="belum" data-platform="instagram">
-                        <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
-                            <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-                            <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg></div>
-                            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3"><h4 class="text-[11px] sm:text-sm font-bold text-white truncate">Skincare Pemula</h4><p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">5 Mar 2026</p></div>
-                        </div>
-                        <a href="#" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors"><svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Lihat Konten</a>
-                        <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
-                            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
-                                <div><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Views</p><p class="text-[10px] sm:text-sm font-bold text-white">2.288</p></div>
-                                <div class="text-right"><p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase mb-0.5">Pendapatan</p><p class="text-[10px] sm:text-sm font-bold text-emerald-400">Rp 4.000</p></div>
-                            </div>
-                            <div class="mt-auto space-y-2">
-                                <div class="flex gap-1.5 sm:gap-2">
-                                    <input type="number" placeholder="Jml views" class="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white transition-colors">
-                                    <button class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg px-2 sm:px-3 flex items-center justify-center transition-colors"><svg class="w-3 h-3 sm:w-4 sm:h-4 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8V6a2 2 0 012-2h2M3 16v2a2 2 0 002 2h2M21 8V6a2 2 0 00-2-2h-2M21 16v2a2 2 0 01-2 2h-2M12 8v8m-4-4h8"></path></svg></button>
-                                </div>
-                                <button class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2">Klaim <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg></button>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-zinc-500 text-sm col-span-full">Memuat data...</p>
                 </div>
 
-                <!-- TOMBOL LOAD MORE -->
+                <!-- Alert Kosong -->
+                <div id="no-data-alert" class="hidden text-center py-20">
+                    <p class="text-zinc-500 text-sm">Tidak ada video yang sesuai dengan filter.</p>
+                </div>
+
+                <!-- Load More -->
                 <div id="load-more-container" class="w-full flex justify-center mt-8 hidden">
-                    <button onclick="loadMore()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 text-zinc-300 text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-full transition-colors flex items-center gap-2">
+                    <button onclick="window.loadMore()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 text-zinc-300 text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-full transition-colors flex items-center gap-2 focus:outline-none">
                         Muat Lebih Banyak
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                 </div>
-
             </section>
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
-    <!-- ========================================== -->
-    
-    <script>
-        const ACTIVE_MENU = 'klaim_views'; 
-    </script>
+    <!-- BOTTOM NAVBAR -->
+    <script>const ACTIVE_MENU = 'klaim_views';</script>
     <script src="attribute/navbarclipper.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Animasi Loader
+    <!-- SCRIPT UTAMA -->
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        let sessionUser = null;
+        let submissionsData = [];
+        let campaignsMap = {};
+        
+        let realEarnings = 0;
+        let realWithdrawable = 0;
+        let isSensorActive = false;
+
+        // Pagination & Filter States
+        let currentFilter = { status: 'all', campaign_id: 'all', sort: 'newest' };
+        let currentLimit = getCols() * 2;
+
+        document.addEventListener('DOMContentLoaded', async () => {
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 loader.classList.add('opacity-0'); 
-                setTimeout(() => {
-                    loader.style.display = 'none'; 
-                }, 500); 
-            }, 800); 
-            
-            // Inisialisasi Tampilan Grid (Paginasi 2 Baris)
-            updateVisibility();
+                setTimeout(() => loader.style.display = 'none', 500); 
+            }, 800);
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Silakan login.");
+                window.location.replace('login.html');
+                return;
+            }
+            sessionUser = session.user;
+
+            await Promise.all([
+                loadUserStats(),
+                loadSubmissions()
+            ]);
         });
 
-        // =====================================
-        // LOGIC SENSOR PENGHASILAN (MATA)
-        // =====================================
+        // ==========================================
+        // 1. STATS (Pendapatan & Penghitungan Status)
+        // ==========================================
+        async function loadUserStats() {
+            // Ambil dari clipper_stats
+            const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
+            if (stats) {
+                realEarnings = stats.total_earnings || 0;
+                realWithdrawable = stats.withdrawable || 0;
+            }
+            window.toggleSensor(true); // Panggil fungsi render agar angkanya terupdate (dengan format default)
+
+            // Hitung status PENDING, APPROVED, REJECTED
+            const { data: subs } = await supabase.from('submissions').select('status').eq('user_id', sessionUser.id);
+            let p = 0, a = 0, r = 0;
+            if(subs) {
+                subs.forEach(s => {
+                    if(s.status === 'PENDING') p++;
+                    else if(s.status === 'APPROVED') a++;
+                    else if(s.status === 'REJECTED') r++;
+                });
+            }
+            document.getElementById('pending-detail').innerText = p;
+            document.getElementById('disetujui-detail').innerText = a;
+            document.getElementById('ditolak-detail').innerText = r;
+        }
+
+        // ==========================================
+        // 2. LOAD DATA SUBMISSIONS & CAMPAIGNS
+        // ==========================================
+        async function loadSubmissions() {
+            const { data, error } = await supabase
+                .from('submissions')
+                .select(`
+                    id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
+                    campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status )
+                `)
+                .eq('user_id', sessionUser.id);
+
+            if (error) {
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm">Gagal mengambil data.</p>';
+                return;
+            }
+
+            submissionsData = data || [];
+            
+            // Build Campaign Filter Dropdown
+            const campSet = new Set();
+            let campOptionsHTML = `<div onclick="window.selectCampaign('all', 'Semua Campaign')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white">Semua Campaign</div>`;
+            
+            submissionsData.forEach(sub => {
+                if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
+                    campSet.add(sub.campaigns.id);
+                    campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${sub.campaigns.title}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${sub.campaigns.title}">${sub.campaigns.title}</div>`;
+                }
+            });
+            document.getElementById('campaign-options').innerHTML = campOptionsHTML;
+
+            applyFilters();
+        }
+
+        // ==========================================
+        // 3. LOGIKA RENDER & SMART THUMBNAIL
+        // ==========================================
+        function getVideoMeta(url) {
+            let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
+            let thumbUrl = 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+            
+            if (url.includes('tiktok.com')) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+                thumbUrl = 'https://images.unsplash.com/photo-1611605698335-8b1569810432?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+            } else if (url.includes('instagram.com')) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+                thumbUrl = 'https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+            } else if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+                let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                if (ytMatch && ytMatch[1]) thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+            }
+            return { platHTML, thumbUrl };
+        }
+
+        function generateCard(sub) {
+            const camp = sub.campaigns || {};
+            const meta = getVideoMeta(sub.video_link);
+            const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+            
+            // Format Views untuk UI
+            const uiViews = sub.views_claimed > 0 ? sub.views_claimed.toLocaleString('id-ID') : '-';
+            const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
+            
+            // State Rendering (PENDING, APPROVED, REJECTED, atau NORMAL/KLAIM LGI)
+            // Jika status NULL atau belum diklaim sama sekali
+            let realStatus = sub.status || 'NONE';
+            if (sub.views_claimed === 0) realStatus = 'NONE';
+
+            let actionArea = '';
+            let cardOpacityClass = 'opacity-100';
+
+            // Jika campaign tutup/habis budget, user TIDAK BISA dibayar lagi tapi bisa update views
+            const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
+
+            if (realStatus === 'PENDING') {
+                // REVIEWING STATE
+                actionArea = `
+                    <div class="flex gap-1.5 sm:gap-2">
+                        <input type="text" value="${sub.views_claimed}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed">
+                    </div>
+                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
+                        <span>Reviewing...</span>
+                        <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${sub.est_payout.toLocaleString('id-ID')}</span>
+                    </button>`;
+            } 
+            else if (realStatus === 'REJECTED') {
+                // REJECTED STATE
+                cardOpacityClass = 'opacity-70 border-red-900/30';
+                actionArea = `
+                    <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium"><b>Ditolak:</b> ${sub.reject_reason || 'Tidak memenuhi syarat brief/kualitas.'}</p>
+                    </div>
+                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Ditolak</button>`;
+            } 
+            else {
+                // APPROVED ATAU BELUM KLAIM (NORMAL STATE) - Bisa input views baru
+                let placeholder = sub.views_paid > 0 ? `> ${sub.views_paid}` : 'Total views asli';
+                
+                let warningText = '';
+                if(isCampClosed) warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
+
+                actionArea = `
+                    ${warningText}
+                    <div class="flex gap-1.5 sm:gap-2">
+                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none">
+                    </div>
+                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none">
+                        ${sub.views_paid > 0 ? 'Klaim Update' : 'Klaim'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </button>`;
+            }
+
+            // Top Badge Info
+            let badgeHTML = '';
+            if (isCampClosed) {
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur">Habis/Closed</div>`;
+            } else if (realStatus === 'APPROVED') {
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
+            }
+
+            return `
+            <div class="video-card bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group ${cardOpacityClass}">
+                ${badgeHTML}
+                <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
+                    <img src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
+                        ${meta.platHTML}
+                    </div>
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                        <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${camp.title}">${camp.title}</h4>
+                        <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5">${dateStr} • By ${camp.brand_name}</p>
+                    </div>
+                </div>
+                
+                <a href="${sub.video_link}" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors focus:outline-none">
+                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    Lihat Video Link
+                </a>
+                
+                <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
+                        <div>
+                            <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
+                            <p class="text-[10px] sm:text-sm font-bold text-white">${uiViews}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
+                            <p class="text-[10px] sm:text-sm font-bold ${sub.earned > 0 ? 'text-emerald-400' : 'text-zinc-500'}">${uiEarned}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-auto space-y-2">
+                        ${actionArea}
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function getCols() {
+            const w = window.innerWidth;
+            if (w >= 1280) return 4; 
+            if (w >= 1024) return 3; 
+            return 2;                
+        }
+
+        function applyFilters() {
+            const grid = document.getElementById('cards-container');
+            const alertBox = document.getElementById('no-data-alert');
+            const loadMoreContainer = document.getElementById('load-more-container');
+            
+            grid.innerHTML = '';
+
+            let filtered = submissionsData.filter(sub => {
+                let realStatus = sub.status || 'NONE';
+                if (sub.views_claimed === 0) realStatus = 'NONE'; // Belum klaim
+                
+                // Filter Campaign ID
+                const matchCamp = currentFilter.campaign_id === 'all' || sub.campaigns.id === currentFilter.campaign_id;
+                // Filter Status
+                const matchStatus = currentFilter.status === 'all' || realStatus === currentFilter.status;
+                
+                return matchCamp && matchStatus;
+            });
+
+            // Sort logic
+            if (currentFilter.sort === 'oldest') {
+                filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+            } else { // newest default
+                filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+
+            if (filtered.length === 0) {
+                alertBox.classList.remove('hidden');
+                loadMoreContainer.classList.add('hidden');
+                return;
+            } else {
+                alertBox.classList.add('hidden');
+            }
+
+            let html = '';
+            filtered.slice(0, currentLimit).forEach((sub, i) => {
+                html += generateCard(sub, i);
+            });
+            grid.innerHTML = html;
+
+            if (filtered.length > currentLimit) {
+                loadMoreContainer.classList.remove('hidden');
+            } else {
+                loadMoreContainer.classList.add('hidden');
+            }
+        }
+
+        // ==========================================
+        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE
+        // ==========================================
+        window.claimViews = async function(subId) {
+            const inputEl = document.getElementById(`input-${subId}`);
+            const newClaimStr = inputEl.value.trim();
+            if (!newClaimStr) return alert("Masukkan jumlah views yang valid.");
+            
+            const newClaimViews = parseInt(newClaimStr);
+            if (newClaimViews <= 0) return alert("Jumlah views harus lebih dari 0.");
+
+            // Temukan submission data
+            const sub = submissionsData.find(s => s.id === subId);
+            if (!sub) return alert("Data tidak ditemukan.");
+
+            const camp = sub.campaigns;
+            const paidViews = sub.views_paid || 0;
+
+            if (newClaimViews <= paidViews) {
+                return alert(`Views harus lebih besar dari yang sudah dibayar (${paidViews}).`);
+            }
+
+            // --- MULAI PERHITUNGAN MATEMATIKA ---
+            let estPayout = 0;
+            const isClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
+
+            if (!isClosed && camp.payment_type === 'views') {
+                const cpm = camp.reward_per_1k || 0;
+                const minViews = camp.min_views || 10000;
+                const maxClaim = camp.max_claim || 250000;
+
+                // 1. Batasi Max Claim
+                let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
+                
+                // 2. Hitung Selisih Views (Delta) yang belum dibayar
+                let deltaViews = effectiveViews - paidViews;
+
+                if (deltaViews > 0) {
+                    // 3. Pengecekan Penalty (75% potong = dikali 0.25)
+                    let rate = cpm;
+                    if (effectiveViews < minViews) {
+                        rate = cpm * 0.25; 
+                    }
+
+                    // 4. Hitung Payout dari Delta
+                    estPayout = Math.floor((deltaViews / 1000) * rate);
+
+                    // 5. Mencegah melebihi sisa budget
+                    if (estPayout > camp.budget_remaining) {
+                        estPayout = camp.budget_remaining;
+                    }
+                }
+            }
+
+            // Notifikasi Konfirmasi
+            const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Pendapatan: Rp ${estPayout.toLocaleString('id-ID')}\n\nLanjutkan?`;
+            if (!confirm(confirmMsg)) return;
+
+            // --- PROSES UPDATE KE SUPABASE ---
+            const { data, error } = await supabase
+                .from('submissions')
+                .update({
+                    views_claimed: newClaimViews,
+                    est_payout: estPayout,
+                    status: 'PENDING',
+                    reject_reason: null // reset reject reason if re-claiming
+                })
+                .eq('id', subId);
+
+            if (error) {
+                alert("Gagal melakukan klaim: " + error.message);
+            } else {
+                alert("Berhasil mengajukan klaim. Menunggu review Admin/Brand.");
+                loadSubmissions(); // Refresh UI
+            }
+        };
+
+        // ==========================================
+        // 5. GLOBAL UI BINDINGS
+        // ==========================================
+        window.toggleSelect = function(id) {
+            document.querySelectorAll('.custom-select-options').forEach(el => { if(el.id !== id) el.classList.add('hidden'); });
+            document.getElementById(id).classList.toggle('hidden');
+        };
+
+        window.selectCampaign = function(id, title) {
+            currentFilter.campaign_id = id;
+            document.getElementById('campaign-selected-text').innerText = title;
+            document.getElementById('campaign-options').classList.add('hidden');
+            currentLimit = getCols() * 2; // reset limit
+            applyFilters();
+        };
+
+        window.toggleFilter = function() {
+            document.getElementById('filter-dropdown').classList.toggle('hidden');
+            document.getElementById('filter-dropdown').classList.toggle('flex');
+        };
+
+        window.applyFilter = function(type, value) {
+            currentFilter[type] = value;
+            document.querySelectorAll(`.filter-btn[class*="${type}-"]`).forEach(btn => {
+                if (btn.classList.contains(`${type}-${value}`)) {
+                    btn.classList.add('bg-zinc-800', 'text-white');
+                    btn.classList.remove('text-zinc-400', 'hover:bg-zinc-800/50', 'text-amber-400', 'text-blue-400', 'text-red-400');
+                } else {
+                    btn.classList.remove('bg-zinc-800', 'text-white');
+                    btn.classList.add('text-zinc-400', 'hover:bg-zinc-800/50');
+                    // Balikin warna text kalau khusus
+                    if(btn.classList.contains('status-PENDING')) btn.classList.add('text-amber-400');
+                    if(btn.classList.contains('status-APPROVED')) btn.classList.add('text-blue-400');
+                    if(btn.classList.contains('status-REJECTED')) btn.classList.add('text-red-400');
+                }
+            });
+            document.getElementById('filter-dropdown').classList.add('hidden');
+            document.getElementById('filter-dropdown').classList.remove('flex');
+            currentLimit = getCols() * 2;
+            applyFilters();
+        };
+
+        window.loadMore = function() {
+            currentLimit += getCols() * 2;
+            applyFilters();
+        };
+
+        // Sensor
         let isSensorActive = false;
-        function toggleSensor() {
-            isSensorActive = !isSensorActive;
+        window.toggleSensor = function(silent = false) {
+            if(!silent) isSensorActive = !isSensorActive;
             const totalElement = document.getElementById('total-pendapatan');
             const saldoElement = document.getElementById('saldo-detail');
             const iconElement = document.getElementById('eye-icon');
@@ -585,105 +590,24 @@
                 saldoElement.innerText = 'Rp ••••';
                 iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
             } else {
-                totalElement.innerText = 'Rp 263.000';
-                saldoElement.innerText = 'Rp 20.000';
+                totalElement.innerText = 'Rp ' + realEarnings.toLocaleString('id-ID');
+                saldoElement.innerText = 'Rp ' + realWithdrawable.toLocaleString('id-ID');
                 iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
             }
-        }
+        };
 
-        // =====================================
-        // LOGIC FILTER & LOAD MORE
-        // =====================================
-        let currentFilter = { status: 'all', platform: 'all' };
-
-        // Menentukan jumlah item untuk 2 baris berdasarkan lebar layar
-        function getCols() {
-            const w = window.innerWidth;
-            if (w >= 1280) return 4; // XL: 4 kolom
-            if (w >= 1024) return 3; // LG: 3 kolom
-            return 2;                // Default (Mobile/SM): 2 kolom
-        }
-
-        // Limit awal adalah (Jumlah Kolom * 2 Baris)
-        let currentLimit = getCols() * 2;
-
-        function toggleFilter() {
-            document.getElementById('filter-dropdown').classList.toggle('hidden');
-            document.getElementById('filter-dropdown').classList.toggle('flex');
-        }
-
-        // Tutup dropdown jika klik diluar
+        // Close custom dropdowns if clicked outside
         document.addEventListener('click', (e) => {
-            const container = document.getElementById('filter-container');
-            if (!container.contains(e.target)) {
-                document.getElementById('filter-dropdown').classList.add('hidden');
-                document.getElementById('filter-dropdown').classList.remove('flex');
-            }
-        });
-
-        function applyFilter(type, value) {
-            currentFilter[type] = value;
+            const selContainer = document.querySelector('.custom-select-container');
+            const filtContainer = document.getElementById('filter-container');
             
-            // Ubah gaya tombol filter
-            document.querySelectorAll(`.filter-btn[class*="platform-"], .filter-btn[class*="status-"]`).forEach(btn => {
-                if (btn.classList.contains(`${type}-${value}`)) {
-                    btn.classList.add('bg-zinc-800', 'text-white');
-                    btn.classList.remove('text-zinc-400', 'hover:bg-zinc-800/50');
-                } else if (btn.classList.contains(`${type}-all`) || btn.classList.contains(`${type}-belum`) || btn.classList.contains(`${type}-sudah`) || btn.classList.contains(`${type}-tiktok`) || btn.classList.contains(`${type}-instagram`)) {
-                    btn.classList.remove('bg-zinc-800', 'text-white');
-                    btn.classList.add('text-zinc-400', 'hover:bg-zinc-800/50');
-                }
-            });
-
-            // Reset limit saat filter berganti agar kembali ke 2 baris awal
-            currentLimit = getCols() * 2;
-            updateVisibility();
-        }
-
-        function updateVisibility() {
-            const cards = document.querySelectorAll('.video-card');
-            let matchCount = 0;
-            let visibleCount = 0;
-
-            cards.forEach(card => {
-                const cardStatus = card.getAttribute('data-status');
-                const cardPlatform = card.getAttribute('data-platform');
-                
-                const matchStatus = currentFilter.status === 'all' || cardStatus === currentFilter.status;
-                const matchPlatform = currentFilter.platform === 'all' || cardPlatform === currentFilter.platform;
-
-                if (matchStatus && matchPlatform) {
-                    matchCount++;
-                    if (visibleCount < currentLimit) {
-                        card.style.display = ''; // Munculkan kartu jika masuk kuota baris
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none'; // Sembunyikan sisanya
-                    }
-                } else {
-                    card.style.display = 'none'; // Sembunyikan jika tak cocok filter
-                }
-            });
-
-            // Atur tombol Load More
-            const loadMoreBtn = document.getElementById('load-more-container');
-            if (matchCount > currentLimit) {
-                loadMoreBtn.classList.remove('hidden');
-            } else {
-                loadMoreBtn.classList.add('hidden');
+            if (selContainer && !selContainer.contains(e.target)) {
+                document.querySelectorAll('.custom-select-options').forEach(el => el.classList.add('hidden'));
             }
-        }
-
-        function loadMore() {
-            // Tambahkan batas limit untuk memunculkan 2 baris selanjutnya
-            currentLimit += getCols() * 2;
-            updateVisibility();
-        }
-
-        // Update tampilan saat layar diresize jika dibutuhkan
-        window.addEventListener('resize', () => {
-            // Kita tidak perlu mereset limit saat meresize, tapi tetap rapikan tampilannya
-            updateVisibility();
+            if (filtContainer && !filtContainer.contains(e.target)) {
+                const fd = document.getElementById('filter-dropdown');
+                if(fd) { fd.classList.add('hidden'); fd.classList.remove('flex'); }
+            }
         });
     </script>
 </body>
