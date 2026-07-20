@@ -16,9 +16,9 @@
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         
-        /* Custom Box Styles for Brief section */
         .brief-box-blue { background-color: #1a2235; border-color: #2d3748; }
         .brief-box-red { background-color: #2a1616; border-color: #4a2525; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -42,8 +42,8 @@
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 pb-32 scroll-smooth">
         <div class="max-w-5xl mx-auto space-y-8 mt-4">
             
-            <!-- BANNER FULL GAMBAR -->
-            <div class="w-full aspect-[16/9] md:h-[400px] md:aspect-auto bg-zinc-900 rounded-2xl md:rounded-3xl overflow-hidden relative shadow-2xl">
+            <!-- BANNER FULL GAMBAR (DI TINGGIKAN -> md:h-[480px]) -->
+            <div class="w-full aspect-[16/9] md:h-[480px] md:aspect-auto bg-zinc-900 rounded-2xl md:rounded-3xl overflow-hidden relative shadow-2xl">
                 <img id="campaign-banner" src="" alt="Banner Campaign" class="w-full h-full object-cover transition-transform duration-700 opacity-0">
                 <div id="banner-fallback" class="absolute inset-0 flex items-center justify-center text-zinc-600 text-sm font-medium">Memuat Banner...</div>
             </div>
@@ -53,17 +53,18 @@
                 <h1 id="campaign-title" class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4 flex flex-wrap items-center gap-3">
                     Memuat Judul...
                     <!-- Tags -->
-                    <span id="tag-status" class="border border-zinc-600 bg-zinc-800/50 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">STATUS</span>
-                    <span id="tag-niche" class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">NICHE</span>
+                    <span id="tag-status" class="hidden border border-zinc-600 bg-zinc-800/50 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">STATUS</span>
+                    <span id="tag-type" class="hidden border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">TIPE</span>
+                    <span id="tag-niche" class="hidden border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">NICHE</span>
                 </h1>
-                <p id="campaign-desc" class="text-sm md:text-base text-zinc-400">Lihat brief dibawah untuk melihat instruksi lengkapnya</p>
+                <p class="text-sm md:text-base text-zinc-400">Lihat brief dibawah untuk melihat instruksi lengkapnya</p>
             </div>
 
             <!-- GRID STATS & BUDGET -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                 
                 <!-- KIRI: CAMPAIGN STATS -->
-                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6 flex flex-col">
+                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6 flex flex-col h-full">
                     <div class="flex items-center gap-2 mb-4 border-b border-zinc-800/80 pb-4">
                         <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                         <h3 class="text-base font-bold text-white">Campaign Stats</h3>
@@ -76,11 +77,11 @@
                         </div>
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> <span class="text-sm">Min. Views</span></div>
-                            <span id="stat-min-views" class="font-bold text-white text-sm">0rb</span>
+                            <span id="stat-min-views" class="font-bold text-white text-sm">0</span>
                         </div>
                         <div class="flex justify-between items-center border-b border-zinc-800/80 pb-4">
                             <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> <span class="text-sm">Max. Claim</span></div>
-                            <span id="stat-max-claim" class="font-bold text-white text-sm">0rb</span>
+                            <span id="stat-max-claim" class="font-bold text-white text-sm">0</span>
                         </div>
                     </div>
 
@@ -104,7 +105,7 @@
                 </div>
 
                 <!-- KANAN: BUDGET & BAHAN -->
-                <div class="flex flex-col gap-6">
+                <div class="flex flex-col gap-6 h-full">
                     
                     <!-- Box Budget -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6">
@@ -129,7 +130,7 @@
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 md:p-6 flex-1 flex flex-col">
                         <div class="flex items-center gap-2 mb-4 border-b border-zinc-800/80 pb-4">
                             <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                            <h3 class="text-base font-bold text-white">Bahan Clipping</h3>
+                            <h3 id="bahan-title" class="text-base font-bold text-white">Bahan Clipping</h3>
                         </div>
                         <p class="text-sm text-zinc-400 mb-6 leading-relaxed">Dapatkan referensi, file mentahan, atau panduan visual lainnya untuk bahan editingmu.</p>
                         
@@ -252,6 +253,14 @@
             await loadCampaignDetails(campaignId);
         });
 
+        // Formatter angka fleksibel (ribu/juta)
+        function formatFlexibleNumber(num) {
+            if (!num) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(num % 1000000 !== 0 ? 1 : 0).replace('.', ',') + 'jt';
+            if (num >= 1000) return (num / 1000).toFixed(num % 1000 !== 0 ? 1 : 0).replace('.', ',') + 'rb';
+            return num.toString();
+        }
+
         async function loadCampaignDetails(id) {
             const { data, error } = await supabase
                 .from('campaigns')
@@ -283,11 +292,21 @@
                 fallback.innerText = "Tidak ada banner";
             }
 
-            // 3. Title & Tags
+            // 3. Title & Tags (Update Status / Niche / Tipe)
+            let statusColor = 'border-green-500/50 bg-green-500/20 text-green-500';
+            if(data.status === 'HOLDING') statusColor = 'border-yellow-500/50 bg-yellow-500/20 text-yellow-500';
+            if(data.status === 'CLOSED') statusColor = 'border-red-500/50 bg-red-500/20 text-red-500';
+
+            const typeText = data.type === 'ugc' ? 'UGC' : 'CLIPPING';
+            
+            // Atur nama Bahan sesuai tipe
+            document.getElementById('bahan-title').innerText = data.type === 'ugc' ? 'Bahan / Referensi UGC' : 'Bahan Clipping';
+
             document.getElementById('campaign-title').innerHTML = `
                 ${data.title}
-                <span class="border border-zinc-600 bg-zinc-800/50 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.status}</span>
-                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.niche}</span>
+                <span class="${statusColor} px-2.5 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.status}</span>
+                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${typeText}</span>
+                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.niche}</span>
             `;
 
             // 4. STATS (KIRI)
@@ -295,11 +314,9 @@
             const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
             document.getElementById('stat-rate').innerText = `${priceFormatted} / ${data.payment_type === 'video' ? 'video' : '1k views'}`;
             
-            // Render Fallback Min/Max jika belum ada di database
-            const minV = data.min_views ? (data.min_views / 1000) + 'rb' : '10rb';
-            const maxC = data.max_claim ? (data.max_claim / 1000) + 'rb' : '250rb';
-            document.getElementById('stat-min-views').innerText = minV;
-            document.getElementById('stat-max-claim').innerText = maxC;
+            // Format Min Views & Max Claim fleksibel (rb/jt)
+            document.getElementById('stat-min-views').innerText = formatFlexibleNumber(data.min_views || 10000);
+            document.getElementById('stat-max-claim').innerText = formatFlexibleNumber(data.max_claim || 250000);
 
             // Platform Badges (KIRI)
             let platHTML = '';
@@ -325,19 +342,30 @@
             document.getElementById('budget-percentage').innerText = percentage + '%';
             setTimeout(() => { document.getElementById('budget-bar').style.width = percentage + '%'; }, 300);
 
-            // 6. BAHAN (MODAL LINK)
+            // 6. BAHAN (MODAL LINK PARSING JSON)
             const modalLinks = document.getElementById('modal-links-container');
-            if (data.video_links && data.video_links.length > 0) {
+            let parsedLinks = [];
+            if (data.video_links && Array.isArray(data.video_links)) {
+                parsedLinks = data.video_links.map(item => {
+                    if (typeof item === 'string') {
+                        try { return JSON.parse(item); } catch(e) { return { name: 'Link Materi / Bahan', url: item }; }
+                    }
+                    return item;
+                });
+            }
+
+            if (parsedLinks.length > 0) {
                 let mHtml = '';
-                data.video_links.forEach(l => {
+                parsedLinks.forEach(l => {
                     mHtml += `
-                    <a href="${l}" target="_blank" class="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors group">
-                        <div class="flex items-center gap-4 overflow-hidden pr-4">
+                    <a href="${l.url}" target="_blank" class="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors group">
+                        <div class="flex items-center gap-4 overflow-hidden pr-4 w-full">
                             <div class="w-10 h-10 bg-indigo-500/20 text-indigo-400 rounded-lg flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                             </div>
-                            <div class="truncate">
-                                <p class="text-sm font-semibold text-white group-hover:underline truncate">${l}</p>
+                            <div class="truncate w-full pr-2">
+                                <p class="text-sm font-semibold text-white group-hover:underline truncate">${l.name}</p>
+                                <p class="text-[10px] text-zinc-500 truncate block mt-0.5">${l.url}</p>
                             </div>
                         </div>
                         <svg class="w-5 h-5 text-zinc-500 group-hover:text-white transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
