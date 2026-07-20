@@ -38,10 +38,10 @@
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 z-0 w-full relative scroll-smooth">
         <div class="max-w-2xl mx-auto space-y-6 sm:space-y-8">
             
-            <!-- Judul Campaign yang dipilih -->
+            <!-- Judul Campaign yang dipilih (Diisi Dinamis) -->
             <div class="text-center">
                 <p class="text-xs text-zinc-500 font-semibold uppercase tracking-widest mb-2">Submit untuk Campaign</p>
-                <h2 class="text-xl sm:text-2xl font-bold text-white">ENHYPEN Jakarta (Presale)</h2>
+                <h2 id="campaignTitle" class="text-xl sm:text-2xl font-bold text-white animate-pulse">Memuat...</h2>
             </div>
 
             <!-- Peringatan / Rules -->
@@ -57,22 +57,13 @@
                 </div>
             </div>
 
-            <form id="submitForm" class="bg-cardBg border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden">
+            <form id="submitForm" class="bg-cardBg border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden" novalidate>
                 
-                <!-- Platform yang diizinkan -->
+                <!-- Platform yang diizinkan (Diisi Dinamis) -->
                 <div class="mb-6">
                     <label class="block text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Platform Yang Diizinkan</label>
-                    <div class="flex flex-wrap gap-2">
-                        <!-- TikTok -->
-                        <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-full text-xs font-medium text-white">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                            TikTok
-                        </div>
-                        <!-- IG -->
-                        <div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-full text-xs font-medium text-white">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                            Instagram Reels
-                        </div>
+                    <div id="platformsContainer" class="flex flex-wrap gap-2">
+                        <p class="text-zinc-600 text-xs">Memuat platform...</p>
                     </div>
                 </div>
 
@@ -83,13 +74,19 @@
                         <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                             <svg class="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                         </div>
-                        <input type="url" id="videoLink" placeholder="https://..." required class="w-full bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-xl pl-11 pr-4 py-3 sm:py-4 text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors shadow-inner">
+                        <!-- Input dirubah tanpa required HTML untuk kita tangani pakai JS khusus -->
+                        <input type="text" id="videoLink" placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-11 pr-4 py-3 sm:py-4 text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors shadow-inner">
                     </div>
+                    <!-- Tempat error dinamis -->
+                    <p id="urlError" class="hidden text-red-500 text-xs mt-2 font-medium flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Link tidak valid. Harap masukkan format link yang benar (mengandung http:// atau https://).
+                    </p>
                     <p class="text-[10px] text-zinc-500 mt-2">Pastikan link video bersifat publik dan dapat diakses.</p>
                 </div>
 
                 <!-- Tombol Submit -->
-                <button type="submit" class="w-full bg-white hover:bg-zinc-200 text-black font-bold text-sm sm:text-base py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                <button type="submit" id="submitBtn" class="w-full bg-white hover:bg-zinc-200 text-black font-bold text-sm sm:text-base py-3 sm:py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] focus:outline-none">
                     Kirim Konten
                     <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </button>
@@ -106,7 +103,7 @@
     <!-- POPUP SUKSES -->
     <div id="successModal" class="fixed inset-0 z-[999] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <!-- Overlay -->
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="window.closeModal()"></div>
         
         <!-- Modal Content -->
         <div class="bg-cardBg border border-zinc-800 p-6 sm:p-8 rounded-[2rem] shadow-2xl relative z-10 w-[90%] max-w-sm text-center transform scale-95 transition-transform duration-300" id="modalContent">
@@ -115,40 +112,175 @@
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Berhasil Submit!</h3>
             <p class="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-6">
-                Anda dapat claim kapanpun di menu claim views selagi campaign open dan budget masih ada.
+                Video kamu telah direkam ke dalam sistem. Anda dapat mengajukan claim views kapanpun di menu klaim!
             </p>
-            <button onclick="closeModal()" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors">
+            <button onclick="window.closeModal()" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-zinc-200 transition-colors">
                 Oke, Mengerti
             </button>
         </div>
     </div>
 
-    <!-- JS Form Submit & Popup Modal -->
-    <script>
-        const form = document.getElementById('submitForm');
-        const modal = document.getElementById('successModal');
-        const modalContent = document.getElementById('modalContent');
+    <!-- SCRIPT UTAMA (SUPABASE & LOGIC) -->
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Mencegah reload halaman
-            
-            // Munculkan popup
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
+        let sessionUser = null;
+        let campaignId = new URLSearchParams(window.location.search).get('campaign_id');
+        let campaignData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cek Login
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                alert("Silakan login.");
+                window.location.replace('login.html');
+                return;
+            }
+            sessionUser = session.user;
+
+            // Pastikan User Datang Membawa Campaign ID
+            if (!campaignId) {
+                alert("Campaign tidak ditemukan! Harap pilih dari halaman sebelumnya.");
+                window.location.replace('clipper-campaignselector.html');
+                return;
+            }
+
+            // Fetch Data Campaign dari Supabase
+            await fetchCampaign();
         });
 
-        function closeModal() {
-            // Animasi menutup popup
+        async function fetchCampaign() {
+            try {
+                const { data, error } = await supabase
+                    .from('campaigns')
+                    .select('title, platforms')
+                    .eq('id', campaignId)
+                    .single();
+
+                if (error || !data) throw error;
+                campaignData = data;
+
+                // Update UI Judul
+                const titleEl = document.getElementById('campaignTitle');
+                titleEl.innerText = campaignData.title;
+                titleEl.classList.remove('animate-pulse');
+                document.title = "Submit: " + campaignData.title + " - Whoost Clipper";
+
+                // Memperbarui URL History (Tampil Rapi di Browser tanpa refresh)
+                const safeUrlName = campaignData.title.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
+                window.history.replaceState({}, '', `?campaign_id=${campaignId}&name=${safeUrlName}`);
+
+                // Render Platforms Badge
+                renderPlatforms(campaignData.platforms);
+
+            } catch (err) {
+                alert("Gagal memuat data campaign. Memulangkan halaman.");
+                window.location.replace('clipper-campaignselector.html');
+            }
+        }
+
+        function renderPlatforms(platformsArray) {
+            const container = document.getElementById('platformsContainer');
+            if (!platformsArray || platformsArray.length === 0) {
+                container.innerHTML = `<span class="text-zinc-500 text-xs">Semua Platform Diizinkan</span>`;
+                return;
+            }
+
+            let html = '';
+            if (platformsArray.includes('tiktok')) {
+                html += `<div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-full text-xs font-medium text-white"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>TikTok</div>`;
+            }
+            if (platformsArray.includes('instagram')) {
+                html += `<div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-full text-xs font-medium text-white"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>Instagram Reels</div>`;
+            }
+            if (platformsArray.includes('youtube')) {
+                html += `<div class="flex items-center gap-1.5 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-full text-xs font-medium text-white"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>YouTube Shorts</div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // Handle Validasi & Submit
+        const form = document.getElementById('submitForm');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const inputEl = document.getElementById('videoLink');
+            const urlVal = inputEl.value.trim();
+            const errorMsg = document.getElementById('urlError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Regex Validator Link Kuat
+            const isValidUrl = (str) => {
+                const pattern = new RegExp('^(https?:\\/\\/)?'+ 
+                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ 
+                    '((\\d{1,3}\\.){3}\\d{1,3}))'+ 
+                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ 
+                    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
+                    '(\\#[-a-z\\d_]*)?$','i');
+                return !!pattern.test(str) && (str.startsWith('http://') || str.startsWith('https://'));
+            };
+
+            // Jika Bukan Link Valid
+            if (!isValidUrl(urlVal)) {
+                inputEl.classList.add('border-red-500', 'bg-red-950/20');
+                inputEl.classList.remove('border-zinc-700', 'focus:border-white');
+                errorMsg.classList.remove('hidden');
+                inputEl.focus();
+                return;
+            }
+
+            // Jika Lolos Validasi
+            inputEl.classList.remove('border-red-500', 'bg-red-950/20');
+            inputEl.classList.add('border-zinc-700', 'focus:border-white');
+            errorMsg.classList.add('hidden');
+
+            // Nonaktifkan tombol sementara agar tidak dobel klik
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+
+            try {
+                // Insert Data Baru ke Supabase `submissions`
+                const { error } = await supabase
+                    .from('submissions')
+                    .insert([{
+                        campaign_id: campaignId,
+                        user_id: sessionUser.id,
+                        video_link: urlVal,
+                        status: 'PENDING',
+                        views_claimed: 0,
+                        views_paid: 0,
+                        earned: 0
+                    }]);
+
+                if (error) throw error;
+
+                // Jika Berhasil, Tampilkan Modal
+                const modal = document.getElementById('successModal');
+                const modalContent = document.getElementById('modalContent');
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+
+            } catch (err) {
+                alert("Gagal mensubmit link: " + err.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+            }
+        });
+
+        // Global Action for Modal
+        window.closeModal = function() {
+            const modal = document.getElementById('successModal');
+            const modalContent = document.getElementById('modalContent');
             modal.classList.add('opacity-0', 'pointer-events-none');
             modalContent.classList.remove('scale-100');
             modalContent.classList.add('scale-95');
             
-            // Redirect ke halaman Campaign Selector setelah 300ms (menunggu animasi beres)
+            // Redirect langsung ke halaman Klaim
             setTimeout(() => {
-                window.location.href = 'clipper-campaignselector.html';
+                window.location.href = 'clipper-claim.html';
             }, 300);
-        }
+        };
     </script>
 </body>
 </html>
