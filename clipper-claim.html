@@ -357,7 +357,9 @@
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
                         <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak:</b> ${sub.reject_reason || 'Tidak memenuhi syarat brief/kualitas.'}</p>
                     </div>
-                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Ditolak</button>`;
+                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-zinc-800 text-zinc-400 hover:text-white font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-700 transition-colors">Klaim Ulang</button>
+                    <input type="number" id="input-${sub.id}" placeholder="Masukkan views baru" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mt-2">
+                    `;
             } 
             else {
                 // NORMAL STATE (Bisa Klaim/Update)
@@ -478,6 +480,8 @@
         // ==========================================
         window.claimViews = async function(subId) {
             const inputEl = document.getElementById(`input-${subId}`);
+            if(!inputEl) return;
+            
             const newClaimStr = inputEl.value.trim();
             if (!newClaimStr) return alert("Masukkan jumlah views yang valid.");
             
@@ -488,10 +492,11 @@
             if (!sub) return alert("Data tidak ditemukan.");
 
             const camp = sub.campaigns;
-            const paidViews = sub.views_paid || 0;
-
-            if (newClaimViews <= paidViews) {
-                return alert(`Views baru harus lebih besar dari views yang sudah dibayar (${paidViews.toLocaleString('id-ID')}).`);
+            
+            // Validasi: User tidak bisa klaim jumlah views yang sama atau lebih rendah dari yang sudah diapprove
+            const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+            if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED') {
+                return alert(`Views baru harus lebih besar dari views yang sudah disetujui sebelumnya (${maxPrevViews.toLocaleString('id-ID')}).`);
             }
 
             // --- MULAI PERHITUNGAN MATEMATIKA SESUAI PERMINTAAN ---
@@ -507,30 +512,34 @@
                     // 1. Batasi Max Claim
                     let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
                     
-                    // 2. Hitung Selisih Views (Delta) yang belum dibayar
-                    let deltaViews = effectiveViews - paidViews;
+                    // 2. Hitung total estimasi yang seharusnya didapat
+                    let rate = cpm;
+                    if (effectiveViews < minViews) {
+                        rate = cpm * 0.25; // Penalty 75%
+                    }
 
-                    if (deltaViews > 0) {
-                        // 3. Pengecekan Penalty (Potong 75% jika dibawah batas minimal -> sisa 25% atau 0.25)
-                        let rate = cpm;
-                        if (effectiveViews < minViews) {
-                            rate = cpm * 0.25; 
-                        }
+                    let totalExpectedEarnings = Math.floor((effectiveViews / 1000) * rate);
 
-                        // 4. Hitung Estimasi (Delta * Rate normal/penalty)
-                        estPayout = Math.floor((deltaViews / 1000) * rate);
+                    // 3. Kurangi dengan yang sudah dibayarkan sebelumnya
+                    let previouslyEarned = sub.earned || 0;
+                    estPayout = totalExpectedEarnings - previouslyEarned;
 
-                        // 5. Cegah melebihi sisa budget brand
-                        if (estPayout > camp.budget_remaining) {
-                            estPayout = camp.budget_remaining;
-                        }
+                    // Jika hasilnya minus, set ke 0
+                    if (estPayout < 0) estPayout = 0;
+
+                    // 4. Cegah melebihi sisa budget brand
+                    if (estPayout > camp.budget_remaining) {
+                        estPayout = camp.budget_remaining;
                     }
                 } else if (camp.payment_type === 'video') {
-                    // Jika bayar per video, klaim hanya divalidasi sekali
-                    if (paidViews === 0) {
-                        estPayout = camp.price_per_video || 0;
-                        if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
-                    }
+                    // Jika bayar per video, hitung sisa pembayarannya
+                    let previouslyEarned = sub.earned || 0;
+                    let totalExpectedEarnings = camp.price_per_video || 0;
+                    
+                    estPayout = totalExpectedEarnings - previouslyEarned;
+                    
+                    if (estPayout < 0) estPayout = 0;
+                    if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
                 }
             }
 
@@ -608,7 +617,6 @@
         };
 
         // Sensor
-        let isSensorActive = false;
         window.toggleSensor = function(silent = false) {
             if(!silent) isSensorActive = !isSensorActive;
             const totalElement = document.getElementById('total-pendapatan');
