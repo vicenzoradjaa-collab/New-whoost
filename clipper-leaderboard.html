@@ -43,6 +43,15 @@
         .podium-1 { background: linear-gradient(180deg, rgba(250, 204, 21, 0.15) 0%, rgba(250, 204, 21, 0) 100%); }
         .podium-2 { background: linear-gradient(180deg, rgba(161, 161, 170, 0.15) 0%, rgba(161, 161, 170, 0) 100%); }
         .podium-3 { background: linear-gradient(180deg, rgba(217, 119, 6, 0.15) 0%, rgba(217, 119, 6, 0) 100%); }
+        
+        /* Animasi Transisi Halus */
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -85,16 +94,19 @@
             
             <!-- Intro & Filter Tabs -->
             <div class="mb-8">
-                <h2 class="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">Top Clippers 🏆</h2>
-                <p class="text-xs sm:text-sm text-zinc-400 mb-6">Peringkat didasarkan pada performa bulan ini. Terus submit konten untuk raih posisi puncak!</p>
+                <h2 class="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight flex items-center gap-3">
+                    Top Clippers 
+                    <svg class="inline-block w-7 h-7 text-yellow-400 drop-shadow-md align-middle" fill="currentColor" viewBox="0 0 24 24"><path d="M19 2H5C3.346 2 2 3.346 2 5v2.831c0 2.455 1.54 4.582 3.86 5.378C6.671 16.643 9.07 19 12 19s5.329-2.357 6.14-5.791C20.46 12.413 22 10.286 22 7.831V5c0-1.654-1.346-3-3-3zM4 7.831V5c0-.551.449-1 1-1h1v4.444C4.851 8.246 4 8.083 4 7.831zm16 0c0 .252-.851.415-2 .613V4h1c.551 0 1 .449 1 1v2.831z"></path><path d="M10 20h4v2h-4z"></path></svg>
+                </h2>
+                <p class="text-xs sm:text-sm text-zinc-400 mb-6">Peringkat didasarkan pada performa keseluruhan. Terus submit konten untuk raih posisi puncak!</p>
 
                 <!-- TABS VIEWS & PAYOUT -->
                 <div class="flex bg-zinc-900/60 p-1.5 rounded-xl border border-zinc-800/80 backdrop-blur-sm">
-                    <button id="btn-views" onclick="switchTab('views')" class="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-zinc-800 text-white rounded-lg shadow-md transition-all duration-300">
+                    <button id="btn-views" onclick="window.switchTab('views')" class="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold bg-zinc-800 text-white rounded-lg shadow-md transition-all duration-300">
                         Paling Banyak Views
                     </button>
-                    <button id="btn-payout" onclick="switchTab('payout')" class="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-zinc-400 hover:text-white rounded-lg transition-all duration-300">
-                        Total Payout Terbesar
+                    <button id="btn-payout" onclick="window.switchTab('payout')" class="flex-1 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-zinc-400 hover:text-white rounded-lg transition-all duration-300">
+                        Total Penghasilan
                     </button>
                 </div>
             </div>
@@ -103,322 +115,272 @@
             <!-- LEADERBOARD: VIEWS CONTENT                 -->
             <!-- ========================================== -->
             <div id="content-views" class="space-y-6 animate-fade-in block">
-                
-                <!-- Podium Top 3 -->
-                <div class="flex items-end justify-center gap-2 sm:gap-4 pt-6 pb-4">
-                    <!-- Rank 2 -->
-                    <div class="flex flex-col items-center podium-2 border border-zinc-800/50 rounded-t-2xl p-3 pb-0 w-[30%] max-w-[120px]">
-                        <div class="relative mb-2">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-zinc-400 bg-zinc-800 overflow-hidden">
-                                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-zinc-300 text-black text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#2</div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">@fanzone</h4>
-                        <p class="text-[10px] sm:text-xs text-zinc-400 font-medium mb-3">4.2M Views</p>
-                        <div class="w-full h-16 sm:h-20 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
-                            <span class="text-zinc-500 font-black text-xl">2</span>
-                        </div>
-                    </div>
-
-                    <!-- Rank 1 -->
-                    <div class="flex flex-col items-center podium-1 border border-yellow-500/30 rounded-t-2xl p-3 pb-0 w-[35%] max-w-[140px] relative z-10">
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
-                        <div class="relative mb-2">
-                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-yellow-400 bg-zinc-800 overflow-hidden shadow-[0_0_15px_rgba(250,204,21,0.3)]">
-                                <img src="https://i.pravatar.cc/150?img=33" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full border-2 border-darkBg">#1</div>
-                        </div>
-                        <h4 class="text-sm sm:text-base font-black text-yellow-400 truncate w-full text-center mt-1">@clipper_king</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-300 font-semibold mb-3">6.8M Views</p>
-                        <div class="w-full h-24 sm:h-28 bg-gradient-to-t from-yellow-500/20 to-yellow-500/5 rounded-t-lg border-x border-t border-yellow-500/40 flex items-start justify-center pt-2">
-                            <span class="text-yellow-500/50 font-black text-3xl">1</span>
-                        </div>
-                    </div>
-
-                    <!-- Rank 3 -->
-                    <div class="flex flex-col items-center podium-3 border border-zinc-800/50 rounded-t-2xl p-3 pb-0 w-[30%] max-w-[120px]">
-                        <div class="relative mb-2">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-amber-600 bg-zinc-800 overflow-hidden">
-                                <img src="https://i.pravatar.cc/150?img=12" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#3</div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">@viral_ninja</h4>
-                        <p class="text-[10px] sm:text-xs text-zinc-400 font-medium mb-3">3.9M Views</p>
-                        <div class="w-full h-12 sm:h-16 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
-                            <span class="text-zinc-500 font-black text-lg">3</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- List Rank 4 hingga 10 -->
-                <div id="list-views" class="flex flex-col gap-3">
-                    <!-- Rank 4 -->
-                    <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 transition-colors group">
-                        <div class="flex items-center gap-3 sm:gap-4">
-                            <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">4</span>
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?img=5" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">Dika Saputra</h4>
-                                <p class="text-[10px] sm:text-xs text-zinc-400">@dika_clips</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm sm:text-base font-bold text-white">2.5M</p>
-                            <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Views</p>
-                        </div>
-                    </div>
-                    <!-- Rank 5 -->
-                    <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 transition-colors group">
-                        <div class="flex items-center gap-3 sm:gap-4">
-                            <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">5</span>
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?img=47" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">K-Pop Update</h4>
-                                <p class="text-[10px] sm:text-xs text-zinc-400">@kpop_clips</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm sm:text-base font-bold text-white">1.8M</p>
-                            <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Views</p>
-                        </div>
-                    </div>
-                    <!-- Rank 6 ke 10 Digenerate otomatis oleh Script -->
-                </div>
+                <!-- Akan diisi oleh JS -->
+                <div class="py-10 text-center text-zinc-500 animate-pulse text-sm">Menyiapkan data peringkat...</div>
             </div>
 
             <!-- ========================================== -->
             <!-- LEADERBOARD: PAYOUT CONTENT (Hidden by default) -->
             <!-- ========================================== -->
             <div id="content-payout" class="space-y-6 hidden animate-fade-in">
-                
-                <!-- Podium Top 3 (Payout) -->
-                <div class="flex items-end justify-center gap-2 sm:gap-4 pt-6 pb-4">
-                    <!-- Rank 2 -->
-                    <div class="flex flex-col items-center podium-2 border border-zinc-800/50 rounded-t-2xl p-3 pb-0 w-[30%] max-w-[120px]">
-                        <div class="relative mb-2">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-zinc-400 bg-zinc-800 overflow-hidden">
-                                <img src="https://i.pravatar.cc/150?img=33" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-zinc-300 text-black text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#2</div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">@clipper_king</h4>
-                        <p class="text-[10px] sm:text-xs text-green-400 font-bold mb-3">Rp 12.5 Jt</p>
-                        <div class="w-full h-16 sm:h-20 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
-                            <span class="text-zinc-500 font-black text-xl">2</span>
-                        </div>
-                    </div>
-
-                    <!-- Rank 1 -->
-                    <div class="flex flex-col items-center podium-1 border border-yellow-500/30 rounded-t-2xl p-3 pb-0 w-[35%] max-w-[140px] relative z-10">
-                        <svg class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
-                        <div class="relative mb-2">
-                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-yellow-400 bg-zinc-800 overflow-hidden shadow-[0_0_15px_rgba(250,204,21,0.3)]">
-                                <img src="https://i.pravatar.cc/150?img=12" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full border-2 border-darkBg">#1</div>
-                        </div>
-                        <h4 class="text-sm sm:text-base font-black text-yellow-400 truncate w-full text-center mt-1">@viral_ninja</h4>
-                        <p class="text-[11px] sm:text-xs text-green-400 font-black mb-3">Rp 15.2 Jt</p>
-                        <div class="w-full h-24 sm:h-28 bg-gradient-to-t from-yellow-500/20 to-yellow-500/5 rounded-t-lg border-x border-t border-yellow-500/40 flex items-start justify-center pt-2">
-                            <span class="text-yellow-500/50 font-black text-3xl">1</span>
-                        </div>
-                    </div>
-
-                    <!-- Rank 3 -->
-                    <div class="flex flex-col items-center podium-3 border border-zinc-800/50 rounded-t-2xl p-3 pb-0 w-[30%] max-w-[120px]">
-                        <div class="relative mb-2">
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-amber-600 bg-zinc-800 overflow-hidden">
-                                <img src="https://i.pravatar.cc/150?img=11" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#3</div>
-                        </div>
-                        <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">@fanzone</h4>
-                        <p class="text-[10px] sm:text-xs text-green-400 font-bold mb-3">Rp 8.7 Jt</p>
-                        <div class="w-full h-12 sm:h-16 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
-                            <span class="text-zinc-500 font-black text-lg">3</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- List Rank 4 hingga 10 (Payout) -->
-                <div id="list-payout" class="flex flex-col gap-3">
-                    <!-- Rank 4 -->
-                    <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 transition-colors group">
-                        <div class="flex items-center gap-3 sm:gap-4">
-                            <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">4</span>
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?img=8" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">UGC Master</h4>
-                                <p class="text-[10px] sm:text-xs text-zinc-400">@ugc_master</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm sm:text-base font-bold text-green-400">Rp 5.4 Jt</p>
-                            <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Total Payout</p>
-                        </div>
-                    </div>
-                    <!-- Rank 5 -->
-                    <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 transition-colors group">
-                        <div class="flex items-center gap-3 sm:gap-4">
-                            <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">5</span>
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?img=5" alt="Avatar" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">Dika Saputra</h4>
-                                <p class="text-[10px] sm:text-xs text-zinc-400">@dika_clips</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm sm:text-base font-bold text-green-400">Rp 3.1 Jt</p>
-                            <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Total Payout</p>
-                        </div>
-                    </div>
-                    <!-- Rank 6 ke 10 Digenerate otomatis oleh Script -->
-                </div>
+                 <!-- Akan diisi oleh JS -->
             </div>
 
         </div>
     </main>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT & LOGIC                         -->
-    <!-- ========================================== -->
-    
     <!-- Navbar Bawah -->
     <script>
         const ACTIVE_MENU = 'leaderboard'; 
     </script>
     <script src="attribute/navbarclipper.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Hilangkan Loading Screen
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT & SUPABASE LOGIC                -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            
+            await loadLeaderboardData();
+
+            // Hilangkan Loading Screen setelah data siap
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
-                loader.classList.add('opacity-0'); 
-                setTimeout(() => {
-                    loader.style.display = 'none'; 
-                }, 500); 
-            }, 800); 
-
-            // =========================================================================
-            // GENERATE SISA RANKING (RANK 6 SAMPAI 10)
-            // =========================================================================
-            const listViewsContainer = document.getElementById('list-views');
-            const listPayoutContainer = document.getElementById('list-payout');
-
-            // HANYA SAMPAI TOP 10
-            for (let i = 6; i <= 10; i++) {
-                // Buat id avatar random untuk dummy data (max 70 id di pravatar)
-                const avatarId = (i % 70) + 1; 
-
-                // Simulasi data semakin mengecil ke bawah
-                // Views (mulai dari ~1.7M)
-                const viewsBase = Math.max(10, 1800 - (i * 15)); // dalam satuan K (1000)
-                const viewsFormatted = viewsBase >= 1000 ? (viewsBase/1000).toFixed(1) + 'M' : viewsBase + 'K';
-
-                // Payout (mulai dari ~2.9 Juta)
-                const payoutBase = Math.max(100, 3100 - (i * 25)); // dalam ribuan (1000 = 1 Juta)
-                const payoutFormatted = payoutBase >= 1000 ? (payoutBase/1000).toFixed(1) + ' Jt' : payoutBase + ' Rb';
-
-                // 1. Template Item untuk VIEWS
-                const viewEl = document.createElement('div');
-                viewEl.className = 'bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 transition-colors group';
-                viewEl.innerHTML = `
-                    <div class="flex items-center gap-3 sm:gap-4">
-                        <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">${i}</span>
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0">
-                            <img src="https://i.pravatar.cc/150?img=${avatarId}" alt="Avatar" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">Clipper ${i}</h4>
-                            <p class="text-[10px] sm:text-xs text-zinc-400">@clipper_${i}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm sm:text-base font-bold text-white">${viewsFormatted}</p>
-                        <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Views</p>
-                    </div>
-                `;
-                listViewsContainer.appendChild(viewEl);
-
-                // 2. Template Item untuk PAYOUT
-                const payoutEl = document.createElement('div');
-                payoutEl.className = 'bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 transition-colors group';
-                payoutEl.innerHTML = `
-                    <div class="flex items-center gap-3 sm:gap-4">
-                        <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">${i}</span>
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0">
-                            <img src="https://i.pravatar.cc/150?img=${avatarId}" alt="Avatar" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">Clipper ${i}</h4>
-                            <p class="text-[10px] sm:text-xs text-zinc-400">@clipper_${i}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm sm:text-base font-bold text-green-400">Rp ${payoutFormatted}</p>
-                        <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Total Payout</p>
-                    </div>
-                `;
-                listPayoutContainer.appendChild(payoutEl);
-            }
+                if(loader) {
+                    loader.classList.add('opacity-0'); 
+                    setTimeout(() => {
+                        loader.style.display = 'none'; 
+                    }, 500); 
+                }
+            }, 500); 
         });
 
-        // Logika Switch Tab (Views vs Payout)
-        function switchTab(tabName) {
+        async function loadLeaderboardData() {
+            // Ambil data stats clipper digabung dengan profile (nama, umur, avatar)
+            const { data, error } = await supabase
+                .from('clipper_stats')
+                .select(`
+                    user_id,
+                    total_views,
+                    total_earnings,
+                    profiles (
+                        full_name,
+                        age,
+                        avatar_url
+                    )
+                `);
+
+            if (error || !data) {
+                console.error("Gagal memuat leaderboard:", error);
+                document.getElementById('content-views').innerHTML = `<p class="text-center text-red-400 py-10 text-sm">Gagal memuat data.</p>`;
+                return;
+            }
+
+            // Filter user yang profilnya terhubung saja
+            const validData = data.filter(d => d.profiles);
+
+            // Sorting Data (Top 10 Views & Top 10 Payout)
+            const topViews = [...validData].sort((a,b) => (b.total_views || 0) - (a.total_views || 0)).slice(0, 10);
+            const topPayout = [...validData].sort((a,b) => (b.total_earnings || 0) - (a.total_earnings || 0)).slice(0, 10);
+
+            // Render ke UI
+            renderTabContent('content-views', topViews, 'views');
+            renderTabContent('content-payout', topPayout, 'payout');
+        }
+
+        function renderTabContent(containerId, dataArray, type) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Kosongkan placeholder
+
+            if (dataArray.length === 0) {
+                container.innerHTML = '<p class="text-zinc-500 text-center py-10 text-sm">Belum ada data peringkat.</p>';
+                return;
+            }
+
+            const top3 = dataArray.slice(0, 3);
+            const rest = dataArray.slice(3, 10);
+
+            // 1. Build Podium HTML (Top 3)
+            const podiumHtml = generatePodiumHTML(top3, type);
+            
+            // 2. Build List HTML (Rank 4 - 10)
+            let listHtml = '';
+            if (rest.length > 0) {
+                listHtml = generateListHTML(rest, type, 4);
+            }
+
+            container.innerHTML = podiumHtml + listHtml;
+        }
+
+        // =====================================
+        // HTML GENERATORS
+        // =====================================
+
+        function generatePodiumHTML(top3, type) {
+            const r1 = top3[0]; // Rank 1
+            const r2 = top3[1]; // Rank 2
+            const r3 = top3[2]; // Rank 3
+
+            let html = '<div class="flex items-end justify-center gap-2 sm:gap-4 pt-6 pb-4">';
+
+            // RANK 2 (Kiri)
+            if (r2) {
+                html += `
+                <div class="flex flex-col items-center podium-2 border border-zinc-800/50 rounded-t-2xl p-3 pb-0 w-[30%] max-w-[120px]">
+                    <div class="relative mb-2">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-zinc-400 bg-zinc-800 overflow-hidden">
+                            <img src="${getAvatar(r2.profiles)}" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-zinc-300 text-black text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#2</div>
+                    </div>
+                    <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">${maskName(r2.profiles.full_name)}</h4>
+                    <p class="text-[10px] sm:text-xs ${type === 'views' ? 'text-zinc-400' : 'text-green-400'} font-bold mb-3">${formatValue(r2, type)}</p>
+                    <div class="w-full h-16 sm:h-20 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
+                        <span class="text-zinc-500 font-black text-xl">2</span>
+                    </div>
+                </div>`;
+            } else {
+                html += `<div class="w-[30%] max-w-[120px]"></div>`;
+            }
+
+            // RANK 1 (Tengah)
+            if (r1) {
+                html += `
+                <div class="flex flex-col items-center podium-1 border border-yellow-500/30 rounded-t-2xl p-3 pb-0 w-[35%] max-w-[140px] relative z-10">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-400 mb-1 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"/></svg>
+                    <div class="relative mb-2">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-yellow-400 bg-zinc-800 overflow-hidden shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+                            <img src="${getAvatar(r1.profiles)}" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full border-2 border-darkBg">#1</div>
+                    </div>
+                    <h4 class="text-sm sm:text-base font-black text-yellow-400 truncate w-full text-center mt-1">${maskName(r1.profiles.full_name)}</h4>
+                    <p class="text-[11px] sm:text-xs ${type === 'views' ? 'text-zinc-300' : 'text-green-400'} font-black mb-3">${formatValue(r1, type)}</p>
+                    <div class="w-full h-24 sm:h-28 bg-gradient-to-t from-yellow-500/20 to-yellow-500/5 rounded-t-lg border-x border-t border-yellow-500/40 flex items-start justify-center pt-2">
+                        <span class="text-yellow-500/50 font-black text-3xl">1</span>
+                    </div>
+                </div>`;
+            }
+
+            // RANK 3 (Kanan)
+            if (r3) {
+                html += `
+                <div class="flex flex-col items-center podium-3 border border-zinc-800/50 rounded-t-2xl p-3 pb-0 w-[30%] max-w-[120px]">
+                    <div class="relative mb-2">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-amber-600 bg-zinc-800 overflow-hidden">
+                            <img src="${getAvatar(r3.profiles)}" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#3</div>
+                    </div>
+                    <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">${maskName(r3.profiles.full_name)}</h4>
+                    <p class="text-[10px] sm:text-xs ${type === 'views' ? 'text-zinc-400' : 'text-green-400'} font-bold mb-3">${formatValue(r3, type)}</p>
+                    <div class="w-full h-12 sm:h-16 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
+                        <span class="text-zinc-500 font-black text-lg">3</span>
+                    </div>
+                </div>`;
+            } else {
+                html += `<div class="w-[30%] max-w-[120px]"></div>`;
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        function generateListHTML(listData, type, startIndex) {
+            let html = '<div class="flex flex-col gap-3">';
+            listData.forEach((u, i) => {
+                const rank = startIndex + i;
+                const valClass = type === 'views' ? 'text-white' : 'text-green-400';
+                const labelStr = type === 'views' ? 'Views' : 'Pendapatan';
+                const ageStr = u.profiles.age ? `${u.profiles.age} Tahun` : 'Umur Rahasia';
+
+                html += `
+                <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 hover:-translate-y-0.5 transition-all group shadow-md hover:shadow-lg cursor-default">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <span class="text-sm sm:text-base font-black text-zinc-500 w-4 text-center">${rank}</span>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0 border border-zinc-700">
+                            <img src="${getAvatar(u.profiles)}" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">${maskName(u.profiles.full_name)}</h4>
+                            <p class="text-[10px] sm:text-xs text-zinc-400">${ageStr}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm sm:text-base font-bold ${valClass}">${formatValue(u, type).replace(' Views', '')}</p>
+                        <p class="text-[9px] sm:text-[10px] text-zinc-500 font-medium uppercase tracking-wider">${labelStr}</p>
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+            return html;
+        }
+
+
+        // =====================================
+        // HELPER FUNCTIONS (FORMATTING & LOGIC)
+        // =====================================
+
+        function getAvatar(profile) {
+            if (profile && profile.avatar_url) return profile.avatar_url;
+            const name = profile?.full_name || 'Clipper';
+            return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=27272a&color=fff`;
+        }
+
+        // Tampilkan 1 huruf pertama dari tiap kata, sisanya sensor bintang (*)
+        function maskName(fullName) {
+            if (!fullName) return "P*******";
+            return fullName.trim().split(/\s+/).map(word => {
+                if (word.length <= 1) return word;
+                return word.charAt(0) + '*'.repeat(word.length - 1);
+            }).join(' ');
+        }
+
+        function formatValue(row, type) {
+            if (type === 'views') {
+                let num = row.total_views || 0;
+                if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'B Views';
+                if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'M Views';
+                if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'K Views';
+                return num.toLocaleString('id-ID') + ' Views';
+            } else {
+                let num = row.total_earnings || 0;
+                if(num >= 1000000000000) return 'Rp ' + (num/1000000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' T';
+                if(num >= 1000000000) return 'Rp ' + (num/1000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' M';
+                if(num >= 1000000) return 'Rp ' + (num/1000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' Jt';
+                if(num >= 1000) return 'Rp ' + (num/1000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' Rb';
+                return 'Rp ' + num.toLocaleString('id-ID');
+            }
+        }
+
+        // Window binding agar dapat diakses dari onClick di HTML
+        window.switchTab = function(tabName) {
             const btnViews = document.getElementById('btn-views');
             const btnPayout = document.getElementById('btn-payout');
             const contentViews = document.getElementById('content-views');
             const contentPayout = document.getElementById('content-payout');
 
             if (tabName === 'views') {
-                // Aktifkan tombol Views
                 btnViews.classList.add('bg-zinc-800', 'text-white', 'shadow-md');
                 btnViews.classList.remove('text-zinc-400');
-                
-                // Matikan tombol Payout
                 btnPayout.classList.remove('bg-zinc-800', 'text-white', 'shadow-md');
                 btnPayout.classList.add('text-zinc-400');
 
-                // Tampilkan konten Views
                 contentViews.classList.remove('hidden');
                 contentPayout.classList.add('hidden');
             } else {
-                // Aktifkan tombol Payout
                 btnPayout.classList.add('bg-zinc-800', 'text-white', 'shadow-md');
                 btnPayout.classList.remove('text-zinc-400');
-                
-                // Matikan tombol Views
                 btnViews.classList.remove('bg-zinc-800', 'text-white', 'shadow-md');
                 btnViews.classList.add('text-zinc-400');
 
-                // Tampilkan konten Payout
                 contentPayout.classList.remove('hidden');
                 contentViews.classList.add('hidden');
             }
-        }
+        };
     </script>
-    
-    <style>
-        /* Animasi Transisi Halus */
-        .animate-fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-    </style>
+
 </body>
 </html>
