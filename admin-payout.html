@@ -38,11 +38,13 @@
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
         
         input[type="radio"] { accent-color: #ef4444; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
 
-    <!-- TOAST NOTIFICATION (SUKSES) -->
+    <!-- TOAST NOTIFICATION -->
     <div id="toastNotif" class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] bg-zinc-900 border border-zinc-700 shadow-2xl rounded-xl px-4 py-3 flex items-center gap-3 transition-all duration-300 transform -translate-y-20 opacity-0 pointer-events-none">
         <div id="toastIcon" class="w-8 h-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center shrink-0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -64,22 +66,14 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER ADMIN -->
+    <!-- HEADER ADMIN (Ikon & Profil Dihapus) -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Kelola Payout</h1>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="hidden sm:flex items-center gap-2 mr-2">
-                <div class="text-right">
-                    <p class="text-sm font-bold text-white">Super Admin</p>
-                    <p class="text-[10px] text-zinc-400">admin@whoost.com</p>
-                </div>
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold border-2 border-zinc-800">AD</div>
-            </div>
-        </div>
+        <div></div>
     </header>
 
     <!-- TOOLBAR (Search & Filter) -->
@@ -88,185 +82,43 @@
         <div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto hide-scrollbar">
             <div class="bg-cardBg border border-zinc-800 rounded-xl px-4 py-2 min-w-max flex flex-col">
                 <span class="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Total Pending</span>
-                <span class="text-sm font-bold text-amber-500">Rp 1.250.000</span>
+                <span id="total-pending" class="text-sm font-bold text-amber-500">Rp 0</span>
             </div>
             <div class="bg-cardBg border border-zinc-800 rounded-xl px-4 py-2 min-w-max flex flex-col">
                 <span class="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Total Selesai</span>
-                <span class="text-sm font-bold text-green-500">Rp 45.200.000</span>
+                <span id="total-selesai" class="text-sm font-bold text-green-500">Rp 0</span>
             </div>
         </div>
 
         <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto ml-auto">
-            <!-- Search Bar -->
             <div class="relative w-full md:w-64">
                 <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" id="searchInput" oninput="handleSearch(event)" placeholder="Cari nama atau email..." 
+                <input type="text" id="searchInput" oninput="window.handleSearch(event)" placeholder="Cari nama atau email..." 
                     class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-[13px] sm:text-[14px] text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-shadow">
             </div>
 
-            <!-- Filter Dropdown -->
             <div class="relative w-full md:w-auto">
-                <button onclick="toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
+                <button onclick="window.toggleFilter()" id="btnFilter" class="w-full md:w-auto flex items-center justify-between md:justify-center gap-3 bg-cardBg border border-zinc-800 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-[13px] sm:text-[14px] font-medium text-white hover:bg-zinc-900 transition-colors">
                     <div class="flex items-center gap-2">
                         <span id="filterLabel">Status: Pending</span>
                     </div>
                     <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
                 <div id="dropdownFilter" class="absolute right-0 top-full mt-2 w-full md:w-48 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                    <button onclick="selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] text-white hover:bg-zinc-800 transition-colors">Semua Status</button>
-                    <button onclick="selectFilter('Pending')" class="text-left px-5 py-3 text-[13px] text-amber-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Pending</button>
-                    <button onclick="selectFilter('Selesai')" class="text-left px-5 py-3 text-[13px] text-green-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Selesai</button>
-                    <button onclick="selectFilter('Ditolak')" class="text-left px-5 py-3 text-[13px] text-red-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Ditolak</button>
+                    <button onclick="window.selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] text-white hover:bg-zinc-800 transition-colors">Semua Status</button>
+                    <button onclick="window.selectFilter('Pending')" class="text-left px-5 py-3 text-[13px] text-amber-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Pending</button>
+                    <button onclick="window.selectFilter('Selesai')" class="text-left px-5 py-3 text-[13px] text-green-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Selesai</button>
+                    <button onclick="window.selectFilter('Ditolak')" class="text-left px-5 py-3 text-[13px] text-red-500 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Ditolak</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT (LIST PAYOUT) -->
-    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-24 z-0 scroll-smooth w-full relative">
+    <!-- MAIN CONTENT (Ditambah pb-48 agar scroll tidak tertutup bottom navbar) -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-48 z-0 scroll-smooth w-full relative">
         <div class="max-w-6xl mx-auto space-y-3 sm:space-y-4" id="payoutList">
-
-            <!-- ITEM 1: PENDING -->
-            <div class="payout-card bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-600 transition-all" data-status="Pending" data-name="Ahmad Fauzan">
-                <!-- Info User -->
-                <div class="flex items-center gap-3 sm:gap-4 md:w-1/3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
-                        <span class="text-white font-bold text-sm sm:text-base">AF</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm sm:text-base font-bold text-white user-name">Ahmad Fauzan</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400">ahmad.f@email.com</p>
-                        <p class="text-[10px] sm:text-[11px] text-zinc-500 mt-1 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 15 Jul 2026, 14:30
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Info Bank -->
-                <div class="md:w-1/3 bg-zinc-900/50 rounded-xl p-3 border border-zinc-800/50 flex flex-col justify-center">
-                    <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1">Tujuan Transfer</span>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">BCA</span>
-                        <span class="text-sm font-mono text-zinc-300">1234567890</span>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-zinc-400 mt-1 truncate">a.n Ahmad Fauzan</p>
-                </div>
-
-                <!-- Nominal & Action -->
-                <div class="flex items-center justify-between md:w-1/3 md:justify-end gap-4">
-                    <div class="text-left md:text-right">
-                        <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider block mb-0.5">Nominal</span>
-                        <span class="text-lg sm:text-xl font-bold text-white block">Rp 500.000</span>
-                        <span class="status-badge inline-block mt-1 bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
-                    </div>
-                    <button onclick="openPayoutModal('Ahmad Fauzan', 'BCA', '1234567890', 'Ahmad Fauzan', 500000, this.closest('.payout-card'))" class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[12px] sm:text-[13px] font-bold transition-all shrink-0 shadow-lg shadow-blue-900/20">
-                        Proses
-                    </button>
-                </div>
-            </div>
-
-            <!-- ITEM 2: PENDING -->
-            <div class="payout-card bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-600 transition-all" data-status="Pending" data-name="Siti Aminah">
-                <div class="flex items-center gap-3 sm:gap-4 md:w-1/3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
-                        <span class="text-white font-bold text-sm sm:text-base">SA</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm sm:text-base font-bold text-white user-name">Siti Aminah</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400">siti.a@email.com</p>
-                        <p class="text-[10px] sm:text-[11px] text-zinc-500 mt-1 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 14 Jul 2026, 09:15
-                        </p>
-                    </div>
-                </div>
-                <div class="md:w-1/3 bg-zinc-900/50 rounded-xl p-3 border border-zinc-800/50 flex flex-col justify-center">
-                    <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1">Tujuan Transfer</span>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">GOPAY</span>
-                        <span class="text-sm font-mono text-zinc-300">081234567890</span>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-zinc-400 mt-1 truncate">a.n Siti Aminah</p>
-                </div>
-                <div class="flex items-center justify-between md:w-1/3 md:justify-end gap-4">
-                    <div class="text-left md:text-right">
-                        <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider block mb-0.5">Nominal</span>
-                        <span class="text-lg sm:text-xl font-bold text-white block">Rp 750.000</span>
-                        <span class="status-badge inline-block mt-1 bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Pending</span>
-                    </div>
-                    <button onclick="openPayoutModal('Siti Aminah', 'GOPAY', '081234567890', 'Siti Aminah', 750000, this.closest('.payout-card'))" class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[12px] sm:text-[13px] font-bold transition-all shrink-0 shadow-lg shadow-blue-900/20">
-                        Proses
-                    </button>
-                </div>
-            </div>
-
-            <!-- ITEM 3: SELESAI -->
-            <div class="payout-card bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all opacity-60" data-status="Selesai" data-name="Budi Santoso">
-                <div class="flex items-center gap-3 sm:gap-4 md:w-1/3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
-                        <span class="text-zinc-400 font-bold text-sm sm:text-base">BS</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm sm:text-base font-bold text-white user-name">Budi Santoso</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400">budi.s@email.com</p>
-                        <p class="text-[10px] sm:text-[11px] text-zinc-500 mt-1 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Disetujui: 13 Jul 2026
-                        </p>
-                    </div>
-                </div>
-                <div class="md:w-1/3 bg-zinc-900/50 rounded-xl p-3 border border-zinc-800/50 flex flex-col justify-center">
-                    <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1">Tujuan Transfer</span>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-orange-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">BNI</span>
-                        <span class="text-sm font-mono text-zinc-300">0987654321</span>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-zinc-400 mt-1 truncate">a.n Budi Santoso</p>
-                </div>
-                <div class="flex items-center justify-between md:w-1/3 md:justify-end gap-4">
-                    <div class="text-left md:text-right">
-                        <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider block mb-0.5">Nominal</span>
-                        <span class="text-lg sm:text-xl font-bold text-zinc-400 block">Rp 2.000.000</span>
-                        <span class="status-badge inline-block mt-1 bg-green-500/10 text-green-500 border border-green-500/20 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Selesai</span>
-                    </div>
-                    <button disabled class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0">
-                        Selesai
-                    </button>
-                </div>
-            </div>
-
-            <!-- ITEM 4: DITOLAK -->
-            <div class="payout-card bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all opacity-60" data-status="Ditolak" data-name="Rina Melati">
-                <div class="flex items-center gap-3 sm:gap-4 md:w-1/3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
-                        <span class="text-zinc-400 font-bold text-sm sm:text-base">RM</span>
-                    </div>
-                    <div>
-                        <h4 class="text-sm sm:text-base font-bold text-white user-name">Rina Melati</h4>
-                        <p class="text-[11px] sm:text-xs text-zinc-400">rina.m@email.com</p>
-                        <p class="text-[10px] sm:text-[11px] text-red-400 mt-1 flex items-center gap-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg> Rekening Tidak Valid
-                        </p>
-                    </div>
-                </div>
-                <div class="md:w-1/3 bg-zinc-900/50 rounded-xl p-3 border border-zinc-800/50 flex flex-col justify-center">
-                    <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1">Tujuan Transfer</span>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-blue-800 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">MANDIRI</span>
-                        <span class="text-sm font-mono text-zinc-300">1122334455</span>
-                    </div>
-                    <p class="text-[11px] sm:text-xs text-zinc-400 mt-1 truncate">a.n Rina Melati</p>
-                </div>
-                <div class="flex items-center justify-between md:w-1/3 md:justify-end gap-4">
-                    <div class="text-left md:text-right">
-                        <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider block mb-0.5">Nominal</span>
-                        <span class="text-lg sm:text-xl font-bold text-zinc-400 block">Rp 300.000</span>
-                        <span class="status-badge inline-block mt-1 bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Ditolak</span>
-                    </div>
-                    <button disabled class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0">
-                        Ditolak
-                    </button>
-                </div>
-            </div>
-
+            <!-- List Payout Akan Dirender Otomatis via JS -->
+            <p class="text-zinc-500 text-sm text-center py-10">Memuat data...</p>
         </div>
     </main>
 
@@ -281,7 +133,7 @@
                     <h3 class="text-lg font-bold text-white">Review Payout</h3>
                     <p class="text-xs text-zinc-400 mt-1">Pastikan nominal transfer sesuai.</p>
                 </div>
-                <button onclick="closePayoutModal()" class="text-zinc-500 hover:text-white bg-zinc-900 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                <button onclick="window.closePayoutModal()" class="text-zinc-500 hover:text-white bg-zinc-900 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -293,7 +145,7 @@
                     <span class="text-white font-medium" id="modalGrossAmount">Rp 0</span>
                 </div>
                 <div class="flex justify-between items-center text-[13px] mb-3">
-                    <span class="text-zinc-400">Potongan Admin (15%)</span>
+                    <span class="text-zinc-400" id="modalFeeLabel">Potongan Admin</span>
                     <span class="text-red-400 font-medium" id="modalFeeAmount">- Rp 0</span>
                 </div>
                 <div class="border-t border-dashed border-zinc-700 my-3"></div>
@@ -325,10 +177,10 @@
 
             <!-- Tombol Action -->
             <div class="flex gap-3 mb-4">
-                <button id="btnSetuju" onclick="selectDecision('setuju')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all">
+                <button id="btnSetuju" onclick="window.selectDecision('setuju')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all">
                     Setujui & Selesai
                 </button>
-                <button id="btnTolak" onclick="selectDecision('tolak')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all">
+                <button id="btnTolak" onclick="window.selectDecision('tolak')" class="flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all">
                     Tolak Payout
                 </button>
             </div>
@@ -337,22 +189,22 @@
             <div id="formTolak" class="hidden flex-col gap-2 mb-4 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
                 <label class="text-[12px] font-medium text-white mb-1">Alasan Penolakan:</label>
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Nomor rekening/e-wallet tidak valid" class="w-3.5 h-3.5" onchange="toggleCustomReason(false)">
+                    <input type="radio" name="alasan" value="Nomor rekening/e-wallet tidak valid" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(false)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Rekening tidak valid</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="Nama rekening tidak sesuai profil" class="w-3.5 h-3.5" onchange="toggleCustomReason(false)">
+                    <input type="radio" name="alasan" value="Nama rekening tidak sesuai profil" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(false)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Nama tidak sesuai</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5" onchange="toggleCustomReason(true)">
+                    <input type="radio" name="alasan" value="lainnya" class="w-3.5 h-3.5" onchange="window.toggleCustomReason(true)">
                     <span class="text-[13px] text-zinc-300 group-hover:text-white">Lainnya (Isi manual)</span>
                 </label>
                 <textarea id="customReason" class="w-full bg-black/50 border border-zinc-700 rounded-lg p-2.5 text-[12px] text-white focus:outline-none focus:border-red-500 hidden mt-2 resize-none" rows="2" placeholder="Ketik alasan penolakan..."></textarea>
             </div>
 
             <div class="flex justify-end pt-3 border-t border-zinc-800/80">
-                <button id="btnSubmitReview" onclick="openConfirmModal()" class="w-full py-3 bg-white text-black rounded-xl text-[14px] font-bold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                <button id="btnSubmitReview" onclick="window.openConfirmModal()" class="w-full py-3 bg-white text-black rounded-xl text-[14px] font-bold hover:bg-zinc-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed" disabled>
                     Konfirmasi Status
                 </button>
             </div>
@@ -373,110 +225,262 @@
             <p class="text-[13px] text-zinc-400 mb-6 leading-relaxed" id="confirmDesc">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
             
             <div class="flex gap-3">
-                <button onclick="closeConfirmModal()" class="flex-1 py-2.5 rounded-xl border border-zinc-700 bg-zinc-800 text-white text-[13px] font-semibold hover:bg-zinc-700 transition-all">
+                <button onclick="window.closeConfirmModal()" class="flex-1 py-2.5 rounded-xl border border-zinc-700 bg-zinc-800 text-white text-[13px] font-semibold hover:bg-zinc-700 transition-all">
                     Batal
                 </button>
-                <button id="btnExecuteAction" onclick="executeConfirmAction()" class="flex-1 py-2.5 rounded-xl text-white text-[13px] font-semibold transition-all">
+                <button id="btnExecuteAction" onclick="window.executeConfirmAction()" class="flex-1 py-2.5 rounded-xl text-white text-[13px] font-semibold transition-all">
                     Ya, Lanjutkan
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT & LOGIC -->
-    <script>
-        const ACTIVE_MENU = 'payout';
-    </script>
+    <!-- JAVASCRIPT & SUPABASE LOGIC -->
+    <script>const ACTIVE_MENU = 'payout';</script>
     <script src="attribute/navbaradmin.js"></script>
 
-    <script>
-        let allCards = [];
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        let sysSettings = { fee_amount: 0, fee_type: 'Rupiah (Rp)' };
+        let withdrawalsData = [];
         let currentFilter = 'Pending'; 
         let searchQuery = '';
-        let activeCardElement = null;
+        
+        let activeWdId = null;
+        let activeUserId = null;
+        let activeWdAmount = 0;
         let currentDecision = null;
 
-        const FEE_PERCENTAGE = 0.15; // 15% Admin Fee
-        const formatRupiah = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
+        const formatRupiah = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num || 0);
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Data & Settings
+            await loadSettings();
+            await loadData();
+
+            // Sembunyikan Loading Screen
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 if (loader) {
                     loader.classList.add('opacity-0');
                     setTimeout(() => loader.style.display = 'none', 500);
                 }
-            }, 1000); 
-
-            try {
-                allCards = Array.from(document.querySelectorAll('.payout-card'));
-                document.getElementById('filterLabel').innerText = "Status: " + currentFilter;
-                applyFilters();
-            } catch (error) {
-                console.error("Error init cards:", error);
-            }
+            }, 800);
         });
 
-        /* FILTER & PENCARIAN */
-        function toggleFilter() {
+        async function loadSettings() {
+            const { data } = await supabase.from('system_settings').select('*').eq('id', 1).single();
+            if(data) {
+                sysSettings.fee_amount = parseFloat(data.fee_clipper_amount) || 0;
+                sysSettings.fee_type = data.fee_clipper_type || 'Rupiah (Rp)';
+            }
+        }
+
+        async function loadData() {
+            const { data, error } = await supabase
+                .from('withdrawals')
+                .select(`
+                    id, amount, status, created_at, reject_reason, user_id,
+                    profiles ( full_name, email, payment_info )
+                `)
+                .order('created_at', { ascending: false });
+
+            if(data) {
+                withdrawalsData = data;
+                calculateSummary();
+                renderList();
+            }
+        }
+
+        function calculateSummary() {
+            let pending = 0;
+            let selesai = 0;
+            withdrawalsData.forEach(item => {
+                if(item.status === 'PENDING') pending += item.amount;
+                if(item.status === 'SUCCESS') selesai += item.amount;
+            });
+            document.getElementById('total-pending').innerText = formatRupiah(pending);
+            document.getElementById('total-selesai').innerText = formatRupiah(selesai);
+        }
+
+        function renderList() {
+            const container = document.getElementById('payoutList');
+            
+            // Filter Logic
+            const statusMap = { 'PENDING': 'Pending', 'SUCCESS': 'Selesai', 'REJECTED': 'Ditolak', 'FAILED': 'Ditolak' };
+            
+            const filtered = withdrawalsData.filter(item => {
+                const uiStatus = statusMap[item.status] || 'Pending';
+                const name = (item.profiles?.full_name || 'User').toLowerCase();
+                const email = (item.profiles?.email || '').toLowerCase();
+
+                const matchesFilter = (currentFilter === 'Semua' || uiStatus === currentFilter);
+                const matchesSearch = name.includes(searchQuery) || email.includes(searchQuery);
+
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                <div class="flex flex-col items-center justify-center text-center opacity-60 min-h-[400px]">
+                    <svg class="w-16 h-16 text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    <p class="text-sm text-zinc-500 font-medium">Tidak ada data yang ditemukan.</p>
+                </div>`;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(item => {
+                const uiStatus = statusMap[item.status] || 'Pending';
+                const dateObj = new Date(item.created_at);
+                const dateStr = dateObj.toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+                const timeStr = dateObj.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+                
+                let statusColor, statusBg, actionBtn, statusInfoText;
+                
+                if(item.status === 'SUCCESS') {
+                    statusColor = 'text-green-500'; statusBg = 'bg-green-500/10 border-green-500/20';
+                    statusInfoText = `Disetujui: ${dateStr}`;
+                    actionBtn = `<button disabled class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0">Selesai</button>`;
+                } else if (item.status === 'REJECTED' || item.status === 'FAILED') {
+                    statusColor = 'text-red-500'; statusBg = 'bg-red-500/10 border-red-500/20';
+                    statusInfoText = `Ditolak: ${item.reject_reason || 'Alasan tidak valid'}`;
+                    actionBtn = `<button disabled class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0">Ditolak</button>`;
+                } else {
+                    statusColor = 'text-amber-500'; statusBg = 'bg-amber-500/20 border-amber-500/30';
+                    statusInfoText = `${dateStr}, ${timeStr}`;
+                    actionBtn = `<button onclick="window.openPayoutModal('${item.id}')" class="action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-[12px] sm:text-[13px] font-bold transition-all shrink-0 shadow-lg shadow-blue-900/20">Proses</button>`;
+                }
+
+                let fullName = item.profiles?.full_name || 'User Tanpa Nama';
+                let initials = fullName.substring(0,2).toUpperCase();
+                let email = item.profiles?.email || 'Tidak ada email';
+
+                let bank = 'Bank', accNum = '-', accName = '-';
+                if (item.profiles && item.profiles.payment_info) {
+                    let pi = item.profiles.payment_info;
+                    if(typeof pi === 'string') {
+                        try { pi = JSON.parse(pi); } catch(e){ pi = []; }
+                    }
+                    if(Array.isArray(pi) && pi.length > 0) {
+                        bank = pi[0].bank || pi[0].bank_name || 'Bank';
+                        accNum = pi[0].account || pi[0].account_number || '-';
+                        accName = pi[0].name || pi[0].account_name || fullName;
+                    }
+                }
+
+                // Tambahkan color random utk avatar text berdasarkan huruf
+                let iconColor = item.status === 'PENDING' ? 'text-white' : 'text-zinc-500';
+
+                html += `
+                <div class="payout-card bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-600 transition-all ${item.status !== 'PENDING' ? 'opacity-60' : ''}">
+                    <div class="flex items-center gap-3 sm:gap-4 md:w-1/3">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700">
+                            <span class="${iconColor} font-bold text-sm sm:text-base">${initials}</span>
+                        </div>
+                        <div class="overflow-hidden">
+                            <h4 class="text-sm sm:text-base font-bold text-white truncate">${fullName}</h4>
+                            <p class="text-[11px] sm:text-xs text-zinc-400 truncate">${email}</p>
+                            <p class="text-[10px] sm:text-[11px] ${uiStatus === 'Ditolak' ? 'text-red-400' : 'text-zinc-500'} mt-1 flex items-center gap-1 truncate">
+                                <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${uiStatus === 'Ditolak' ? 'M6 18L18 6M6 6l12 12' : (uiStatus === 'Selesai' ? 'M5 13l4 4L19 7' : 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z')}"></path></svg> 
+                                <span class="truncate">${statusInfoText}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="md:w-1/3 bg-zinc-900/50 rounded-xl p-3 border border-zinc-800/50 flex flex-col justify-center">
+                        <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider mb-1">Tujuan Transfer</span>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">${bank}</span>
+                            <span class="text-sm font-mono text-zinc-300 truncate">${accNum}</span>
+                        </div>
+                        <p class="text-[11px] sm:text-xs text-zinc-400 mt-1 truncate">a.n ${accName}</p>
+                    </div>
+                    <div class="flex items-center justify-between md:w-1/3 md:justify-end gap-4">
+                        <div class="text-left md:text-right">
+                            <span class="text-[10px] sm:text-[11px] text-zinc-500 font-medium uppercase tracking-wider block mb-0.5">Nominal</span>
+                            <span class="text-lg sm:text-xl font-bold ${item.status === 'PENDING' ? 'text-white' : 'text-zinc-400'} block">${formatRupiah(item.amount)}</span>
+                            <span class="inline-block mt-1 ${statusColor} ${statusBg} border text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${uiStatus}</span>
+                        </div>
+                        ${actionBtn}
+                    </div>
+                </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // =====================================
+        // WINDOW EVENT BINDINGS (Untuk UI)
+        // =====================================
+        window.toggleFilter = function() {
             const dropdown = document.getElementById('dropdownFilter');
             dropdown.classList.toggle('hidden');
             dropdown.classList.toggle('flex');
-        }
+        };
 
-        function selectFilter(status) {
+        window.selectFilter = function(status) {
             currentFilter = status;
             document.getElementById('filterLabel').innerText = "Status: " + status;
-            toggleFilter();
-            applyFilters();
-        }
+            window.toggleFilter();
+            renderList();
+        };
 
-        function handleSearch(e) {
+        window.handleSearch = function(e) {
             searchQuery = e.target.value.toLowerCase();
-            applyFilters();
-        }
+            renderList();
+        };
 
-        function applyFilters() {
-            allCards.forEach(card => {
-                const status = card.getAttribute('data-status');
-                const name = card.getAttribute('data-name').toLowerCase();
-                const email = card.querySelector('p').innerText.toLowerCase(); 
+        window.openPayoutModal = function(id) {
+            const item = withdrawalsData.find(w => w.id === id);
+            if(!item) return;
 
-                const matchesFilter = (currentFilter === 'Semua' || status === currentFilter);
-                const matchesSearch = name.includes(searchQuery) || email.includes(searchQuery);
+            activeWdId = item.id;
+            activeUserId = item.user_id;
+            activeWdAmount = item.amount;
 
-                if (matchesFilter && matchesSearch) {
-                    card.classList.remove('hidden');
-                    card.classList.add('flex');
-                } else {
-                    card.classList.add('hidden');
-                    card.classList.remove('flex');
+            let bank = 'Bank', accNum = '-', accName = '-';
+            if (item.profiles && item.profiles.payment_info) {
+                let pi = item.profiles.payment_info;
+                if(typeof pi === 'string') {
+                    try { pi = JSON.parse(pi); } catch(e){ pi = []; }
                 }
-            });
-        }
+                if(Array.isArray(pi) && pi.length > 0) {
+                    bank = pi[0].bank || pi[0].bank_name || 'Bank';
+                    accNum = pi[0].account || pi[0].account_number || '-';
+                    accName = pi[0].name || pi[0].account_name || item.profiles.full_name || '-';
+                }
+            }
 
-        /* MODAL PAYOUT REVIEW */
-        const payoutModal = document.getElementById('payoutModal');
-        const payoutModalBox = document.getElementById('payoutModalBox');
+            // Hitung Fee (Sesuai DB)
+            let fee = 0;
+            let feeLabelStr = 'Biaya Layanan/Fee';
+            if (sysSettings.fee_type.includes('%')) {
+                fee = Math.floor(activeWdAmount * (sysSettings.fee_amount / 100));
+                feeLabelStr = `Biaya Layanan/Fee (${sysSettings.fee_amount}%)`;
+            } else {
+                fee = sysSettings.fee_amount;
+                feeLabelStr = `Biaya Layanan/Fee (${formatRupiah(sysSettings.fee_amount)})`;
+            }
 
-        function openPayoutModal(user, bank, accNum, accName, amount, cardElement) {
-            activeCardElement = cardElement;
-            
-            // Kalkulasi Fee (15%)
-            const feeAmount = amount * FEE_PERCENTAGE;
-            const netAmount = amount - feeAmount;
+            let netAmount = activeWdAmount - fee;
+            if(netAmount < 0) netAmount = 0;
 
-            // Set Data ke Modal
-            document.getElementById('modalGrossAmount').innerText = formatRupiah(amount);
-            document.getElementById('modalFeeAmount').innerText = "- " + formatRupiah(feeAmount);
+            document.getElementById('modalFeeLabel').innerText = feeLabelStr;
+            document.getElementById('modalGrossAmount').innerText = formatRupiah(activeWdAmount);
+            document.getElementById('modalFeeAmount').innerText = "- " + formatRupiah(fee);
             document.getElementById('modalNetAmount').innerText = formatRupiah(netAmount);
             
-            document.getElementById('modalUser').innerText = user;
+            document.getElementById('modalUser').innerText = item.profiles?.full_name || 'Tanpa Nama';
             document.getElementById('modalBank').innerText = bank;
             document.getElementById('modalAccNum').innerText = accNum;
             document.getElementById('modalAccName').innerText = accName;
 
             resetModalForm();
+            
+            const payoutModal = document.getElementById('payoutModal');
+            const payoutModalBox = document.getElementById('payoutModalBox');
             payoutModal.classList.remove('hidden');
             payoutModal.classList.add('flex');
             setTimeout(() => {
@@ -484,9 +488,11 @@
                 payoutModalBox.classList.remove('scale-95');
                 payoutModalBox.classList.add('scale-100');
             }, 10);
-        }
+        };
 
-        function closePayoutModal() {
+        window.closePayoutModal = function() {
+            const payoutModal = document.getElementById('payoutModal');
+            const payoutModalBox = document.getElementById('payoutModalBox');
             payoutModal.classList.add('opacity-0');
             payoutModalBox.classList.remove('scale-100');
             payoutModalBox.classList.add('scale-95');
@@ -494,7 +500,7 @@
                 payoutModal.classList.add('hidden');
                 payoutModal.classList.remove('flex');
             }, 300);
-        }
+        };
 
         function resetModalForm() {
             currentDecision = null;
@@ -512,7 +518,7 @@
             document.querySelectorAll('input[name="alasan"]').forEach(r => r.checked = false);
         }
 
-        function selectDecision(decision) {
+        window.selectDecision = function(decision) {
             currentDecision = decision;
             const btnSetuju = document.getElementById('btnSetuju');
             const btnTolak = document.getElementById('btnTolak');
@@ -538,30 +544,26 @@
                     btnSubmit.disabled = false;
                 }
             }
-        }
+        };
 
-        function toggleCustomReason(isCustom) {
+        window.toggleCustomReason = function(isCustom) {
             const textArea = document.getElementById('customReason');
             if (isCustom) textArea.classList.remove('hidden');
             else textArea.classList.add('hidden');
             
             document.getElementById('btnSubmitReview').disabled = isCustom ? (textArea.value.trim() === '') : false;
-        }
+        };
 
         document.getElementById('customReason').addEventListener('input', e => {
             document.getElementById('btnSubmitReview').disabled = e.target.value.trim() === '';
         });
 
+        // MODAL KONFIRMASI
+        window.openConfirmModal = function() {
+            if (!activeWdId || !currentDecision) return;
 
-        /* =======================================
-           MODAL KONFIRMASI & EKSEKUSI
-           ======================================= */
-        const confirmModal = document.getElementById('confirmModal');
-        const confirmModalBox = document.getElementById('confirmModalBox');
-
-        function openConfirmModal() {
-            if (!activeCardElement || !currentDecision) return;
-
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmModalBox = document.getElementById('confirmModalBox');
             const iconContainer = document.getElementById('confirmIcon');
             const title = document.getElementById('confirmTitle');
             const desc = document.getElementById('confirmDesc');
@@ -580,7 +582,7 @@
                 iconContainer.className = "w-14 h-14 rounded-full mx-auto mb-4 flex items-center justify-center border-4 border-red-500/20 bg-red-500/10 text-red-500";
                 iconContainer.innerHTML = `<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
                 title.innerText = "Tolak Payout?";
-                desc.innerText = "Pengajuan payout ini akan ditandai sebagai Ditolak.";
+                desc.innerText = "Pengajuan payout ini akan ditandai sebagai Ditolak dan saldo akan dikembalikan ke akun clipper.";
                 btnExec.className = "flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[13px] font-semibold transition-all";
             }
 
@@ -591,9 +593,11 @@
                 confirmModalBox.classList.remove('scale-95');
                 confirmModalBox.classList.add('scale-100');
             }, 10);
-        }
+        };
 
-        function closeConfirmModal() {
+        window.closeConfirmModal = function() {
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmModalBox = document.getElementById('confirmModalBox');
             confirmModal.classList.add('opacity-0');
             confirmModalBox.classList.remove('scale-100');
             confirmModalBox.classList.add('scale-95');
@@ -601,7 +605,7 @@
                 confirmModal.classList.add('hidden');
                 confirmModal.classList.remove('flex');
             }, 300);
-        }
+        };
 
         function showSuccessToast(message, type) {
             const toast = document.getElementById('toastNotif');
@@ -618,54 +622,77 @@
                 icon.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
             }
 
-            toast.classList.remove('-translate-y-20', 'opacity-0');
+            toast.classList.remove('-translate-y-20', 'opacity-0', 'pointer-events-none');
             toast.classList.add('translate-y-0', 'opacity-100');
 
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('-translate-y-20', 'opacity-0');
+                toast.classList.add('-translate-y-20', 'opacity-0', 'pointer-events-none');
             }, 3500);
         }
 
-        function executeConfirmAction() {
-            if (!activeCardElement || !currentDecision) return;
+        // AKSI UTAMA MENGUPDATE SUPABASE
+        window.executeConfirmAction = async function() {
+            if (!activeWdId || !currentDecision) return;
 
-            const badge = activeCardElement.querySelector('.status-badge');
-            const btn = activeCardElement.querySelector('.action-btn');
-            
-            if (currentDecision === 'setuju') {
-                activeCardElement.setAttribute('data-status', 'Selesai');
-                activeCardElement.classList.add('opacity-60');
-                
-                badge.className = "status-badge inline-block mt-1 bg-green-500/10 text-green-500 border border-green-500/20 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider";
-                badge.innerText = "Selesai";
-                
-                btn.className = "action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0";
-                btn.innerText = "Selesai";
-                btn.disabled = true;
-                
-                showSuccessToast("Payout berhasil disetujui!", "success");
-            } else if (currentDecision === 'tolak') {
-                activeCardElement.setAttribute('data-status', 'Ditolak');
-                activeCardElement.classList.add('opacity-60');
-                
-                badge.className = "status-badge inline-block mt-1 bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider";
-                badge.innerText = "Ditolak";
-                
-                btn.className = "action-btn px-4 py-2 sm:px-5 sm:py-2.5 bg-zinc-800 text-zinc-500 rounded-xl text-[12px] sm:text-[13px] font-bold cursor-not-allowed shrink-0";
-                btn.innerText = "Ditolak";
-                btn.disabled = true;
+            const btnExec = document.getElementById('btnExecuteAction');
+            const originalText = btnExec.innerText;
+            btnExec.disabled = true;
+            btnExec.innerText = "Memproses...";
 
-                showSuccessToast("Pengajuan payout ditolak.", "error");
+            try {
+                if (currentDecision === 'setuju') {
+                    // Update ke SUCCESS
+                    const { error } = await supabase.from('withdrawals')
+                        .update({ status: 'SUCCESS' })
+                        .eq('id', activeWdId);
+                    
+                    if (error) throw error;
+                    showSuccessToast("Payout berhasil disetujui!", "success");
+
+                } else if (currentDecision === 'tolak') {
+                    // Cek Alasan
+                    let reason = "";
+                    const checked = document.querySelector('input[name="alasan"]:checked');
+                    if(checked) {
+                        reason = checked.value === 'lainnya' ? document.getElementById('customReason').value.trim() : checked.value;
+                    }
+
+                    // 1. Update status Ditolak
+                    const { error } = await supabase.from('withdrawals')
+                        .update({ status: 'REJECTED', reject_reason: reason })
+                        .eq('id', activeWdId);
+                    if (error) throw error;
+
+                    // 2. Kembalikan saldo withdrawable user
+                    const { data: stats } = await supabase.from('clipper_stats')
+                        .select('withdrawable')
+                        .eq('user_id', activeUserId)
+                        .single();
+                        
+                    if(stats) {
+                        const newSaldo = (stats.withdrawable || 0) + activeWdAmount;
+                        await supabase.from('clipper_stats')
+                            .update({ withdrawable: newSaldo })
+                            .eq('user_id', activeUserId);
+                    }
+
+                    showSuccessToast("Pengajuan payout ditolak, saldo dikembalikan.", "error");
+                }
+
+                // Sukses
+                window.closeConfirmModal();
+                window.closePayoutModal();
+                await loadData(); // Reload list
+
+            } catch (err) {
+                alert("Gagal memproses data: " + err.message);
+            } finally {
+                btnExec.disabled = false;
+                btnExec.innerText = originalText;
             }
+        };
 
-            // Tutup semua modal
-            closeConfirmModal();
-            closePayoutModal();
-            
-            // Re-filter (Sembunyikan card jika filter hanya menampilkan 'Pending')
-            applyFilters(); 
-        }
     </script>
 </body>
 </html>
