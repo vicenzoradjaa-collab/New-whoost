@@ -130,31 +130,63 @@
 
     <!-- SCRIPT UTAMA (SUPABASE & LOGIC) -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; // Tambahan keamanan role
 
         let sessionUser = null;
         let campaignId = new URLSearchParams(window.location.search).get('campaign_id');
         let campaignData = null;
 
+        // FUNGSI ANTI-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // Cek Login
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                alert("Silakan login.");
-                window.location.replace('login.html');
-                return;
-            }
-            sessionUser = session.user;
+            try {
+                // 1. Cek Proteksi Role
+                await enforceRoleProtection();
 
-            // Pastikan User Datang Membawa Campaign ID
-            if (!campaignId) {
-                alert("Campaign tidak ditemukan! Harap pilih dari halaman sebelumnya.");
-                window.location.replace('clipper-campaignselector.html');
-                return;
-            }
+                // 2. Cek Sesi Autentikasi
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                sessionUser = session.user;
 
-            // Fetch Data Campaign dari Supabase
-            await fetchCampaign();
+                // 3. Pastikan User Datang Membawa Campaign ID
+                if (!campaignId) {
+                    alert("Campaign tidak valid! Harap pilih dari halaman sebelumnya.");
+                    window.location.replace('clipper-campaignselector.html');
+                    return;
+                }
+
+                // 4. (ANTI-BYPASS) Pastikan user benar-benar sudah JOIN di campaign ini
+                const { data: checkJoin, error: joinError } = await supabase
+                    .from('user_campaigns')
+                    .select('id')
+                    .eq('campaign_id', campaignId)
+                    .eq('user_id', sessionUser.id)
+                    .single();
+
+                if (joinError || !checkJoin) {
+                    alert("Anda belum bergabung dengan campaign ini. Dilarang melakukan submit.");
+                    window.location.replace('clipper-campaignselector.html');
+                    return;
+                }
+
+                // 5. Fetch Data Campaign
+                await fetchCampaign();
+
+            } catch (err) {
+                console.error("Terjadi kesalahan sistem:", err);
+            }
         });
 
         async function fetchCampaign() {
@@ -168,21 +200,23 @@
                 if (error || !data) throw error;
                 campaignData = data;
 
-                // Update UI Judul
-                const titleEl = document.getElementById('campaignTitle');
-                titleEl.innerText = campaignData.title;
-                titleEl.classList.remove('animate-pulse');
-                document.title = "Submit: " + campaignData.title + " - Whoost Clipper";
+                const safeTitle = escapeHTML(campaignData.title);
 
-                // Memperbarui URL History (Tampil Rapi di Browser tanpa refresh)
-                const safeUrlName = campaignData.title.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
+                // Update UI Judul secara aman
+                const titleEl = document.getElementById('campaignTitle');
+                titleEl.innerText = safeTitle;
+                titleEl.classList.remove('animate-pulse');
+                document.title = "Submit: " + safeTitle + " - Whoost Clipper";
+
+                // Memperbarui URL History dengan aman
+                const safeUrlName = safeTitle.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
                 window.history.replaceState({}, '', `?campaign_id=${campaignId}&name=${safeUrlName}`);
 
                 // Render Platforms Badge
                 renderPlatforms(campaignData.platforms);
 
             } catch (err) {
-                alert("Gagal memuat data campaign. Memulangkan halaman.");
+                alert("Gagal memuat data campaign. Mengembalikan Anda ke halaman sebelumnya.");
                 window.location.replace('clipper-campaignselector.html');
             }
         }
@@ -242,18 +276,21 @@
             inputEl.classList.add('border-zinc-700', 'focus:border-white');
             errorMsg.classList.add('hidden');
 
-            // Nonaktifkan tombol sementara agar tidak dobel klik
+            // Nonaktifkan tombol sementara agar tidak dobel klik / submit beruntun
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
 
             try {
+                // Sanitasi input link terakhir kali sebelum masuk database
+                const sanitizedUrl = escapeHTML(urlVal);
+
                 // Insert Data Baru ke Supabase `submissions` dengan status PENDING
                 const { error } = await supabase
                     .from('submissions')
                     .insert([{
                         campaign_id: campaignId,
                         user_id: sessionUser.id,
-                        video_link: urlVal,
+                        video_link: sanitizedUrl,
                         status: 'PENDING',
                         views_claimed: 0,
                         views_paid: 0,
