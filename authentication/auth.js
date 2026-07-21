@@ -60,3 +60,61 @@ export function routeBasedOnProfile(profile) {
         window.location.replace('clipper-dashboard.html');
     }
 }
+
+// ==========================================
+// 3. FUNGSI PROTEKSI HALAMAN BERDASARKAN ROLE
+// ==========================================
+export async function enforceRoleProtection() {
+    // Abaikan pengecekan jika di halaman login, halaman depan/index, atau pemilihan role
+    const path = window.location.pathname.toLowerCase();
+    
+    // Validasi tambahan agar root path ('/') tidak error
+    if (path.includes('login.html') || path.includes('index.html') || path.includes('role.html') || path === '/' || path.endsWith('/')) {
+        return;
+    }
+
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    // Jika tidak ada sesi (belum login), lempar ke login
+    if (!session) {
+        window.location.replace('login.html');
+        return;
+    }
+
+    // Ambil role user dari tabel profiles
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single();
+
+    const role = profile?.role ? profile.role.toLowerCase() : '';
+
+    // Jika user sudah login tapi belum punya role, lempar ke halaman pilih role
+    if (!role) {
+        window.location.replace('role.html');
+        return;
+    }
+
+    // --- LOGIKA PROTEKSI HALAMAN ---
+    let isAllowed = true;
+
+    if (path.includes('admin-') && role !== 'admin') {
+        isAllowed = false;
+    } else if (path.includes('client-') && (role !== 'client' && role !== 'brand')) {
+        isAllowed = false;
+    } else if (path.includes('clipper-') && (role !== 'clipper' && role !== 'kreator')) {
+        isAllowed = false;
+    }
+
+    // Jika user mengakses halaman yang bukan rolenya, kembalikan ke dashboardnya sendiri
+    if (!isAllowed) {
+        if (role === 'admin') {
+            window.location.replace('admin-dashboard.html');
+        } else if (role === 'client' || role === 'brand') {
+            window.location.replace('client-dashboard.html');
+        } else if (role === 'clipper' || role === 'kreator') {
+            window.location.replace('clipper-dashboard.html');
+        }
+    }
+}
