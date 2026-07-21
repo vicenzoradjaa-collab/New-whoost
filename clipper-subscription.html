@@ -62,7 +62,7 @@
     <header class="h-20 flex items-center px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/80 backdrop-blur-md z-20 sticky top-0">
         <div class="max-w-4xl w-full mx-auto flex items-center gap-4">
             <!-- Back Button -->
-            <button onclick="history.back()" class="p-2 rounded-full hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-white">
+            <button onclick="history.back()" class="p-2 rounded-full hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-white focus:outline-none">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             </button>
             <h1 class="text-lg font-semibold tracking-tight text-white">PRO Membership</h1>
@@ -189,7 +189,7 @@
                             <span class="text-sm text-zinc-500 mb-1">/ lifetime</span>
                         </div>
                         
-                        <button onclick="openFormModal()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 group">
+                        <button onclick="openFormModal()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 group focus:outline-none">
                             Beli Akses Premium
                             <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
@@ -208,7 +208,7 @@
             <!-- Modal Header -->
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-white">Konfirmasi Pembelian</h3>
-                <button onclick="closeModal('buyModal')" class="text-zinc-500 hover:text-white transition-colors">
+                <button onclick="closeModal('buyModal')" class="text-zinc-500 hover:text-white transition-colors focus:outline-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
@@ -220,12 +220,12 @@
                 <div>
                     <label class="block text-xs font-medium text-zinc-400 mb-1.5">Nama Lengkap</label>
                     <!-- Input otomatis diisi dan readonly -->
-                    <input type="text" id="buyerName" readonly class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm focus:outline-none cursor-not-allowed">
+                    <input type="text" id="buyerName" readonly class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm focus:outline-none cursor-not-allowed placeholder-zinc-700" placeholder="Memuat nama...">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-zinc-400 mb-1.5">Alamat Email (Akun Whoost)</label>
                     <!-- Input otomatis diisi dan readonly -->
-                    <input type="email" id="buyerEmail" readonly class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm focus:outline-none cursor-not-allowed">
+                    <input type="email" id="buyerEmail" readonly class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm focus:outline-none cursor-not-allowed placeholder-zinc-700" placeholder="Memuat email...">
                 </div>
                 
                 <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 flex justify-between items-center mt-2">
@@ -234,8 +234,8 @@
                 </div>
             </div>
 
-            <!-- Tombol Lanjut WA (Menggunakan warna putih agar senada dengan B&W, icon WA standar) -->
-            <button onclick="processToWhatsApp()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+            <!-- Tombol Lanjut WA -->
+            <button onclick="processToWhatsApp()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-lg flex items-center justify-center gap-2 focus:outline-none">
                 <svg class="w-5 h-5 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 Lanjutkan ke WhatsApp
             </button>
@@ -257,42 +257,88 @@
                 Mohon lanjutkan pembayaran dan konfirmasi melalui jendela WhatsApp yang terbuka. Admin akan segera memproses upgrade akun Anda.
             </p>
             
-            <button onclick="closeModal('successModal')" class="w-full py-3 rounded-xl bg-zinc-800 border border-zinc-700 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors">Tutup Jendela</button>
+            <button onclick="closeModal('successModal')" class="w-full py-3 rounded-xl bg-zinc-800 border border-zinc-700 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors focus:outline-none">Tutup Jendela</button>
         </div>
     </div>
 
+    <!-- DEKLARASI VARIABLE GLOBAL UNTUK NAVBAR -->
     <script>
-        // --- SIMULASI DATA AKUN LOGIN ---
-        // Di integrasi aslinya, data ini diambil dari session/database backend.
-        const loggedInUser = {
-            name: "John Clipper",
-            email: "john.clipper@gmail.com"
-        };
+        const ACTIVE_MENU = 'premium';
+    </script>
+    <!-- PEMANGGILAN NAVBAR CLIPPER -->
+    <script src="attribute/navbarclipper.js"></script>
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT & SUPABASE LOGIC                -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         // GANTI DENGAN NOMOR WA ADMIN (Gunakan format 62 tanpa + atau 0)
         const ADMIN_WHATSAPP = "6281234567890"; 
         
-        // Inisiasi data saat halaman dimuat
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('buyerName').value = loggedInUser.name;
-            document.getElementById('buyerEmail').value = loggedInUser.email;
-        });
-
-        function openFormModal() {
-            openModal('buyModal');
+        // Fungsi Anti-XSS (Sanitasi String)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-        function processToWhatsApp() {
+        // Inisiasi data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // 1. Validasi Keamanan (Hanya Clipper yang boleh masuk)
+                await enforceRoleProtection();
+
+                // 2. Ambil data asli dari User yang sedang Login
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    throw new Error("Sesi tidak valid");
+                }
+
+                // Ambil Nama Lengkap dari tabel profiles
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('full_name')
+                    .eq('id', session.user.id)
+                    .single();
+
+                const userName = profile?.full_name || "Clipper Tanpa Nama";
+                const userEmail = session.user.email;
+
+                // 3. Tampilkan di Form Modal (Sudah di-sanitasi)
+                document.getElementById('buyerName').value = escapeHTML(userName);
+                document.getElementById('buyerEmail').value = escapeHTML(userEmail);
+
+            } catch (err) {
+                console.error("Auth Error:", err);
+                document.getElementById('buyerName').value = "Gagal memuat nama";
+                document.getElementById('buyerEmail').value = "Gagal memuat email";
+            }
+        });
+
+        // BINDING FUNGSI KE WINDOW AGAR BISA DIPANGGIL HTML SETELAH JADI MODULE
+        window.openFormModal = function() {
+            window.openModal('buyModal');
+        };
+
+        window.processToWhatsApp = function() {
+            // Ambil dari inputan yang sudah terisi otomatis
             const name = document.getElementById('buyerName').value.trim();
             const email = document.getElementById('buyerEmail').value.trim();
 
-            if (!name || !email) {
-                alert("Terjadi kesalahan sistem dalam membaca data akun Anda.");
+            if (!name || !email || name === "Memuat nama...") {
+                alert("Mohon tunggu sebentar, sistem sedang memuat data akun Anda.");
                 return;
             }
 
-            // Menyusun format pesan WhatsApp
-            const message = `Halo Admin Whoost,%0A%0ASaya ingin melakukan pembelian *PRO Membership (LIFETIME)*.%0A%0A*Data Akun:*%0ANama: ${name}%0AEmail: ${email}%0A%0A*Tagihan:* Rp 499.000%0A%0AMohon instruksi pembayarannya. Terima kasih!`;
+            // Menyusun format pesan WhatsApp (Encode agar rapi di URL)
+            const message = `Halo Admin Whoost,%0A%0ASaya ingin melakukan pembelian *PRO Membership (LIFETIME)*.%0A%0A*Data Akun:*%0ANama: ${encodeURIComponent(name)}%0AEmail: ${encodeURIComponent(email)}%0A%0A*Tagihan:* Rp 499.000%0A%0AMohon instruksi pembayarannya. Terima kasih!`;
             
             const waLink = `https://wa.me/${ADMIN_WHATSAPP}?text=${message}`;
 
@@ -300,14 +346,14 @@
             window.open(waLink, '_blank');
 
             // Tutup modal form dan tampilkan modal sukses
-            closeModal('buyModal');
+            window.closeModal('buyModal');
             setTimeout(() => {
-                openModal('successModal');
+                window.openModal('successModal');
             }, 400); // jeda sedikit agar transisi lebih smooth
-        }
+        };
 
         // FUNGSI DASAR BUKA/TUTUP MODAL
-        function openModal(modalId) {
+        window.openModal = function(modalId) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(modalId + 'Content');
             
@@ -316,9 +362,9 @@
             
             content.classList.remove('modal-content-inactive');
             content.classList.add('modal-content-active');
-        }
+        };
 
-        function closeModal(modalId) {
+        window.closeModal = function(modalId) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(modalId + 'Content');
             
@@ -327,13 +373,7 @@
             
             content.classList.remove('modal-content-active');
             content.classList.add('modal-content-inactive');
-        }
-
-        // Deklarasikan active menu state untuk navbar clipper jika diperlukan
-        const ACTIVE_MENU = 'premium';
+        };
     </script>
-    
-    <!-- PEMANGGILAN NAVBAR CLIPPER -->
-    <script src="attribute/navbarclippers.js"></script>
 </body>
 </html>
