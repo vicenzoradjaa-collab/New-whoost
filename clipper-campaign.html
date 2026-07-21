@@ -216,7 +216,7 @@
     <script src="attribute/navbarclipper.js"></script>
 
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let activeFilters = { search: '', category: 'All Categories', content: 'All Content', status: 'Semua Status' };
         let currentVisible = 10; 
@@ -226,21 +226,44 @@
         let joinedCampaignIds = [];
         let sessionUser = null;
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                loader.classList.add('opacity-0'); 
-                setTimeout(() => loader.style.display = 'none', 500); 
-            }, 800); 
-            
-            AOS.init({ once: true, offset: 50, duration: 800 });
+        // Fungsi Anti-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-            await initData();
-            
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                activeFilters.search = e.target.value.toLowerCase();
-                applyFilters();
-            });
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // 1. Validasi Proteksi Role
+                await enforceRoleProtection();
+
+                // 2. Inisialisasi Data
+                await initData();
+                
+                AOS.init({ once: true, offset: 50, duration: 800 });
+                
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    activeFilters.search = e.target.value.toLowerCase();
+                    applyFilters();
+                });
+
+            } catch(e) {
+                console.error("Initialization Error:", e);
+            } finally {
+                // Sembunyikan Loading Screen setelah proses selesai/gagal
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if (loader) {
+                        loader.classList.add('opacity-0'); 
+                        setTimeout(() => loader.style.display = 'none', 500); 
+                    }
+                }, 500); 
+            }
         });
 
         async function initData() {
@@ -279,7 +302,11 @@
 
                 let typeText = camp.type === 'ugc' ? 'UGC' : 'Clipping';
 
-                const matchSearch = activeFilters.search === '' || camp.title.toLowerCase().includes(activeFilters.search) || camp.brand_name.toLowerCase().includes(activeFilters.search);
+                // Gunakan lowercase yang aman untuk pencarian
+                const campTitle = (camp.title || '').toLowerCase();
+                const campBrand = (camp.brand_name || '').toLowerCase();
+
+                const matchSearch = activeFilters.search === '' || campTitle.includes(activeFilters.search) || campBrand.includes(activeFilters.search);
                 const matchCat = activeFilters.category === 'All Categories' || typeText === activeFilters.category;
                 const matchCont = activeFilters.content === 'All Content' || camp.niche === activeFilters.content;
                 const matchStat = activeFilters.status === 'Semua Status' || statText === activeFilters.status;
@@ -336,6 +363,12 @@
             
             const priceLabel = camp.payment_type === 'video' ? '/ vid' : '/ 1k view';
 
+            // Sanitasi data
+            const safeTitle = escapeHTML(camp.title);
+            const safeBrand = escapeHTML(camp.brand_name);
+            const safeNiche = escapeHTML(camp.niche);
+            const safeBanner = camp.banner_url ? escapeHTML(camp.banner_url) : null;
+
             let platformIcons = '';
             if (camp.platforms && Array.isArray(camp.platforms)) {
                 if (camp.platforms.includes('tiktok')) platformIcons += `<svg class="w-3 h-3 md:w-4 md:h-4 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
@@ -375,17 +408,16 @@
             return `
             <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-2xl md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group" data-aos="fade-up" data-aos-delay="${delay}">
                 
-                <!-- Ganti aspect-ratio bermasalah dengan padding-top 16:9 100% stabil di mobile -->
                 <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
-                    ${camp.banner_url ? `<img src="${camp.banner_url}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
+                    ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
                 </div>
                 
                 <div class="flex justify-between items-start mb-2 gap-2">
-                    <span class="text-[10px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${camp.brand_name}</span>
+                    <span class="text-[10px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrand}</span>
                     <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
                 </div>
                 
-                <h4 class="text-sm md:text-xl font-black text-white mb-2 line-clamp-2 leading-snug group-hover:text-zinc-300 transition-colors" title="${camp.title}">${camp.title}</h4>
+                <h4 class="text-sm md:text-xl font-black text-white mb-2 line-clamp-2 leading-snug group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
                 
                 <div class="mb-3 flex items-baseline gap-1 flex-wrap">
                     <span class="text-sm md:text-2xl font-extrabold text-white tracking-tight leading-none">${priceFormatted}</span>
@@ -397,7 +429,7 @@
                         ${platformIcons || `<span class="text-[9px] text-zinc-500">-</span>`}
                     </div>
                     <div class="flex items-center px-1.5 py-1 md:px-2 rounded-md border border-zinc-800 bg-zinc-900/80">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-wider truncate max-w-[70px] md:max-w-none">${camp.niche}</span>
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-wider truncate max-w-[70px] md:max-w-none">${safeNiche}</span>
                     </div>
                 </div>
 
@@ -464,37 +496,49 @@
         };
 
         // ==========================================
-        // AKSI JOIN CAMPAIGN & MODAL
+        // AKSI JOIN CAMPAIGN & MODAL (ANTI BYPASS)
         // ==========================================
         window.joinCampaign = async function(campaignId, btnElement) {
-            if (!sessionUser) {
-                alert("Silakan login terlebih dahulu untuk mendaftar campaign.");
-                return;
-            }
+            try {
+                // Double Check Session via Server untuk menghindari bypass var lokal
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError || !session) {
+                    alert("Sesi Anda telah habis. Silakan login kembali untuk mendaftar campaign.");
+                    window.location.replace('login.html');
+                    return;
+                }
 
-            btnElement.disabled = true;
-            btnElement.innerText = 'Proses...';
+                btnElement.disabled = true;
+                btnElement.innerText = 'Proses...';
 
-            const { data, error } = await supabase.from('user_campaigns').insert([
-                { user_id: sessionUser.id, campaign_id: campaignId }
-            ]);
+                const { data, error } = await supabase.from('user_campaigns').insert([
+                    { user_id: session.user.id, campaign_id: campaignId }
+                ]);
 
-            if (error) {
-                if (error.code === '23505' || error.message.includes('duplicate')) {
+                if (error) {
+                    if (error.code === '23505' || error.message.includes('duplicate')) {
+                        // Jika sudah pernah join
+                        joinedCampaignIds.push(campaignId);
+                        btnElement.innerText = 'Joined';
+                        btnElement.className = 'w-full bg-zinc-800 text-white border border-zinc-700 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed';
+                    } else {
+                        alert("Gagal mendaftar: " + error.message);
+                        btnElement.innerText = 'Daftar';
+                        btnElement.disabled = false;
+                    }
+                } else {
                     joinedCampaignIds.push(campaignId);
                     btnElement.innerText = 'Joined';
                     btnElement.className = 'w-full bg-zinc-800 text-white border border-zinc-700 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed';
-                } else {
-                    alert("Gagal mendaftar: " + error.message);
-                    btnElement.innerText = 'Daftar';
-                    btnElement.disabled = false;
+                    
+                    window.showJoinModal();
                 }
-            } else {
-                joinedCampaignIds.push(campaignId);
-                btnElement.innerText = 'Joined';
-                btnElement.className = 'w-full bg-zinc-800 text-white border border-zinc-700 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed';
-                
-                window.showJoinModal();
+            } catch (err) {
+                console.error("Join Error:", err);
+                alert("Terjadi kesalahan sistem.");
+                btnElement.innerText = 'Daftar';
+                btnElement.disabled = false;
             }
         };
 
