@@ -80,7 +80,7 @@
             </p>
         </div>
 
-        <!-- Form Pemilihan Role (Action dihapus karena dihandle JS) -->
+        <!-- Form Pemilihan Role -->
         <form id="roleForm" onsubmit="event.preventDefault();">
             
             <div class="grid md:grid-cols-2 gap-6 md:gap-8 mb-12">
@@ -196,7 +196,7 @@
                     <button type="button" onclick="closePopup()" class="flex-1 py-3.5 rounded-xl font-bold bg-zinc-800 text-white hover:bg-zinc-700 transition duration-300">
                         Batal
                     </button>
-                    <!-- Tombol ini sudah dipanggil window.submitForm() di bawah -->
+                    <!-- Tombol Konfirmasi -->
                     <button type="button" id="btnConfirmRole" onclick="submitForm()" class="flex-1 py-3.5 rounded-xl font-bold bg-white text-black hover:bg-zinc-200 transition duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95">
                         Ya, Lanjutkan
                     </button>
@@ -210,8 +210,7 @@
     
     <!-- MENGUBAH KE type="module" UNTUK MEMANGGIL SUPABASE -->
     <script type="module">
-        // Import supabase dari file auth.js Anda
-        import { supabase } from './authentication/auth.js';
+        import { supabase, routeBasedOnProfile } from './authentication/auth.js';
 
         AOS.init({
             once: true,
@@ -219,10 +218,38 @@
             duration: 800
         });
 
+        // ===============================================
+        // 0. PROTEKSI HALAMAN (ANTI BYPASS)
+        // ===============================================
+        async function enforceRolePageSecurity() {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            // Jika belum login, tendang ke login
+            if (!session) {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Cek apakah user sudah punya role di database
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            // Jika role sudah ada (tidak kosong), tendang user ini ke dashboardnya!
+            if (profile && profile.role) {
+                routeBasedOnProfile(profile);
+            }
+        }
+        
+        // Panggil proteksi saat halaman pertama kali dibuka
+        enforceRolePageSecurity();
+
+
         const iconBrandSVG = `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`;
         const iconKreatorSVG = `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
 
-        // Karena kita menggunakan type="module", fungsi harus ditempel ke window agar bisa dipanggil dari HTML (onclick)
         window.handleRoleSelection = function(radioInput) {
             const allCards = document.querySelectorAll('.role-card');
             allCards.forEach(card => card.classList.remove('active'));
@@ -290,12 +317,26 @@
             btnConfirm.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-black inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
 
             try {
-                // 1. Cek sesi user saat ini (apakah dia masih login?)
+                // 1. Cek sesi user saat ini
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 
                 if (sessionError || !session) {
                     alert('Sesi Anda telah habis. Silakan login kembali.');
                     window.location.replace('login.html');
+                    return;
+                }
+
+                // Proteksi Tambahan: Pastikan di database rolenya masih benar-benar kosong 
+                // sebelum kita izinkan insert/update (mencegah bypass console)
+                const { data: checkProfile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (checkProfile && checkProfile.role) {
+                    alert('Anda sudah memiliki peran dan tidak bisa mengubahnya lagi!');
+                    window.location.reload(); // Refresh akan menendang mereka ke dashboard berkat enforceRolePageSecurity()
                     return;
                 }
 
@@ -313,17 +354,16 @@
                     return;
                 }
 
-                // 3. Arahkan halaman (sesuai logika auth.js Anda sebelumnya)
-                // Jika Brand -> Karena baru daftar, is_profile_complete pasti false, maka arahkan ke lengkapi profil
-                // Jika Clipper -> Langsung ke clipper dashboard
-                if (selectedRole === 'brand') {
+                // 3. Arahkan halaman (sesuai role)
+                if (selectedRole === 'brand' || selectedRole === 'client') {
                     window.location.replace('client-completeprofile.html');
-                } else if (selectedRole === 'clipper') {
+                } else if (selectedRole === 'clipper' || selectedRole === 'kreator') {
                     window.location.replace('clipper-dashboard.html');
                 }
 
             } catch (error) {
                 console.error("Error:", error);
+                alert("Terjadi kesalahan sistem. Coba beberapa saat lagi.");
                 btnConfirm.disabled = false;
                 btnConfirm.innerHTML = originalText;
             }
