@@ -88,11 +88,22 @@
 
     <!-- SCRIPT UTAMA (SUPABASE & LOGIC) -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; // Tambahan Proteksi
 
         let sessionUser = null;
         let joinedCampaigns = [];
         let currentSearch = '';
+
+        // FUNGSI ANTI-XSS (Mencegah Eksekusi Script Jahat)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         // Menghitung kolom grid berdasarkan ukuran layar
         function getCols() {
@@ -106,23 +117,33 @@
         let currentLimit = getCols() * 2;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                alert("Silakan login.");
-                window.location.replace('login.html');
-                return;
-            }
-            sessionUser = session.user;
-            await fetchJoinedCampaigns();
-            
-            // Refresh grid limit jika ukuran di resize
-            window.addEventListener('resize', () => {
-                const newCols = getCols();
-                if(currentLimit < newCols * 2) {
-                    currentLimit = newCols * 2;
-                    applyRender();
+            try {
+                // 1. Cek Role Terlebih Dahulu
+                await enforceRoleProtection();
+
+                // 2. Verifikasi Sesi Lanjutan
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
                 }
-            });
+                sessionUser = session.user;
+                
+                // 3. Ambil Data
+                await fetchJoinedCampaigns();
+                
+                // Refresh grid limit jika ukuran di resize
+                window.addEventListener('resize', () => {
+                    const newCols = getCols();
+                    if(currentLimit < newCols * 2) {
+                        currentLimit = newCols * 2;
+                        applyRender();
+                    }
+                });
+            } catch (error) {
+                console.error("Terjadi kesalahan sistem saat inisialisasi:", error);
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal memuat halaman dengan benar. Silakan refresh.</p>';
+            }
         });
 
         async function fetchJoinedCampaigns() {
@@ -143,13 +164,13 @@
 
                 if (error) throw error;
 
-                // Ekstrak data yang tidak null dan tidak di hapus (exclude null campaigns)
+                // Ekstrak data yang tidak null (exclude null campaigns jika campaign dihapus)
                 joinedCampaigns = data.filter(item => item.campaigns !== null).map(item => item.campaigns);
                 applyRender();
 
             } catch (err) {
                 console.error("Gagal load joined campaigns:", err);
-                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal memuat data dari server.</p>';
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500/80 text-sm col-span-full">Gagal memuat data dari server. Silakan coba lagi nanti.</p>';
             }
         }
 
@@ -174,7 +195,12 @@
             const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
             const validPercentage = percentage > 100 ? 100 : (percentage < 0 ? 0 : percentage);
 
-            const safeTitle = camp.title || 'Tanpa Judul';
+            // Sanitasi data dari database sebelum ditampilkan (Mencegah XSS Attack)
+            const safeTitle = escapeHTML(camp.title || 'Tanpa Judul');
+            const safeBrand = escapeHTML(camp.brand_name || '-');
+            const safeNiche = escapeHTML(camp.niche || 'General');
+            const safeBanner = camp.banner_url ? escapeHTML(camp.banner_url) : null;
+            
             const fallbackText = safeTitle.substring(0, 10).toUpperCase();
             const typeLabel = camp.type === 'ugc' ? 'UGC' : 'CLIPPING';
             
@@ -187,8 +213,8 @@
             }
 
             let bgContent = '';
-            if (camp.banner_url) {
-                bgContent = `<img src="${camp.banner_url}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">`;
+            if (safeBanner) {
+                bgContent = `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">`;
             } else {
                 bgContent = `
                     <div class="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent z-0 opacity-80"></div>
@@ -200,20 +226,17 @@
             return `
             <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group cursor-pointer" onclick="window.location.href='clipper-submit.html?campaign_id=${camp.id}'">
                 
-                <!-- Full Gambar Tanpa Teks Overlay (Kecuali Tidak Ada Banner) -->
                 <div class="w-full aspect-[16/9] bg-zinc-950 rounded-xl mb-4 flex flex-col items-center justify-center relative overflow-hidden shrink-0 border border-zinc-800/50">
                     ${bgContent}
                 </div>
                 
-                <!-- Info Brand & Status Tanpa Icon Bulat -->
                 <div class="flex justify-between items-center mb-2 md:mb-3">
                     <div class="flex items-center overflow-hidden pr-2">
-                        <span class="text-[11px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${camp.brand_name || '-'}</span>
+                        <span class="text-[11px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrand}</span>
                     </div>
                     <div class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</div>
                 </div>
                 
-                <!-- Judul Diperbesar Persis Seperti Campaign Utama -->
                 <h4 class="text-base md:text-xl font-black text-white mb-2 md:mb-3 truncate group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
                 
                 <div class="mb-3 md:mb-4 flex items-baseline gap-1">
@@ -226,7 +249,7 @@
                         ${platformIcons || `<span class="text-[10px] text-zinc-500">-</span>`}
                     </div>
                     <div class="flex items-center px-2 py-1 rounded-md border border-zinc-800 bg-zinc-900/80">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-wider">${camp.niche || 'General'}</span>
+                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-wider">${safeNiche}</span>
                     </div>
                 </div>
                 
