@@ -315,13 +315,24 @@
     <script src="attribute/navbarclipper.js"></script>
 
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; // Tambahan proteksi role
 
         // Variabel global state
         let currentUserId = null;
         let currentAvatarUrl = null;
         let socmedCount = 0;
         let bankCount = 0;
+
+        // FUNGSI KEAMANAN (ANTI-XSS) UNTUK MERENDER DYNAMIC HTML
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         // Ikon Custom Alert
         const iconSuccess = `<svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
@@ -333,6 +344,9 @@
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // Proteksi Role Keamanan
+                await enforceRoleProtection();
+
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError || !session) {
                     window.location.replace('login.html');
@@ -483,8 +497,12 @@
             showActionLoader("Mengunggah Foto Baru...");
 
             try {
+                // Keamanan Ekstra: Validasi sesi sebelum upload
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) throw new Error("Sesi tidak valid. Silakan login ulang.");
+                
                 const ext = file.name.split('.').pop();
-                const newFileName = `${currentUserId}-${Date.now()}.${ext}`;
+                const newFileName = `${session.user.id}-${Date.now()}.${ext}`;
 
                 const { error: uploadError } = await supabase.storage.from('avatars').upload(newFileName, file);
                 if (uploadError) throw uploadError;
@@ -498,7 +516,8 @@
                     if(removeError) console.warn("Gagal hapus avatar lama:", removeError);
                 }
 
-                const { error: updateError } = await supabase.from('profiles').update({ avatar_url: newUrl }).eq('id', currentUserId);
+                // Update menggunakan session ID untuk menghindari bypass user id
+                const { error: updateError } = await supabase.from('profiles').update({ avatar_url: newUrl }).eq('id', session.user.id);
                 if (updateError) throw updateError;
 
                 currentAvatarUrl = newUrl;
@@ -508,7 +527,7 @@
                 window.showCustomAlert("Berhasil", "Foto profil berhasil diperbarui.", "success");
             } catch (error) {
                 console.error("Gagal ubah foto:", error);
-                window.showCustomAlert("Gagal", "Terjadi kesalahan saat mengunggah foto.", "error");
+                window.showCustomAlert("Gagal", error.message || "Terjadi kesalahan saat mengunggah foto.", "error");
             } finally {
                 hideActionLoader();
                 event.target.value = "";
@@ -524,11 +543,15 @@
 
             showActionLoader("Menghapus Foto...");
             try {
+                // Keamanan Ekstra: Validasi sesi sebelum menghapus
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) throw new Error("Sesi tidak valid. Silakan login ulang.");
+
                 const oldFileName = decodeURIComponent(currentAvatarUrl.split('/').pop().split('?')[0]);
                 const { error: removeError } = await supabase.storage.from('avatars').remove([oldFileName]);
                 if(removeError) console.warn("Gagal hapus avatar dari storage:", removeError);
 
-                await supabase.from('profiles').update({ avatar_url: null }).eq('id', currentUserId);
+                await supabase.from('profiles').update({ avatar_url: null }).eq('id', session.user.id);
                 
                 currentAvatarUrl = null;
                 updateAvatarUI(null);
@@ -537,7 +560,7 @@
                 window.showCustomAlert("Berhasil", "Foto profil telah dihapus.", "success");
             } catch (error) {
                 console.error(error);
-                window.showCustomAlert("Gagal", "Gagal menghapus foto profil.", "error");
+                window.showCustomAlert("Gagal", error.message || "Gagal menghapus foto profil.", "error");
             } finally {
                 hideActionLoader();
             }
@@ -558,20 +581,24 @@
         }
 
         // ==========================================
-        // 4. DYNAMIC SOCIAL MEDIA LOGIC
+        // 4. DYNAMIC SOCIAL MEDIA LOGIC (DENGAN ANTI-XSS)
         // ==========================================
         window.addSocmedRow = function(platform = 'TikTok', username = '') {
             socmedCount++;
             const container = document.getElementById('socmed-container');
             const rowId = socmedCount;
             
+            // Sanitasi input sebelum dirender ke HTML inner
+            const safePlatform = escapeHTML(platform);
+            const safeUsername = escapeHTML(username);
+
             const div = document.createElement('div');
             div.className = "socmed-row flex flex-col sm:flex-row gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl dropdown-parent relative";
             div.innerHTML = `
                 <div class="relative w-full sm:w-[150px] shrink-0" id="dd-container-${rowId}">
-                    <input type="hidden" class="platform-val" value="${platform}" id="platform-val-${rowId}">
+                    <input type="hidden" class="platform-val" value="${safePlatform}" id="platform-val-${rowId}">
                     <button type="button" onclick="toggleSocmedDropdown('${rowId}')" class="w-full bg-cardBg border border-zinc-700 hover:border-zinc-500 rounded-lg py-3 px-3 flex justify-between items-center text-xs text-white transition-colors">
-                        <span id="platform-text-${rowId}">${platform}</span>
+                        <span id="platform-text-${rowId}">${safePlatform}</span>
                         <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
                     <div id="platform-options-${rowId}" class="absolute z-[100] left-0 top-full mt-1 w-full bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl hidden flex-col overflow-hidden py-1">
@@ -587,7 +614,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span class="text-zinc-500 font-bold text-sm">@</span>
                         </div>
-                        <input type="text" class="username-input w-full bg-cardBg border border-zinc-700 focus:border-white focus:bg-zinc-900 rounded-lg py-3 pl-8 pr-3 text-xs sm:text-sm text-white outline-none transition-colors" placeholder="Username" value="${username}">
+                        <input type="text" class="username-input w-full bg-cardBg border border-zinc-700 focus:border-white focus:bg-zinc-900 rounded-lg py-3 pl-8 pr-3 text-xs sm:text-sm text-white outline-none transition-colors" placeholder="Username" value="${safeUsername}">
                     </div>
                     <button type="button" onclick="this.closest('.socmed-row').remove(); updateHealthBar();" class="p-3 shrink-0 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Hapus Akun">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -630,22 +657,26 @@
         }
 
         // ==========================================
-        // 5. DYNAMIC BANK LOGIC
+        // 5. DYNAMIC BANK LOGIC (DENGAN ANTI-XSS)
         // ==========================================
         window.addBankRow = function(bankName = 'BCA', accountNumber = '') {
             bankCount++;
             const container = document.getElementById('bank-list-container');
             const rowId = bankCount;
             
+            // Sanitasi input
+            const safeBank = escapeHTML(bankName);
+            const safeAccount = escapeHTML(accountNumber);
+
             const div = document.createElement('div');
             div.className = "bank-row flex flex-col sm:flex-row gap-3 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl dropdown-parent relative";
             div.innerHTML = `
                 <div class="relative w-full sm:w-[150px] shrink-0" id="bank-dd-container-${rowId}">
-                    <input type="hidden" class="bank-val" value="${bankName}" id="bank-val-${rowId}">
+                    <input type="hidden" class="bank-val" value="${safeBank}" id="bank-val-${rowId}">
                     <button type="button" onclick="toggleBankDropdown('${rowId}')" class="w-full bg-cardBg border border-zinc-700 hover:border-zinc-500 rounded-lg py-3 px-3 flex justify-between items-center text-xs text-white transition-colors">
                         <div class="flex items-center gap-1.5">
                             <svg class="h-3.5 w-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                            <span id="bank-text-${rowId}">${bankName}</span>
+                            <span id="bank-text-${rowId}">${safeBank}</span>
                         </div>
                         <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
@@ -664,7 +695,7 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path></svg>
                         </div>
-                        <input type="number" class="account-input w-full bg-cardBg border border-zinc-700 focus:border-white focus:bg-zinc-900 rounded-lg py-3 pl-9 pr-3 text-xs sm:text-sm text-white outline-none transition-colors" placeholder="Nomor rekening/e-wallet" value="${accountNumber}">
+                        <input type="number" class="account-input w-full bg-cardBg border border-zinc-700 focus:border-white focus:bg-zinc-900 rounded-lg py-3 pl-9 pr-3 text-xs sm:text-sm text-white outline-none transition-colors" placeholder="Nomor rekening/e-wallet" value="${safeAccount}">
                     </div>
                     <button type="button" onclick="this.closest('.bank-row').remove(); updateHealthBar();" class="p-3 shrink-0 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors" title="Hapus Rekening">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -724,16 +755,19 @@
         });
 
         // ==========================================
-        // 6. FUNGSI SIMPAN KE DB
+        // 6. FUNGSI SIMPAN KE DB (ANTI-BYPASS ID)
         // ==========================================
         window.saveProfile = async function() {
             const btnBottom = document.getElementById('btn-save-bottom');
             const btnHeader = document.getElementById('btn-save-header');
-            const originalBottomText = btnBottom.innerHTML;
             
             showActionLoader("Menyimpan Profil...");
             
             try {
+                // Keamanan: Pastikan yang diedit adalah profil milik user session ini saja
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) throw new Error("Sesi tidak valid. Silakan muat ulang atau login kembali.");
+
                 // SESUAIKAN DENGAN NAMA KOLOM DI DATABASE
                 const updateData = {
                     full_name: document.getElementById('input-fullname').value,
@@ -743,7 +777,7 @@
                     payment_info: getBankData()
                 };
                 
-                const { error } = await supabase.from('profiles').update(updateData).eq('id', currentUserId);
+                const { error } = await supabase.from('profiles').update(updateData).eq('id', session.user.id);
                 if(error) throw error;
                 
                 updateHealthBar();
