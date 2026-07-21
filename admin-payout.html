@@ -66,7 +66,7 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER ADMIN (Ikon & Profil Dihapus) -->
+    <!-- HEADER ADMIN -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain">
@@ -114,11 +114,17 @@
         </div>
     </div>
 
-    <!-- MAIN CONTENT (Ditambah pb-48 agar scroll tidak tertutup bottom navbar) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-48 z-0 scroll-smooth w-full relative">
         <div class="max-w-6xl mx-auto space-y-3 sm:space-y-4" id="payoutList">
-            <!-- List Payout Akan Dirender Otomatis via JS -->
-            <p class="text-zinc-500 text-sm text-center py-10">Memuat data...</p>
+            <!-- Spinner Default Sebelum Data Dirender -->
+            <div class="flex flex-col items-center justify-center py-20 opacity-80">
+                <svg class="w-10 h-10 text-blue-500 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="text-sm text-zinc-400 font-medium">Memuat data dari database...</p>
+            </div>
         </div>
     </main>
 
@@ -259,7 +265,7 @@
             await loadSettings();
             await loadData();
 
-            // Sembunyikan Loading Screen
+            // Sembunyikan Loading Screen utama
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 if (loader) {
@@ -278,13 +284,25 @@
         }
 
         async function loadData() {
+            const container = document.getElementById('payoutList');
+            
+            // Pengambilan data dengan select '*' memastikan tidak akan error jika kolom tertentu (seperti reject_reason) belum ada.
             const { data, error } = await supabase
                 .from('withdrawals')
-                .select(`
-                    id, amount, status, created_at, reject_reason, user_id,
-                    profiles ( full_name, email, payment_info )
-                `)
+                .select('*, profiles ( full_name, email, payment_info )')
                 .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error("Gagal memuat data withdrawals:", error);
+                container.innerHTML = `
+                    <div class="text-center py-10">
+                        <p class="text-red-500 text-sm bg-red-500/10 inline-block px-4 py-2 rounded-lg border border-red-500/20">
+                            <b>Error:</b> ${error.message}
+                        </p>
+                        <p class="text-xs text-zinc-500 mt-2">Pastikan RLS policy Supabase mengizinkan akses.</p>
+                    </div>`;
+                return;
+            }
 
             if(data) {
                 withdrawalsData = data;
@@ -370,7 +388,6 @@
                     }
                 }
 
-                // Tambahkan color random utk avatar text berdasarkan huruf
                 let iconColor = item.status === 'PENDING' ? 'text-white' : 'text-zinc-500';
 
                 html += `
@@ -453,15 +470,15 @@
                 }
             }
 
-            // Hitung Fee (Sesuai DB)
+            // Hitung Fee Dinamis dari DB Setting
             let fee = 0;
             let feeLabelStr = 'Biaya Layanan/Fee';
             if (sysSettings.fee_type.includes('%')) {
                 fee = Math.floor(activeWdAmount * (sysSettings.fee_amount / 100));
-                feeLabelStr = `Biaya Layanan/Fee (${sysSettings.fee_amount}%)`;
+                feeLabelStr = `Potongan Admin (${sysSettings.fee_amount}%)`;
             } else {
                 fee = sysSettings.fee_amount;
-                feeLabelStr = `Biaya Layanan/Fee (${formatRupiah(sysSettings.fee_amount)})`;
+                feeLabelStr = `Potongan Admin (${formatRupiah(sysSettings.fee_amount)})`;
             }
 
             let netAmount = activeWdAmount - fee;
@@ -683,7 +700,14 @@
                 // Sukses
                 window.closeConfirmModal();
                 window.closePayoutModal();
-                await loadData(); // Reload list
+                
+                // Render Ulang data List
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 opacity-80">
+                        <svg class="w-10 h-10 text-blue-500 animate-spin mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <p class="text-sm text-zinc-400 font-medium">Memperbarui data...</p>
+                    </div>`;
+                await loadData(); 
 
             } catch (err) {
                 alert("Gagal memproses data: " + err.message);
