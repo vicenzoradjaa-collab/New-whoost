@@ -34,6 +34,17 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black min-h-screen flex relative">
 
+    <!-- ========================================== -->
+    <!-- LOADING SCREEN PENUH (THEME WHOOST)        -->
+    <!-- ========================================== -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex-col items-center justify-center transition-opacity duration-500 opacity-0 hidden">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/100x40?text=WHOOST'">
+            <p id="loaderText" class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memverifikasi...</p>
+        </div>
+    </div>
+
     <!-- Tombol Back to Home -->
     <a href="index.html" class="absolute top-6 left-6 lg:left-auto lg:right-8 z-50 flex items-center gap-2 text-sm font-bold text-zinc-400 hover:text-white transition-colors group">
         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -116,6 +127,27 @@
 
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAL PERINGATAN BANNED (THEME WHOOST)     -->
+    <!-- ========================================== -->
+    <div id="bannedModal" class="fixed inset-0 z-[1000] hidden items-center justify-center transition-all duration-300 opacity-0">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+        <div id="bannedModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform scale-95 transition-transform duration-300 overflow-hidden">
+            <!-- Glow Effect -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-500 blur-[50px] opacity-20 pointer-events-none"></div>
+
+            <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border-4 border-red-500/20 relative z-10 text-red-500">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            
+            <h3 class="text-xl font-bold text-white mb-2 relative z-10">Akses Ditolak</h3>
+            <p class="text-[13px] text-zinc-400 mb-6 relative z-10 leading-relaxed">
+                Akun Anda telah <b>diblokir (banned)</b> oleh sistem karena melanggar ketentuan. Anda tidak dapat masuk ke platform.
+            </p>
+            <button onclick="window.closeBannedModal()" class="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-[13px] font-bold transition-all shadow-lg border border-zinc-700 relative z-10">Tutup</button>
+        </div>
+    </div>
+
     <!-- Scripts AOS Bawaan Anda -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -133,28 +165,88 @@
         import { supabase, getUserProfile, routeBasedOnProfile } from './authentication/auth.js';
 
         const btnLoginGoogle = document.getElementById('btn-login-google');
-
-        // Fungsi bantuan untuk mengubah tampilan tombol saat loading
-        function setLoadingState(text) {
-            if (btnLoginGoogle) {
-                btnLoginGoogle.innerHTML = `
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    ${text}`;
-                btnLoginGoogle.classList.add('opacity-70', 'cursor-not-allowed', 'pointer-events-none');
-            }
+        
+        // Menampilkan Loading Layar Penuh
+        function showFullLoader(text) {
+            const loader = document.getElementById('pageLoader');
+            const loaderText = document.getElementById('loaderText');
+            if (loaderText) loaderText.innerText = text;
+            
+            loader.classList.remove('hidden');
+            loader.style.display = 'flex';
+            setTimeout(() => {
+                loader.classList.remove('opacity-0');
+            }, 10);
         }
 
-        // 1. CEK SESI SAAT HALAMAN DIMUAT (Jika sudah login, langsung arahkan ke dashboard)
+        // Menyembunyikan Loading Layar Penuh
+        function hideFullLoader() {
+            const loader = document.getElementById('pageLoader');
+            loader.classList.add('opacity-0');
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                loader.style.display = 'none';
+            }, 500);
+        }
+
+        // Tampilkan Modal Banned
+        window.closeBannedModal = function() {
+            const modal = document.getElementById('bannedModal');
+            const content = document.getElementById('bannedModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        };
+
+        function showBannedModal() {
+            const modal = document.getElementById('bannedModal');
+            const content = document.getElementById('bannedModalContent');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        // FUNGSI UTAMA: PROSES LOGIN & CEK BAN
+        async function processLoginAndCheckBan(session) {
+            showFullLoader('Memuat Profil...');
+            
+            // Ambil profile dari auth.js bawaan Anda
+            const profile = await getUserProfile(session.user.id, session.user.email);
+            
+            // CEK STATUS BANNED (Mencegah Akses)
+            if (profile && profile.status === 'banned') {
+                // Logout paksa dari Supabase
+                await supabase.auth.signOut();
+                
+                // Sembunyikan loader, munculkan pop-up
+                hideFullLoader();
+                showBannedModal();
+                
+                // Ubah status tombol balik normal (jika sempat ter-click)
+                if (btnLoginGoogle) {
+                    btnLoginGoogle.classList.remove('opacity-70', 'cursor-not-allowed', 'pointer-events-none');
+                    btnLoginGoogle.innerHTML = `<svg class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg> Lanjutkan dengan Google`;
+                }
+                return; // Stop eksekusi agar tidak dialihkan ke halaman dashboard
+            }
+
+            // Jika status tidak dibanned, arahkan sesuai role seperti biasa
+            routeBasedOnProfile(profile);
+        }
+
+        // 1. CEK SESI SAAT HALAMAN DIMUAT
         async function checkCurrentSession() {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
-                // User sudah ada sesinya
-                setLoadingState('Memuat Data Anda...');
-                const profile = await getUserProfile(session.user.id, session.user.email);
-                routeBasedOnProfile(profile);
+                await processLoginAndCheckBan(session);
             }
         }
         
@@ -166,13 +258,11 @@
             btnLoginGoogle.addEventListener('click', async (e) => {
                 e.preventDefault(); 
                 
-                setLoadingState('Menghubungkan ke Google...');
+                showFullLoader('Menghubungkan ke Google...');
 
-                // Panggil Supabase Google Auth
                 const { error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        // Setelah berhasil login di popup Google, kembali ke URL ini
                         redirectTo: window.location.origin + window.location.pathname
                     }
                 });
@@ -180,7 +270,7 @@
                 if (error) {
                     console.error("Gagal login:", error.message);
                     alert("Gagal terhubung ke Google. Coba lagi.");
-                    window.location.reload(); // Kembalikan ke state awal jika error
+                    hideFullLoader();
                 }
             });
         }
@@ -188,9 +278,7 @@
         // 3. DETEKSI SETELAH GOOGLE MENGEMBALIKAN USER DARI AUTENTIKASI
         supabase.auth.onAuthStateChange(async (event, session) => {
             if (event === 'SIGNED_IN' && session) {
-                setLoadingState('Memverifikasi Akun...');
-                const profile = await getUserProfile(session.user.id, session.user.email);
-                routeBasedOnProfile(profile);
+                await processLoginAndCheckBan(session);
             }
         });
     </script>
