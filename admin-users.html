@@ -315,7 +315,7 @@
                 
                 data.forEach(user => {
                     const fullName = user.full_name || 'Tanpa Nama';
-                    const email = user.email || 'Email tidak tersedia';
+                    const email = user.email || 'Email belum disinkronkan';
                     const userStatus = user.status || 'active';
                     const isBanned = userStatus === 'banned';
                     const isPremium = user.is_premium || false;
