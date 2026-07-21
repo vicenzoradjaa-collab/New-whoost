@@ -202,7 +202,7 @@
 
     <!-- SCRIPT UTAMA -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let sessionUser = null;
         let sessionFullName = 'Pengguna'; 
@@ -211,6 +211,17 @@
         let realEarnings = 0;
         let realWithdrawable = 0;
         let isSensorActive = false;
+
+        // Fungsi Keamanan Anti-XSS (Untuk merender output dari database ke HTML)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         function getCols() {
             const w = window.innerWidth;
@@ -224,29 +235,36 @@
         let currentLimit = getCols() * 2;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                alert("Silakan login.");
-                window.location.replace('login.html');
-                return;
-            }
-            sessionUser = session.user;
-
-            // Fetch Nama Profil User dari Supabase
             try {
-                const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', sessionUser.id).single();
-                if (profile && profile.full_name) {
-                    sessionFullName = profile.full_name;
-                } else if (sessionUser.user_metadata?.full_name) {
-                    sessionFullName = sessionUser.user_metadata.full_name;
-                }
-            } catch(e) { console.log("Gagal memuat nama profil"); }
+                // Proteksi Role Keamanan
+                await enforceRoleProtection();
 
-            // Load data paralel dengan error handling aman
-            await Promise.all([
-                loadUserStats(),
-                loadSubmissions()
-            ]);
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                sessionUser = session.user;
+
+                // Fetch Nama Profil User dari Supabase
+                try {
+                    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', sessionUser.id).single();
+                    if (profile && profile.full_name) {
+                        sessionFullName = profile.full_name;
+                    } else if (sessionUser.user_metadata?.full_name) {
+                        sessionFullName = sessionUser.user_metadata.full_name;
+                    }
+                } catch(e) { console.log("Gagal memuat nama profil"); }
+
+                // Load data paralel dengan error handling aman
+                await Promise.all([
+                    loadUserStats(),
+                    loadSubmissions()
+                ]);
+
+            } catch(e) {
+                console.error("Kesalahan inisialisasi:", e);
+            }
         });
 
         // ==========================================
@@ -254,7 +272,7 @@
         // ==========================================
         async function loadUserStats() {
             try {
-                // 1. Ambil seluruh submission milik user ini. Menambahkan views_claimed.
+                // 1. Ambil seluruh submission milik user ini
                 const { data: allSubs } = await supabase
                     .from('submissions')
                     .select('status, earned, views_paid, views_claimed')
@@ -267,27 +285,21 @@
 
                 // Loop & hitung matang data berdasarkan status aslinya
                 if (allSubs) {
-                    calcVideos = allSubs.length; // Total semua video yang diajukan
+                    calcVideos = allSubs.length; 
                     allSubs.forEach(sub => {
-                        
                         if (sub.status === 'PENDING') {
                             p++;
                         } else if (sub.status === 'APPROVED') {
                             a++;
-                            // Pendapatan dihitung berdasar nominal bayaran riil (sudah difilter oleh rules)
                             calcEarnings += (sub.earned || 0);
-                            
-                            // Untuk Total Views, hitung menggunakan views klaim paling mentah/asli yang diajukan user.
-                            // Meskipun yang dibayar (views_paid) cuma sebatas max claim.
                             calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0);
-
                         } else if (sub.status === 'REJECTED') {
                             r++;
                         }
                     });
                 }
 
-                // 2. Ambil total history penarikan untuk hitung withdrawable (Saldo Tersedia)
+                // 2. Ambil total history penarikan
                 const { data: withdrawals } = await supabase
                     .from('withdrawals')
                     .select('amount, status')
@@ -296,7 +308,6 @@
                 let totalWithdrawn = 0;
                 if (withdrawals) {
                     withdrawals.forEach(w => {
-                        // Penarikan Ditolak/Gagal tidak dipotong dari saldo
                         if (w.status !== 'REJECTED' && w.status !== 'FAILED') {
                             totalWithdrawn += (w.amount || 0);
                         }
@@ -317,21 +328,20 @@
                 }, { onConflict: 'user_id' });
 
                 if (upsertError) {
-                    console.error("Gagal sinkronisasi data ke clipper_stats (Cek RLS Database Anda):", upsertError.message);
+                    console.error("Gagal sinkronisasi data ke clipper_stats:", upsertError.message);
                 }
 
                 // 4. Perbarui UI
                 realEarnings = calcEarnings;
                 realWithdrawable = calcWithdrawable;
 
-                // Render jumlah status klaim (otomatis menghapus skeleton)
                 document.getElementById('pending-detail').innerText = p;
                 document.getElementById('disetujui-detail').innerText = a;
                 document.getElementById('ditolak-detail').innerText = r;
 
             } catch(e) {
                 console.error("Gagal perhitungan:", e);
-                // Fallback (apabila perhitungan error, render data lama yang ada di db)
+                // Fallback (apabila perhitungan error)
                 try {
                     const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
                     if (stats) {
@@ -373,8 +383,8 @@
                 submissionsData.forEach(sub => {
                     if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
                         campSet.add(sub.campaigns.id);
-                        const safeTitle = (sub.campaigns.title || 'Tanpa Judul').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                        campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${sub.campaigns.title}</div>`;
+                        const safeTitle = escapeHTML(sub.campaigns.title || 'Tanpa Judul');
+                        campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${safeTitle}</div>`;
                     }
                 });
                 document.getElementById('campaign-options').innerHTML = campOptionsHTML;
@@ -383,7 +393,7 @@
 
             } catch(err) {
                 console.error("JS Error in loadSubmissions:", err);
-                document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal memuat data.</p>';
+                document.getElementById('cards-container').innerHTML = '<p class="text-red-500/80 text-sm col-span-full">Gagal memuat data.</p>';
             }
         }
 
@@ -414,6 +424,11 @@
             const meta = getVideoMeta(sub.video_link);
             const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
             
+            // Sanitasi output
+            const safeTitle = escapeHTML(camp.title);
+            const safeRejectReason = escapeHTML(sub.reject_reason);
+            const safeSessionName = escapeHTML(sessionFullName);
+
             const viewsClaimed = sub.views_claimed || 0;
             const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
@@ -446,8 +461,8 @@
                 cardOpacityClass = 'opacity-70 border-red-900/30';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Ditolak Brand</div>`;
                 actionArea = `
-                    <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak Brand:</b> ${sub.reject_reason || 'Video tidak sesuai kriteria/brief.'}</p>
+                    <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Brand:</b> ${safeRejectReason || 'Video tidak sesuai kriteria/brief.'}</p>
                     </div>
                     <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Video Ditolak</button>`;
             }
@@ -466,11 +481,11 @@
                 cardOpacityClass = 'opacity-80 border-red-900/50';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
                 actionArea = `
-                    <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight"><b>Ditolak Admin:</b> ${sub.reject_reason || 'Bukti views tidak valid atau melanggar aturan.'}</p>
+                    <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti views tidak valid atau melanggar aturan.'}</p>
                     </div>
                     <input type="number" id="input-${sub.id}" placeholder="Masukkan views yang benar" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mb-2">
-                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors">Ajukan Ulang Klaim</button>`;
+                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors focus:outline-none">Ajukan Ulang Klaim</button>`;
             }
             else {
                 const paidViews = sub.views_paid || 0;
@@ -491,7 +506,7 @@
                     <div class="flex gap-1.5 sm:gap-2">
                         <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
                     </div>
-                    <button onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors">
+                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors mt-2">
                         ${paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>`;
             }
@@ -506,8 +521,8 @@
                         ${meta.platHTML}
                     </div>
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10">
-                        <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${camp.title}">${camp.title}</h4>
-                        <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="By ${sessionFullName}">${dateStr} • By ${sessionFullName}</p>
+                        <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${safeTitle}">${safeTitle}</h4>
+                        <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="By ${safeSessionName}">${dateStr} • By ${safeSessionName}</p>
                     </div>
                 </div>
                 
@@ -615,11 +630,13 @@
         };
 
         // ==========================================
-        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE
+        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE (DENGAN PROTEKSI DOUBLE KLIK)
         // ==========================================
         window.claimViews = async function(subId) {
             const inputEl = document.getElementById(`input-${subId}`);
-            if(!inputEl) return;
+            const btnEl = document.getElementById(`btn-claim-${subId}`);
+            
+            if(!inputEl || !btnEl) return;
             
             const newClaimStr = inputEl.value.trim();
             if (!newClaimStr) return alert("Masukkan jumlah views yang valid.");
@@ -654,12 +671,10 @@
                     }
 
                     let totalExpectedEarnings = Math.floor((effectiveViews / 1000) * rate);
-
                     let previouslyEarned = sub.earned || 0;
                     estPayout = totalExpectedEarnings - previouslyEarned;
 
                     if (estPayout < 0) estPayout = 0;
-
                     if (estPayout > camp.budget_remaining) {
                         estPayout = camp.budget_remaining;
                     }
@@ -674,27 +689,44 @@
                 }
             }
 
-            const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Pendapatan: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+            const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
             if (!confirm(confirmMsg)) return;
 
+            // Nonaktifkan tombol sementara agar tidak dobel klik
+            const originalBtnHtml = btnEl.innerHTML;
             inputEl.disabled = true;
+            btnEl.disabled = true;
+            btnEl.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+            btnEl.classList.add('cursor-not-allowed', 'opacity-80');
 
-            const { error } = await supabase
-                .from('submissions')
-                .update({
-                    views_claimed: newClaimViews,
-                    est_payout: estPayout,
-                    status: 'PENDING',
-                    reject_reason: null
-                })
-                .eq('id', subId);
+            try {
+                // Pastikan user masih login sebelum klaim (Anti bypass)
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session || session.user.id !== sub.user_id) {
+                    alert('Sesi tidak valid, mohon muat ulang halaman.');
+                    return;
+                }
 
-            if (error) {
+                const { error } = await supabase
+                    .from('submissions')
+                    .update({
+                        views_claimed: newClaimViews,
+                        est_payout: estPayout,
+                        status: 'PENDING',
+                        reject_reason: null
+                    })
+                    .eq('id', subId);
+
+                if (error) throw error;
+
+                alert("Berhasil mengajukan klaim. Menunggu review Admin.");
+                await loadSubmissions(); 
+            } catch (error) {
                 alert("Gagal melakukan klaim: " + error.message);
                 inputEl.disabled = false;
-            } else {
-                alert("Berhasil mengajukan klaim. Menunggu review Admin/Brand.");
-                await loadSubmissions(); 
+                btnEl.disabled = false;
+                btnEl.innerHTML = originalBtnHtml;
+                btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
             }
         };
 
