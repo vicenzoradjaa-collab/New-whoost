@@ -219,8 +219,17 @@
             showFullLoader('Memuat Profil...');
             
             // Ambil profile dari auth.js bawaan Anda
+            // (Memastikan database trigger atau auth.js sudah memproses row user)
             const profile = await getUserProfile(session.user.id, session.user.email);
             
+            // MENAMBAHKAN/MEMPERBARUI DATA EMAIL SECARA OTOMATIS DARI AKUN GOOGLE
+            if (session.user && session.user.email) {
+                await supabase
+                    .from('profiles')
+                    .update({ email: session.user.email })
+                    .eq('id', session.user.id);
+            }
+
             // CEK STATUS BANNED (Mencegah Akses)
             if (profile && profile.status === 'banned') {
                 // Logout paksa dari Supabase
