@@ -200,7 +200,7 @@
     <script src="attribute/navbaradmin.js"></script>
 
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let submissionsData = [];
         let currentFilter = 'Perlu Review'; 
@@ -215,21 +215,49 @@
         const formatRupiah = (num) => 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                alert("Silakan login sebagai admin.");
-                window.location.replace('login.html');
-                return;
-            }
+            try {
+                // 1. CEK PROTEKSI ROLE UMUM
+                if (typeof enforceRoleProtection === 'function') {
+                    await enforceRoleProtection();
+                }
 
-            // Load Data Submissions
-            await loadSubmissions();
+                // 2. DOUBLE CHECK KHUSUS ADMIN
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('admin-login.html');
+                    return;
+                }
 
-            // Hilangkan Loading Screen
-            const loader = document.getElementById('pageLoader');
-            if (loader) {
-                loader.classList.add('opacity-0');
-                setTimeout(() => loader.style.display = 'none', 500);
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('role, status')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profileError || !profile || profile.role !== 'admin') {
+                    window.location.replace('login.html');
+                    return;
+                }
+                
+                if (profile.status === 'banned') {
+                    await supabase.auth.signOut();
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                // 3. JIKA AMAN, LOAD DATA SUBMISSION
+                await loadSubmissions();
+
+            } catch (error) {
+                console.error("Akses ditolak atau terjadi kesalahan:", error);
+                window.location.replace('admin-login.html');
+            } finally {
+                // Hilangkan Loading Screen
+                const loader = document.getElementById('pageLoader');
+                if (loader) {
+                    loader.classList.add('opacity-0');
+                    setTimeout(() => loader.style.display = 'none', 500);
+                }
             }
         });
 
@@ -505,8 +533,8 @@
             
             const btnSetuju = document.getElementById('btnSetuju');
             const btnTolak = document.getElementById('btnTolak');
-            btnSetuju.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all";
-            btnTolak.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all";
+            btnSetuju.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
+            btnTolak.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
             
             document.querySelectorAll('input[name="alasan"]').forEach(r => r.checked = false);
         }
@@ -518,16 +546,16 @@
             const formTolak = document.getElementById('formTolak');
             const btnSubmit = document.getElementById('btnSubmitReview');
 
-            btnSetuju.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all";
-            btnTolak.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all";
+            btnSetuju.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none";
+            btnTolak.className = "flex-1 py-2.5 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
 
             if (decision === 'setuju') {
-                btnSetuju.className = "flex-1 py-2.5 rounded-xl border-2 border-green-500 bg-green-500/10 text-green-500 text-[13px] font-semibold transition-all";
+                btnSetuju.className = "flex-1 py-2.5 rounded-xl border-2 border-green-500 bg-green-500/10 text-green-500 text-[13px] font-semibold transition-all focus:outline-none";
                 formTolak.classList.add('hidden');
                 formTolak.classList.remove('flex');
                 btnSubmit.disabled = false;
             } else if (decision === 'tolak') {
-                btnTolak.className = "flex-1 py-2.5 rounded-xl border-2 border-red-500 bg-red-500/10 text-red-500 text-[13px] font-semibold transition-all";
+                btnTolak.className = "flex-1 py-2.5 rounded-xl border-2 border-red-500 bg-red-500/10 text-red-500 text-[13px] font-semibold transition-all focus:outline-none";
                 formTolak.classList.remove('hidden');
                 formTolak.classList.add('flex');
                 btnSubmit.disabled = true;
