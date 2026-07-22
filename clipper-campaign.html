@@ -50,20 +50,12 @@
 
         .load-hidden { display: none !important; }
         .filter-hidden { display: none !important; }
-        
-        /* Line clamp untuk teks yang panjang agar rapi */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- SAFELIST TAILWIND CDN (Sangat penting agar class yang ada di dalam JS tetap di-render di Mobile) -->
-    <div class="hidden p-3 md:p-4 pt-[56.25%] mb-3 md:mb-4 px-1.5 md:px-2 py-0.5 text-[8px] md:text-[9px] text-[10px] md:text-xs sm:text-xs text-sm md:text-sm md:text-xl md:text-2xl gap-1 gap-1.5 gap-2 w-3 h-3 md:w-4 md:h-4 py-1 py-2 max-w-[70px] md:max-w-none border-yellow-900/50 bg-yellow-900/20 text-yellow-500 border-red-900/50 bg-red-900/20 text-red-500 border-zinc-700 bg-zinc-800/40 text-green-400 opacity-100 opacity-50 grayscale bg-zinc-900 bg-zinc-900/50 bg-zinc-800/50 bg-zinc-900/80 active:scale-[0.98] h-1 md:h-1.5 group-hover:scale-105 transition-transform duration-500 bg-zinc-950 shrink-0 object-cover line-clamp-2 leading-snug tracking-tight leading-none whitespace-nowrap uppercase tracking-wider font-extrabold font-black font-semibold truncate hover:border-zinc-500 hover:-translate-y-1 shadow-xl mt-auto pt-3 border-t items-baseline border-zinc-800 border-zinc-800/50 rounded-2xl md:rounded-[1.5rem] rounded-lg md:rounded-xl w-full relative overflow-hidden flex flex-col h-full absolute inset-0 cursor-not-allowed group text-zinc-600 text-zinc-500 text-zinc-400 hover:text-white text-zinc-300 text-white bg-white text-black hover:bg-zinc-800 hover:bg-zinc-200 flex-wrap items-center justify-center text-center focus:outline-none transition-all transition-colors items-start justify-between items-end rounded-full rounded-md border-zinc-800 bg-zinc-800 bg-cardBg campaign-card"></div>
+    <!-- SAFELIST TAILWIND CDN -->
+    <div class="hidden p-3 md:p-4 pt-[56.25%] mb-3 md:mb-4 px-1.5 md:px-2 py-0.5 text-[8px] md:text-[9px] text-[10px] md:text-xs sm:text-xs text-sm md:text-sm md:text-xl md:text-2xl gap-1 gap-1.5 gap-2 w-3 h-3 md:w-4 md:h-4 py-1 py-2 max-w-[70px] md:max-w-none border-yellow-900/50 bg-yellow-900/20 text-yellow-500 border-red-900/50 bg-red-900/20 text-red-500 border-zinc-700 bg-zinc-800/40 text-green-400 opacity-100 opacity-50 grayscale bg-zinc-900 bg-zinc-900/50 bg-zinc-800/50 bg-zinc-900/80 active:scale-[0.98] h-1 md:h-1.5 group-hover:scale-105 transition-transform duration-500 bg-zinc-950 shrink-0 object-cover truncate leading-none whitespace-nowrap uppercase tracking-wider font-extrabold font-black font-semibold hover:border-zinc-500 hover:-translate-y-1 shadow-xl mt-auto pt-3 border-t items-baseline border-zinc-800 border-zinc-800/50 rounded-2xl md:rounded-[1.5rem] rounded-lg md:rounded-xl w-full relative overflow-hidden flex flex-col h-full absolute inset-0 cursor-not-allowed group text-zinc-600 text-zinc-500 text-zinc-400 hover:text-white text-zinc-300 text-white bg-white text-black hover:bg-zinc-800 hover:bg-zinc-200 flex-wrap items-center justify-center text-center focus:outline-none transition-all transition-colors items-start justify-between items-end rounded-full rounded-md border-zinc-800 bg-zinc-800 bg-cardBg campaign-card"></div>
 
     <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
@@ -159,8 +151,8 @@
 
             <h1 class="text-4xl md:text-5xl font-extrabold mb-8 tracking-tight">All Campaign</h1>
 
-            <!-- GRID KONSISTEN: 2 Kolom di HP -->
-            <div id="campaign-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 z-10 relative">
+            <!-- GRID RESPONSIVE: Mobile 2, Tablet 3, Desktop 4, Lebar Extra 5 -->
+            <div id="campaign-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 z-10 relative">
                 <!-- Data di-load via JS -->
             </div>
 
@@ -219,8 +211,8 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let activeFilters = { search: '', category: 'All Categories', content: 'All Content', status: 'Semua Status' };
-        let currentVisible = 10; 
-        const itemsToLoad = 10;
+        let currentVisible = 12; // Load default awal 12 (karena cocok untuk dibagi 2, 3, dan 4 grid)
+        const itemsToLoad = 12;
         
         let allCampaigns = [];
         let joinedCampaignIds = [];
@@ -249,6 +241,7 @@
                 
                 document.getElementById('searchInput').addEventListener('input', (e) => {
                     activeFilters.search = e.target.value.toLowerCase();
+                    currentVisible = 12; // Reset ke urutan awal jika mengetik ulang
                     applyFilters();
                 });
 
@@ -279,7 +272,7 @@
             const { data, error } = await supabase
                 .from('campaigns')
                 .select('*')
-                .order('created_at', { ascending: false });
+                .order('created_at', { ascending: false }); // Pertama ambil berdasarkan data terbaru
 
             if (error) {
                 console.error("Gagal load campaign:", error);
@@ -288,6 +281,14 @@
             }
 
             allCampaigns = data || [];
+
+            // Sortir manual: Menaruh yang CLOSED di paling akhir, sisanya sesuai urutan terbaru 'created_at'
+            allCampaigns.sort((a, b) => {
+                if (a.status === 'CLOSED' && b.status !== 'CLOSED') return 1;
+                if (a.status !== 'CLOSED' && b.status === 'CLOSED') return -1;
+                return 0; // Mempertahankan urutan aslinya jika keduanya sama-sama tidak CLOSED
+            });
+
             applyFilters();
         }
 
@@ -325,8 +326,8 @@
                 noDataAlert.classList.add('hidden');
             }
 
-            let isFilteringActive = activeFilters.search !== '' || activeFilters.category !== 'All Categories' || activeFilters.content !== 'All Content' || activeFilters.status !== 'Semua Status';
-            const displayLimit = isFilteringActive ? filtered.length : currentVisible;
+            // Membatasi tampilan berdasarkan `currentVisible` untuk mengaktifkan sistem Load More bertahap
+            const displayLimit = currentVisible; 
             
             let html = '';
             filtered.slice(0, displayLimit).forEach((camp, index) => {
@@ -335,7 +336,8 @@
 
             grid.innerHTML = html;
 
-            if (!isFilteringActive && filtered.length > currentVisible) {
+            // Jika masih ada sisa data untuk diload, munculkan tombol load more
+            if (filtered.length > currentVisible) {
                 loadMoreContainer.style.display = 'flex';
             } else {
                 loadMoreContainer.style.display = 'none';
@@ -417,7 +419,8 @@
                     <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
                 </div>
                 
-                <h4 class="text-sm md:text-xl font-black text-white mb-2 line-clamp-2 leading-snug group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
+                <!-- Di sini class ditambahkan 'truncate' dan block w-full untuk memastikan tulisan satu baris -->
+                <h4 class="text-sm md:text-xl font-black text-white mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
                 
                 <div class="mb-3 flex items-baseline gap-1 flex-wrap">
                     <span class="text-sm md:text-2xl font-extrabold text-white tracking-tight leading-none">${priceFormatted}</span>
@@ -473,6 +476,7 @@
             document.getElementById('label-' + type).innerText = displayValue;
             document.getElementById('menu-' + type).classList.add('hidden');
             
+            currentVisible = 12; // Reset view kalau ganti filter
             applyFilters();
         };
 
@@ -492,7 +496,7 @@
                 btn.disabled = false;
                 spinner.classList.add('hidden');
                 btnText.innerText = 'Load More Campaigns';
-            }, 500); 
+            }, 600); // Simulasi waktu load agar animasi terasa
         };
 
         // ==========================================
