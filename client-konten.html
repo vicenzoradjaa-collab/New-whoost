@@ -137,7 +137,8 @@
     <script src="attribute/navbarclient.js"></script>
 
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        // 1. IMPORT PROTEKSI DARI AUTH.JS
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let sessionUser = null;
         let campaignsData = [];
@@ -145,50 +146,72 @@
         let currentCampaign = "Semua Kampanye";
         let currentPlatform = "Semua";
 
+        // 2. FUNGSI ANTI-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Cek Sesi
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.replace('login.html');
-                return;
-            }
-            sessionUser = session.user;
+            try {
+                // 3. JALANKAN PROTEKSI PERTAMA KALI
+                await enforceRoleProtection();
 
-            // 2. Ambil Kampanye (Untuk Filter Dropdown)
-            const { data: camps } = await supabase
-                .from('campaigns')
-                .select('id, title')
-                .eq('client_id', sessionUser.id)
-                .order('created_at', { ascending: false });
+                // 4. Cek Sesi
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                sessionUser = session.user;
 
-            if (camps) campaignsData = camps;
-
-            renderCampaignDropdown();
-
-            // 3. Ambil Konten (Submissions) yang APPROVED
-            if (campaignsData.length > 0) {
-                const campIds = campaignsData.map(c => c.id);
-                const { data: subs } = await supabase
-                    .from('submissions')
-                    .select('*, campaigns(title), profiles(full_name, business_name)')
-                    .in('campaign_id', campIds)
-                    .eq('status', 'APPROVED')
+                // 5. Ambil Kampanye (Untuk Filter Dropdown)
+                const { data: camps, error: campError } = await supabase
+                    .from('campaigns')
+                    .select('id, title')
+                    .eq('client_id', sessionUser.id)
                     .order('created_at', { ascending: false });
 
-                if (subs) submissionsData = subs;
-            }
+                if (campError) throw campError;
+                if (camps) campaignsData = camps;
 
-            // 4. Render Grid
-            renderGrid();
+                renderCampaignDropdown();
 
-            // 5. Sembunyikan Loader
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if (loader) {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500);
+                // 6. Ambil Konten (Submissions) yang APPROVED
+                if (campaignsData.length > 0) {
+                    const campIds = campaignsData.map(c => c.id);
+                    const { data: subs, error: subError } = await supabase
+                        .from('submissions')
+                        .select('*, campaigns(title), profiles(full_name, business_name)')
+                        .in('campaign_id', campIds)
+                        .eq('status', 'APPROVED')
+                        .order('created_at', { ascending: false });
+
+                    if (subError) throw subError;
+                    if (subs) submissionsData = subs;
                 }
-            }, 800); 
+
+                // 7. Render Grid
+                renderGrid();
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                document.getElementById('contentGrid').innerHTML = '<p class="text-red-500 col-span-full">Gagal memuat data dari database.</p>';
+            } finally {
+                // 8. Sembunyikan Loader AMAN DALAM FINALLY
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if (loader) {
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.style.display = 'none', 500);
+                    }
+                }, 800); 
+            }
         });
 
         // ==========================================
@@ -233,6 +256,7 @@
                 if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
                     const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
                     if (ytMatch && ytMatch[1]) {
+                        // FIX: Memperbaiki URL Thumbnail Youtube yang terputus di script asli
                         imgEl.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
                         imgEl.setAttribute('data-loaded', 'true');
                     }
@@ -268,8 +292,9 @@
             let html = `<button onclick="window.selectCampaign('Semua Kampanye', 'Semua Kampanye')" class="w-full text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors">Semua Kampanye</button>`;
             
             campaignsData.forEach(c => {
-                const safeTitle = c.title.replace(/'/g, "\\'");
-                html += `<button onclick="window.selectCampaign('${c.id}', '${safeTitle}')" class="w-full text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">${c.title}</button>`;
+                // Sanitasi saat merender ke dalam list menu
+                const safeTitle = escapeHTML(c.title);
+                html += `<button onclick="window.selectCampaign('${c.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="w-full text-left px-5 py-3 text-[13px] sm:text-[14px] hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">${safeTitle}</button>`;
             });
 
             dropdown.innerHTML = html;
@@ -300,14 +325,19 @@
 
                         const views = Math.max(sub.views_claimed || 0, sub.views_paid || 0, sub.views || 0);
                         const badgeHTML = getPlatformBadge(platform);
-                        const creatorName = sub.profiles?.business_name || sub.profiles?.full_name || 'Kreator Whoost';
-                        const campTitle = sub.campaigns?.title || 'Kampanye';
+                        
+                        // 9. SANITASI XSS PADA INFORMASI CARD
+                        const rawCreatorName = sub.profiles?.business_name || sub.profiles?.full_name || 'Kreator Whoost';
+                        const creatorName = escapeHTML(rawCreatorName).replace(/\s+/g, '').toLowerCase();
+                        const campTitle = escapeHTML(sub.campaigns?.title || 'Kampanye');
+                        const safeUrl = encodeURI(sub.video_link || '');
+
                         const thumbPlaceholder = 'https://placehold.co/300x400/121214/27272a?text=...';
                         
                         htmlContent += `
                             <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
                                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                                    <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="${thumbPlaceholder}" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <img id="thumb-${sub.id}" data-video-link="${safeUrl}" src="${thumbPlaceholder}" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
                                     
                                     <!-- Platform Badge -->
@@ -323,13 +353,13 @@
                                     
                                     <!-- Info Creator -->
                                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@${creatorName.replace(/\s+/g, '').toLowerCase()}</p>
-                                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5">${campTitle}</p>
+                                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">@${creatorName}</p>
+                                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5" title="${campTitle}">${campTitle}</p>
                                     </div>
                                 </div>
                                 <!-- Action Button (Membuka link asli konten) -->
                                 <div class="mt-1.5 sm:mt-2 grid grid-cols-1">
-                                    <a href="${sub.video_link}" target="_blank" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors focus:outline-none">
+                                    <a href="${safeUrl}" target="_blank" class="flex items-center justify-center gap-2 py-2 sm:py-2.5 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[11px] sm:text-[13px] font-medium text-white transition-colors focus:outline-none">
                                         <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         Lihat Video
                                     </a>
