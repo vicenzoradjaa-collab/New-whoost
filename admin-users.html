@@ -528,19 +528,23 @@
                 const { error } = await supabase.from('profiles').update(updateData).eq('id', window.pendingAction.id);
                 if (error) throw error;
 
+                // 💡 PERBAIKAN: Simpan nama dan aksi ke variabel lokal SEBELUM modal ditutup & memori dihapus
+                const actionTaken = window.pendingAction.action;
+                const targetName = window.pendingAction.name;
+
                 window.closeModal('confirmModal');
                 await loadUsersFromDB(); 
 
-                // Tampilkan Modal Sukses
+                // Tampilkan Modal Sukses menggunakan variabel yang sudah diamankan
                 const successMsg = document.getElementById('successMessage');
-                if (window.pendingAction.action === 'ban') {
-                    successMsg.innerHTML = `Akun <b class="text-white">${window.pendingAction.name}</b> telah berhasil diblokir (Banned).`;
-                } else if (window.pendingAction.action === 'unban') {
-                    successMsg.innerHTML = `Blokir untuk <b class="text-white">${window.pendingAction.name}</b> berhasil dibuka (Active).`;
-                } else if (window.pendingAction.action === 'addPremium') {
-                    successMsg.innerHTML = `Status Premium berhasil diberikan kepada <b class="text-white">${window.pendingAction.name}</b>.`;
-                } else if (window.pendingAction.action === 'removePremium') {
-                    successMsg.innerHTML = `Status Premium berhasil dicabut dari <b class="text-white">${window.pendingAction.name}</b>.`;
+                if (actionTaken === 'ban') {
+                    successMsg.innerHTML = `Akun <b class="text-white">${targetName}</b> telah berhasil diblokir (Banned).`;
+                } else if (actionTaken === 'unban') {
+                    successMsg.innerHTML = `Blokir untuk <b class="text-white">${targetName}</b> berhasil dibuka (Active).`;
+                } else if (actionTaken === 'addPremium') {
+                    successMsg.innerHTML = `Status Premium berhasil diberikan kepada <b class="text-white">${targetName}</b>.`;
+                } else if (actionTaken === 'removePremium') {
+                    successMsg.innerHTML = `Status Premium berhasil dicabut dari <b class="text-white">${targetName}</b>.`;
                 }
                 
                 setTimeout(() => { window.openModal('successModal'); }, 300);
