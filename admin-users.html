@@ -200,7 +200,7 @@
 
     <!-- SUPABASE INTEGRATION -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         // GLOBAL VARIABLES
         window.usersData = { clipper: [], client: [] };
@@ -209,8 +209,44 @@
         window.pendingAction = null; 
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadUsersFromDB();
-            window.selectFilter('all', 'Semua Status'); 
+            try {
+                // 1. CEK PROTEKSI ROLE UMUM
+                if (typeof enforceRoleProtection === 'function') {
+                    await enforceRoleProtection();
+                }
+
+                // 2. DOUBLE CHECK KHUSUS ADMIN (Keamanan Tambahan)
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('admin-login.html');
+                    return;
+                }
+
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('role, status')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profileError || !profile || profile.role !== 'admin') {
+                    window.location.replace('login.html');
+                    return;
+                }
+                
+                if (profile.status === 'banned') {
+                    await supabase.auth.signOut();
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                // 3. JIKA AMAN, LOAD DATA PENGGUNA
+                await loadUsersFromDB();
+                window.selectFilter('all', 'Semua Status'); 
+
+            } catch (error) {
+                console.error("Akses ditolak atau terjadi kesalahan:", error);
+                window.location.replace('admin-login.html');
+            }
         });
 
         // ----- PULL DATA DARI SUPABASE -----
