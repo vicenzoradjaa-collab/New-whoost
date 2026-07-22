@@ -42,20 +42,21 @@
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 pb-32 scroll-smooth">
         <div class="max-w-5xl mx-auto space-y-8 mt-4">
             
-            <!-- BANNER FULL GAMBAR (DI TINGGIKAN -> md:h-[480px]) -->
+            <!-- BANNER FULL GAMBAR -->
             <div class="w-full aspect-[16/9] md:h-[480px] md:aspect-auto bg-zinc-900 rounded-2xl md:rounded-3xl overflow-hidden relative shadow-2xl">
                 <img id="campaign-banner" src="" alt="Banner Campaign" class="w-full h-full object-cover transition-transform duration-700 opacity-0">
                 <div id="banner-fallback" class="absolute inset-0 flex items-center justify-center text-zinc-600 text-sm font-medium">Memuat Banner...</div>
             </div>
 
-            <!-- JUDUL & TAGS -->
-            <div>
-                <h1 id="campaign-title" class="text-3xl md:text-5xl font-black text-white tracking-tight mb-4 flex flex-wrap items-center gap-3">
+            <!-- JUDUL & TAGS DIPERBAIKI -->
+            <div class="mb-2">
+                <!-- Badges diletakkan terpisah di atas judul -->
+                <div id="badges-container" class="flex flex-wrap items-center gap-2 mb-3">
+                    <!-- Badges diisi via JS -->
+                </div>
+                
+                <h1 id="campaign-title" class="text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight mb-2 leading-tight">
                     Memuat Judul...
-                    <!-- Tags -->
-                    <span id="tag-status" class="hidden border border-zinc-600 bg-zinc-800/50 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">STATUS</span>
-                    <span id="tag-type" class="hidden border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">TIPE</span>
-                    <span id="tag-niche" class="hidden border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider mt-1 md:mt-0">NICHE</span>
                 </h1>
                 <p class="text-sm md:text-base text-zinc-400">Lihat brief dibawah untuk melihat instruksi lengkapnya</p>
             </div>
@@ -70,16 +71,17 @@
                         <h3 class="text-base font-bold text-white">Campaign Stats</h3>
                     </div>
                     
-                    <div class="space-y-4 mb-6">
+                    <!-- Container dibungkus border-b agar rapi saat baris lain disembunyikan -->
+                    <div class="space-y-4 mb-6 border-b border-zinc-800/80 pb-6">
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span class="text-sm">Rate</span></div>
                             <span id="stat-rate" class="font-bold text-white text-sm">Rp 0</span>
                         </div>
-                        <div class="flex justify-between items-center">
+                        <div id="row-min-views" class="flex justify-between items-center hidden">
                             <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> <span class="text-sm">Min. Claim Views</span></div>
                             <span id="stat-min-views" class="font-bold text-white text-sm">0</span>
                         </div>
-                        <div class="flex justify-between items-center border-b border-zinc-800/80 pb-4">
+                        <div id="row-max-claim" class="flex justify-between items-center hidden">
                             <div class="flex items-center gap-2 text-zinc-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg> <span class="text-sm">Max. Claim Views</span></div>
                             <span id="stat-max-claim" class="font-bold text-white text-sm">0</span>
                         </div>
@@ -292,21 +294,20 @@
                 fallback.innerText = "Tidak ada banner";
             }
 
-            // 3. Title & Tags (Update Status / Niche / Tipe)
-            let statusColor = 'border-green-500/50 bg-green-500/20 text-green-500';
-            if(data.status === 'HOLDING') statusColor = 'border-yellow-500/50 bg-yellow-500/20 text-yellow-500';
-            if(data.status === 'CLOSED') statusColor = 'border-red-500/50 bg-red-500/20 text-red-500';
+            // 3. Title & Tags (Update Status / Niche / Tipe ditarik ke atas judul agar rapi)
+            document.getElementById('campaign-title').innerText = data.title;
+            
+            let statusColor = 'border-green-500/50 bg-green-500/10 text-green-400';
+            if(data.status === 'HOLDING') statusColor = 'border-yellow-500/50 bg-yellow-500/10 text-yellow-400';
+            if(data.status === 'CLOSED') statusColor = 'border-red-500/50 bg-red-500/10 text-red-400';
 
             const typeText = data.type === 'ugc' ? 'UGC' : 'CLIPPING';
-            
-            // Atur nama Bahan sesuai tipe
             document.getElementById('bahan-title').innerText = data.type === 'ugc' ? 'Bahan / Referensi UGC' : 'Bahan Clipping';
 
-            document.getElementById('campaign-title').innerHTML = `
-                ${data.title}
-                <span class="${statusColor} px-2.5 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.status}</span>
-                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${typeText}</span>
-                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded text-[10px] sm:text-xs font-bold uppercase tracking-wider ml-2 align-middle inline-block">${data.niche}</span>
+            document.getElementById('badges-container').innerHTML = `
+                <span class="border ${statusColor} px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">${data.status}</span>
+                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">${typeText}</span>
+                <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">${data.niche}</span>
             `;
 
             // 4. STATS (KIRI)
@@ -314,9 +315,25 @@
             const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
             document.getElementById('stat-rate').innerText = `${priceFormatted} / ${data.payment_type === 'video' ? 'video' : '1k views'}`;
             
-            // Format Min Views & Max Claim fleksibel (rb/jt)
-            document.getElementById('stat-min-views').innerText = formatFlexibleNumber(data.min_views || 10000);
-            document.getElementById('stat-max-claim').innerText = formatFlexibleNumber(data.max_claim || 250000);
+            // Logika Hide/Show Min Max View jika tipe "Per Video"
+            const rowMin = document.getElementById('row-min-views');
+            const rowMax = document.getElementById('row-max-claim');
+            
+            if (data.payment_type === 'video') {
+                rowMin.classList.add('hidden');
+                rowMax.classList.add('hidden');
+                rowMin.classList.remove('flex');
+                rowMax.classList.remove('flex');
+            } else {
+                rowMin.classList.remove('hidden');
+                rowMax.classList.remove('hidden');
+                rowMin.classList.add('flex');
+                rowMax.classList.add('flex');
+                
+                // Format Min Views & Max Claim fleksibel (rb/jt)
+                document.getElementById('stat-min-views').innerText = formatFlexibleNumber(data.min_views || 10000);
+                document.getElementById('stat-max-claim').innerText = formatFlexibleNumber(data.max_claim || 250000);
+            }
 
             // Platform Badges (KIRI)
             let platHTML = '';
@@ -377,13 +394,11 @@
             }
 
             // 7. BRIEF & PANDUAN LENGKAP
-            // Split by newline and wrap in <li>
             const briefLines = (data.brief || 'Ikuti panduan umum.').split('\n').filter(l => l.trim() !== '');
             let briefHTML = '';
             briefLines.forEach(l => { briefHTML += `<li>${l}</li>`; });
             document.getElementById('brief-list').innerHTML = briefHTML;
 
-            // Restriksi
             const restrictLines = (data.restrictions || 'Jangan melanggar aturan umum.').split('\n').filter(l => l.trim() !== '');
             let restHTML = '';
             restrictLines.forEach(l => { 
@@ -391,7 +406,6 @@
             });
             document.getElementById('restriction-list').innerHTML = restHTML;
 
-            // Full Brief Modal
             document.getElementById('modal-full-brief').innerText = data.full_brief || data.brief || 'Panduan lengkap belum ditambahkan oleh Admin.';
         }
 
