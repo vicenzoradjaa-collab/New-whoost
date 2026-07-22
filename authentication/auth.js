@@ -81,12 +81,44 @@ export async function enforceRoleProtection() {
         return;
     }
 
-    // Ambil role user dari tabel profiles
+    // ========================================================
+    // 🔥 KEAMANAN BARU: RADAR ANTI-BANNED REALTIME
+    // ========================================================
+    supabase
+      .channel('banned-kicker')
+      .on(
+        'postgres_changes',
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'profiles', 
+          filter: `id=eq.${session.user.id}` 
+        },
+        async (payload) => {
+          // Jika status diubah jadi banned oleh admin saat user sedang buka web
+          if (payload.new.status === 'banned') {
+            alert("⚠️ SESI DIHENTIKAN: Akun Anda telah diblokir oleh Admin.");
+            await supabase.auth.signOut();
+            window.location.replace('login.html');
+          }
+        }
+      )
+      .subscribe();
+    // ========================================================
+
+    // Ambil role & status user dari tabel profiles
     const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, status')
         .eq('id', session.user.id)
         .single();
+
+    // 🔥 KEAMANAN BARU: Cek langsung saat pindah/refresh halaman
+    if (profile?.status === 'banned') {
+        await supabase.auth.signOut();
+        window.location.replace('login.html');
+        return;
+    }
 
     const role = profile?.role ? profile.role.toLowerCase() : '';
 
