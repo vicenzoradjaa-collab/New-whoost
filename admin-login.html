@@ -152,10 +152,12 @@
                         .single();
 
                     if (profile && profile.role === 'admin') {
-                        // Jika admin, lempar ke dashboard admin
                         window.location.replace('admin-dashboard.html');
+                    } else if (profile && profile.role === 'clipper') {
+                        window.location.replace('clipper-dashboard.html');
+                    } else if (profile && (profile.role === 'client' || profile.role === 'brand')) {
+                        window.location.replace('client-dashboard.html');
                     } else {
-                        // Jika bukan admin (Clipper/Client), keluarkan paksa untuk login ulang
                         await supabase.auth.signOut();
                     }
                 }
@@ -236,7 +238,7 @@
                     }
                 }
 
-                // Jika login sukses, pastikan dia ADMIN
+                // Cek Role User setelah Login
                 const { data: profile, error: profileError } = await supabase
                     .from('profiles')
                     .select('role')
@@ -248,13 +250,16 @@
                     throw new Error("Gagal mengambil profil akun.");
                 }
 
+                // Routing Otomatis Berdasarkan Role
                 if (profile.role === 'admin') {
-                    // SUKSES! Arahkan ke dashboard admin
                     window.location.replace('admin-dashboard.html');
+                } else if (profile.role === 'clipper') {
+                    window.location.replace('clipper-dashboard.html');
+                } else if (profile.role === 'client' || profile.role === 'brand') {
+                    window.location.replace('client-dashboard.html');
                 } else {
-                    // BUKAN ADMIN -> KELUARKAN
                     await supabase.auth.signOut();
-                    throw new Error("Akses ditolak! Akun ini bukan administrator.");
+                    throw new Error("Akses ditolak! Akun ini tidak memiliki akses yang valid.");
                 }
 
             } catch (err) {
