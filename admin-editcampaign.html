@@ -276,7 +276,7 @@
 
     <!-- SCRIPT LOGIC MENGGUNAKAN AUTH.JS -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         const urlParams = new URLSearchParams(window.location.search);
         const campaignId = urlParams.get('id');
@@ -305,14 +305,50 @@
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
-            if(!campaignId) {
-                alert("ID Campaign tidak ditemukan!");
-                window.location.replace('admin-campaign.html');
-                return;
-            }
+            try {
+                // 1. CEK PROTEKSI ROLE UMUM
+                if (typeof enforceRoleProtection === 'function') {
+                    await enforceRoleProtection();
+                }
 
-            await fetchClientAccounts();
-            await fetchCampaignData();
+                // 2. DOUBLE CHECK KHUSUS ADMIN (Keamanan Tambahan)
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('admin-login.html');
+                    return;
+                }
+
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('role, status')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profileError || !profile || profile.role !== 'admin') {
+                    window.location.replace('login.html');
+                    return;
+                }
+                
+                if (profile.status === 'banned') {
+                    await supabase.auth.signOut();
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                // 3. JIKA AMAN, LANJUTKAN INISIALISASI
+                if(!campaignId) {
+                    alert("ID Campaign tidak ditemukan!");
+                    window.location.replace('admin-campaign.html');
+                    return;
+                }
+
+                await fetchClientAccounts();
+                await fetchCampaignData();
+
+            } catch (error) {
+                console.error("Akses ditolak atau terjadi kesalahan:", error);
+                window.location.replace('admin-login.html');
+            }
         });
 
         // ==========================================
