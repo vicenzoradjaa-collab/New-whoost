@@ -363,7 +363,7 @@
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
-                        id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
+                        id, user_id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
                         campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video )
                     `)
                     .eq('user_id', sessionUser.id);
