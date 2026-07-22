@@ -316,7 +316,8 @@
     </div>
 
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        // 1. IMPORT FUNGSI PROTEKSI ROLE DARI AUTH.JS
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         // ========================================================
         // KONFIGURASI NOMOR WA ADMIN
@@ -346,56 +347,75 @@
             restrict: "Anti-Botting: Dilarang keras menggunakan view botting, ads boosting, atau pembelian views. Hanya Organic Views yang dihitung.\nOriginalitas: Dilarang keras mencuri atau melakukan re-post konten milik sesama clipper.\nManual Editing Only: Penggunaan alat editing AI otomatis (seperti Opus Clip atau sejenisnya) dilarang.\nNo Raw Reupload: Dilarang mengunggah ulang video mentah tanpa sentuhan kreativitas atau editing tambahan.\nEtika & Nama Baik: Dilarang membuat konten yang mengandung unsur SARA, ujaran kebencian, atau menjelekkan pihak tertentu."
         };
 
+        // Fungsi Anti-XSS jika dibutuhkan
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                alert("Silakan login.");
-                window.location.replace('login.html');
-                return;
-            }
-            sessionUser = session.user;
-            
-            // Coba ambil nama lengkap dari database untuk dicantumkan di pesan WA
-            const { data: profile } = await supabase.from('profiles').select('full_name, business_name').eq('id', sessionUser.id).single();
-            sessionData.name = profile?.business_name || profile?.full_name || sessionUser.email;
-            sessionData.email = sessionUser.email;
+            try {
+                // 2. JALANKAN PROTEKSI PERTAMA KALI (Block akses Clipper/Admin)
+                await enforceRoleProtection();
 
-            // AMBIL DATA SETTING (FEE) DARI SUPABASE
-            const { data: settings } = await supabase.from('system_settings').select('fee_client_amount, fee_client_type, support_whatsapp').eq('id', 1).single();
-            
-            if (settings) {
-                feeAmount = settings.fee_client_amount || 0;
-                feeType = settings.fee_client_type || 'Persen (%)';
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                sessionUser = session.user;
                 
-                // Gunakan nomor admin dari setting jika tersedia (menghapus tanda + agar format wa.me bekerja)
-                if (settings.support_whatsapp) {
-                    ADMIN_WA_NUMBER = settings.support_whatsapp.replace(/[^0-9]/g, '');
+                // Coba ambil nama lengkap dari database untuk dicantumkan di pesan WA
+                const { data: profile } = await supabase.from('profiles').select('full_name, business_name').eq('id', sessionUser.id).single();
+                sessionData.name = escapeHTML(profile?.business_name || profile?.full_name || sessionUser.email);
+                sessionData.email = escapeHTML(sessionUser.email);
+
+                // AMBIL DATA SETTING (FEE) DARI SUPABASE
+                const { data: settings } = await supabase.from('system_settings').select('fee_client_amount, fee_client_type, support_whatsapp').eq('id', 1).single();
+                
+                if (settings) {
+                    feeAmount = settings.fee_client_amount || 0;
+                    feeType = settings.fee_client_type || 'Persen (%)';
+                    
+                    // Gunakan nomor admin dari setting jika tersedia (menghapus tanda + agar format wa.me bekerja)
+                    if (settings.support_whatsapp) {
+                        ADMIN_WA_NUMBER = settings.support_whatsapp.replace(/[^0-9]/g, '');
+                    }
                 }
-            }
 
-            // Update Label Teks UI Berdasarkan Tipe Fee
-            const lblViews = document.getElementById('fee_label_views');
-            const lblVid = document.getElementById('fee_label_video');
-            if (feeType === 'Persen (%)') {
-                if(lblViews) lblViews.innerText = `Fee Platform (${feeAmount}%)`;
-                if(lblVid) lblVid.innerText = `Fee Platform (${feeAmount}%)`;
-            } else {
-                if(lblViews) lblViews.innerText = `Fee Platform (Tetap)`;
-                if(lblVid) lblVid.innerText = `Fee Platform (Tetap)`;
-            }
-
-            // Inisiasi Nilai
-            window.renderNicheOptions();
-            window.calculateSummary();
-
-            // Hilangkan loader
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader) {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500);
+                // Update Label Teks UI Berdasarkan Tipe Fee
+                const lblViews = document.getElementById('fee_label_views');
+                const lblVid = document.getElementById('fee_label_video');
+                if (feeType === 'Persen (%)') {
+                    if(lblViews) lblViews.innerText = `Fee Platform (${feeAmount}%)`;
+                    if(lblVid) lblVid.innerText = `Fee Platform (${feeAmount}%)`;
+                } else {
+                    if(lblViews) lblViews.innerText = `Fee Platform (Tetap)`;
+                    if(lblVid) lblVid.innerText = `Fee Platform (Tetap)`;
                 }
-            }, 500);
+
+                // Inisiasi Nilai
+                window.renderNicheOptions();
+                window.calculateSummary();
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                alert("Terjadi kesalahan sistem saat memuat form.");
+            } finally {
+                // 3. HILANGKAN LOADER DI BLOK FINALLY AGAR AMAN
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if(loader) {
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.style.display = 'none', 500);
+                    }
+                }, 500);
+            }
         });
 
         // ==========================================
@@ -483,7 +503,7 @@
             const nameVal = document.getElementById('linkModalName').value.trim() || 'Link Materi / Bahan';
             const urlVal = document.getElementById('linkModalUrl').value.trim();
             if(urlVal) {
-                linksData.push({ name: nameVal, url: urlVal });
+                linksData.push({ name: escapeHTML(nameVal), url: escapeHTML(urlVal) });
                 window.renderLinks();
                 window.closeModal('linkModal', 'linkModalContent');
             }
