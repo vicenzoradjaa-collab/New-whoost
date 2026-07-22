@@ -230,73 +230,96 @@
 
     <!-- LOGIKA SUPABASE & ANALYTICS -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        // 1. IMPORT FUNGSI PROTEKSI DARI AUTH.JS
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         // State Data
         let allCampaigns = [];
         let allSubmissions = [];
         let currentFilter = 'all';
 
+        // Fungsi Anti-XSS (Untuk mencegah script berbahaya pada input/nama campaign)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Cek Sesi User
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.replace('login.html');
-                return;
-            }
-            const userId = session.user.id;
+            try {
+                // 2. JALANKAN PROTEKSI PERTAMA KALI
+                await enforceRoleProtection();
 
-            // 2. Ambil data Campaigns milik Brand
-            const { data: campaignsData } = await supabase
-                .from('campaigns')
-                .select('*')
-                .eq('client_id', userId);
-            
-            if (campaignsData) allCampaigns = campaignsData;
+                // 3. Cek Sesi User
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
+                }
+                const userId = session.user.id;
 
-            // 3. Populate Dropdown Filter
-            const dropdownList = document.getElementById('dropdownListContainer');
-            let dropdownHTML = `
-                <div onclick="window.selectCampaign('all', 'Semua Campaign')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group border-b border-zinc-800/50">
-                    <span class="truncate">Semua Campaign</span>
-                    <svg class="w-4 h-4 text-green-400 shrink-0 ml-2" id="check-camp-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-            `;
-            allCampaigns.forEach(c => {
-                // Gunakan replace untuk menghindari bug kutip
-                const safeTitle = c.title.replace(/'/g, "\\'");
-                dropdownHTML += `
-                    <div onclick="window.selectCampaign('${c.id}', '${safeTitle}')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                        <span class="truncate">${c.title}</span>
-                        <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-${c.id}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                // 4. Ambil data Campaigns milik Brand
+                const { data: campaignsData, error: campError } = await supabase
+                    .from('campaigns')
+                    .select('*')
+                    .eq('client_id', userId);
+                
+                if (campError) throw campError;
+                if (campaignsData) allCampaigns = campaignsData;
+
+                // 5. Populate Dropdown Filter
+                const dropdownList = document.getElementById('dropdownListContainer');
+                let dropdownHTML = `
+                    <div onclick="window.selectCampaign('all', 'Semua Campaign')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group border-b border-zinc-800/50">
+                        <span class="truncate">Semua Campaign</span>
+                        <svg class="w-4 h-4 text-green-400 shrink-0 ml-2" id="check-camp-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                 `;
-            });
-            dropdownList.innerHTML = dropdownHTML;
+                allCampaigns.forEach(c => {
+                    // Gunakan escapeHTML & replace untuk menghindari bug kutip
+                    const safeTitle = escapeHTML(c.title);
+                    dropdownHTML += `
+                        <div onclick="window.selectCampaign('${c.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
+                            <span class="truncate" title="${safeTitle}">${safeTitle}</span>
+                            <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-${c.id}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    `;
+                });
+                dropdownList.innerHTML = dropdownHTML;
 
-            // 4. Ambil data Submissions terkait
-            if (allCampaigns.length > 0) {
-                const campaignIds = allCampaigns.map(c => c.id);
-                // Kita gabung data judul campaign agar tau saat diexport CSV
-                const { data: submissionsData } = await supabase
-                    .from('submissions')
-                    .select('*, campaigns(title)')
-                    .in('campaign_id', campaignIds);
+                // 6. Ambil data Submissions terkait
+                if (allCampaigns.length > 0) {
+                    const campaignIds = allCampaigns.map(c => c.id);
+                    // Kita gabung data judul campaign agar tau saat diexport CSV
+                    const { data: submissionsData, error: subError } = await supabase
+                        .from('submissions')
+                        .select('*, campaigns(title)')
+                        .in('campaign_id', campaignIds);
 
-                if (submissionsData) allSubmissions = submissionsData;
-            }
-
-            // 5. Update UI
-            updateDashboard('all');
-
-            // 6. Sembunyikan Loader
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader){
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500); 
+                    if (subError) throw subError;
+                    if (submissionsData) allSubmissions = submissionsData;
                 }
-            }, 800); 
+
+                // 7. Update UI
+                updateDashboard('all');
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+                alert("Terjadi kesalahan sistem saat memuat data Analytics.");
+            } finally {
+                // 8. Sembunyikan Loader (Aman dalam Finally block)
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if(loader){
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.style.display = 'none', 500); 
+                    }
+                }, 800); 
+            }
         });
 
         // FUNGSI UPDATE TAMPILAN
