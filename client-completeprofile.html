@@ -256,9 +256,34 @@
     <!-- Scripts (Telah Diubah menjadi Type Module) -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        // 1. IMPORT FUNGSI PROTEKSI DARI AUTH.JS
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         AOS.init({ once: true, offset: 20, duration: 800 });
+
+        // 2. FUNGSI ANTI-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // 3. JALANKAN PROTEKSI AKSES SAAT HALAMAN DIMUAT (Mencegah Akses Ilegal)
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await enforceRoleProtection();
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error || !session) {
+                    window.location.replace('login.html');
+                }
+            } catch (err) {
+                console.error("Auth check failed:", err);
+            }
+        });
 
         // Fungsi Global ditempel ke window agar terbaca oleh HTML attribute
         window.previewImage = function(event) {
@@ -269,20 +294,14 @@
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 
-                // ===============================================
-                // PROTEKSI 1: SAAT FILE DIPILIH
-                // ===============================================
-                if (file.size > 1024 * 1024) { // 1 MB
+                // PROTEKSI: BATASAN UKURAN FILE (Maks. 1MB)
+                if (file.size > 1024 * 1024) { 
                     alert("Gagal: Ukuran foto profil tidak boleh lebih dari 1 MB. Silakan pilih foto dengan ukuran lebih kecil!");
-                    
-                    // Kembalikan ke keadaan default
                     input.value = ""; 
                     previewContainer.style.backgroundImage = 'none';
                     if(defaultIcon) defaultIcon.style.display = 'block';
-                    
-                    return; // Hentikan fungsi
+                    return; 
                 }
-                // ===============================================
 
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -391,14 +410,11 @@
 
             const avatarFile = document.getElementById('avatarUpload').files[0];
 
-            // ===============================================
-            // PROTEKSI 2: SAAT TOMBOL SIMPAN DIKLIK
-            // ===============================================
+            // PROTEKSI SAAT TOMBOL SIMPAN DIKLIK
             if (avatarFile && avatarFile.size > 1024 * 1024) { // 1 MB
                 alert("Gagal: Ukuran foto profil tidak boleh lebih dari 1 MB. Silakan ganti foto terlebih dahulu.");
-                return; // Batalkan proses submit seketika!
+                return; 
             }
-            // ===============================================
 
             // Tampilkan Loading
             btnSubmit.setAttribute('disabled', 'true');
@@ -412,14 +428,14 @@
                 if (sessionError || !session) throw new Error("Sesi tidak valid");
                 const userId = session.user.id;
 
-                // 2. Kumpulkan semua Data
-                const namaBisnis = document.getElementById('inputNama').value;
-                const kategoriBisnis = document.getElementById('kategoriInput').value;
-                const alamatBisnis = document.getElementById('inputAlamat').value;
-                const websiteBisnis = document.getElementById('inputWebsite').value;
+                // 2. Kumpulkan dan SANITASI semua Data
+                const namaBisnis = escapeHTML(document.getElementById('inputNama').value);
+                const kategoriBisnis = escapeHTML(document.getElementById('kategoriInput').value);
+                const alamatBisnis = escapeHTML(document.getElementById('inputAlamat').value);
+                const websiteBisnis = escapeHTML(document.getElementById('inputWebsite').value);
                 
                 const sourceRadio = document.querySelector('input[name="source"]:checked');
-                const discoverySource = sourceRadio ? sourceRadio.value : null;
+                const discoverySource = sourceRadio ? escapeHTML(sourceRadio.value) : null;
                 
                 let avatarUrl = null;
 
