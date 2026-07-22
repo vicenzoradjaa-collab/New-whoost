@@ -287,7 +287,8 @@
     <!-- SCRIPT SUPABASE & LOGIC                    -->
     <!-- ========================================== -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        // 1. IMPORT PROTEKSI DARI AUTH.JS
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         // Variabel global untuk state user
         let currentUserId = null;
@@ -298,13 +299,27 @@
         const iconError = `<svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
         const iconWarning = `<svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`;
 
+        // 2. FUNGSI ANTI-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         // ==========================================
-        // 1. INISIALISASI DATA AWAL
+        // 3. INISIALISASI DATA AWAL
         // ==========================================
         document.addEventListener('DOMContentLoaded', async () => {
             generateCategoryList();
 
             try {
+                // Jalankan Proteksi Akses Halaman
+                await enforceRoleProtection();
+
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError || !session) {
                     window.location.replace('login.html');
@@ -359,7 +374,7 @@
         });
 
         // ==========================================
-        // 2. FUNGSI UPDATE UI KESEHATAN
+        // 4. FUNGSI UPDATE UI KESEHATAN
         // ==========================================
         function updateHealthBar(profileObj) {
             let filledFields = 0;
@@ -387,7 +402,7 @@
         }
 
         // ==========================================
-        // 3. LOGIKA FOTO PROFIL (GANTI & HAPUS)
+        // 5. LOGIKA FOTO PROFIL (GANTI & HAPUS)
         // ==========================================
         window.openAvatarActionModal = function() {
             const modal = document.getElementById('avatarActionModal');
@@ -527,7 +542,7 @@
         }
 
         // ==========================================
-        // 4. LOGIKA DROPDOWN KATEGORI CUSTOM
+        // 6. LOGIKA DROPDOWN KATEGORI CUSTOM
         // ==========================================
         const categories = [
             "Fashion & Pakaian", "Makanan & Minuman (F&B)", "Kecantikan & Skincare", 
@@ -579,7 +594,7 @@
         };
 
         // ==========================================
-        // 5. FUNGSI SIMPAN PROFIL
+        // 7. FUNGSI SIMPAN PROFIL & SANITASI DATA
         // ==========================================
         window.saveProfile = async function() {
             const btnBottom = document.getElementById('btn-save-bottom');
@@ -589,11 +604,17 @@
             
             try {
                 // Email tidak disertakan karena sifatnya Read Only (Diambil dari auth Provider)
+                // Implementasi Anti-XSS sebelum menyimpan data ke database
+                const rawName = document.getElementById('input-name').value.trim();
+                const rawCategory = document.getElementById('input-category').value.trim();
+                const rawAddress = document.getElementById('input-address').value.trim();
+                const rawWebsite = document.getElementById('input-website').value.trim();
+
                 const updateData = {
-                    business_name: document.getElementById('input-name').value,
-                    business_category: document.getElementById('input-category').value,
-                    business_address: document.getElementById('input-address').value,
-                    business_website: document.getElementById('input-website').value,
+                    business_name: escapeHTML(rawName),
+                    business_category: escapeHTML(rawCategory),
+                    business_address: escapeHTML(rawAddress),
+                    business_website: rawWebsite // URL tidak perlu di-escape secara agresif, untuk menjaga parameter '?' atau '&' tetap bekerja
                 };
                 
                 const { error } = await supabase.from('profiles').update(updateData).eq('id', currentUserId);
@@ -612,7 +633,7 @@
         };
 
         // ==========================================
-        // 6. FUNGSI LOGOUT KUSTOM
+        // 8. FUNGSI LOGOUT KUSTOM
         // ==========================================
         window.openLogoutModal = function() {
             const modal = document.getElementById('confirmModal');
