@@ -55,18 +55,12 @@
                     <span class="text-[10px] text-zinc-500 bg-zinc-900 px-2 py-1 rounded">16:9</span>
                 </div>
                 <input type="file" id="banner-file" accept="image/*" class="hidden" onchange="window.handleBannerUpload(event)">
-                
-                <div id="banner-upload-box" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center relative overflow-hidden group">
+                <div id="banner-upload-box" onclick="window.triggerUpload()" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group">
                     <img id="banner-preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
-                    
-                    <!-- Overlay Muncul jika gambar sudah diupload -->
-                    <div id="banner-overlay" class="absolute inset-0 bg-black/60 hidden z-20 items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button type="button" onclick="event.stopPropagation(); window.triggerUpload()" class="px-5 py-2 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-200 shadow-xl focus:outline-none transition-transform active:scale-95">Ganti</button>
-                        <button type="button" onclick="event.stopPropagation(); window.deleteBanner()" class="px-5 py-2 bg-red-500 text-white text-sm font-bold rounded-xl hover:bg-red-600 shadow-xl focus:outline-none transition-transform active:scale-95">Hapus</button>
+                    <div class="absolute inset-0 bg-black/40 hidden z-10 group-hover:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="text-white font-bold text-sm bg-black/60 px-4 py-2 rounded-lg">Ganti Gambar</span>
                     </div>
-
-                    <!-- State ketika Kosong -->
-                    <div id="banner-empty-state" onclick="window.triggerUpload()" class="z-0 flex flex-col items-center justify-center w-full h-full cursor-pointer absolute inset-0">
+                    <div id="banner-icon-container" class="z-0 flex flex-col items-center">
                         <div class="w-12 h-12 bg-zinc-800 text-zinc-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
@@ -180,13 +174,6 @@
                         <input type="text" id="price_per_video" placeholder="Rp 50.000" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none currency-input">
                     </div>
                 </div>
-
-                <!-- Budget Tersisa (Editable) -->
-                <div class="mt-5 pt-5 border-t border-zinc-800">
-                    <label class="block text-sm font-medium text-amber-400 mb-1">Budget Tersisa / Sisa Active Budget (Rp) <span class="text-red-500">*</span></label>
-                    <input type="text" id="budget_remaining" placeholder="Rp 0" class="w-full bg-zinc-900 border border-amber-500/50 focus:border-amber-400 rounded-xl px-4 py-3 text-sm text-white outline-none currency-input shadow-[0_0_10px_rgba(245,158,11,0.1)]">
-                    <p class="text-[10px] text-zinc-500 mt-1">Otomatis mengikuti Total Budget. Anda bisa mengubah atau menurunkannya menjadi 0 jika ingin menutup paksa Campaign.</p>
-                </div>
             </div>
 
             <!-- PLATFORM & BAHAN LINKS -->
@@ -276,7 +263,6 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let uploadedBannerUrl = null;
-        let uploadedBannerPath = null; // Menyimpan path file di storage agar bisa dihapus
         let selectedPlatforms = { tiktok: false, ig: false, yt: false };
         let linksData = [];
         let currentPaymentType = 'views';
@@ -291,6 +277,12 @@
             short: "Download video mentahan dari Link yang disediakan.\nCari momen paling menarik/lucu (Hook 3 detik pertama).\nPotong menjadi klip 15-60 detik.",
             full: "1. Seluruh konten wajib dibuat dengan tone yang positif dan informatif.\n2. Wajib menggunakan materi dari link bahan yang diberikan.\n3. Tambahkan subtitle otomatis agar menarik.\n4. Volume background music tidak boleh lebih besar dari suara utama.\n5. Jangan lupa gunakan hashtag yang telah ditentukan.",
             restrict: "Anti-Botting: Dilarang keras menggunakan view botting, ads boosting, atau pembelian views. Hanya Organic Views yang dihitung.\nOriginalitas: Dilarang keras mencuri atau melakukan re-post konten milik sesama clipper.\nManual Editing Only: Penggunaan alat editing AI otomatis (seperti Opus Clip atau sejenisnya) dilarang.\nNo Raw Reupload: Dilarang mengunggah ulang video mentah tanpa sentuhan kreativitas atau editing tambahan.\nEtika & Nama Baik: Dilarang membuat konten yang mengandung unsur SARA, ujaran kebencian, atau menjelekkan pihak tertentu."
+        };
+
+        const statusHTMLMap = {
+            'ACTIVE': `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ACTIVE`,
+            'HOLDING': `<svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> HOLDING`,
+            'CLOSED': `<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> CLOSED`
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -365,14 +357,8 @@
         });
 
         window.selectStatus = function(val) {
-            // Memindahkan Map langsung ke fungsi agar tidak error pembacaan module JS
-            const statusMap = {
-                'ACTIVE': `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ACTIVE`,
-                'HOLDING': `<svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> HOLDING`,
-                'CLOSED': `<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> CLOSED`
-            };
             document.getElementById('status_val').value = val;
-            document.getElementById('status-selected-text').innerHTML = statusMap[val];
+            document.getElementById('status-selected-text').innerHTML = statusHTMLMap[val];
             document.getElementById('status-options').classList.add('hidden');
         };
 
@@ -412,13 +398,6 @@
             document.getElementById('btn-type-video').className = type === 'video' ? "px-5 py-1.5 rounded-full bg-white text-black text-xs font-semibold focus:outline-none" : "px-5 py-1.5 rounded-full text-zinc-400 hover:text-white text-xs font-semibold focus:outline-none";
             document.getElementById('budget-views-section').classList.toggle('hidden', type !== 'views');
             document.getElementById('budget-video-section').classList.toggle('hidden', type !== 'video');
-            
-            // Auto Update Budget Tersisa
-            if(type === 'views') {
-                document.getElementById('budget_remaining').value = document.getElementById('budget_total_views').value;
-            } else {
-                updateVideoTotal();
-            }
         };
 
         window.togglePlatform = function(platform) {
@@ -491,9 +470,9 @@
         };
 
         // ==========================================
-        // 3. FORMAT CURRENCY & BUDGET SYNC
+        // 3. FORMAT CURRENCY & NUMBER
         // ==========================================
-        function parseRupiah(val) { return parseInt(val.toString().replace(/[^0-9]/g, '')) || 0; }
+        function parseRupiah(val) { return parseInt(val.replace(/[^0-9]/g, '')) || 0; }
         
         document.querySelectorAll('.currency-input').forEach(input => {
             input.addEventListener('input', e => {
@@ -509,42 +488,16 @@
             });
         });
 
-        // Sinkronisasi Budget Total ke Budget Tersisa
-        document.getElementById('budget_total_views').addEventListener('input', e => {
-            document.getElementById('budget_remaining').value = e.target.value;
-        });
-
-        function updateVideoTotal() {
-            const tv = parseInt(document.getElementById('target_video').value) || 0;
-            const pv = parseRupiah(document.getElementById('price_per_video').value) || 0;
-            const total = tv * pv;
-            if(total > 0) {
-                document.getElementById('budget_remaining').value = 'Rp ' + total.toLocaleString('id-ID');
-            } else {
-                document.getElementById('budget_remaining').value = '';
-            }
-        }
-        document.getElementById('target_video').addEventListener('input', updateVideoTotal);
-        document.getElementById('price_per_video').addEventListener('input', updateVideoTotal);
-
         // ==========================================
-        // 4. UPLOAD & DELETE BANNER
+        // 4. UPLOAD BANNER
         // ==========================================
         window.triggerUpload = function() { document.getElementById('banner-file').click(); };
-        
         window.handleBannerUpload = async function(event) {
             const file = event.target.files[0];
             if(!file) return;
 
             const textEl = document.getElementById('banner-text');
-
-            // Hapus banner lama dari database Supabase sebelum upload jika replace
-            if (uploadedBannerPath) {
-                textEl.innerText = "Mengganti Banner...";
-                await supabase.storage.from('avatars').remove([uploadedBannerPath]);
-            } else {
-                textEl.innerText = "Mengupload ke Supabase...";
-            }
+            textEl.innerText = "Mengupload ke Supabase...";
             textEl.classList.add('text-amber-400');
 
             const fileExt = file.name.split('.').pop();
@@ -560,48 +513,13 @@
                 return;
             }
 
-            uploadedBannerPath = fileName;
             const { data: pUrl } = supabase.storage.from('avatars').getPublicUrl(fileName);
             uploadedBannerUrl = pUrl.publicUrl;
 
-            // Update UI Tampilan
             const preview = document.getElementById('banner-preview');
             preview.src = uploadedBannerUrl;
             preview.classList.remove('hidden');
-            
-            document.getElementById('banner-empty-state').classList.add('hidden');
-            document.getElementById('banner-overlay').classList.remove('hidden');
-            document.getElementById('banner-overlay').classList.add('flex');
-            
-            document.getElementById('banner-file').value = ''; 
-        };
-
-        window.deleteBanner = async function() {
-            if (uploadedBannerPath) {
-                const btnSave = document.getElementById('btn-save');
-                btnSave.disabled = true; // Kunci tombol save sementara
-
-                // Hapus Realtime File dari Database
-                await supabase.storage.from('avatars').remove([uploadedBannerPath]);
-                
-                uploadedBannerPath = null;
-                uploadedBannerUrl = null;
-                
-                // Balikkan UI ke Semula (Kosong)
-                document.getElementById('banner-preview').classList.add('hidden');
-                document.getElementById('banner-preview').src = '';
-                
-                document.getElementById('banner-overlay').classList.remove('flex');
-                document.getElementById('banner-overlay').classList.add('hidden');
-                
-                document.getElementById('banner-empty-state').classList.remove('hidden');
-                
-                const textEl = document.getElementById('banner-text');
-                textEl.innerText = "Klik untuk Upload Banner";
-                textEl.classList.remove('text-amber-400', 'text-red-500');
-                
-                btnSave.disabled = false;
-            }
+            document.getElementById('banner-icon-container').classList.add('hidden');
         };
 
         // ==========================================
@@ -624,8 +542,6 @@
                 ? parseRupiah(document.getElementById('budget_total_views').value) 
                 : ((parseInt(document.getElementById('target_video').value)||0) * parseRupiah(document.getElementById('price_per_video').value));
             
-            const bRemaining = parseRupiah(document.getElementById('budget_remaining').value);
-
             const platforms = [];
             if(selectedPlatforms.tiktok) platforms.push('tiktok');
             if(selectedPlatforms.ig) platforms.push('instagram');
@@ -647,7 +563,7 @@
                 deadline: document.getElementById('deadline').value,
                 description: document.getElementById('brief').value.trim(),
                 budget_total: bTotal,
-                budget_remaining: bRemaining, // Menyimpan nilai hasil editan admin
+                budget_remaining: bTotal,
                 payment_type: currentPaymentType,
                 reward_per_1k: parseRupiah(document.getElementById('reward_per_1k').value),
                 min_views: parseRupiah(document.getElementById('min_views').value),
