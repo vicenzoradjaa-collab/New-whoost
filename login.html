@@ -254,8 +254,16 @@
                     return; 
                 }
 
-                // Jika status tidak dibanned, arahkan sesuai role
-                // Kunci (isProcessingLogin) tidak dibuka lagi karena user akan dipindahkan halamannya
+                // --- LOGIKA BARU: CEK JIKA ADMIN ---
+                if (profile && profile.role === 'admin') {
+                    // Jika admin, lempar ke halaman admin-login.html
+                    // (Skrip di admin-login.html akan otomatis mem-forward ke admin-dashboard)
+                    window.location.replace('admin-login.html');
+                    return; 
+                }
+                // -----------------------------------
+
+                // Jika status tidak dibanned dan BUKAN admin, arahkan sesuai role (Clipper/Client)
                 routeBasedOnProfile(profile);
 
             } catch (error) {
