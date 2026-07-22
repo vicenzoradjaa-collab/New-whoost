@@ -171,7 +171,8 @@
     <script src="attribute/navbarclient.js"></script>
 
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        // 1. IMPORT FUNGSI PROTEKSI DARI AUTH.JS
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let sessionUser = null;
         let submissionsData = [];
@@ -182,25 +183,43 @@
         let activeCardId = null;
         let currentDecision = null;
 
+        // 2. FUNGSI ANTI-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                alert("Silakan login sebagai Client.");
-                window.location.replace('login.html');
-                return;
-            }
-            sessionUser = session.user;
+            try {
+                // 3. JALANKAN PROTEKSI PERTAMA KALI
+                await enforceRoleProtection();
 
-            await loadSubmissions();
-
-            // Sembunyikan Loader
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader) {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500);
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('login.html');
+                    return;
                 }
-            }, 500);
+                sessionUser = session.user;
+
+                await loadSubmissions();
+
+            } catch (error) {
+                console.error("Initialization error:", error);
+            } finally {
+                // 4. TUTUP LOADER DENGAN AMAN DI DALAM FINALLY
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if(loader) {
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.style.display = 'none', 500);
+                    }
+                }, 500);
+            }
         });
 
         // 1. Tarik Data dari Supabase (Hanya yang Client_ID nya cocok)
@@ -227,6 +246,7 @@
 
         // 2. Logic Generate Badge Platform
         function getPlatformInfo(url, campPlatforms) {
+            if (!url) return { color: 'bg-zinc-100', name: 'Link Web' };
             if (url.includes('tiktok.com')) return { color: 'bg-cyan-400', name: 'TikTok' };
             if (url.includes('instagram.com')) return { color: 'bg-fuchsia-500', name: 'IG Reels' };
             if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) return { color: 'bg-red-600', name: 'YT Shorts' };
@@ -235,8 +255,11 @@
 
         // 3. Render Kartu HTML
         function generateCard(sub) {
-            const creator = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
-            const title = sub.campaigns?.title || 'Campaign Dihapus';
+            // 5. SANITASI DATA SEBELUM RENDER (Mencegah XSS)
+            const creator = escapeHTML(sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator');
+            const title = escapeHTML(sub.campaigns?.title || 'Campaign Dihapus');
+            const safeUrl = encodeURI(sub.video_link || '');
+            
             const platInfo = getPlatformInfo(sub.video_link, sub.campaigns?.platforms);
 
             // Logika Status
@@ -261,7 +284,7 @@
             return `
             <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300 ${sub.status !== 'PENDING' ? 'opacity-80' : ''}">
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group border border-zinc-800">
-                    <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="https://placehold.co/300x400/121214/27272a?text=..." class="sub-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img id="thumb-${sub.id}" data-video-link="${safeUrl}" src="https://placehold.co/300x400/121214/27272a?text=..." class="sub-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                     
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
@@ -277,7 +300,7 @@
                     </div>
                 </div>
                 <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="${sub.video_link}" target="_blank" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors focus:outline-none">
+                    <a href="${safeUrl}" target="_blank" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors focus:outline-none">
                         <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
                     </a>
                     ${btnReviewHTML}
@@ -335,6 +358,7 @@
                 if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
                     const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
                     if (ytMatch && ytMatch[1]) {
+                        // FIX: Memperbaiki URL Thumbnail Youtube
                         imgEl.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
                         imgEl.setAttribute('data-loaded', 'true');
                     }
@@ -500,7 +524,9 @@
                 
                 if (currentDecision === 'tolak') {
                     const checked = document.querySelector('input[name="alasan"]:checked');
-                    updateData.reject_reason = checked.value === 'lainnya' ? document.getElementById('customReason').value.trim() : checked.value;
+                    // 6. SANITASI ALASAN PENOLAKAN
+                    let rawReason = checked.value === 'lainnya' ? document.getElementById('customReason').value.trim() : checked.value;
+                    updateData.reject_reason = escapeHTML(rawReason);
                 } else {
                     updateData.reject_reason = null; // Bersihkan reason jika di-acc
                 }
@@ -515,8 +541,8 @@
                     // Kirim Notif ke Clipper
                     const notifTitle = currentDecision === 'setuju' ? 'Video Disetujui! ✅' : 'Video Ditolak ❌';
                     const notifMsg = currentDecision === 'setuju' 
-                        ? `Video Anda untuk campaign "${sub.campaigns.title}" disetujui oleh Brand. Sekarang Anda bisa mulai klaim Views!`
-                        : `Video Anda untuk campaign "${sub.campaigns.title}" ditolak oleh Brand. Alasan: ${updateData.reject_reason}`;
+                        ? `Video Anda untuk campaign "${escapeHTML(sub.campaigns.title)}" disetujui oleh Brand. Sekarang Anda bisa mulai klaim Views!`
+                        : `Video Anda untuk campaign "${escapeHTML(sub.campaigns.title)}" ditolak oleh Brand. Alasan: ${updateData.reject_reason}`;
                         
                     await supabase.from('notifications').insert([{
                         user_id: sub.user_id,
