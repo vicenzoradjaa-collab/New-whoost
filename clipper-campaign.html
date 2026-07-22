@@ -50,12 +50,22 @@
 
         .load-hidden { display: none !important; }
         .filter-hidden { display: none !important; }
+
+        /* Animasi Custom agar muncul bertahap otomatis tanpa peduli posisi Scroll */
+        @keyframes fadeInUpLocal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up-local {
+            opacity: 0;
+            animation: fadeInUpLocal 0.6s ease-out forwards;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
     <!-- SAFELIST TAILWIND CDN -->
-    <div class="hidden p-3 md:p-4 pt-[56.25%] mb-3 md:mb-4 px-1.5 md:px-2 py-0.5 text-[8px] md:text-[9px] text-[10px] md:text-xs sm:text-xs text-sm md:text-sm md:text-xl md:text-2xl gap-1 gap-1.5 gap-2 w-3 h-3 md:w-4 md:h-4 py-1 py-2 max-w-[70px] md:max-w-none border-yellow-900/50 bg-yellow-900/20 text-yellow-500 border-red-900/50 bg-red-900/20 text-red-500 border-zinc-700 bg-zinc-800/40 text-green-400 opacity-100 opacity-50 grayscale bg-zinc-900 bg-zinc-900/50 bg-zinc-800/50 bg-zinc-900/80 active:scale-[0.98] h-1 md:h-1.5 group-hover:scale-105 transition-transform duration-500 bg-zinc-950 shrink-0 object-cover truncate leading-none whitespace-nowrap uppercase tracking-wider font-extrabold font-black font-semibold hover:border-zinc-500 hover:-translate-y-1 shadow-xl mt-auto pt-3 border-t items-baseline border-zinc-800 border-zinc-800/50 rounded-2xl md:rounded-[1.5rem] rounded-lg md:rounded-xl w-full relative overflow-hidden flex flex-col h-full absolute inset-0 cursor-not-allowed group text-zinc-600 text-zinc-500 text-zinc-400 hover:text-white text-zinc-300 text-white bg-white text-black hover:bg-zinc-800 hover:bg-zinc-200 flex-wrap items-center justify-center text-center focus:outline-none transition-all transition-colors items-start justify-between items-end rounded-full rounded-md border-zinc-800 bg-zinc-800 bg-cardBg campaign-card"></div>
+    <div class="hidden p-3 md:p-4 pt-[56.25%] mb-3 md:mb-4 px-1.5 md:px-2 py-0.5 text-[8px] md:text-[9px] text-[10px] md:text-xs sm:text-xs text-sm md:text-sm md:text-xl md:text-2xl gap-1 gap-1.5 gap-2 w-3 h-3 md:w-4 md:h-4 py-1 py-2 max-w-[70px] md:max-w-none border-yellow-900/50 bg-yellow-900/20 text-yellow-500 border-red-900/50 bg-red-900/20 text-red-500 border-zinc-700 bg-zinc-800/40 text-green-400 opacity-100 opacity-50 grayscale bg-zinc-900 bg-zinc-900/50 bg-zinc-800/50 bg-zinc-900/80 active:scale-[0.98] h-1 md:h-1.5 group-hover:scale-105 transition-transform duration-500 bg-zinc-950 shrink-0 object-cover truncate leading-none whitespace-nowrap uppercase tracking-wider font-extrabold font-black font-semibold hover:border-zinc-500 hover:-translate-y-1 shadow-xl mt-auto pt-3 border-t items-baseline border-zinc-800 border-zinc-800/50 rounded-2xl md:rounded-[1.5rem] rounded-lg md:rounded-xl w-full relative overflow-hidden flex flex-col h-full absolute inset-0 cursor-not-allowed group text-zinc-600 text-zinc-500 text-zinc-400 hover:text-white text-zinc-300 text-white bg-white text-black hover:bg-zinc-800 hover:bg-zinc-200 flex-wrap items-center justify-center text-center focus:outline-none transition-all transition-colors items-start justify-between items-end rounded-full rounded-md border-zinc-800 bg-zinc-800 bg-cardBg campaign-card animate-fade-in-up-local"></div>
 
     <!-- LOADING SCREEN -->
     <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
@@ -211,7 +221,7 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let activeFilters = { search: '', category: 'All Categories', content: 'All Content', status: 'Semua Status' };
-        let currentVisible = 12; // Load default awal 12 (karena cocok untuk dibagi 2, 3, dan 4 grid)
+        let currentVisible = 12; // Load default awal 12 (karena cocok untuk dibagi 2, 3, 4 dan 5 grid)
         const itemsToLoad = 12;
         
         let allCampaigns = [];
@@ -237,6 +247,7 @@
                 // 2. Inisialisasi Data
                 await initData();
                 
+                // AOS tetap diinit barangkali ada element diluar grid yang butuh
                 AOS.init({ once: true, offset: 50, duration: 800 });
                 
                 document.getElementById('searchInput').addEventListener('input', (e) => {
@@ -342,8 +353,6 @@
             } else {
                 loadMoreContainer.style.display = 'none';
             }
-
-            setTimeout(() => AOS.refresh(), 100);
         }
 
         function generateCardHTML(camp, index) {
@@ -379,7 +388,7 @@
             }
 
             const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
-            const delay = (index % 4) * 50; 
+            const delay = (index % 12) * 40; 
             const isJoined = joinedCampaignIds.includes(camp.id);
             
             // TOMBOL AKSI
@@ -407,8 +416,9 @@
                 }
             }
 
+            // MENGGANTI data-aos menjadi class "animate-fade-in-up-local" agar otomatis muncul tanpa harus discroll
             return `
-            <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-2xl md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group" data-aos="fade-up" data-aos-delay="${delay}">
+            <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-2xl md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
                 
                 <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
                     ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
@@ -419,7 +429,6 @@
                     <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
                 </div>
                 
-                <!-- Di sini class ditambahkan 'truncate' dan block w-full untuk memastikan tulisan satu baris -->
                 <h4 class="text-sm md:text-xl font-black text-white mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
                 
                 <div class="mb-3 flex items-baseline gap-1 flex-wrap">
