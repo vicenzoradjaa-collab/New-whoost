@@ -236,7 +236,18 @@
 
     <!-- LOGIKA SUPABASE & ANALYTICS -->
     <script type="module">
-        import { supabase } from './authentication/auth.js';
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
+
+        // FUNGSI ANTI-XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         // State Data
         let allCampaigns = [];
@@ -244,58 +255,87 @@
         let currentFilter = 'all';
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Cek Sesi User (Admin)
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.replace('login.html');
-                return;
-            }
+            try {
+                // 1. CEK PROTEKSI ROLE UMUM
+                if (typeof enforceRoleProtection === 'function') {
+                    await enforceRoleProtection();
+                }
 
-            // 2. Ambil data SELURUH Campaigns di Database (Karena ini Admin)
-            const { data: campaignsData } = await supabase
-                .from('campaigns')
-                .select('*');
-            
-            if (campaignsData) allCampaigns = campaignsData;
+                // 2. DOUBLE CHECK KHUSUS ADMIN
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('admin-login.html');
+                    return;
+                }
 
-            // 3. Populate Dropdown Filter (Dinamis dari db)
-            const dropdownList = document.getElementById('dropdownListContainer');
-            let dropdownHTML = `
-                <div onclick="window.selectCampaign('all', 'Semua Campaign')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group border-b border-zinc-800/50">
-                    <span class="truncate">Semua Campaign</span>
-                    <svg class="w-4 h-4 text-green-400 shrink-0 ml-2" id="check-camp-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-            `;
-            allCampaigns.forEach(c => {
-                // Gunakan replace untuk menghindari bug kutip
-                const safeTitle = c.title.replace(/'/g, "\\'");
-                dropdownHTML += `
-                    <div onclick="window.selectCampaign('${c.id}', '${safeTitle}')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                        <span class="truncate">${c.title}</span>
-                        <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-${c.id}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('role, status')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profileError || !profile || profile.role !== 'admin') {
+                    window.location.replace('login.html');
+                    return;
+                }
+                
+                if (profile.status === 'banned') {
+                    await supabase.auth.signOut();
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                // 3. Ambil data SELURUH Campaigns di Database
+                const { data: campaignsData } = await supabase
+                    .from('campaigns')
+                    .select('*');
+                
+                if (campaignsData) allCampaigns = campaignsData;
+
+                // 4. Populate Dropdown Filter (Dinamis dari db dengan Anti-XSS)
+                const dropdownList = document.getElementById('dropdownListContainer');
+                let dropdownHTML = `
+                    <div onclick="window.selectCampaign('all', 'Semua Campaign')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group border-b border-zinc-800/50">
+                        <span class="truncate">Semua Campaign</span>
+                        <svg class="w-4 h-4 text-green-400 shrink-0 ml-2" id="check-camp-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     </div>
                 `;
-            });
-            dropdownList.innerHTML = dropdownHTML;
+                allCampaigns.forEach(c => {
+                    const safeTitle = escapeHTML(c.title);
+                    // Hindari tanda kutip tunggal merusak fungsi onclick
+                    const safeTitleJS = safeTitle.replace(/'/g, "\\'");
+                    dropdownHTML += `
+                        <div onclick="window.selectCampaign('${c.id}', '${safeTitleJS}')" class="cursor-pointer px-3 py-2.5 text-xs sm:text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
+                            <span class="truncate">${safeTitle}</span>
+                            <svg class="w-4 h-4 text-green-400 hidden shrink-0 ml-2" id="check-camp-${c.id}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                    `;
+                });
+                dropdownList.innerHTML = dropdownHTML;
 
-            // 4. Ambil data SELURUH Submissions
-            const { data: submissionsData } = await supabase
-                .from('submissions')
-                .select('*, campaigns(title)');
+                // 5. Ambil data SELURUH Submissions
+                const { data: submissionsData } = await supabase
+                    .from('submissions')
+                    .select('*, campaigns(title)');
 
-            if (submissionsData) allSubmissions = submissionsData;
+                if (submissionsData) allSubmissions = submissionsData;
 
-            // 5. Update UI
-            updateDashboard('all');
+                // 6. Update UI Dashboard
+                updateDashboard('all');
 
-            // 6. Sembunyikan Loader
-            setTimeout(() => {
-                const loader = document.getElementById('pageLoader');
-                if(loader){
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 500); 
-                }
-            }, 800); 
+            } catch (error) {
+                console.error("Terjadi kesalahan:", error);
+                window.location.replace('admin-login.html');
+            } finally {
+                // 7. Sembunyikan Loader
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if(loader){
+                        loader.classList.add('opacity-0');
+                        setTimeout(() => loader.style.display = 'none', 500); 
+                    }
+                }, 800); 
+            }
         });
 
         // FUNGSI UPDATE TAMPILAN
@@ -421,7 +461,7 @@
             }
         });
 
-        // FUNGSI EXPORT CSV
+        // FUNGSI EXPORT CSV (Aman dari injeksi HTML di spreadsheet)
         window.exportToCSV = function() {
             if (allSubmissions.length === 0) {
                 alert("Belum ada data untuk diexport.");
@@ -441,9 +481,9 @@
             let csvContent = "Tanggal,Campaign,Platform,Link Video,Views,Status\n";
 
             filteredSubmissions.forEach(sub => {
-                // Parsing Data
+                // Parsing Data (Dan hilangkan HTML Tag)
                 const date = new Date(sub.created_at).toLocaleDateString('id-ID');
-                const campName = sub.campaigns?.title || 'Unknown Campaign';
+                const campName = escapeHTML(sub.campaigns?.title || 'Unknown Campaign');
                 
                 let platform = 'Lainnya';
                 const link = (sub.video_link || '').toLowerCase();
@@ -453,7 +493,7 @@
 
                 const status = sub.status;
                 const views = Math.max(sub.views_claimed || 0, sub.views_paid || 0);
-                const url = sub.video_link || '-';
+                const url = escapeHTML(sub.video_link || '-');
 
                 // Escape koma pada nama string dengan quote ""
                 csvContent += `"${date}","${campName}","${platform}","${url}","${views}","${status}"\n`;
