@@ -61,13 +61,13 @@
         }
     </style>
 </head>
-<body class="antialiased selection:bg-zinc-300 selection:text-black">
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col min-h-screen">
 
     <!-- Memanggil Component Header -->
     <custom-header></custom-header>
 
     <!-- Main Content FAQ -->
-    <main class="pt-32 pb-24 px-6 max-w-[1000px] mx-auto min-h-screen">
+    <main class="pt-32 pb-24 px-6 max-w-[1000px] mx-auto flex-1 w-full">
         
         <!-- Header Section -->
         <div class="text-center mt-8 mb-10" data-aos="fade-up">
@@ -77,7 +77,7 @@
             </div>
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-5 tracking-tight">Your Questions, Answered</h1>
             <p class="text-zinc-400 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-                Everything you need to know to understand how the platform works, all in one place.
+                Semua hal yang perlu Anda ketahui tentang Whoost, terangkum lengkap di sini.
             </p>
         </div>
 
@@ -101,181 +101,303 @@
         <!-- ========================================== -->
         <div id="faq-creator" class="tab-content active" data-aos="fade-up" data-aos-delay="200">
             
-            <!-- Category 1 -->
+            <!-- Category: Payouts -->
             <div class="mb-12">
-                <h2 class="text-xl font-bold mb-6 text-zinc-100">Participating in Campaigns</h2>
+                <h2 class="text-xl font-bold mb-6 text-zinc-100">Pencairan & Penghasilan (Payouts)</h2>
                 <div class="space-y-3">
-                    <!-- FAQ Item -->
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana cara kerja Whoost?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Saat saya mencairkan uang, apakah ada biaya yang dipotong?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Whoost menghubungkan brand dengan ribuan kreator. Anda cukup mendaftar, memilih campaign yang tersedia, membuat atau memotong (clip) video sesuai brief, lalu mengunggah link video tersebut. Anda akan dibayar berdasarkan jumlah views valid yang didapatkan.
+                                Ya. Terdapat biaya layanan (fee platform) sebesar <span id="fee_clipper_display" class="font-bold text-white">...</span> yang akan dipotong dari penghasilan kreator Anda pada saat saldo dicairkan.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Siapa saja yang bisa berpartisipasi dalam sebuah campaign?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Seberapa sering saya menerima bayaran?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Siapa saja bisa bergabung! Baik Anda seorang kreator konten profesional, editor video (clipper), maupun pengguna aktif media sosial yang memiliki akun publik di TikTok, Instagram, YouTube, atau X (Twitter).
+                                Anda akan menerima bayaran selambat-lambatnya dalam tujuh (7) hari kerja untuk setiap pengajuan (submission) views yang telah divalidasi dan menghasilkan uang.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah saya perlu memiliki banyak followers untuk menghasilkan uang?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah uang cair otomatis setelah video saya disetujui?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Tidak. Algoritma beberapa platform (seperti TikTok) memungkinkan video dari akun dengan follower sedikit pun bisa FYP dan mendapat jutaan tayangan. Pendapatan dihitung dari views, bukan jumlah pengikut.
+                                Ya. Maksimal 7 hari setelah status pengajuan klaim Anda terverifikasi oleh Admin, dana akan otomatis disalurkan masuk ke dalam saldo Whoost Anda.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah lokasi tempat tinggal saya berpengaruh?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Kenapa bayaran saya belum kunjung masuk?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Selama Anda memiliki rekening bank atau e-wallet yang didukung di Indonesia, Anda dapat berpartisipasi dari mana saja.
+                                Pembayaran baru dapat diproses jika video Anda setidaknya sudah berjalan minimal 7 hari sejak disubmit. Kami juga sedang memastikan apakah views Anda sah atau ada indikasi bot.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Di mana saya bisa menemukan lebih banyak campaign untuk diikuti?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah saya tetap dibayar jika Campaign tersebut keburu tutup?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Anda dapat menemukan seluruh campaign yang aktif di halaman <strong>Explore</strong> pada dashboard akun Anda. Kami memperbarui daftar ini setiap hari.
+                                Tentu saja! Selama Anda mengunggah dan mengajukan video saat status campaign masih <i>Active</i>, Anda tetap berhak memproses dan mencairkan pembayaran meski nantinya campaign tersebut sudah berakhir.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apa itu CPM?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apa yang dimaksud batas Maksimal Klaim?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                CPM (Cost Per Mille) adalah besaran bayaran yang akan Anda terima untuk setiap 1.000 views yang didapatkan oleh video Anda. Misalnya, jika CPM adalah Rp 5.000 dan video Anda mendapat 100.000 views, Anda akan mendapat Rp 500.000.
+                                Maksimal Klaim adalah batas atas (limit) jumlah views yang dapat dibayarkan per satu video. Ketika video Anda mencapai batas ini, akumulasi pendapatan akan berhenti di angka tersebut meski views video aslinya terus melambung.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Berapa Minimal Views untuk dapat dicairkan?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Setiap campaign menentukan syarat Minimal Views-nya sendiri. Jika video Anda belum menyentuh angka minimal tersebut, Anda tenang saja, karena sistem tetap akan membayar Anda menggunakan tarif penyesuaian (EARLY CPM).
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Category 2 -->
+            <!-- Category: Account Linking -->
             <div class="mb-12">
-                <h2 class="text-xl font-bold mb-6 text-zinc-100">Video Submission Rules</h2>
+                <h2 class="text-xl font-bold mb-6 text-zinc-100">Koneksi & Tautan Akun Sosial Media</h2>
                 <div class="space-y-3">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana cara mengirimkan video?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bisakah saya setor video dari beberapa akun yang berbeda?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Setelah Anda memposting konten di media sosial (misal: TikTok), salin link video tersebut. Buka halaman detail campaign di Whoost, lalu tempel (paste) link tersebut ke dalam kolom "Submit Link" yang disediakan.
+                                Tentu bisa. Anda dapat menggunakan akun TikTok, Instagram, atau YouTube yang berbeda-beda, asalkan semua akun tersebut sudah didaftarkan pada profil Whoost Anda.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Berapa kali saya bisa mengirimkan video untuk satu campaign?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana cara menautkan akun sosmed saya?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Tergantung aturan dari masing-masing brand. Sebagian besar campaign mengizinkan Anda mengirimkan hingga 3 video berbeda untuk campaign yang sama, asalkan kontennya tidak identik.
+                                Cukup masuk ke Pengaturan Profil Anda → Pilih menu "Kelola Akun Sosial Media" → Tambah Akun. Ikuti langkah sederhana yang muncul di layar.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apa fungsi menghubungkan akun sosial media ke platform?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Sistem kami memerlukan ini untuk membuktikan kepemilikan. Kami memverifikasi bahwa link video yang disetorkan benar-benar diposting oleh anggota terdaftar kami untuk mencegah klaim dari pihak yang tidak bertanggung jawab.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah boleh memposting dari akun yang di-Private?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Tidak bisa. Seluruh video yang Anda submit harus diunggah melalui akun publik (Public Account) agar sistem pelacakan (tracker) kami dapat mendeteksi pertumbuhan views-nya.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Category 3 -->
+            <!-- Category: Participating in Campaigns -->
             <div class="mb-12">
-                <h2 class="text-xl font-bold mb-6 text-zinc-100">Payouts</h2>
+                <h2 class="text-xl font-bold mb-6 text-zinc-100">Sistem & Mengikuti Campaign</h2>
                 <div class="space-y-3">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Saat saya menghasilkan uang, apakah ada biaya yang dipotong?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana siklus kerja di platform ini?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Whoost mengambil potongan biaya platform sebesar 10% dari total pendapatan per video untuk biaya operasional dan pemeliharaan server. Selain itu, mungkin ada biaya transfer bank flat standar (seperti Rp 4.000) saat melakukan penarikan.
+                                Prosesnya simpel: Anda daftar ke campaign, produksi konten dan post sesuai dengan aturan, submit link-nya di Dashboard Whoost. Jika video di-ACC oleh client, Anda bisa langsung melakukan klaim views. Terakhir, tunggu Admin memvalidasi dan mengirimkan bayarannya ke Anda.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Seberapa sering saya dibayar?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Siapa saja yang boleh bergabung mencari cuan?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Saldo akan otomatis masuk ke dompet Whoost Anda setiap kali views berhasil divalidasi. Anda dapat menarik (*withdraw*) saldo ke rekening bank kapan saja jika sudah memenuhi batas minimum penarikan (Rp 50.000).
+                                Siapa pun bisa mencoba! Tidak perlu riwayat mentereng atau skill tinggi. Pemula sekalipun sangat dipersilakan untuk mendistribusikan konten.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah saya tetap akan dibayar setelah campaign berakhir?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Haruskah punya ribuan followers untuk bisa cuan?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Views hanya akan dihitung dan dibayar selama campaign masih berstatus "Aktif" dan budget brand masih tersedia. Jika campaign ditutup, penambahan views setelahnya tidak akan dibayar.
+                                Sama sekali tidak. Algoritma saat ini memungkinkan video Anda FYP dan menjangkau ratusan ribu orang meski akun Anda baru dibuat dan tanpa follower.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah berlaku hanya untuk warga wilayah tertentu?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Tidak ada batasan wilayah. Semua campaign terbuka untuk seluruh warga asalkan menggunakan bahasa yang ditentukan campaign bersangkutan.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Di mana melihat daftar misi atau pekerjaan yang aktif?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Anda dapat menelusuri katalog campaign yang tersedia di halaman utama <strong>Campaigns</strong>.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apa itu istilah CPM?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                CPM (Cost Per Mille) merupakan struktur harga yang diberikan kepada Anda per 1.000 views yang didapat. Besaran harga ini ditetapkan berdasarkan bobot campaign—semakin berpotensi viral sulit, bayarannya bisa jauh lebih mahal.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Category 4 -->
+            <!-- Category: Video Rules & Review -->
             <div class="mb-12">
-                <h2 class="text-xl font-bold mb-6 text-zinc-100">Account Linking & Requirements</h2>
+                <h2 class="text-xl font-bold mb-6 text-zinc-100">Aturan Pengajuan & Proses Review</h2>
                 <div class="space-y-3">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana cara menautkan akun sosial media saya?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Cara yang benar untuk submit video?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Buka halaman Profile/Pengaturan di dashboard Anda, pilih menu "Linked Accounts". Klik tombol tambah pada platform yang dituju (misal: TikTok) dan ikuti proses otorisasi resmi.
+                                Pertama pahami brief yang terlampir. Setelah video diunggah ke sosmed Anda (jangan lupa beri tag/mention wajib), salin URL video tersebut. Klik tombol "Buat Submission" pada dashboard, dan tempelkan (paste) linknya ke sana.
                             </p>
                         </div>
                     </div>
-
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Dapatkah saya mengirimkan video dari akun privat?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Ada batasan jumlah video per campaign?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Tidak. Sistem deteksi views kami memerlukan akun yang disetel sebagai <strong>Publik</strong> agar dapat memvalidasi performa views dari video Anda secara akurat.
+                                Tidak ada batas. Semakin banyak variasi konten yang Anda hasilkan, semakin banyak potensi cuan yang bisa Anda ambil.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bolehkah mengirimkan video lama yang sudah pernah FYP?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Tidak valid. Kami menggunakan tracker waktu, dan hanya video yang *dipublikasikan baru* semenjak Anda klik tombol Join Campaign yang masuk hitungan sistem.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bolehkah satu link video di-submit 2 kali?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Tidak bisa. Sistem deteksi duplikat kami hanya mengizinkan satu URL (link) untuk satu proses.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Saya tidak sengaja memasukkan link yang salah, bagaimana?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Biarkan saja link yang salah tersebut hingga statusnya ditolak. Untuk sementara, Anda bisa langsung mengulangi submit pengajuan baru dengan menggunakan URL yang benar.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Kenapa pengajuan video saya ditolak Admin/Brand?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Ada beberapa faktor. Biasanya karena melanggar aturan brief, video terdeteksi memakai BOT peningkat views, atau kualitas konten dianggap di luar standar kelayakan.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Berapa lama saya harus menunggu proses "Review"?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Waktu tinjauan bergantung pada padatnya antrean tim kurasi dan Admin. Umumnya, akan diselesaikan dalam kurun beberapa hari kerja.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
+                        <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Boleh upload ke media sosial apa saja?</span>
+                            <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="faq-answer max-h-0 overflow-hidden px-6">
+                            <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                                Anda harus merujuk pada label 'Target Platforms' di detail campaign. Sebagian besar menerima TikTok, Instagram Reels, dan YouTube Shorts.
                             </p>
                         </div>
                     </div>
@@ -290,45 +412,40 @@
         <div id="faq-client" class="tab-content" data-aos="fade-up">
             
             <div class="mb-12">
-                <h2 class="text-xl font-bold mb-6 text-zinc-100">Membuat Campaign</h2>
+                <h2 class="text-xl font-bold mb-6 text-zinc-100">Top Up, Billing & Management</h2>
                 <div class="space-y-3">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana cara memasang campaign di Whoost?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Apakah Whoost memotong biaya dari anggaran campaign saya?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Anda dapat menekan tombol "Contact Us" untuk terhubung dengan Account Manager kami. Kami akan membantu merumuskan brief, mengatur CPM, dan meluncurkan campaign Anda ke ribuan kreator kami.
+                                Ya. Kami akan mengenakan tarif / memotong margin operasional sebesar <span id="fee_client_display" class="font-bold text-white">...</span> dari total alokasi budget campaign yang Anda pasang di platform kami.
                             </p>
                         </div>
                     </div>
 
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Berapa budget minimal untuk menjalankan campaign?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana flow pencairan dari budget brand menuju ke dompet kreator?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Budget minimal saat ini bervariasi, namun kami merekomendasikan budget awal setidaknya Rp 2.000.000 untuk melihat hasil distribusi yang optimal dan masif.
+                                Saldo budget Anda akan terpotong dan dialirkan secara otomatis ke e-wallet kreator *hanya setelah* tim kami memvalidasi sah/tidaknya pengajuan. Jika detektor membuktikan views berasal dari bot (engagement palsu), sistem otomatis membekukan hak bayaran tersebut untuk menyelamatkan sisa budget Anda.
                             </p>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="mb-12">
-                <h2 class="text-xl font-bold mb-6 text-zinc-100">Keamanan & Anti Bot</h2>
-                <div class="space-y-3">
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600">
                         <button class="w-full px-6 py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
-                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Bagaimana Whoost mencegah views palsu atau bot?</span>
+                            <span class="font-semibold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">Di mana saya bisa melihat seluruh riwayat atau statistik data campaign saya?</span>
                             <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div class="faq-answer max-h-0 overflow-hidden px-6">
                             <p class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
-                                Kami menggunakan sistem <em>Fraud Detection</em> canggih yang menganalisa rasio interaksi (Like, Comment, Share) terhadap total Views. Jika ditemukan anomali atau terindikasi suntikan bot, pengajuan video tersebut akan langsung diblacklist dan budget brand tidak akan dipotong.
+                                Sangat mudah. Cukup masuk (Login) melalui halaman akses Brand Whoost Anda, kemudian masuk ke bagian Dashboard Campaign. Seluruh statistik performa, jumlah views viral, beserta rincian sisa budget Anda akan disajikan penuh secara transparan.
                             </p>
                         </div>
                     </div>
@@ -342,61 +459,100 @@
     <!-- Memanggil Component Footer -->
     <custom-footer></custom-footer>
 
-    <!-- Scripts -->
+    <!-- Scripts Supabase & Animasi -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        // Init animasi scroll
-        AOS.init({
-            once: true,
-            offset: 50,
-            duration: 800
+    <script type="module">
+        import { supabase } from './authentication/auth.js';
+
+        // Load Animasi
+        AOS.init({ once: true, offset: 50, duration: 800 });
+
+        // Sinkronisasi data Fee dengan Database
+        async function fetchSystemSettings() {
+            try {
+                const { data, error } = await supabase
+                    .from('system_settings')
+                    .select('fee_clipper_amount, fee_clipper_type, fee_client_amount, fee_client_type')
+                    .limit(1)
+                    .single();
+
+                if (!error && data) {
+                    // Clipper Fee
+                    let clipperFee = '0%';
+                    if(data.fee_clipper_type.includes('Persen')) {
+                        clipperFee = data.fee_clipper_amount + '%';
+                    } else {
+                        clipperFee = 'Rp ' + parseInt(data.fee_clipper_amount).toLocaleString('id-ID');
+                    }
+                    const clipDisplay = document.getElementById('fee_clipper_display');
+                    if (clipDisplay) clipDisplay.innerText = clipperFee;
+
+                    // Client Fee
+                    let clientFee = '0%';
+                    if(data.fee_client_type.includes('Persen')) {
+                        clientFee = data.fee_client_amount + '%';
+                    } else {
+                        clientFee = 'Rp ' + parseInt(data.fee_client_amount).toLocaleString('id-ID');
+                    }
+                    const clientDisplay = document.getElementById('fee_client_display');
+                    if (clientDisplay) clientDisplay.innerText = clientFee;
+                }
+            } catch (err) {
+                console.error("Gagal sinkronisasi data sistem", err);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchSystemSettings();
         });
 
         // ==========================================
-        // FUNGSI TOGGLE ACCORDION FAQ
+        // FUNGSI TOGGLE ACCORDION FAQ (SMART CLOSE)
         // ==========================================
-        function toggleFaq(button) {
+        window.toggleFaq = function(button) {
             const answer = button.nextElementSibling;
             const chevron = button.querySelector('.chevron');
+            
+            // Tutup semua yang sedang terbuka selain yang sedang di-klik
             const allAnswers = document.querySelectorAll('.faq-answer');
             const allChevrons = document.querySelectorAll('.chevron');
             
-            // Opsi: Jika ingin saat 1 dibuka yang lain tertutup otomatis
-            // Hapus blok komentar di bawah jika ingin mengaktifkannya
-            /*
+            let isOpening = !answer.classList.contains('open');
+
             allAnswers.forEach((item) => {
-                if(item !== answer) {
-                    item.style.maxHeight = null;
-                    item.classList.remove('open');
-                }
+                item.style.maxHeight = null;
+                item.classList.remove('open');
             });
             allChevrons.forEach((icon) => {
-                if(icon !== chevron) icon.classList.remove('rotate-180');
+                icon.classList.remove('rotate-180');
             });
-            */
 
-            // Toggle element saat ini
-            if (answer.style.maxHeight) {
-                answer.style.maxHeight = null;
-                answer.classList.remove('open');
-                chevron.classList.remove('rotate-180');
-            } else {
-                // Set max-height sesuai tinggi aslinya agar transisinya mulus
+            // Buka element saat ini jika tadinya tertutup
+            if (isOpening) {
                 answer.style.maxHeight = answer.scrollHeight + "px";
                 answer.classList.add('open');
                 chevron.classList.add('rotate-180');
             }
-        }
+        };
 
         // ==========================================
         // FUNGSI SWITCH TAB (CLIENT vs CREATOR)
         // ==========================================
-        function switchFaqTab(tabName) {
+        window.switchFaqTab = function(tabName) {
             const btnClient = document.getElementById('btn-faq-client');
             const btnCreator = document.getElementById('btn-faq-creator');
             const indicator = document.getElementById('faq-slide-indicator');
             const contentClient = document.getElementById('faq-client');
             const contentCreator = document.getElementById('faq-creator');
+
+            // Tutup semua accordion saat berpindah tab biar bersih
+            document.querySelectorAll('.faq-answer').forEach(item => {
+                item.style.maxHeight = null;
+                item.classList.remove('open');
+            });
+            document.querySelectorAll('.chevron').forEach(icon => {
+                icon.classList.remove('rotate-180');
+            });
 
             if(tabName === 'client') {
                 // Geser putih ke kiri
@@ -424,7 +580,7 @@
                     setTimeout(() => contentCreator.classList.add('active'), 50);
                 }, 300);
             }
-        }
+        };
     </script>
 </body>
 </html>
