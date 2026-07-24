@@ -299,8 +299,10 @@
             const c = document.getElementById('customConfirmContent');
             m.classList.add('opacity-0'); c.classList.add('scale-95');
             setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+            confirmCallback = null; // Bersihkan agar tidak nyangkut
         };
 
+        // Eksekusi CallBack Konfirmasi (Telah Diperbaiki)
         document.getElementById('confirmYesBtn').addEventListener('click', () => {
             const cb = confirmCallback;
             window.closeConfirm();
@@ -516,6 +518,7 @@
             let realStatus = sub.status || 'PENDING';
             let isPerVideo = camp.payment_type === 'video';
             
+            // Boolean State Logics
             let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
             let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
             let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
@@ -544,7 +547,7 @@
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
                         <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Brand:</b> ${safeRejectReason || 'Video tidak sesuai kriteria/brief.'}</p>
                     </div>
-                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Video Ditolak</button>`;
+                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
             }
             else if (isClaimReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
@@ -562,17 +565,15 @@
                     </button>`;
             } 
             else if (isClaimRejected) {
+                // FIX: Langsung dikunci (Tidak bisa update/claim lagi)
                 cardOpacityClass = 'opacity-80 border-red-900/50';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
-                
-                let inputHTML = `<input type="number" id="input-${sub.id}" placeholder="Masukkan views yang benar" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mb-2">`;
                 
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
                         <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
                     </div>
-                    ${inputHTML}
-                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors focus:outline-none">Ajukan Ulang Klaim</button>`;
+                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
             }
             else {
                 const paidViews = sub.views_paid || 0;
