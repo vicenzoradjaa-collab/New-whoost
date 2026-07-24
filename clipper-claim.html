@@ -72,7 +72,7 @@
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Klaim Views</h1>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Klaim Pembayaran</h1>
         </div>
         <div class="flex items-center gap-2 sm:gap-3">
             <button onclick="location.reload()" class="p-2 rounded-full bg-cardBg border border-zinc-800 hover:border-zinc-500 transition-colors tooltip" title="Refresh Data">
@@ -196,6 +196,31 @@
         </div>
     </main>
 
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="customAlertModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform flex flex-col items-center" id="customAlertContent">
+            <div id="alertIcon" class="w-16 h-16 rounded-full flex items-center justify-center mb-4"></div>
+            <h3 id="alertTitle" class="text-xl font-bold text-white mb-2">Pemberitahuan</h3>
+            <p id="alertMessage" class="text-[13px] text-zinc-400 mb-6 leading-relaxed"></p>
+            <button onclick="window.closeAlert()" class="w-full px-4 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none">Tutup</button>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRM MODAL -->
+    <div id="customConfirmModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform flex flex-col items-center" id="customConfirmContent">
+            <div class="w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Konfirmasi Klaim</h3>
+            <p id="confirmMessage" class="text-[13px] text-zinc-400 mb-6 leading-relaxed whitespace-pre-line"></p>
+            <div class="grid grid-cols-2 gap-3 w-full">
+                <button onclick="window.closeConfirm()" class="w-full px-4 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 text-sm font-bold hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
+                <button id="confirmYesBtn" class="w-full px-4 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- BOTTOM NAVBAR -->
     <script>const ACTIVE_MENU = 'klaim_views';</script>
     <script src="attribute/navbarclipper.js"></script>
@@ -222,6 +247,66 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
+        // ==========================================
+        // SISTEM CUSTOM MODAL POP-UP
+        // ==========================================
+        window.showAlert = function(msg, type = 'info') {
+            const m = document.getElementById('customAlertModal');
+            const c = document.getElementById('customAlertContent');
+            const icon = document.getElementById('alertIcon');
+            const title = document.getElementById('alertTitle');
+            document.getElementById('alertMessage').innerText = msg;
+
+            if (type === 'success') {
+                icon.className = 'w-16 h-16 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full flex items-center justify-center mb-4';
+                icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                title.innerText = 'Berhasil';
+            } else if (type === 'error') {
+                icon.className = 'w-16 h-16 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full flex items-center justify-center mb-4';
+                icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                title.innerText = 'Gagal';
+            } else {
+                icon.className = 'w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full flex items-center justify-center mb-4';
+                icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                title.innerText = 'Informasi';
+            }
+
+            m.classList.remove('hidden'); m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+        };
+
+        window.closeAlert = function() {
+            const m = document.getElementById('customAlertModal');
+            const c = document.getElementById('customAlertContent');
+            m.classList.add('opacity-0'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+        };
+
+        let confirmCallback = null;
+        window.showConfirm = function(msg, callback) {
+            const m = document.getElementById('customConfirmModal');
+            const c = document.getElementById('customConfirmContent');
+            document.getElementById('confirmMessage').innerText = msg;
+            confirmCallback = callback;
+
+            m.classList.remove('hidden'); m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+        };
+
+        window.closeConfirm = function() {
+            const m = document.getElementById('customConfirmModal');
+            const c = document.getElementById('customConfirmContent');
+            m.classList.add('opacity-0'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+            confirmCallback = null;
+        };
+
+        document.getElementById('confirmYesBtn').addEventListener('click', () => {
+            window.closeConfirm();
+            if (confirmCallback) confirmCallback();
+        });
+
 
         function getCols() {
             const w = window.innerWidth;
@@ -424,7 +509,6 @@
             const meta = getVideoMeta(sub.video_link);
             const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
             
-            // Sanitasi output
             const safeTitle = escapeHTML(camp.title);
             const safeRejectReason = escapeHTML(sub.reject_reason);
             const safeSessionName = escapeHTML(sessionFullName);
@@ -434,14 +518,15 @@
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
             
             let realStatus = sub.status || 'PENDING';
+            let isPerVideo = camp.payment_type === 'video';
             
             // Boolean State Logics untuk menentukan Tampilan UI
-            let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
-            let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
-            let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
-            let isClaimReview   = (realStatus === 'PENDING' && viewsClaimed > 0);
-            let isClaimRejected = (realStatus === 'REJECTED' && viewsClaimed > 0);
-            let isClaimApproved = (realStatus === 'APPROVED' && viewsClaimed > 0);
+            let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0 && !isPerVideo);
+            let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0 && !isPerVideo);
+            let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0 && !isPerVideo);
+            let isClaimReview   = (realStatus === 'PENDING' && (viewsClaimed > 0 || isPerVideo));
+            let isClaimRejected = (realStatus === 'REJECTED' && (viewsClaimed > 0 || isPerVideo));
+            let isClaimApproved = (realStatus === 'APPROVED' && (viewsClaimed > 0 || isPerVideo));
 
             let actionArea = '';
             let badgeHTML = '';
@@ -468,10 +553,13 @@
             }
             else if (isClaimReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
+                let inputHTML = isPerVideo ? '' : `
+                    <div class="flex gap-1.5 sm:gap-2 mb-2">
+                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
+                    </div>`;
+                
                 actionArea = `
-                    <div class="flex gap-1.5 sm:gap-2">
-                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')}" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
-                    </div>
+                    ${inputHTML}
                     <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
                         <span>Reviewing Claim...</span>
                         <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
@@ -480,11 +568,19 @@
             else if (isClaimRejected) {
                 cardOpacityClass = 'opacity-80 border-red-900/50';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
+                
+                let inputHTML = '';
+                if(isPerVideo) {
+                    inputHTML = `<input type="hidden" id="input-${sub.id}" value="1">`;
+                } else {
+                    inputHTML = `<input type="number" id="input-${sub.id}" placeholder="Masukkan views yang benar" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mb-2">`;
+                }
+                
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti views tidak valid atau melanggar aturan.'}</p>
+                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
                     </div>
-                    <input type="number" id="input-${sub.id}" placeholder="Masukkan views yang benar" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center mb-2">
+                    ${inputHTML}
                     <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 transition-colors focus:outline-none">Ajukan Ulang Klaim</button>`;
             }
             else {
@@ -494,21 +590,39 @@
                 
                 if(isCampClosed) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Closed</div>`;
-                    warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
+                    warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. ${isPerVideo ? 'Tidak bisa klaim lagi.' : 'Cuma bisa update views.'}</p>`;
                 } else if (isClaimApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
                 } else if (isBrandApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
 
-                actionArea = `
-                    ${warningText}
+                let inputHTML = '';
+                if(isPerVideo) {
+                    inputHTML = `<input type="hidden" id="input-${sub.id}" value="1">`;
+                } else {
+                    inputHTML = `
                     <div class="flex gap-1.5 sm:gap-2">
                         <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
-                    </div>
-                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors mt-2">
-                        ${paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views'} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                    </button>`;
+                    </div>`;
+                }
+
+                let btnText = isPerVideo ? 'Klaim Pembayaran Video' : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
+
+                if (isPerVideo && (isCampClosed || isClaimApproved)) {
+                    actionArea = `
+                        ${warningText}
+                        <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">
+                            Pembayaran Telah Cair
+                        </button>`;
+                } else {
+                    actionArea = `
+                        ${warningText}
+                        ${inputHTML}
+                        <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors ${isPerVideo ? '' : 'mt-2'}">
+                            ${btnText} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </button>`;
+                }
             }
 
             return `
@@ -535,7 +649,7 @@
                     <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
                         <div>
                             <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
-                            <p class="text-[10px] sm:text-sm font-bold text-white">${uiViews}</p>
+                            <p class="text-[10px] sm:text-sm font-bold text-white">${isPerVideo ? 'Video' : uiViews}</p>
                         </div>
                         <div class="text-right">
                             <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
@@ -630,28 +744,33 @@
         };
 
         // ==========================================
-        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE (DENGAN PROTEKSI DOUBLE KLIK)
+        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE (DENGAN CUSTOM MODAL CONFIRM)
         // ==========================================
-        window.claimViews = async function(subId) {
+        window.claimViews = function(subId) {
             const inputEl = document.getElementById(`input-${subId}`);
             const btnEl = document.getElementById(`btn-claim-${subId}`);
             
             if(!inputEl || !btnEl) return;
-            
-            const newClaimStr = inputEl.value.trim();
-            if (!newClaimStr) return alert("Masukkan jumlah views yang valid.");
-            
-            const newClaimViews = parseInt(newClaimStr);
-            if (isNaN(newClaimViews) || newClaimViews <= 0) return alert("Jumlah views harus lebih dari 0.");
 
             const sub = submissionsData.find(s => s.id === subId);
-            if (!sub) return alert("Data tidak ditemukan.");
+            if (!sub) return showAlert("Data tidak ditemukan.", "error");
 
             const camp = sub.campaigns;
+            const isPerVideo = camp.payment_type === 'video';
             
-            const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
-            if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED' && maxPrevViews > 0) {
-                return alert(`Views baru harus lebih besar dari views yang sudah disetujui sebelumnya (${maxPrevViews.toLocaleString('id-ID')}).`);
+            let newClaimViews = 1; // Default
+            
+            if (!isPerVideo) {
+                const newClaimStr = inputEl.value.trim();
+                if (!newClaimStr) return showAlert("Masukkan jumlah views yang valid.", "error");
+                
+                newClaimViews = parseInt(newClaimStr);
+                if (isNaN(newClaimViews) || newClaimViews <= 0) return showAlert("Jumlah views harus lebih dari 0.", "error");
+
+                const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+                if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED' && maxPrevViews > 0) {
+                    return showAlert(`Views baru harus lebih besar dari views yang sudah disetujui sebelumnya (${maxPrevViews.toLocaleString('id-ID')}).`, "error");
+                }
             }
 
             let estPayout = 0;
@@ -689,45 +808,51 @@
                 }
             }
 
-            const confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
-            if (!confirm(confirmMsg)) return;
-
-            // Nonaktifkan tombol sementara agar tidak dobel klik
-            const originalBtnHtml = btnEl.innerHTML;
-            inputEl.disabled = true;
-            btnEl.disabled = true;
-            btnEl.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
-            btnEl.classList.add('cursor-not-allowed', 'opacity-80');
-
-            try {
-                // Pastikan user masih login sebelum klaim (Anti bypass)
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError || !session || session.user.id !== sub.user_id) {
-                    alert('Sesi tidak valid, mohon muat ulang halaman.');
-                    return;
-                }
-
-                const { error } = await supabase
-                    .from('submissions')
-                    .update({
-                        views_claimed: newClaimViews,
-                        est_payout: estPayout,
-                        status: 'PENDING',
-                        reject_reason: null
-                    })
-                    .eq('id', subId);
-
-                if (error) throw error;
-
-                alert("Berhasil mengajukan klaim. Menunggu review Admin.");
-                await loadSubmissions(); 
-            } catch (error) {
-                alert("Gagal melakukan klaim: " + error.message);
-                inputEl.disabled = false;
-                btnEl.disabled = false;
-                btnEl.innerHTML = originalBtnHtml;
-                btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
+            let confirmMsg = "";
+            if (isPerVideo) {
+                confirmMsg = `Pengajuan pencairan untuk konten video Anda.\nEstimasi Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+            } else {
+                confirmMsg = `Request klaim sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
             }
+            
+            window.showConfirm(confirmMsg, async () => {
+                // Nonaktifkan tombol sementara agar tidak dobel klik
+                const originalBtnHtml = btnEl.innerHTML;
+                if(!isPerVideo) inputEl.disabled = true;
+                btnEl.disabled = true;
+                btnEl.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+                btnEl.classList.add('cursor-not-allowed', 'opacity-80');
+
+                try {
+                    // Pastikan user masih login sebelum klaim (Anti bypass)
+                    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                    if (sessionError || !session || session.user.id !== sub.user_id) {
+                        showAlert('Sesi tidak valid, mohon muat ulang halaman.', 'error');
+                        return;
+                    }
+
+                    const { error } = await supabase
+                        .from('submissions')
+                        .update({
+                            views_claimed: newClaimViews,
+                            est_payout: estPayout,
+                            status: 'PENDING',
+                            reject_reason: null
+                        })
+                        .eq('id', subId);
+
+                    if (error) throw error;
+
+                    showAlert("Berhasil mengajukan klaim. Menunggu proses pencairan/review Admin.", "success");
+                    await loadSubmissions(); 
+                } catch (error) {
+                    showAlert("Gagal melakukan klaim: " + error.message, "error");
+                    if(!isPerVideo) inputEl.disabled = false;
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = originalBtnHtml;
+                    btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
+                }
+            });
         };
 
         // ==========================================
