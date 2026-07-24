@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kebijakan Privasi - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Panggil file Header & Footer -->
+    <script src="attribute/header.js"></script>
+    <script src="attribute/footer.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* Transisi tinggi untuk Accordion */
+        .faq-answer {
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+        }
+        .faq-answer.open {
+            transition: max-height 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col min-h-screen">
+
+    <!-- Memanggil Component Header -->
+    <custom-header></custom-header>
+
+    <!-- Main Content Privacy -->
+    <main class="pt-32 pb-24 px-6 max-w-[900px] mx-auto flex-1 w-full">
+        
+        <!-- Breadcrumb / Back Link -->
+        <div data-aos="fade-down">
+            <a href="index.html" class="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-8 focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Kembali ke Beranda
+            </a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="mb-12 border-b border-zinc-800/60 pb-8 text-center md:text-left" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">
+                Legal Document
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+                Kebijakan Privasi
+            </h1>
+            <p class="text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl">
+                Whoost berkomitmen untuk melindungi privasi Anda. Klik pada setiap bagian di bawah ini untuk membaca detail bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda.
+            </p>
+            <p class="text-xs mt-6 text-zinc-500 font-medium">Terakhir diperbarui: 28 Mei 2026</p>
+        </div>
+
+        <!-- Accordion Content -->
+        <div class="space-y-4" data-aos="fade-up" data-aos-delay="100">
+
+            <!-- Item 1 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">1. Pendahuluan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <p class="mb-3">Whoost ("kami", "kita", atau "platform") berkomitmen untuk melindungi privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi Anda saat menggunakan platform Whoost.</p>
+                        <p>Harap baca Kebijakan Privasi ini dengan saksama. Jika Anda tidak setuju dengan ketentuan dalam kebijakan ini, mohon untuk tidak mengakses atau menggunakan platform Whoost.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">2. Informasi yang Kami Kumpulkan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <strong class="text-white block mb-2">Informasi Pribadi</strong>
+                        <ul class="list-disc pl-5 space-y-1 mb-5 text-zinc-300">
+                            <li>Nama dan informasi kontak (alamat email, nomor WhatsApp)</li>
+                            <li>Kredensial akun (username, password)</li>
+                            <li>Informasi profil (bio, foto profil, tautan media sosial)</li>
+                            <li>Informasi pembayaran (detail rekening bank, e-wallet)</li>
+                            <li>Kartu identitas & NPWP untuk verifikasi</li>
+                        </ul>
+                        
+                        <strong class="text-white block mb-2">Informasi Media Sosial (via OAuth Resmi)</strong>
+                        <ul class="list-disc pl-5 space-y-1 mb-4 text-zinc-300">
+                            <li>Data profil dan metrik video TikTok, Instagram, atau YouTube</li>
+                            <li>Video/posting publik terkait kampanye</li>
+                        </ul>
+                        
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 mb-5 flex gap-3 items-start">
+                            <svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <p class="text-xs text-blue-200 leading-relaxed"><strong>Catatan Keamanan:</strong> Kami TIDAK pernah meminta dan TIDAK menyimpan kata sandi TikTok/Instagram/YouTube Anda.</p>
+                        </div>
+                        
+                        <strong class="text-white block mb-2">Informasi Otomatis</strong>
+                        <ul class="list-disc pl-5 space-y-1 text-zinc-300">
+                            <li>Informasi perangkat (IP Address, jenis browser, OS), data penggunaan, dan Cookie.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">3. Cara Kami Menggunakan Informasi Anda</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <ul class="list-disc pl-5 space-y-2 text-zinc-300">
+                            <li>Menyediakan dan memelihara kelancaran operasional platform kami.</li>
+                            <li>Memproses transaksi, menghitung pembayaran, dan mengirim konfirmasi pencairan.</li>
+                            <li>Memverifikasi keabsahan konten dan melacak performa/views kampanye secara real-time.</li>
+                            <li>Berkomunikasi dengan pengguna dan mengirimkan informasi promosi (dengan persetujuan Anda).</li>
+                            <li>Mendeteksi kecurangan (Fraud/Bot detection), mematuhi hukum yang berlaku, dan mengoptimalkan performa server.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Item 4 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">4. Informasi yang Kami Bagikan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2 space-y-3">
+                        <p><strong class="text-white">Dengan Pengguna Lain:</strong> Profil kreator (Nama, Tautan Sosmed) mungkin terlihat oleh brand (Client) yang Anda ikuti campaign-nya, serta metrik performa di papan peringkat publik.</p>
+                        <p><strong class="text-white">Dengan Penyedia Layanan:</strong> Pihak ketiga seperti Gateway pembayaran (Xendit/Midtrans), layanan Cloud Hosting (Supabase/AWS), dan layanan analitik/email pihak ketiga yang terikat kontrak kerahasiaan.</p>
+                        <p><strong class="text-white">Persyaratan Hukum:</strong> Kami dapat mengungkapkan informasi Anda jika diwajibkan oleh hukum atau permintaan resmi dari otoritas pemerintah berwenang.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">5. Keamanan Data</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <p class="mb-3">Keamanan data Anda adalah prioritas utama kami. Kami menerapkan metode enkripsi data yang kuat, pembaruan keamanan rutin, pembatasan kontrol akses, dan prosedur respons insiden yang ketat.</p>
+                        <p class="text-xs italic text-zinc-500 bg-zinc-900 p-3 border border-zinc-800 rounded-lg">Namun, tidak ada metode transmisi data melalui Internet atau metode penyimpanan elektronik yang 100% aman. Meskipun kami berusaha menggunakan perlindungan komersial yang dapat diterima, kami tidak dapat menjamin keamanan absolut.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">6. Retensi Data</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <p>Kami hanya menyimpan data Anda selama masih diperlukan untuk menyediakan layanan, mematuhi kewajiban hukum yang berlaku, atau menyelesaikan sengketa. Jika akun Anda ditutup dan data tersebut tidak lagi diperlukan, kami akan menghapus secara permanen atau menganonimkan data tersebut.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 7 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">7. Hak dan Pilihan Anda</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <p>Sebagai pengguna, Anda memiliki hak penuh atas data Anda. Anda berhak untuk:</p>
+                        <ul class="list-disc pl-5 mt-2 space-y-1 text-zinc-300">
+                            <li>Meminta salinan data (Hak Akses).</li>
+                            <li>Memperbaiki data yang salah (Hak Koreksi).</li>
+                            <li>Menghapus akun dan data terkait (Hak Penghapusan).</li>
+                            <li>Menolak komunikasi pemasaran (Opt-out promosi).</li>
+                            <li>Menarik persetujuan pemrosesan data Anda kapan saja.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 8 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">8. Cookie & Teknologi Pelacakan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <p>Kami menggunakan Cookie dan teknologi pelacakan sejenis untuk mempertahankan sesi login Anda, mengingat preferensi antarmuka, dan menganalisis metrik performa web. Anda berhak mengelola atau memblokir cookie ini langsung melalui pengaturan browser Anda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 9 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">9. Layanan Pihak Ketiga & Privasi Anak</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2 space-y-3">
+                        <p><strong class="text-white">Pihak Ketiga:</strong> Platform kami mungkin berisi tautan ke situs web lain. Kami tidak bertanggung jawab atas praktik privasi, kebijakan, atau konten dari situs pihak ketiga tersebut.</p>
+                        <p><strong class="text-white">Privasi Anak:</strong> Platform ini tidak ditujukan untuk anak di bawah usia 18 tahun. Jika kami mendeteksi pendaftaran dari anak di bawah umur, data akan kami hapus sesegera mungkin.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 10 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">10. Transfer Data Internasional & Perubahan Kebijakan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2 space-y-3">
+                        <p><strong class="text-white">Transfer Data:</strong> Data Anda mungkin diproses di server Cloud (misal: AWS/Supabase) yang berlokasi di luar Indonesia. Kami memastikan transfer ini mematuhi standar perlindungan privasi internasional yang ketat.</p>
+                        <p><strong class="text-white">Perubahan Kebijakan:</strong> Kami berhak memperbarui dokumen ini sewaktu-waktu. Perubahan material akan diberitahukan, dan kami akan mengubah tanggal "Terakhir diperbarui" di bagian atas halaman ini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 11 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">11. Data Platform Eksternal & Minimasi Data</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2 space-y-3">
+                        <p><strong class="text-white">Integrasi Sosmed:</strong> Kami mematuhi Ketentuan Layanan API resmi. Anda dapat membatalkan dan mencabut akses kami kapan saja melalui menu pengaturan di media sosial terkait Anda.</p>
+                        <p><strong class="text-white">Minimasi Data:</strong> Kami berkomitmen untuk hanya mengumpulkan dan mengolah informasi yang secara mutlak diperlukan untuk keperluan verifikasi identitas, pembayaran, dan keamanan kampanye.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 12 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">12. Kepatuhan Hukum & Kontak Kami</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-4 mt-2">
+                        <p>Kebijakan Privasi ini disusun mematuhi undang-undang pelindungan data pribadi (UU PDP) di Indonesia dan standar internasional terkait. Jika Anda memiliki pertanyaan seputar privasi akun Anda, silakan hubungi tim dukungan kami melalui kontak email yang tertera pada bagian bawah situs (Footer).</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Memanggil Component Footer -->
+    <custom-footer></custom-footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Init animasi scroll
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800
+        });
+
+        // ==========================================
+        // FUNGSI TOGGLE ACCORDION (SMART CLOSE)
+        // ==========================================
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            const chevron = button.querySelector('.chevron');
+            
+            // Tutup semua Accordion yang lain agar rapi
+            const allAnswers = document.querySelectorAll('.faq-answer');
+            const allChevrons = document.querySelectorAll('.chevron');
+            
+            let isOpening = !answer.classList.contains('open');
+
+            allAnswers.forEach((item) => {
+                item.style.maxHeight = null;
+                item.classList.remove('open');
+            });
+            allChevrons.forEach((icon) => {
+                icon.classList.remove('rotate-180');
+            });
+
+            // Buka elemen yang diklik jika sebelumnya tertutup
+            if (isOpening) {
+                answer.style.maxHeight = answer.scrollHeight + "px";
+                answer.classList.add('open');
+                chevron.classList.add('rotate-180');
+            }
+        }
+
+        // Buka otomatis Tab 1 saat pertama kali dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstButton = document.querySelector('.accordion-item button');
+            if(firstButton) toggleFaq(firstButton);
+        });
+    </script>
+</body>
+</html>
