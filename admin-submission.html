@@ -117,37 +117,43 @@
             <!-- Rincian Hitungan -->
             <div class="bg-zinc-900 rounded-xl p-4 mb-5 border border-zinc-800">
                 <div class="flex justify-between items-center text-[13px] mb-2">
-                    <span class="text-zinc-400">Total Views Diajukan</span>
+                    <span class="text-zinc-400">Total Views Asli (Uncapped)</span>
                     <span class="text-white font-semibold" id="mTotalViews">0</span>
                 </div>
                 <div class="flex justify-between items-center text-[13px] mb-2">
-                    <span class="text-zinc-400">Target Valid (Max Limit)</span>
+                    <span class="text-zinc-400">Max Views Dibayar ke Kreator</span>
                     <span class="text-zinc-300 font-semibold" id="mEffectiveViews">0</span>
                 </div>
                 <div class="flex justify-between items-center text-[13px] mb-3">
-                    <span class="text-zinc-400">Riwayat Views Terbayar</span>
+                    <span class="text-zinc-400">Views Asli Sblmnya (Riwayat)</span>
                     <span class="text-red-400 font-semibold" id="mPrevViews">- 0</span>
                 </div>
                 <div class="border-t border-dashed border-zinc-700 my-3"></div>
                 
                 <div class="flex justify-between items-center text-[14px] mb-3">
-                    <span class="text-white font-medium">Sisa Views Dibayar</span>
+                    <span class="text-white font-medium">Sisa Views Tambahan</span>
                     <span class="text-indigo-400 font-bold" id="mUnpaidViews">0</span>
                 </div>
                 
                 <div class="flex justify-between items-center text-[12px] mb-1">
-                    <span class="text-zinc-500" id="mCpmRateLabel">Rate CPM Asli (Per 1k view)</span>
+                    <span class="text-zinc-500" id="mCpmRateLabel">Rate CPM (Per 1k view)</span>
                     <span class="text-zinc-400" id="mCpmRate">Rp 0</span>
                 </div>
                 <div class="flex justify-between items-center text-[12px] mb-4">
-                    <span class="text-zinc-500" id="mCpmAppliedLabel">Rate CPM Diterapkan</span>
+                    <span class="text-zinc-500" id="mCpmAppliedLabel">Rate CPM Diterapkan <span id="mPenaltyFlag" class="text-red-500 hidden">(Penalti)</span></span>
                     <span class="text-amber-400 font-bold" id="mCpmApplied">Rp 0</span>
                 </div>
                 
-                <!-- TOTAL BAYARAN -->
-                <div class="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-3 flex justify-between items-center">
-                    <span class="text-[13px] font-bold text-indigo-400">ESTIMASI BAYARAN</span>
-                    <span class="text-[18px] font-bold text-white" id="mTotalPay">Rp 0</span>
+                <!-- TOTAL BAYARAN DENGAN PEMISAHAN PLATFORM CUT -->
+                <div class="flex flex-col gap-2">
+                    <div class="bg-indigo-500/10 border border-indigo-500/30 rounded-lg p-3 flex justify-between items-center">
+                        <span class="text-[12px] font-bold text-indigo-400">BAYAR KE KREATOR</span>
+                        <span class="text-[16px] font-bold text-white" id="mTotalPay">Rp 0</span>
+                    </div>
+                    <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex justify-between items-center">
+                        <span class="text-[12px] font-bold text-red-400">POTONG BUDGET CLIENT</span>
+                        <span class="text-[16px] font-bold text-white" id="mCampaignDeduct">Rp 0</span>
+                    </div>
                 </div>
             </div>
 
@@ -217,9 +223,10 @@
         let submissionsData = [];
         let currentFilter = 'Perlu Review'; 
         let searchQuery = '';
-        let activeSubmission = null; // Menyimpan objek data yang sedang di-review
-        let calculatedPayout = 0;
-        let calculatedViewsToPay = 0;
+        let activeSubmission = null;
+        let calculatedPayout = 0;          // Uang yang ditransfer ke Kreator
+        let calculatedCampaignDeduction = 0; // Uang yang dipotong dari Client (Uncapped)
+        let newUncappedViewsPaid = 0;      // Logika agar tidak double potongan
         let currentDecision = null;
 
         // Formatting utilities
@@ -308,7 +315,6 @@
 
         async function loadSubmissions() {
             try {
-                // Tambahkan field payment_type dan price_per_video
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
@@ -330,7 +336,7 @@
 
         // Tentukan Kategori Tab Filter Admin
         function getAdminStatus(sub) {
-            if (sub.status === 'PENDING' && (sub.views_claimed || 0) === 0 && sub.campaigns?.payment_type !== 'video') return 'Menunggu Client'; // Fix agar Per Video lsg masuk review
+            if (sub.status === 'PENDING' && (sub.views_claimed || 0) === 0 && sub.campaigns?.payment_type !== 'video') return 'Menunggu Client'; 
             if (sub.status === 'PENDING' && (sub.views_claimed || 0) > 0) return 'Perlu Review';
             if (sub.status === 'APPROVED' || sub.status === 'REJECTED') return 'Selesai';
             return 'Lainnya';
@@ -362,7 +368,8 @@
                 const campTitle = sub.campaigns?.title || 'Unknown Campaign';
                 
                 const currentViews = sub.views_claimed || 0;
-                const prevViews = sub.views_paid || 0;
+                // views_paid sekarang adalah total views UNCAPPED sebelumnya yang diakui (agar kalkulasi selisih tidak salah)
+                const prevViews = sub.views_paid || 0; 
                 const unpaidViews = currentViews > prevViews ? currentViews - prevViews : 0;
                 
                 const adminStatus = getAdminStatus(sub);
@@ -489,7 +496,7 @@
         };
 
         // ==========================================
-        // MODAL REVIEW & MATEMATIKA KALKULASI
+        // MODAL REVIEW & MATEMATIKA KALKULASI DUAL-MODE
         // ==========================================
         window.openAdminReviewModal = function(subId) {
             activeSubmission = submissionsData.find(s => s.id === subId);
@@ -498,20 +505,23 @@
             const camp = activeSubmission.campaigns;
             const isVideo = camp.payment_type === 'video';
             const currentViews = activeSubmission.views_claimed || 0;
-            const prevViews = activeSubmission.views_paid || 0;
+            const prevViews = activeSubmission.views_paid || 0; // Views_paid kini melambangkan prev uncapped views
             
-            // 1. Batasi klaim dengan Max Limit (hanya efektif untuk per-views)
+            // 1. Batasi klaim dengan Max Limit untuk KREATOR
             let effectiveViews = isVideo ? currentViews : Math.min(currentViews, camp.max_claim || 250000);
             
-            // 2. Tentukan Sisa Views Belum Dibayar
-            calculatedViewsToPay = effectiveViews - prevViews;
-            if (calculatedViewsToPay < 0) calculatedViewsToPay = 0;
+            // 2. Uncapped views untuk POTONG BUDGET CLIENT
+            let uncappedViewsToPay = currentViews - prevViews;
+            if (uncappedViewsToPay < 0) uncappedViewsToPay = 0;
 
             let isPenalized = false;
             let rate = 0;
+            let deductionRate = 0;
 
             const lblRate = document.getElementById('mCpmRateLabel');
             const lblApplied = document.getElementById('mCpmAppliedLabel');
+
+            let campaignDeduction = 0;
 
             if (isVideo) {
                 // LOGIKA PER VIDEO
@@ -519,36 +529,42 @@
                 lblRate.innerText = "Harga Per Video";
                 lblApplied.innerHTML = `Biaya Diterapkan`;
 
-                // Jika user pernah di-bayar untuk konten ini, maka tambahan bayarannya 0.
+                // Jika sudah pernah cair, tidak ada bayaran atau potongan tambahan
                 if ((activeSubmission.earned || 0) > 0 || prevViews > 0) {
                     calculatedPayout = 0;
+                    campaignDeduction = 0;
                     document.getElementById('mCpmApplied').innerText = formatRupiah(0);
                 } else {
                     calculatedPayout = rate;
+                    campaignDeduction = rate;
                     document.getElementById('mCpmApplied').innerText = formatRupiah(rate);
                 }
                 
                 document.getElementById('mCpmRate').innerText = formatRupiah(rate);
-                
-                // Sembunyikan pesan penalti
                 const flag = document.getElementById('mPenaltyFlag');
                 if (flag) flag.classList.add('hidden');
 
             } else {
                 // LOGIKA PER VIEWS
                 rate = camp.reward_per_1k || 0;
+                deductionRate = rate;
                 lblRate.innerText = "Rate CPM Asli (Per 1k view)";
-                lblApplied.innerHTML = `Rate CPM Diterapkan <span id="mPenaltyFlag" class="text-red-500 hidden">(Penalti 75% - Di bawah target)</span>`;
+                lblApplied.innerHTML = `Rate CPM Diterapkan <span id="mPenaltyFlag" class="text-red-500 hidden">(Penalti 75%)</span>`;
                 
+                // Cek penalti
                 if (effectiveViews < (camp.min_views || 10000)) {
-                    rate = rate * 0.25; // Penalti 75% -> Dibayar 25%
+                    rate = rate * 0.25; 
+                    deductionRate = deductionRate * 0.25;
                     isPenalized = true;
                 }
 
-                // Kalkulasi total
-                let totalExpected = Math.floor((effectiveViews / 1000) * rate);
-                calculatedPayout = totalExpected - (activeSubmission.earned || 0);
+                // Kalkulasi total KREATOR (Menggunakan views CAP / effectiveViews)
+                let totalExpectedClipper = Math.floor((effectiveViews / 1000) * rate);
+                calculatedPayout = totalExpectedClipper - (activeSubmission.earned || 0);
                 if (calculatedPayout < 0) calculatedPayout = 0;
+
+                // Kalkulasi total POTONGAN CLIENT (Menggunakan views UNCAPPED selisihnya)
+                campaignDeduction = Math.floor((uncappedViewsToPay / 1000) * deductionRate);
 
                 document.getElementById('mCpmRate').innerText = formatRupiah(camp.reward_per_1k || 0);
                 document.getElementById('mCpmApplied').innerText = formatRupiah(rate);
@@ -558,20 +574,34 @@
                 else if (flag) flag.classList.add('hidden');
             }
 
-            // Batasi agar tidak melampaui Sisa Budget Brand
+            // Keamanan: Batasi agar tidak melampaui Sisa Budget Brand
+            if (campaignDeduction > camp.budget_remaining) {
+                campaignDeduction = camp.budget_remaining;
+            }
             if (calculatedPayout > camp.budget_remaining) {
                 calculatedPayout = camp.budget_remaining;
             }
+            // Payout kreator tidak boleh lebih besar dari Potongan Budget Client
+            if (calculatedPayout > campaignDeduction) {
+                calculatedPayout = campaignDeduction;
+            }
 
+            // SIMPAN KE GLOBAL STATE UNTUK DIEKSEKUSI SAAT SUBMIT
+            calculatedCampaignDeduction = campaignDeduction;
+            newUncappedViewsPaid = currentViews; 
+            
             // ================= Render UI Modal =================
             const creatorName = activeSubmission.profiles?.full_name || activeSubmission.profiles?.email;
             document.getElementById('modalCreatorName').innerText = creatorName;
+            
             document.getElementById('mTotalViews').innerText = formatNumber(currentViews);
-            document.getElementById('mEffectiveViews').innerText = isVideo ? formatNumber(effectiveViews) : formatNumber(effectiveViews);
+            document.getElementById('mEffectiveViews').innerText = isVideo ? "-" : formatNumber(camp.max_claim || 250000);
             document.getElementById('mPrevViews').innerText = "- " + formatNumber(prevViews);
-            document.getElementById('mUnpaidViews').innerText = formatNumber(calculatedViewsToPay);
+            
+            document.getElementById('mUnpaidViews').innerText = isVideo ? "-" : formatNumber(uncappedViewsToPay);
             
             document.getElementById('mTotalPay').innerText = formatRupiah(calculatedPayout);
+            document.getElementById('mCampaignDeduct').innerText = formatRupiah(campaignDeduction);
 
             // Tampilkan Modal
             resetModalForm();
@@ -670,28 +700,31 @@
                 if (currentDecision === 'setuju') {
                     // --- PROSES PERSETUJUAN & BAYAR ---
                     
-                    const newViewsPaid = (activeSubmission.views_paid || 0) + calculatedViewsToPay;
                     const newEarned = (activeSubmission.earned || 0) + calculatedPayout;
                     
+                    // 1. UPDATE SUBMISSIONS: views_paid diisi dengan newUncappedViewsPaid
                     await supabase.from('submissions').update({
-                        views_paid: newViewsPaid,
+                        views_paid: newUncappedViewsPaid,
                         earned: newEarned,
                         est_payout: 0,
                         status: 'APPROVED',
                         reject_reason: null
                     }).eq('id', activeSubmission.id);
 
-                    // 2. Kurangi Budget Campaigns (Jika ada payout tambahan)
-                    if (calculatedPayout > 0) {
+                    // 2. POTONG BUDGET CAMPAIGN (Berdasarkan Views Uncapped)
+                    if (calculatedCampaignDeduction > 0) {
                         const campId = activeSubmission.campaigns.id;
-                        const newBudget = (activeSubmission.campaigns.budget_remaining || 0) - calculatedPayout;
+                        const newBudget = (activeSubmission.campaigns.budget_remaining || 0) - calculatedCampaignDeduction;
                         await supabase.from('campaigns').update({
                             budget_remaining: newBudget < 0 ? 0 : newBudget
                         }).eq('id', campId);
                     }
 
-                    // 3. Tambahkan ke Clipper Stats (Jika ada payout tambahan)
-                    if (calculatedPayout > 0 || calculatedViewsToPay > 0) {
+                    // 3. TAMBAHKAN UANG KE CLIPPER STATS
+                    let addedViews = newUncappedViewsPaid - (activeSubmission.views_paid || 0);
+                    if (addedViews < 0) addedViews = 0;
+
+                    if (calculatedPayout > 0 || addedViews > 0) {
                         const userId = activeSubmission.user_id;
                         const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', userId).single();
                         
@@ -699,14 +732,14 @@
                             await supabase.from('clipper_stats').update({
                                 total_earnings: (stats.total_earnings || 0) + calculatedPayout,
                                 withdrawable: (stats.withdrawable || 0) + calculatedPayout,
-                                total_views: (stats.total_views || 0) + calculatedViewsToPay
+                                total_views: (stats.total_views || 0) + addedViews
                             }).eq('user_id', userId);
                         } else {
                             await supabase.from('clipper_stats').insert([{
                                 user_id: userId,
                                 total_earnings: calculatedPayout,
                                 withdrawable: calculatedPayout,
-                                total_views: calculatedViewsToPay,
+                                total_views: addedViews,
                                 total_videos: 1
                             }]);
                         }
@@ -720,7 +753,7 @@
                         type: 'approved'
                     }]);
 
-                    window.showAlert("Klaim disetujui dan saldo berhasil diteruskan ke Clipper.", "success");
+                    window.showAlert("Klaim disetujui. Saldo Kreator & Potongan Client berhasil diupdate.", "success");
 
                 } else if (currentDecision === 'tolak') {
                     // --- PROSES PENOLAKAN ---
