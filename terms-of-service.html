@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syarat & Ketentuan - Whoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Panggil file Header & Footer -->
+    <script src="attribute/header.js"></script>
+    <script src="attribute/footer.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+        /* Custom Number List */
+        .legal-list { list-style-type: decimal; }
+        .legal-list li::marker { color: #60a5fa; font-weight: bold; }
+
+        /* Transisi tinggi untuk Accordion */
+        .faq-answer {
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+        }
+        .faq-answer.open {
+            transition: max-height 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col min-h-screen">
+
+    <!-- Memanggil Component Header -->
+    <custom-header></custom-header>
+
+    <!-- Main Content ToS -->
+    <main class="pt-32 pb-24 px-6 max-w-[900px] mx-auto flex-1 w-full">
+        
+        <!-- Breadcrumb / Back Link -->
+        <div data-aos="fade-down">
+            <a href="index.html" class="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-white transition-colors mb-8 focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Kembali ke Beranda
+            </a>
+        </div>
+
+        <!-- Header Section -->
+        <div class="mb-12 border-b border-zinc-800/60 pb-8 text-center md:text-left" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-4">
+                Legal Document
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4 text-balance">
+                Syarat & Ketentuan
+            </h1>
+            <p class="text-sm md:text-base text-zinc-400 leading-relaxed max-w-2xl text-balance mx-auto md:mx-0">
+                Dengan mendaftar dan menggunakan layanan <strong class="text-white">Whoost ID</strong>, pengguna ("Clipper" maupun "Client/Brand") dianggap telah membaca, memahami, dan menyetujui seluruh Syarat dan Ketentuan berikut:
+            </p>
+            <p class="text-xs mt-6 text-zinc-500 font-medium">Terakhir diperbarui: Mei 2026</p>
+        </div>
+
+        <!-- Accordion Content -->
+        <div class="space-y-4" data-aos="fade-up" data-aos-delay="100">
+
+            <!-- Item 1 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">1. Definisi</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li><strong class="text-white">Whoost</strong> adalah platform yang mempertemukan <em>Clippers</em> dengan <em>Campaign Creators</em> (influencer, brand, maupun pihak lain) untuk membuat dan menyebarkan konten berupa klip video di platform media sosial.</li>
+                            <li><strong class="text-white">Clipper</strong> adalah individu yang mendaftar di platform untuk membuat dan mengunggah konten sesuai instruksi kampanye.</li>
+                            <li><strong class="text-white">Campaign Creator</strong> adalah pihak yang membuat kampanye dan memberikan instruksi konten untuk para clipper.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">2. Pendaftaran dan Akun</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li>Pengguna wajib memberikan data yang benar, akurat, dan terbaru saat registrasi.</li>
+                            <li>Pengguna bertanggung jawab penuh atas keamanan akun masing-masing.</li>
+                            <li>Whoost berhak menangguhkan atau menghapus akun jika ditemukan pelanggaran terhadap Syarat dan Ketentuan.</li>
+                            <li>Setiap pengguna hanya diperbolehkan memiliki satu akun. Akun ganda dapat mengakibatkan pembekuan seluruh akun.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">3. Penggunaan Layanan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li>Clipper wajib mengikuti instruksi kampanye dengan benar dan lengkap.</li>
+                            <li>Konten yang dibuat harus sesuai hukum, tidak mengandung SARA, pornografi, ujaran kebencian, konten ilegal, maupun pelanggaran hak cipta.</li>
+                            <li>Campaign Creator bertanggung jawab penuh atas isi instruksi kampanye yang mereka buat.</li>
+                            <li>Konten yang telah disubmit menjadi hak Whoost ID untuk ditinjau dan divalidasi sesuai kebijakan platform.</li>
+                            <li>Pengguna dilarang menggunakan bot, otomatisasi, atau metode curang lainnya untuk memanipulasi metrik performa.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">4. Payout dan Kompensasi</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li>Pembayaran kepada Clipper akan dilakukan sesuai ketentuan yang berlaku pada masing-masing kampanye.</li>
+                            <li>Perhitungan views dan payout mengikuti sistem yang ditentukan Whoost, dan Whoost berhak mengubah sistem ini sewaktu-waktu dengan pemberitahuan sebelumnya.</li>
+                            <li>Whoost ID hanya bertindak sebagai perantara, bukan pihak yang menjamin hasil atau keuntungan tertentu bagi clippers maupun campaign creators.</li>
+                            <li>Pembayaran akan diproses setelah konten melewati proses verifikasi dan validasi views.</li>
+                            <li>Biaya platform (platform fee) akan dipotong dari total payout sesuai persentase yang berlaku.</li>
+                            <li>Whoost berhak menunda atau membatalkan pembayaran jika terindikasi kecurangan atau pelanggaran ketentuan.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">5. Batasan Tanggung Jawab</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li>Whoost tidak bertanggung jawab atas kerugian langsung maupun tidak langsung yang timbul dari penggunaan platform.</li>
+                            <li>Whoost tidak menjamin ketersediaan layanan secara terus-menerus tanpa gangguan.</li>
+                            <li>Dalam hal terjadi perselisihan antara clipper dan campaign creator, Whoost akan bertindak sebagai mediator yang netral.</li>
+                            <li>Keputusan Whoost terkait validasi konten dan perhitungan payout bersifat final dan mengikat.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">6. Hak Kekayaan Intelektual</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li>Hak cipta konten yang dibuat clippers tetap milik pembuat konten.</li>
+                            <li>Dengan mengunggah konten di Whoost, pengguna memberikan lisensi non-eksklusif kepada Whoost untuk menampilkan, mendistribusikan, dan memanfaatkan konten tersebut sesuai kebutuhan platform.</li>
+                            <li>Campaign Creator memiliki hak untuk menggunakan konten yang telah disubmit untuk keperluan kampanye mereka sesuai dengan ketentuan yang disepakati.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 7 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">7. Pembatasan Layanan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <ol class="pl-5 space-y-2.5 legal-list">
+                            <li>Whoost berhak membatasi, menangguhkan, atau menghentikan akses pengguna tanpa pemberitahuan sebelumnya jika ditemukan pelanggaran.</li>
+                            <li>Akun yang tidak aktif dalam jangka waktu lama dapat dinonaktifkan sesuai kebijakan platform.</li>
+                            <li>Whoost berhak melakukan moderasi konten dan menolak submission yang tidak sesuai standar platform.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 8 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">8. Perubahan Syarat dan Ketentuan</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <p>Whoost berhak mengubah atau memperbarui Syarat dan Ketentuan ini sewaktu-waktu. Versi terbaru akan selalu tersedia di platform, dan berlaku sejak tanggal dipublikasikan. Pengguna disarankan untuk secara berkala meninjau halaman ini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item 9 -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden transition-colors hover:border-zinc-600 accordion-item">
+                <button class="w-full px-5 py-4 md:px-6 md:py-5 flex justify-between items-center text-left focus:outline-none group" onclick="toggleFaq(this)">
+                    <span class="font-bold text-zinc-200 group-hover:text-white transition-colors text-sm md:text-base">9. Hukum yang Berlaku</span>
+                    <svg class="w-5 h-5 text-zinc-500 transform transition-transform duration-300 chevron flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div class="faq-answer max-h-0 overflow-hidden px-5 md:px-6 bg-zinc-900/30">
+                    <div class="pb-6 text-zinc-400 text-sm leading-relaxed border-t border-zinc-800/50 pt-5 mt-2">
+                        <p>Syarat dan Ketentuan ini diatur berdasarkan hukum yang berlaku di <strong class="text-white">Republik Indonesia</strong>. Segala sengketa yang timbul akan diselesaikan melalui musyawarah terlebih dahulu, dan jika tidak tercapai kesepakatan, akan diselesaikan melalui Pengadilan Negeri yang berwenang di Indonesia.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Memanggil Component Footer -->
+    <custom-footer></custom-footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Init animasi scroll
+        AOS.init({
+            once: true,
+            offset: 50,
+            duration: 800
+        });
+
+        // ==========================================
+        // FUNGSI TOGGLE ACCORDION (SMART CLOSE)
+        // ==========================================
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            const chevron = button.querySelector('.chevron');
+            
+            // Tutup semua Accordion yang lain agar rapi
+            const allAnswers = document.querySelectorAll('.faq-answer');
+            const allChevrons = document.querySelectorAll('.chevron');
+            
+            let isOpening = !answer.classList.contains('open');
+
+            allAnswers.forEach((item) => {
+                item.style.maxHeight = null;
+                item.classList.remove('open');
+            });
+            allChevrons.forEach((icon) => {
+                icon.classList.remove('rotate-180');
+            });
+
+            // Buka elemen yang diklik jika sebelumnya tertutup
+            if (isOpening) {
+                answer.style.maxHeight = answer.scrollHeight + "px";
+                answer.classList.add('open');
+                chevron.classList.add('rotate-180');
+            }
+        }
+
+        // Buka otomatis Tab 1 saat pertama kali dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstButton = document.querySelector('.accordion-item button');
+            if(firstButton) toggleFaq(firstButton);
+        });
+    </script>
+</body>
+</html>
