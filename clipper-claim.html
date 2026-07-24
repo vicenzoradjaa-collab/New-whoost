@@ -301,7 +301,6 @@
             setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
         };
 
-        // FIX BUG TOMBOL KONFIRMASI: Callback dipisah eksekusinya agar tidak hilang
         document.getElementById('confirmYesBtn').addEventListener('click', () => {
             const cb = confirmCallback;
             window.closeConfirm();
@@ -371,14 +370,19 @@
                 if (allSubs) {
                     calcVideos = allSubs.length; 
                     allSubs.forEach(sub => {
+                        // FIX BUG: Saldo yang sudah didapat (earned) TIDAK BOLEH HILANG 
+                        // Meskipun statusnya kembali jadi PENDING saat update views
+                        calcEarnings += (sub.earned || 0);
+
                         if (sub.status === 'PENDING') {
                             p++;
+                            calcViews += (sub.views_paid || 0); // Tetap hitung views yang sudah dibayar
                         } else if (sub.status === 'APPROVED') {
                             a++;
-                            calcEarnings += (sub.earned || 0);
                             calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0);
                         } else if (sub.status === 'REJECTED') {
                             r++;
+                            calcViews += (sub.views_paid || 0);
                         }
                     });
                 }
@@ -512,7 +516,6 @@
             let realStatus = sub.status || 'PENDING';
             let isPerVideo = camp.payment_type === 'video';
             
-            // Boolean State Logics
             let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
             let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
             let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
@@ -588,6 +591,7 @@
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
 
+                // UNTUK KEDUA TIPE (VIEWS/VIDEO), TETAP MUNCULKAN INPUT VIEWS ASLI
                 let inputHTML = `
                     <div class="flex gap-1.5 sm:gap-2">
                         <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
@@ -736,6 +740,7 @@
             const camp = sub.campaigns;
             const isPerVideo = camp.payment_type === 'video';
             
+            // Wajib masukkan jumlah views, baik tipe Per Views maupun Per Video
             const newClaimStr = inputEl.value.trim();
             if (!newClaimStr) return showAlert("Masukkan jumlah views yang valid.", "error");
             
@@ -772,17 +777,31 @@
                         estPayout = camp.budget_remaining;
                     }
                 } else if (camp.payment_type === 'video') {
-                    let previouslyEarned = sub.earned || 0;
-                    let totalExpectedEarnings = camp.price_per_video || 0;
-                    
-                    estPayout = totalExpectedEarnings - previouslyEarned;
-                    
-                    if (estPayout < 0) estPayout = 0;
-                    if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
+                    // FIX: Jika Tipe Per Video dan sudah pernah cair, otomatis gak dapet bayaran tambahan (0)
+                    if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
+                        estPayout = 0;
+                    } else {
+                        let previouslyEarned = sub.earned || 0;
+                        let totalExpectedEarnings = camp.price_per_video || 0;
+                        
+                        estPayout = totalExpectedEarnings - previouslyEarned;
+                        
+                        if (estPayout < 0) estPayout = 0;
+                        if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
+                    }
                 }
             }
 
-            const confirmMsg = `Request klaim/update sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+            let confirmMsg = "";
+            if (isPerVideo) {
+                if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
+                    confirmMsg = `Update views untuk konten video Anda menjadi ${newClaimViews.toLocaleString('id-ID')}.\n(Pembayaran video sudah dicairkan di awal)\n\nApakah Anda yakin ingin melanjutkan?`;
+                } else {
+                    confirmMsg = `Pengajuan pencairan untuk konten video Anda dengan ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+                }
+            } else {
+                confirmMsg = `Request klaim/update sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+            }
             
             window.showConfirm(confirmMsg, async () => {
                 // Nonaktifkan tombol sementara agar tidak dobel klik
