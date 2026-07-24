@@ -299,12 +299,13 @@
             const c = document.getElementById('customConfirmContent');
             m.classList.add('opacity-0'); c.classList.add('scale-95');
             setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
-            confirmCallback = null;
         };
 
+        // FIX BUG TOMBOL KONFIRMASI: Callback dipisah eksekusinya agar tidak hilang
         document.getElementById('confirmYesBtn').addEventListener('click', () => {
+            const cb = confirmCallback;
             window.closeConfirm();
-            if (confirmCallback) confirmCallback();
+            if (cb) cb();
         });
 
 
@@ -357,7 +358,6 @@
         // ==========================================
         async function loadUserStats() {
             try {
-                // 1. Ambil seluruh submission milik user ini
                 const { data: allSubs } = await supabase
                     .from('submissions')
                     .select('status, earned, views_paid, views_claimed')
@@ -368,7 +368,6 @@
                 let calcVideos = 0;
                 let p = 0, a = 0, r = 0;
 
-                // Loop & hitung matang data berdasarkan status aslinya
                 if (allSubs) {
                     calcVideos = allSubs.length; 
                     allSubs.forEach(sub => {
@@ -384,7 +383,6 @@
                     });
                 }
 
-                // 2. Ambil total history penarikan
                 const { data: withdrawals } = await supabase
                     .from('withdrawals')
                     .select('amount, status')
@@ -399,11 +397,9 @@
                     });
                 }
 
-                // Menentukan saldo yang bisa dicairkan
                 let calcWithdrawable = calcEarnings - totalWithdrawn;
                 if (calcWithdrawable < 0) calcWithdrawable = 0;
 
-                // 3. UPDATE/UPSERT KE TABEL clipper_stats OTOMATIS
                 const { error: upsertError } = await supabase.from('clipper_stats').upsert({
                     user_id: sessionUser.id,
                     total_earnings: calcEarnings,
@@ -416,7 +412,6 @@
                     console.error("Gagal sinkronisasi data ke clipper_stats:", upsertError.message);
                 }
 
-                // 4. Perbarui UI
                 realEarnings = calcEarnings;
                 realWithdrawable = calcWithdrawable;
 
@@ -426,7 +421,6 @@
 
             } catch(e) {
                 console.error("Gagal perhitungan:", e);
-                // Fallback (apabila perhitungan error)
                 try {
                     const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
                     if (stats) {
@@ -436,7 +430,6 @@
                 } catch(err) {}
             }
             
-            // Refresh text UI Pendapatan (Otomatis menghapus skeleton)
             window.toggleSensor(true); 
         }
 
@@ -461,7 +454,6 @@
 
                 submissionsData = data || [];
                 
-                // Build Campaign Filter Dropdown
                 const campSet = new Set();
                 let campOptionsHTML = `<div onclick="window.selectCampaign('all', 'Semua Campaign')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white">Semua Campaign</div>`;
                 
@@ -520,7 +512,7 @@
             let realStatus = sub.status || 'PENDING';
             let isPerVideo = camp.payment_type === 'video';
             
-            // Boolean State Logics untuk menentukan Tampilan UI (Berlaku untuk Views & Video secara setara)
+            // Boolean State Logics
             let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
             let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
             let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
@@ -589,6 +581,9 @@
                     warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
                 } else if (isClaimApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
+                    if (isPerVideo) {
+                        warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views jika mau.</p>`;
+                    }
                 } else if (isBrandApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
