@@ -642,6 +642,7 @@
                 .from('campaigns')
                 .select('*')
                 .eq('status', 'ACTIVE')
+                .eq('is_private', false)
                 .order('created_at', { ascending: false })
                 .limit(4);
 
