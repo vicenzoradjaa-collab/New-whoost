@@ -276,6 +276,26 @@
                 return;
             }
 
+            // [BARU] PROTEKSI AKSES PRIVATE CAMPAIGN VIA URL
+            if (data.is_private) {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (!session) {
+                    alert("Ini adalah Private Campaign. Silakan login terlebih dahulu.");
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                // Cek Role dan Status Whale
+                const { data: profile } = await supabase.from('profiles').select('role, is_whale').eq('id', session.user.id).single();
+                
+                // Jika dia clipper tapi BUKAN Whale, usir! (Admin dan Client tetap boleh lihat)
+                if (profile && profile.role === 'clipper' && !profile.is_whale) {
+                    alert("Akses Ditolak! Ini adalah Private Campaign khusus kreator Whale.");
+                    window.location.replace('clipper-campaignselector.html');
+                    return;
+                }
+            }
+
             // 1. Dinamis URL
             const slugName = data.title.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase().replace(/-+/g, '-');
             window.history.replaceState(null, '', `?id=${data.id}&name=${slugName}`);
@@ -304,7 +324,11 @@
             const typeText = data.type === 'ugc' ? 'UGC' : 'CLIPPING';
             document.getElementById('bahan-title').innerText = data.type === 'ugc' ? 'Bahan / Referensi UGC' : 'Bahan Clipping';
 
+            // [BARU] Badge Private untuk ditambahkan jika is_private bernilai true
+            let privateBadge = data.is_private ? `<span class="border border-indigo-500/50 bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">PRIVATE</span>` : '';
+
             document.getElementById('badges-container').innerHTML = `
+                ${privateBadge}
                 <span class="border ${statusColor} px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">${data.status}</span>
                 <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">${typeText}</span>
                 <span class="border border-zinc-700 bg-zinc-800/80 text-zinc-300 px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider">${data.niche}</span>
