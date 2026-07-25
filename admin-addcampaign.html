@@ -130,6 +130,18 @@
                         <label class="block text-sm font-medium text-zinc-400 mb-1">Deadline <span class="text-red-500">*</span></label>
                         <input type="date" id="deadline" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none">
                     </div>
+
+                    <!-- PRIVATE CAMPAIGN TOGGLE -->
+                    <div class="col-span-1 md:col-span-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 flex items-center justify-between mt-2">
+                        <div>
+                            <h4 class="text-sm font-bold text-indigo-400">Private Campaign (Jalur Paus)</h4>
+                            <p class="text-[11px] sm:text-xs text-zinc-400 mt-1">Hanya Clipper berstatus "Whale" yang bisa melihat dan mendaftar campaign ini.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <input type="checkbox" id="is_private" class="sr-only peer">
+                            <div class="w-11 h-6 bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -282,7 +294,7 @@
         const statusHTMLMap = {
             'ACTIVE': `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ACTIVE`,
             'HOLDING': `<svg class="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> HOLDING`,
-            'CLOSED': `<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> CLOSED`
+            'CLOSED': `<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m-2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> CLOSED`
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -470,21 +482,63 @@
         };
 
         // ==========================================
-        // 3. FORMAT CURRENCY & NUMBER
+        // 3. FORMAT CURRENCY & NUMBER (DIPERBAIKI)
         // ==========================================
-        function parseRupiah(val) { return parseInt(val.replace(/[^0-9]/g, '')) || 0; }
+        function parseRupiah(val) { 
+            if (!val) return 0;
+            return parseInt(val.toString().replace(/[^0-9]/g, ''), 10) || 0; 
+        }
+
+        function formatNumberWithDot(value) {
+            let number_string = value.replace(/[^,\d]/g, '').toString();
+            let split = number_string.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+
+            return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        }
         
         document.querySelectorAll('.currency-input').forEach(input => {
-            input.addEventListener('input', e => {
-                let val = parseRupiah(e.target.value);
-                e.target.value = val === 0 ? '' : 'Rp ' + val.toLocaleString('id-ID');
+            input.addEventListener('input', function(e) {
+                let cursorPosition = this.selectionStart;
+                let oldLength = this.value.length;
+
+                let val = this.value.replace(/[^0-9]/g, '');
+                if (val === '') {
+                    this.value = '';
+                } else {
+                    this.value = 'Rp ' + formatNumberWithDot(val);
+                }
+
+                // Adjust cursor position
+                let newLength = this.value.length;
+                cursorPosition = cursorPosition + (newLength - oldLength);
+                this.setSelectionRange(cursorPosition, cursorPosition);
             });
         });
         
         document.querySelectorAll('.number-input').forEach(input => {
-            input.addEventListener('input', e => {
-                let val = parseRupiah(e.target.value);
-                e.target.value = val === 0 ? '' : val.toLocaleString('id-ID');
+            input.addEventListener('input', function(e) {
+                let cursorPosition = this.selectionStart;
+                let oldLength = this.value.length;
+
+                let val = this.value.replace(/[^0-9]/g, '');
+                if (val === '') {
+                    this.value = '';
+                } else {
+                    this.value = formatNumberWithDot(val);
+                }
+
+                // Adjust cursor position
+                let newLength = this.value.length;
+                cursorPosition = cursorPosition + (newLength - oldLength);
+                this.setSelectionRange(cursorPosition, cursorPosition);
             });
         });
 
@@ -528,6 +582,7 @@
         document.getElementById('btn-save').addEventListener('click', async () => {
             const bName = document.getElementById('brand_name').value.trim();
             const bTitle = document.getElementById('title').value.trim();
+            const isPrivate = document.getElementById('is_private').checked; 
             
             if(!uploadedBannerUrl || !bName || !bTitle) {
                 alert("Banner, Nama Brand, dan Judul wajib diisi!");
@@ -549,7 +604,6 @@
             
             const clientId = document.getElementById('client_id').value;
 
-            // Merubah object link menjadi string JSON untuk disimpan di Array text
             const jsonLinks = linksData.map(obj => JSON.stringify(obj));
 
             const payload = {
@@ -576,7 +630,8 @@
                 hashtags: document.getElementById('hashtags').value.trim(),
                 brief: document.getElementById('brief').value.trim(),
                 full_brief: document.getElementById('full_brief').value.trim(),
-                restrictions: document.getElementById('restrictions').value.trim()
+                restrictions: document.getElementById('restrictions').value.trim(),
+                is_private: isPrivate 
             };
 
             const { error } = await supabase.from('campaigns').insert([payload]);
