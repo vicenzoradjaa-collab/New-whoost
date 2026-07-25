@@ -2,7 +2,8 @@ class CustomFooter extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
         <!-- Footer -->
-        <footer class="border-t border-zinc-800/60 bg-darkBg pt-20 pb-10">
+        <!-- Ditambahkan pb-32 untuk mobile agar tidak tertutup navbar, dan lg:pb-10 untuk desktop -->
+        <footer class="border-t border-zinc-800/60 bg-darkBg pt-20 pb-32 lg:pb-10">
             <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-10 mb-20">
                 
                 <!-- Kolom 1: Brand & Deskripsi -->
