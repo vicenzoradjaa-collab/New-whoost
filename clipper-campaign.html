@@ -227,7 +227,7 @@
         let allCampaigns = [];
         let joinedCampaignIds = [];
         let sessionUser = null;
-        let isUserWhale = false; // [BARU] Indikator Whale
+        let isUserWhale = false; // Indikator Whale
 
         // Fungsi Anti-XSS
         function escapeHTML(str) {
@@ -276,7 +276,7 @@
             if (session) {
                 sessionUser = session.user;
                 
-                // [BARU] Ambil profil user untuk cek is_whale
+                // Ambil profil user untuk cek is_whale
                 const { data: profile } = await supabase.from('profiles').select('is_whale').eq('id', sessionUser.id).single();
                 isUserWhale = profile?.is_whale || false;
 
@@ -286,11 +286,11 @@
                 }
             }
 
-            // [BARU] Tambahkan is_private di select query
+            // Ambil semua campaign
             const { data, error } = await supabase
                 .from('campaigns')
                 .select('id, title, brand_name, budget_total, budget_remaining, reward_per_1k, price_per_video, payment_type, niche, status, banner_url, platforms, type, is_private')
-                .order('created_at', { ascending: false }); // Pertama ambil berdasarkan data terbaru
+                .order('created_at', { ascending: false });
 
             if (error) {
                 console.error("Gagal load campaign:", error);
@@ -300,11 +300,11 @@
 
             allCampaigns = data || [];
 
-            // Sortir manual: Menaruh yang CLOSED di paling akhir, sisanya sesuai urutan terbaru 'created_at'
+            // Sortir manual: Menaruh yang CLOSED di paling akhir
             allCampaigns.sort((a, b) => {
                 if (a.status === 'CLOSED' && b.status !== 'CLOSED') return 1;
                 if (a.status !== 'CLOSED' && b.status === 'CLOSED') return -1;
-                return 0; // Mempertahankan urutan aslinya jika keduanya sama-sama tidak CLOSED
+                return 0; 
             });
 
             applyFilters();
@@ -315,11 +315,7 @@
             grid.innerHTML = ''; 
 
             let filtered = allCampaigns.filter(camp => {
-                // [BARU] LOGIKA PRIVATE CAMPAIGN
-                if (camp.is_private && !isUserWhale) {
-                    return false; // Sembunyikan dari clipper biasa
-                }
-
+                // Hapus filter disembunyikan agar SEMUA user bisa lihat (hanya beda gembok visual saja)
                 let statText = 'Active';
                 if(camp.status === 'HOLDING') statText = 'Hold';
                 if(camp.status === 'CLOSED') statText = 'Closed';
@@ -349,7 +345,6 @@
                 noDataAlert.classList.add('hidden');
             }
 
-            // Membatasi tampilan berdasarkan `currentVisible` untuk mengaktifkan sistem Load More bertahap
             const displayLimit = currentVisible; 
             
             let html = '';
@@ -359,7 +354,6 @@
 
             grid.innerHTML = html;
 
-            // Jika masih ada sisa data untuk diload, munculkan tombol load more
             if (filtered.length > currentVisible) {
                 loadMoreContainer.style.display = 'flex';
             } else {
@@ -368,6 +362,11 @@
         }
 
         function generateCardHTML(camp, index) {
+            // [LOGIKA STATUS KEPEMILIKAN PRIVATE]
+            const isPrivate = camp.is_private;
+            const isLocked = isPrivate && !isUserWhale; // Private & Bukan Whale = TERKUNCI (Blur & Locked)
+            const isUnlockedExclusive = isPrivate && isUserWhale; // Private & Dia Whale = TERBUKA (Tapi tetap Eksklusif Gold)
+
             let statusColor = 'border-zinc-700 bg-zinc-800/40 text-green-400';
             let statText = 'ACTIVE';
             let overlayOpacity = 'opacity-100'; 
@@ -382,7 +381,14 @@
             }
 
             const price = camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k;
-            const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+            
+            // Format Harga (Jika terkunci disamarkan)
+            let priceFormatted = '';
+            if (isLocked) {
+                priceFormatted = 'Rp XXX.XXX';
+            } else {
+                priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+            }
             
             const priceLabel = camp.payment_type === 'video' ? '/ vid' : '/ 1k view';
 
@@ -403,10 +409,17 @@
             const delay = (index % 12) * 40; 
             const isJoined = joinedCampaignIds.includes(camp.id);
             
-            // [BARU] Logika Badge Private
-            let privateBadge = camp.is_private ? `<div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-indigo-900/50 bg-indigo-900/20 text-[7px] md:text-[9px] font-bold text-indigo-400 tracking-wider">PRIVATE</div>` : '';
+            // Badge Label Private
+            let privateBadge = isPrivate ? `
+                <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-yellow-900/50 bg-yellow-900/20 flex items-center gap-1">
+                    ${isLocked 
+                        ? `<svg class="w-2.5 h-2.5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>` 
+                        : `<svg class="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+                    }
+                    <span class="text-[7px] md:text-[9px] font-bold text-yellow-500 tracking-wider">PRIVATE</span>
+                </div>` : '';
 
-            // TOMBOL AKSI
+            // LOGIKA TOMBOL DETAIL & DAFTAR
             let btnDetailHTML = '';
             let btnActionHTML = '';
             
@@ -415,61 +428,97 @@
             const actionDisabled = "w-full bg-zinc-800/50 text-zinc-500 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed";
             const actionJoined = "w-full bg-zinc-800 text-white border border-zinc-700 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed";
             const actionActive = "w-full bg-white text-black py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all focus:outline-none";
+            const actionPremium = "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm hover:from-yellow-500 hover:to-yellow-400 active:scale-[0.98] transition-all focus:outline-none shadow-lg shadow-yellow-900/20";
 
-            if (camp.status === 'HOLDING') {
+            if (isLocked) {
+                // Tampilan Tombol Jika Bukan Whale (Terkunci)
+                btnDetailHTML = `<button disabled class="w-full bg-zinc-900/50 border border-zinc-800/50 text-zinc-500 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed flex items-center justify-center gap-1.5"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg> Locked</button>`;
+                btnActionHTML = `<button disabled class="w-full bg-yellow-900/10 border border-yellow-900/30 text-yellow-600/60 py-2 rounded-lg font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed tracking-wide">Eksklusif</button>`;
+            } else if (camp.status === 'HOLDING') {
                 btnDetailHTML = `<button disabled class="${detailDisabled}">Detail</button>`;
                 btnActionHTML = `<button disabled class="${actionDisabled}">Ditahan</button>`;
             } else if (camp.status === 'CLOSED') {
                 btnDetailHTML = `<button disabled class="${detailDisabled}">Detail</button>`;
                 btnActionHTML = `<button disabled class="${actionDisabled}">Ditutup</button>`;
             } else {
+                // Tampilan Normal atau Whale Private Terbuka
                 btnDetailHTML = `<a href="detail-campaign.html?id=${camp.id}" class="${detailClasses}">Detail</a>`;
                 if (isJoined) {
                     btnActionHTML = `<button disabled class="${actionJoined}">Joined</button>`;
                 } else {
-                    btnActionHTML = `<button onclick="window.joinCampaign('${camp.id}', this)" class="${actionActive}">Daftar</button>`;
+                    let btnClass = isUnlockedExclusive ? actionPremium : actionActive;
+                    btnActionHTML = `<button onclick="window.joinCampaign('${camp.id}', this)" class="${btnClass}">Daftar</button>`;
                 }
             }
 
-            // MENGGANTI data-aos menjadi class "animate-fade-in-up-local" agar otomatis muncul tanpa harus discroll
+            // Tampilan Card Background (Normal vs Private)
+            let cardBaseClass = "campaign-card border rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full transition-all duration-300 shadow-xl group animate-fade-in-up-local relative overflow-hidden";
+            if (isLocked || isUnlockedExclusive) {
+                // Tema Gold/Eksklusif jika ini adalah campaign Private (berlaku untuk locked maupun unlocked)
+                cardBaseClass += " bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border-yellow-900/40 hover:border-yellow-700/60 hover:-translate-y-1";
+            } else {
+                cardBaseClass += " bg-cardBg border-zinc-800/80 hover:border-zinc-500 hover:-translate-y-1";
+            }
+
+            // Tampilan Gambar / Banner
+            let bannerClass = "absolute inset-0 w-full h-full object-cover transition-transform duration-500";
+            let lockedIconOverlay = '';
+
+            if (isLocked) {
+                // Blur dan Hitam Putih jika belum unlock
+                bannerClass += " blur-md scale-110 opacity-50 grayscale-[40%]";
+                lockedIconOverlay = `
+                <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40">
+                    <div class="p-2.5 rounded-full bg-black/70 backdrop-blur-md mb-1 border border-zinc-800 shadow-lg">
+                        <svg class="w-6 h-6 text-yellow-500 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                </div>`;
+            } else {
+                // Normal / Terbuka
+                bannerClass += ` group-hover:scale-105 ${overlayOpacity}`;
+            }
+
             return `
-            <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
+            <div class="${cardBaseClass}" style="animation-delay: ${delay}ms;">
                 
                 <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
-                    ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
+                    ${lockedIconOverlay}
+                    ${safeBanner ? `<img src="${safeBanner}" class="${bannerClass}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
                 </div>
                 
                 <div class="flex justify-between items-start mb-2 gap-2">
-                    <span class="text-[10px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrand}</span>
+                    <span class="text-[10px] md:text-xs font-bold ${isLocked ? 'text-zinc-500' : 'text-zinc-400 hover:text-white'} transition truncate">${safeBrand}</span>
                     <div class="flex items-center gap-1.5">
                         ${privateBadge}
                         <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
                     </div>
                 </div>
                 
-                <h4 class="text-sm md:text-xl font-black text-white mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
+                <h4 class="text-sm md:text-xl font-black ${isLocked ? 'text-zinc-400' : 'text-white group-hover:text-zinc-300'} mb-2 truncate block w-full transition-colors" title="${safeTitle}">${safeTitle}</h4>
                 
                 <div class="mb-3 flex items-baseline gap-1 flex-wrap">
-                    <span class="text-sm md:text-2xl font-extrabold text-white tracking-tight leading-none">${priceFormatted}</span>
+                    <span class="text-sm md:text-2xl font-extrabold ${isLocked ? 'text-yellow-500/90' : (isUnlockedExclusive ? 'text-yellow-400' : 'text-white')} tracking-tight leading-none">${priceFormatted}</span>
                     <span class="text-zinc-500 text-[9px] md:text-xs font-medium whitespace-nowrap">${priceLabel}</span>
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-1.5 md:gap-2 mb-4">
-                    <div class="flex items-center gap-1 px-1.5 py-1 md:px-2 rounded-md border border-zinc-800 bg-zinc-900/50">
+                    <div class="flex items-center gap-1 px-1.5 py-1 md:px-2 rounded-md border ${isLocked ? 'border-zinc-800/40 bg-zinc-900/30' : 'border-zinc-800 bg-zinc-900/50'}">
                         ${platformIcons || `<span class="text-[9px] text-zinc-500">-</span>`}
                     </div>
-                    <div class="flex items-center px-1.5 py-1 md:px-2 rounded-md border border-zinc-800 bg-zinc-900/80">
-                        <span class="text-[8px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-wider truncate max-w-[70px] md:max-w-none">${safeNiche}</span>
+                    <div class="flex items-center px-1.5 py-1 md:px-2 rounded-md border ${isLocked ? 'border-zinc-800/40 bg-zinc-900/40' : 'border-zinc-800 bg-zinc-900/80'}">
+                        <span class="text-[8px] md:text-[10px] font-bold ${isLocked ? 'text-zinc-600' : 'text-zinc-300'} uppercase tracking-wider truncate max-w-[70px] md:max-w-none">${safeNiche}</span>
                     </div>
                 </div>
 
-                <div class="mt-auto pt-3 border-t border-zinc-800/50">
+                <div class="mt-auto pt-3 border-t ${isLocked ? 'border-zinc-800/30' : 'border-zinc-800/50'}">
                     <div class="flex justify-between items-end mb-1 md:mb-2">
-                        <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Sisa Budget</span>
-                        <span class="text-[9px] md:text-xs font-black text-white">${percentage}%</span>
+                        <span class="text-[9px] md:text-xs text-zinc-500 font-semibold">Sisa Budget</span>
+                        <span class="text-[9px] md:text-xs font-black ${isLocked ? 'text-zinc-500' : 'text-white'}">${isLocked ? 'Terkunci' : percentage + '%'}</span>
                     </div>
                     <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                        <div class="h-full bg-white rounded-full" style="width: ${percentage}%"></div>
+                        <div class="h-full ${isLocked ? 'bg-yellow-800/50' : 'bg-white'} rounded-full" style="width: ${isLocked ? '100' : percentage}%"></div>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-1.5 md:gap-2">
