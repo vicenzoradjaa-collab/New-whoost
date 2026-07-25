@@ -227,6 +227,7 @@
         let allCampaigns = [];
         let joinedCampaignIds = [];
         let sessionUser = null;
+        let isUserWhale = false; // [BARU] Indikator Whale
 
         // Fungsi Anti-XSS
         function escapeHTML(str) {
@@ -274,15 +275,21 @@
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 sessionUser = session.user;
+                
+                // [BARU] Ambil profil user untuk cek is_whale
+                const { data: profile } = await supabase.from('profiles').select('is_whale').eq('id', sessionUser.id).single();
+                isUserWhale = profile?.is_whale || false;
+
                 const { data: joined } = await supabase.from('user_campaigns').select('campaign_id').eq('user_id', sessionUser.id);
                 if (joined) {
                     joinedCampaignIds = joined.map(j => j.campaign_id);
                 }
             }
 
+            // [BARU] Tambahkan is_private di select query
             const { data, error } = await supabase
                 .from('campaigns')
-                .select('*')
+                .select('id, title, brand_name, budget_total, budget_remaining, reward_per_1k, price_per_video, payment_type, niche, status, banner_url, platforms, type, is_private')
                 .order('created_at', { ascending: false }); // Pertama ambil berdasarkan data terbaru
 
             if (error) {
@@ -308,6 +315,11 @@
             grid.innerHTML = ''; 
 
             let filtered = allCampaigns.filter(camp => {
+                // [BARU] LOGIKA PRIVATE CAMPAIGN
+                if (camp.is_private && !isUserWhale) {
+                    return false; // Sembunyikan dari clipper biasa
+                }
+
                 let statText = 'Active';
                 if(camp.status === 'HOLDING') statText = 'Hold';
                 if(camp.status === 'CLOSED') statText = 'Closed';
@@ -391,6 +403,9 @@
             const delay = (index % 12) * 40; 
             const isJoined = joinedCampaignIds.includes(camp.id);
             
+            // [BARU] Logika Badge Private
+            let privateBadge = camp.is_private ? `<div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-indigo-900/50 bg-indigo-900/20 text-[7px] md:text-[9px] font-bold text-indigo-400 tracking-wider">PRIVATE</div>` : '';
+
             // TOMBOL AKSI
             let btnDetailHTML = '';
             let btnActionHTML = '';
@@ -418,7 +433,7 @@
 
             // MENGGANTI data-aos menjadi class "animate-fade-in-up-local" agar otomatis muncul tanpa harus discroll
             return `
-            <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-2xl md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
+            <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
                 
                 <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
                     ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
@@ -426,7 +441,10 @@
                 
                 <div class="flex justify-between items-start mb-2 gap-2">
                     <span class="text-[10px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrand}</span>
-                    <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
+                    <div class="flex items-center gap-1.5">
+                        ${privateBadge}
+                        <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
+                    </div>
                 </div>
                 
                 <h4 class="text-sm md:text-xl font-black text-white mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
