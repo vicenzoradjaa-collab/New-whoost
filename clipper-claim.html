@@ -444,11 +444,12 @@
         // ==========================================
         async function loadSubmissions() {
             try {
+                // Diperbarui: Tambahkan field is_private pada saat fetching data campaigns
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
                         id, user_id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
-                        campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video )
+                        campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video, is_private )
                     `)
                     .eq('user_id', sessionUser.id);
 
@@ -503,7 +504,9 @@
         }
 
         function generateCard(sub, index) {
-            const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0 };
+            const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0, is_private: false };
+            const isPrivate = camp.is_private === true;
+            
             const meta = getVideoMeta(sub.video_link);
             const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
             
@@ -514,6 +517,7 @@
             const viewsClaimed = sub.views_claimed || 0;
             const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
             const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
+            let earnedColor = sub.earned > 0 ? (isPrivate ? 'text-yellow-400' : 'text-emerald-400') : 'text-zinc-500';
             
             let realStatus = sub.status || 'PENDING';
             let isPerVideo = camp.payment_type === 'video';
@@ -565,7 +569,6 @@
                     </button>`;
             } 
             else if (isClaimRejected) {
-                // FIX: Langsung dikunci (Tidak bisa update/claim lagi)
                 cardOpacityClass = 'opacity-80 border-red-900/50';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
                 
@@ -592,26 +595,43 @@
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
 
-                // UNTUK KEDUA TIPE (VIEWS/VIDEO), TETAP MUNCULKAN INPUT VIEWS ASLI
                 let inputHTML = `
                     <div class="flex gap-1.5 sm:gap-2">
                         <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
                     </div>`;
 
                 let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Pembayaran Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
+                
+                let claimBtnClass = isPrivate 
+                    ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-all mt-2 shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
+                    : "w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors mt-2 active:scale-[0.98]";
 
                 actionArea = `
                     ${warningText}
                     ${inputHTML}
-                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors mt-2">
+                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">
                         ${btnText} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>`;
             }
 
+            // Logika Styling Card VIP / Whale
+            let cardBaseClass = `rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
+            if (isPrivate) {
+                cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+            } else {
+                cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
+            }
+
+            let privateBadge = isPrivate ? `
+                <div class="absolute top-2 left-10 sm:top-3 sm:left-12 z-20 bg-yellow-900/80 text-yellow-500 text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg backdrop-blur flex items-center gap-1 border border-yellow-500/20">
+                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
+                </div>` : '';
+
             return `
-            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300 flex flex-col group ${cardOpacityClass}">
+            <div class="${cardBaseClass}">
                 <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
                     ${badgeHTML}
+                    ${privateBadge}
                     <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0"></div>
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg z-10">
@@ -636,7 +656,7 @@
                         </div>
                         <div class="text-right">
                             <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
-                            <p class="text-[10px] sm:text-sm font-bold ${sub.earned > 0 ? 'text-emerald-400' : 'text-zinc-500'}">${uiEarned}</p>
+                            <p class="text-[10px] sm:text-sm font-bold ${earnedColor}">${uiEarned}</p>
                         </div>
                     </div>
                     
