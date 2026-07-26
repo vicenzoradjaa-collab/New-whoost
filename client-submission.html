@@ -2,7 +2,7 @@
 <html lang="id" class="bg-darkBg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Pengajuan - Whoost Client</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -81,7 +81,7 @@
                 <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             
-            <div id="dropdownFilter" class="absolute right-0 top-full mt-2 w-full md:w-56 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
+            <div id="dropdownFilter" class="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-full md:w-56 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
                 <button onclick="window.selectFilter('Semua')" class="text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white">Semua Status</button>
                 <button onclick="window.selectFilter('PENDING_CLIENT')" class="text-left px-5 py-3 text-[13px] text-amber-400 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Perlu Review Brand</button>
                 <button onclick="window.selectFilter('PENDING_ADMIN')" class="text-left px-5 py-3 text-[13px] text-blue-400 hover:bg-zinc-800 transition-colors border-t border-zinc-800/50">Diproses Admin (Klaim Saldo)</button>
@@ -258,12 +258,13 @@
         // 1. Tarik Data dari Supabase (Hanya yang Client_ID nya cocok)
         async function loadSubmissions() {
             try {
+                // Modifikasi fetch untuk ikut mengambil is_private
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
                         id, video_link, status, created_at, user_id, views_claimed,
                         profiles (full_name, email),
-                        campaigns!inner (id, title, client_id, platforms)
+                        campaigns!inner (id, title, client_id, platforms, is_private)
                     `)
                     .eq('campaigns.client_id', sessionUser.id)
                     .order('created_at', { ascending: false });
@@ -305,7 +306,9 @@
             const title = escapeHTML(sub.campaigns?.title || 'Campaign Dihapus');
             const safeUrl = encodeURI(sub.video_link || '');
             const platInfo = getPlatformInfo(sub.video_link, sub.campaigns?.platforms);
-
+            
+            // Variabel Logika Private
+            const isPrivate = sub.campaigns?.is_private === true;
             let uiStatus = getClientUIStatus(sub);
             
             let badgeClass = 'bg-zinc-500/20 border-zinc-500/50 text-zinc-500';
@@ -318,7 +321,12 @@
                 opacityClass = '';
                 badgeClass = 'bg-amber-500/20 border-amber-500/50 text-amber-500';
                 badgeText = 'Review Brand';
-                btnReviewHTML = `<button onclick="window.openReviewModal('${sub.id}')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm focus:outline-none">Review Kualitas</button>`;
+                
+                if (isPrivate) {
+                    btnReviewHTML = `<button onclick="window.openReviewModal('${sub.id}')" class="py-1.5 sm:py-2.5 bg-gradient-to-r from-yellow-600 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-400 rounded-lg text-[10px] sm:text-[13px] font-bold transition-all active:scale-95 shadow-lg shadow-yellow-900/20 focus:outline-none">Review Kualitas</button>`;
+                } else {
+                    btnReviewHTML = `<button onclick="window.openReviewModal('${sub.id}')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm focus:outline-none">Review Kualitas</button>`;
+                }
             } else if (uiStatus === 'PENDING_ADMIN') {
                 badgeClass = 'bg-blue-500/20 border-blue-500/50 text-blue-400';
                 badgeText = 'Proses Admin';
@@ -333,15 +341,31 @@
                 btnReviewHTML = `<button disabled class="py-1.5 sm:py-2.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[10px] sm:text-[13px] font-semibold cursor-not-allowed">Video Ditolak</button>`;
             }
 
+            // Card Base Styling Berdasarkan Is_Private
+            let cardBaseClass = `content-card flex flex-col rounded-2xl p-1.5 sm:p-2 transition-all duration-300 ${opacityClass} `;
+            if (isPrivate) {
+                cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+            } else {
+                cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
+            }
+
+            let privateBadgeHTML = isPrivate ? `
+                <div class="bg-yellow-900/80 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-sm backdrop-blur-md">
+                    <svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
+                </div>` : '';
+
             return `
-            <div class="content-card bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300 ${opacityClass}">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group border border-zinc-800">
+            <div class="${cardBaseClass}">
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group border border-zinc-800/50">
                     <img id="thumb-${sub.id}" data-video-link="${safeUrl}" src="https://placehold.co/300x400/121214/27272a?text=..." class="sub-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                     
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                        <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${platInfo.color}"></span>
-                        <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">${platInfo.name}</span>
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-1.5 items-start">
+                        <div class="bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
+                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${platInfo.color}"></span>
+                            <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">${platInfo.name}</span>
+                        </div>
+                        ${privateBadgeHTML}
                     </div>
                     
                     <div class="absolute top-2 right-2 sm:top-3 sm:right-3 ${badgeClass} px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">${badgeText}</div>
