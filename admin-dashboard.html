@@ -62,7 +62,7 @@
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
     </div>
 
-    <!-- HEADER ADMIN (DIBERSIHKAN DARI PROFIL) -->
+    <!-- HEADER ADMIN -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain">
@@ -77,7 +77,7 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT (Diperbarui dengan pb-32 agar tidak tertutup bottom navbar) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-7xl mx-auto space-y-8 sm:space-y-10">
             
@@ -212,9 +212,18 @@
 
     <!-- SCRIPT UTAMA MENGGUNAKAN AUTH.JS -->
     <script type="module">
-        import { supabase, enforceRoleProtection } from './authentication/auth.js'; // Tambahkan enforceRoleProtection
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; 
 
-        // FUNGSI ANTI-XSS (Mencegah Eksekusi Script Jahat dari Database)
+        // FUNGSI FORMATTER RUPIAH DINAMIS
+        function formatRupiahK(num) {
+            if (num >= 1000000000000) return 'Rp ' + (num / 1000000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' T';
+            if (num >= 1000000000) return 'Rp ' + (num / 1000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' M';
+            if (num >= 1000000) return 'Rp ' + (num / 1000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' jt';
+            if (num >= 1000) return 'Rp ' + (num / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' rb';
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(num);
+        }
+
+        // FUNGSI ANTI-XSS
         function escapeHTML(str) {
             if (!str) return '';
             return str.toString()
@@ -246,7 +255,6 @@
                     .single();
 
                 if (profileError || !profile || profile.role !== 'admin') {
-                    // Jika mencoba akses tapi bukan admin, tendang ke login publik
                     window.location.replace('login.html');
                     return;
                 }
@@ -292,13 +300,14 @@
 
             // Load Total Payouts & Request Payout Badges (Cek tabel withdrawals)
             try {
-                // Hitung total payout yg sudah dibayar
+                // Hitung total payout yg sudah dibayar (Sinkronisasi diperbaiki)
                 const { data: paidOut } = await supabase.from('withdrawals').select('amount').in('status', ['COMPLETED', 'APPROVED', 'PAID']);
                 let totalPayout = 0;
                 if (paidOut) {
                     totalPayout = paidOut.reduce((sum, item) => sum + (item.amount || 0), 0);
                 }
-                document.getElementById('stat-payouts').innerText = totalPayout > 0 ? 'Rp ' + (totalPayout / 1000000).toFixed(1) + 'M' : 'Rp 0';
+                // Menggunakan fungsi formatRupiahK agar tersinkronisasi rapi
+                document.getElementById('stat-payouts').innerText = totalPayout > 0 ? formatRupiahK(totalPayout) : 'Rp 0';
 
                 // Badge Request Payout yang pending
                 const { count: pendingPayouts } = await supabase.from('withdrawals').select('*', { count: 'exact', head: true }).eq('status', 'PENDING');
@@ -460,6 +469,9 @@
 
             let html = '';
             data.forEach(camp => {
+                // LOGIKA PRIVATE CAMPAIGN
+                const isPrivate = camp.is_private === true;
+
                 const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
                 const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k);
                 const priceLabel = camp.payment_type === 'video' ? '/ video' : '/ 1k views';
@@ -477,20 +489,40 @@
                     if (camp.platforms.includes('youtube')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
                 }
 
+                // TEMA CARD PRIVATE VS REGULAR
+                let cardBaseClass = "w-full campaign-card rounded-[1.25rem] p-3 md:p-4 flex flex-col h-full hover:-translate-y-1 transition-all duration-300 shadow-xl group";
+                if (isPrivate) {
+                    cardBaseClass += " bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+                } else {
+                    cardBaseClass += " bg-cardBg border border-zinc-800/80 hover:border-zinc-500";
+                }
+
+                let privateBadge = isPrivate ? `
+                    <div class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border border-yellow-900/50 bg-yellow-900/20 flex items-center gap-1">
+                        <svg class="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <span class="text-[7px] md:text-[8px] font-bold text-yellow-500 tracking-wider">PRIVATE</span>
+                    </div>` : '';
+
+                const priceColor = isPrivate ? 'text-yellow-400' : 'text-white';
+                const imgOpacityClass = 'opacity-100 group-hover:scale-105 transition-transform duration-500';
+
                 html += `
-                <div class="w-full campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] p-3 md:p-4 flex flex-col h-full hover:-translate-y-1 transition-all duration-300 shadow-xl group">
+                <div class="${cardBaseClass}">
                     <div class="w-full aspect-[16/9] bg-zinc-950 rounded-xl mb-4 flex flex-col items-center justify-center relative overflow-hidden shrink-0 border border-zinc-800/50">
-                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : `<span class="text-zinc-600 text-xs font-medium">No Banner</span>`}
+                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover ${imgOpacityClass}">` : `<span class="text-zinc-600 text-xs font-medium">No Banner</span>`}
                     </div>
                     <div class="flex justify-between items-center mb-2 md:mb-3">
                         <div class="flex items-center overflow-hidden pr-2">
                             <span class="text-[11px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrandName}</span>
                         </div>
-                        <div class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider border-green-900/50 bg-green-900/20 text-green-400">ACTIVE</div>
+                        <div class="flex items-center gap-1.5">
+                            ${privateBadge}
+                            <div class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider border-green-900/50 bg-green-900/20 text-green-400">ACTIVE</div>
+                        </div>
                     </div>
                     <h4 class="text-base md:text-xl font-black text-white mb-2 md:mb-3 truncate group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
                     <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">${formattedPrice}</span>
+                        <span class="text-lg md:text-2xl font-extrabold ${priceColor} tracking-tight">${formattedPrice}</span>
                         <span class="text-zinc-500 text-[9px] md:text-[10px] font-medium">${priceLabel}</span>
                     </div>
                     <div class="flex flex-wrap items-center gap-2 mb-4">
