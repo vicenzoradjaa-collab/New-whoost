@@ -301,7 +301,7 @@
             // Load Total Payouts & Request Payout Badges (Cek tabel withdrawals)
             try {
                 // Hitung total payout yg sudah dibayar (Sinkronisasi diperbaiki)
-                const { data: paidOut } = await supabase.from('withdrawals').select('amount').in('status', ['COMPLETED', 'APPROVED', 'PAID']);
+                const { data: paidOut } = await supabase.from('withdrawals').select('amount').in('status', ['COMPLETED', 'APPROVED', 'SUCCESS']);
                 let totalPayout = 0;
                 if (paidOut) {
                     totalPayout = paidOut.reduce((sum, item) => sum + (item.amount || 0), 0);
