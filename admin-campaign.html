@@ -78,8 +78,8 @@
         </div>
     </header>
 
-    <!-- TOOLBAR (CARI, FILTER, TAMBAH) -->
-    <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-wrap gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
+    <!-- TOOLBAR (CARI, FILTER, TAMBAH) - Diperbaiki class relative z-40 di sini -->
+    <div class="px-4 sm:px-8 py-4 sm:py-6 relative z-40 flex flex-wrap gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
         <div class="flex flex-col sm:flex-row flex-1 items-start sm:items-center gap-3 w-full sm:w-auto">
             
             <!-- Input Search -->
@@ -113,7 +113,7 @@
     </div>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth w-full relative">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth w-full relative z-0">
         <!-- Container Grid Dinamis -->
         <div id="campaign-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 z-10 relative">
             <p class="text-zinc-500 text-sm col-span-full text-center py-10">Memuat data...</p>
@@ -211,7 +211,7 @@
         async function fetchCampaigns() {
             const { data, error } = await supabase
                 .from('campaigns')
-                .select('*'); // Hapus order default agar di-sort oleh Javascript
+                .select('*'); 
 
             if (error) {
                 console.error("Error fetching campaigns:", error);
@@ -344,7 +344,7 @@
                     <!-- BUDGET -->
                     <div class="mb-3 md:mb-4 flex items-baseline gap-1">
                         <span class="text-lg md:text-2xl font-extrabold ${priceColor} tracking-tight">${formattedPrice}</span>
-                        <span class="text-zinc-500 text-[9px] md:text-xs font-medium">${priceLabel}</span>
+                        <span class="text-zinc-500 text-[9px] md:text-[10px] font-medium">${priceLabel}</span>
                     </div>
                     
                     <!-- NICHE & PLATFORM ICONS -->
