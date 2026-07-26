@@ -2,7 +2,7 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Explore Campaigns - Whoost</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -129,13 +129,14 @@
                     </div>
                 </div>
 
-                <!-- 3. Status Dropdown -->
+                <!-- 3. Status Dropdown (Fixed Position Mobile) -->
                 <div class="relative inline-block text-left filter-dropdown" id="dropdown-status">
                     <button onclick="window.toggleDropdown('menu-status')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                         <span id="label-status">Semua Status</span>
                         <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </button>
-                    <div id="menu-status" class="dropdown-menu hidden absolute right-0 lg:left-0 mt-2 w-48 rounded-xl shadow-xl bg-zinc-900 border border-zinc-700 ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
+                    <!-- Diganti left-0 secara eksplisit agar aman di layar kecil jika flex ter-wrap -->
+                    <div id="menu-status" class="dropdown-menu hidden absolute left-0 mt-2 w-48 rounded-xl shadow-xl bg-zinc-900 border border-zinc-700 ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
                         <div class="py-1">
                             <button onclick="window.selectFilter('status', 'Semua Status')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2.5 text-sm w-full text-left font-medium transition-colors">Semua Status</button>
                             <button onclick="window.selectFilter('status', 'Active')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2.5 text-sm w-full text-left font-medium transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</button>
@@ -213,7 +214,7 @@
         const itemsToLoad = 8;
         
         let allCampaigns = [];
-        let isUserWhale = false; // [BARU] Status Whale
+        let isUserWhale = false;
 
         // Fungsi Anti-XSS
         function escapeHTML(str) {
@@ -238,7 +239,7 @@
         });
 
         async function initData() {
-            // [BARU] Cek apakah user login dan apakah dia Whale
+            // Cek apakah user login dan apakah dia Whale
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 const { data: profile } = await supabase.from('profiles').select('is_whale').eq('id', session.user.id).single();
@@ -273,11 +274,6 @@
             grid.innerHTML = ''; 
 
             let filtered = allCampaigns.filter(camp => {
-                // [BARU] Sembunyikan Private Campaign jika BUKAN WHALE
-                if (camp.is_private && !isUserWhale) {
-                    return false;
-                }
-
                 let statText = 'Active';
                 if(camp.status === 'HOLDING') statText = 'Hold';
                 if(camp.status === 'CLOSED') statText = 'Closed';
@@ -323,6 +319,11 @@
         }
 
         function generateCardHTML(camp, index) {
+            // LOGIKA AKSES PRIVATE
+            const isPrivate = camp.is_private === true;
+            const isLocked = isPrivate && !isUserWhale; 
+            const isUnlockedExclusive = isPrivate && isUserWhale; 
+
             let statusColor = 'border-zinc-700 bg-zinc-800/40 text-green-400';
             let statText = 'ACTIVE';
             let overlayOpacity = 'opacity-100'; 
@@ -337,8 +338,19 @@
             }
 
             const price = camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k;
-            const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
             const priceLabel = camp.payment_type === 'video' ? '/ vid' : '/ 1k view';
+            
+            let priceFormatted = '';
+            if (isLocked) {
+                priceFormatted = 'Rp XXX.XXX';
+            } else {
+                priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+            }
+
+            // Warna harga menyesuaikan tema (Terkunci VS Terbuka Eksklusif VS Terbuka Biasa)
+            const priceColor = isLocked ? 'text-yellow-500/90' : (isUnlockedExclusive ? 'text-yellow-400' : 'text-white');
+            const titleColor = isLocked ? 'text-zinc-400' : 'text-white group-hover:text-zinc-300';
+            const brandColor = isLocked ? 'text-zinc-500' : 'text-zinc-400 hover:text-white';
 
             const safeTitle = escapeHTML(camp.title);
             const safeBrand = escapeHTML(camp.brand_name);
@@ -355,28 +367,66 @@
             const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
             const delay = (index % 12) * 40; 
 
-            // [BARU] Logika Badge Private untuk Explore
-            let privateBadge = camp.is_private ? `<div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-indigo-900/50 bg-indigo-900/20 text-[7px] md:text-[9px] font-bold text-indigo-400 tracking-wider">PRIVATE</div>` : '';
+            // Badge Private Logics
+            let privateBadge = isPrivate ? `
+                <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-yellow-900/50 bg-yellow-900/20 flex items-center gap-1">
+                    ${isLocked 
+                        ? `<svg class="w-2.5 h-2.5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>` 
+                        : `<svg class="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+                    }
+                    <span class="text-[7px] md:text-[9px] font-bold text-yellow-500 tracking-wider">PRIVATE</span>
+                </div>` : '';
+
+            // Card Styling VIP
+            let cardBaseClass = "campaign-card rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full transition-all duration-300 shadow-xl group animate-fade-in-up-local";
+            if (isPrivate) {
+                cardBaseClass += " bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60 hover:-translate-y-1";
+            } else {
+                cardBaseClass += " bg-cardBg border border-zinc-800/80 hover:border-zinc-500 hover:-translate-y-1";
+            }
+
+            // Banner Image
+            let bannerClass = `absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${overlayOpacity}`;
+            let lockedIconOverlay = '';
+            if (isLocked) {
+                lockedIconOverlay = `
+                <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 hover:bg-black/50 transition-colors duration-300">
+                    <div class="p-2.5 rounded-full bg-black/70 backdrop-blur-md mb-1 border border-zinc-800 shadow-lg">
+                        <svg class="w-6 h-6 text-yellow-500 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                </div>`;
+            }
+
+            // Button Action
+            let actionBtnHTML = '';
+            if (isLocked) {
+                actionBtnHTML = `<button disabled class="w-full bg-yellow-900/10 border border-yellow-900/30 text-yellow-600/60 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed tracking-wide">Eksklusif VIP</button>`;
+            } else {
+                actionBtnHTML = `<button onclick="window.showLoginModal()" class="w-full bg-white text-black py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all focus:outline-none">Lihat Campaign</button>`;
+            }
 
             return `
-            <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
+            <div class="${cardBaseClass}" style="animation-delay: ${delay}ms;">
                 
                 <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
-                    ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
+                    ${lockedIconOverlay}
+                    ${safeBanner ? `<img src="${safeBanner}" class="${bannerClass}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
                 </div>
                 
                 <div class="flex justify-between items-start mb-2 gap-2">
-                    <span class="text-[10px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrand}</span>
+                    <span class="text-[10px] md:text-xs font-bold ${brandColor} transition truncate">${safeBrand}</span>
                     <div class="flex items-center gap-1.5">
                         ${privateBadge}
                         <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
                     </div>
                 </div>
                 
-                <h4 class="text-sm md:text-xl font-black text-white mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
+                <h4 class="text-sm md:text-xl font-black ${titleColor} mb-2 truncate block w-full transition-colors" title="${safeTitle}">${safeTitle}</h4>
                 
                 <div class="mb-3 flex items-baseline gap-1 flex-wrap">
-                    <span class="text-sm md:text-2xl font-extrabold text-white tracking-tight leading-none">${priceFormatted}</span>
+                    <span class="text-sm md:text-2xl font-extrabold ${priceColor} tracking-tight leading-none">${priceFormatted}</span>
                     <span class="text-zinc-500 text-[9px] md:text-xs font-medium whitespace-nowrap">${priceLabel}</span>
                 </div>
                 
@@ -392,15 +442,13 @@
                 <div class="mt-auto pt-3 border-t border-zinc-800/50">
                     <div class="flex justify-between items-end mb-1 md:mb-2">
                         <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Sisa Budget</span>
-                        <span class="text-[9px] md:text-xs font-black text-white">${percentage}%</span>
+                        <span class="text-[9px] md:text-xs font-black text-white">${isLocked ? 'Terkunci' : percentage + '%'}</span>
                     </div>
                     <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                        <div class="h-full bg-white rounded-full" style="width: ${percentage}%"></div>
+                        <div class="h-full ${isLocked ? 'bg-yellow-800/50' : 'bg-white'} rounded-full" style="width: ${isLocked ? '100' : percentage}%"></div>
                     </div>
                     
-                    <button onclick="window.showLoginModal()" class="w-full bg-white text-black py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all focus:outline-none">
-                        Lihat Campaign
-                    </button>
+                    ${actionBtnHTML}
                 </div>
             </div>`;
         }
