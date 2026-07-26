@@ -315,13 +315,14 @@
 
         async function loadSubmissions() {
             try {
+                // Modifikasi field: Tambahkan field is_private
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
                         id, user_id, campaign_id, video_link, status, created_at,
                         views_claimed, views_paid, earned, est_payout, reject_reason,
                         profiles ( full_name, email ),
-                        campaigns ( id, title, brand_name, reward_per_1k, min_views, max_claim, budget_remaining, payment_type, price_per_video )
+                        campaigns ( id, title, brand_name, reward_per_1k, min_views, max_claim, budget_remaining, payment_type, price_per_video, is_private )
                     `)
                     .order('created_at', { ascending: false });
 
@@ -364,6 +365,7 @@
 
             let html = '';
             filtered.forEach(sub => {
+                const isPrivate = sub.campaigns?.is_private === true;
                 const creatorName = sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator';
                 const campTitle = sub.campaigns?.title || 'Unknown Campaign';
                 
@@ -374,17 +376,29 @@
                 
                 const adminStatus = getAdminStatus(sub);
 
-                // Tentukan UI Card Berdasarkan Status Admin
+                // Tentukan UI Card Berdasarkan Status Admin & Private Status
                 let badgeHTML = '';
                 let actionBtnHTML = '';
-                let cardClass = 'content-card flex flex-col bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300';
+                let cardClass = 'content-card flex flex-col rounded-2xl overflow-hidden transition-all duration-300 ';
+
+                // Desain Khusus Private
+                if (isPrivate) {
+                    cardClass += 'bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60';
+                } else {
+                    cardClass += 'bg-cardBg border border-zinc-800 hover:border-zinc-500';
+                }
 
                 if (adminStatus === 'Menunggu Client') {
                     badgeHTML = `<span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">Client: PENDING</span>`;
                     actionBtnHTML = `<button disabled class="action-btn flex-1 py-2 bg-zinc-800 text-zinc-500 rounded-lg text-[13px] font-semibold cursor-not-allowed">Menunggu ACC Client</button>`;
                 } else if (adminStatus === 'Perlu Review') {
                     badgeHTML = `<span class="text-[10px] font-bold uppercase tracking-wider text-green-400 bg-green-400/10 px-1.5 py-0.5 rounded border border-green-400/20">Client: ACC</span>`;
-                    actionBtnHTML = `<button onclick="window.openAdminReviewModal('${sub.id}')" class="action-btn flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-indigo-900/20">Review & Bayar</button>`;
+                    // Jika Private, tombolnya Gold
+                    if (isPrivate) {
+                        actionBtnHTML = `<button onclick="window.openAdminReviewModal('${sub.id}')" class="action-btn flex-1 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black rounded-lg text-[13px] font-bold transition-all shadow-lg shadow-yellow-900/20">Review & Bayar</button>`;
+                    } else {
+                        actionBtnHTML = `<button onclick="window.openAdminReviewModal('${sub.id}')" class="action-btn flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-[13px] font-semibold transition-colors shadow-lg shadow-indigo-900/20">Review & Bayar</button>`;
+                    }
                 } else if (adminStatus === 'Selesai') {
                     cardClass += ' opacity-70';
                     let statusColor = sub.status === 'APPROVED' ? 'text-green-500 border-green-500/20 bg-green-500/10' : 'text-red-500 border-red-500/20 bg-red-500/10';
@@ -393,13 +407,22 @@
                     actionBtnHTML = `<button disabled class="action-btn flex-1 py-2 ${statusColor} rounded-lg text-[13px] font-semibold cursor-not-allowed border">${statusText}</button>`;
                 }
 
+                let privateBadge = isPrivate ? `
+                    <div class="shrink-0 px-1.5 py-0.5 rounded border border-yellow-900/50 bg-yellow-900/20 flex items-center gap-1">
+                        <svg class="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <span class="text-[8px] font-bold text-yellow-500 tracking-wider">PRIVATE</span>
+                    </div>` : '';
+
+                const activeColorClass = isPrivate ? 'text-yellow-400' : 'text-indigo-400';
+
                 html += `
                 <div class="${cardClass}">
                     <div class="flex flex-row p-3 gap-3 border-b border-zinc-800/50">
                         <img id="thumb-${sub.id}" data-video-link="${sub.video_link}" src="https://placehold.co/100x150/121214/27272a?text=..." class="sub-thumb w-16 h-24 object-cover rounded-lg bg-zinc-900 shrink-0 border border-zinc-800">
                         <div class="flex-1 min-w-0 flex flex-col justify-center">
-                            <div class="flex items-center justify-between mb-1">
+                            <div class="flex items-center gap-1.5 mb-1 flex-wrap">
                                 ${badgeHTML}
+                                ${privateBadge}
                             </div>
                             <p class="creator-name text-[13px] font-semibold text-white truncate">${creatorName}</p>
                             <p class="text-[11px] text-zinc-400 truncate mt-0.5" title="${campTitle}">${campTitle}</p>
@@ -417,8 +440,8 @@
                             </div>
                             <div class="h-px w-full bg-zinc-800 mb-3"></div>
                             <div class="flex justify-between items-center">
-                                <span class="text-[11px] font-medium ${unpaidViews > 0 ? 'text-indigo-400' : 'text-zinc-500'}">New Views to Pay:</span>
-                                <span class="text-[14px] font-bold ${unpaidViews > 0 ? 'text-indigo-400' : 'text-zinc-500'}">${unpaidViews > 0 ? '+'+formatNumber(unpaidViews) : '0 (Lunas)'}</span>
+                                <span class="text-[11px] font-medium ${unpaidViews > 0 ? activeColorClass : 'text-zinc-500'}">New Views to Pay:</span>
+                                <span class="text-[14px] font-bold ${unpaidViews > 0 ? activeColorClass : 'text-zinc-500'}">${unpaidViews > 0 ? '+'+formatNumber(unpaidViews) : '0 (Lunas)'}</span>
                             </div>
                         </div>
                         <div class="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
