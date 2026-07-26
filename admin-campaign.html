@@ -2,7 +2,7 @@
 <html lang="id" class="bg-darkBg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Kelola Campaign - Admin Whoost</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -35,6 +35,12 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        
+        .dropdown-menu::-webkit-scrollbar { width: 5px; }
+        .dropdown-menu::-webkit-scrollbar-track { background: #18181b; }
+        .dropdown-menu::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        .dropdown-menu::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         .bg-dots-card {
@@ -74,18 +80,30 @@
 
     <!-- TOOLBAR (CARI, FILTER, TAMBAH) -->
     <div class="px-4 sm:px-8 py-4 sm:py-6 z-10 flex flex-wrap gap-3 sm:gap-4 items-center justify-between bg-darkBg flex-shrink-0 w-full border-b border-zinc-800/30">
-        <div class="flex flex-1 sm:flex-none items-center gap-3 w-full sm:w-auto">
+        <div class="flex flex-col sm:flex-row flex-1 items-start sm:items-center gap-3 w-full sm:w-auto">
+            
+            <!-- Input Search -->
             <div class="relative w-full sm:w-72">
                 <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 <input type="text" id="search-input" placeholder="Cari campaign atau brand..." class="w-full bg-cardBg border border-zinc-800 rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors">
             </div>
             
-            <select id="filter-select" class="bg-cardBg border border-zinc-800 p-2.5 rounded-xl hover:bg-zinc-800 transition-colors text-zinc-400 focus:border-blue-500 focus:outline-none text-[13px] cursor-pointer appearance-none px-4">
-                <option value="ALL">Semua Status</option>
-                <option value="ACTIVE">Active</option>
-                <option value="HOLDING">Holding</option>
-                <option value="CLOSED">Closed</option>
-            </select>
+            <!-- Custom Dropdown Status Tema Whoost -->
+            <div class="relative inline-block text-left filter-dropdown w-full sm:w-auto" id="dropdown-status">
+                <button onclick="window.toggleDropdown()" class="whitespace-nowrap flex items-center justify-between gap-2 bg-cardBg border border-zinc-800 hover:bg-zinc-800 px-4 py-2.5 rounded-xl text-[13px] text-zinc-400 focus:border-blue-500 focus:outline-none transition-colors w-full sm:w-48">
+                    <span id="label-status">Semua Status</span>
+                    <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="menu-status" class="dropdown-menu hidden absolute left-0 mt-2 w-full sm:w-48 rounded-xl shadow-xl bg-zinc-900 border border-zinc-700 ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
+                    <div class="py-1">
+                        <button onclick="window.selectFilter('ALL', 'Semua Status')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2 text-[13px] w-full text-left font-medium transition-colors">Semua Status</button>
+                        <button onclick="window.selectFilter('ACTIVE', 'Active')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2 text-[13px] w-full text-left font-medium transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</button>
+                        <button onclick="window.selectFilter('HOLDING', 'Holding')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2 text-[13px] w-full text-left font-medium transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Holding</button>
+                        <button onclick="window.selectFilter('CLOSED', 'Closed')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2 text-[13px] w-full text-left font-medium transition-colors flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Closed</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         
         <a href="admin-addcampaign.html" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-xl hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20">
@@ -95,7 +113,7 @@
     </div>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth">
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth w-full relative">
         <!-- Container Grid Dinamis -->
         <div id="campaign-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 z-10 relative">
             <p class="text-zinc-500 text-sm col-span-full text-center py-10">Memuat data...</p>
@@ -107,6 +125,7 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let allCampaigns = [];
+        let currentStatusFilter = 'ALL';
 
         // FUNGSI ANTI-XSS
         function escapeHTML(str) {
@@ -118,6 +137,25 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
+        // LOGIKA CUSTOM DROPDOWN STATUS
+        window.toggleDropdown = function() {
+            document.getElementById('menu-status').classList.toggle('hidden');
+        };
+
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.filter-dropdown')) {
+                const menu = document.getElementById('menu-status');
+                if(menu) menu.classList.add('hidden');
+            }
+        });
+
+        window.selectFilter = function(value, label) {
+            currentStatusFilter = value;
+            document.getElementById('label-status').innerText = label;
+            document.getElementById('menu-status').classList.add('hidden');
+            applyFilters();
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -154,7 +192,6 @@
                 await fetchCampaigns();
                 
                 document.getElementById('search-input').addEventListener('input', applyFilters);
-                document.getElementById('filter-select').addEventListener('change', applyFilters);
 
             } catch (error) {
                 console.error("Kesalahan sistem:", error);
@@ -174,25 +211,41 @@
         async function fetchCampaigns() {
             const { data, error } = await supabase
                 .from('campaigns')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .select('*'); // Hapus order default agar di-sort oleh Javascript
 
             if (error) {
                 console.error("Error fetching campaigns:", error);
                 document.getElementById('campaign-grid').innerHTML = `<p class="text-red-500 text-sm col-span-full text-center py-10">Gagal memuat data.</p>`;
                 return;
             }
+            
             allCampaigns = data || [];
+
+            // PENGURUTAN: ACTIVE -> HOLDING -> CLOSED (Terbaru ke Terlama di dalam status yang sama)
+            allCampaigns.sort((a, b) => {
+                const statusOrder = { 'ACTIVE': 1, 'HOLDING': 2, 'CLOSED': 3 };
+                const statusA = statusOrder[a.status] || 99;
+                const statusB = statusOrder[b.status] || 99;
+                
+                if (statusA !== statusB) {
+                    return statusA - statusB;
+                }
+                
+                // Jika status sama, urutkan berdasarkan waktu terbaru (Descending)
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
             applyFilters();
         }
 
         function applyFilters() {
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const statusFilter = document.getElementById('filter-select').value;
 
             const filtered = allCampaigns.filter(camp => {
-                const matchSearch = camp.title.toLowerCase().includes(searchTerm) || camp.brand_name.toLowerCase().includes(searchTerm);
-                const matchStatus = statusFilter === 'ALL' || camp.status === statusFilter;
+                const titleMatch = (camp.title || '').toLowerCase();
+                const brandMatch = (camp.brand_name || '').toLowerCase();
+                const matchSearch = titleMatch.includes(searchTerm) || brandMatch.includes(searchTerm);
+                const matchStatus = currentStatusFilter === 'ALL' || camp.status === currentStatusFilter;
                 return matchSearch && matchStatus;
             });
 
@@ -209,28 +262,31 @@
 
             let html = '';
             campaigns.forEach(camp => {
-                // Menentukan Tema Warna Status & Gambar
+                
+                // LOGIKA STATUS TAMPILAN VIP / PRIVATE
+                const isPrivate = camp.is_private === true;
+                
                 let statusColor = 'border-green-900/50 bg-green-900/20 text-green-400';
-                let cardOpacity = 'opacity-100 hover:border-zinc-500';
-                let imgOpacity = 'opacity-100'; 
                 let statText = 'ACTIVE';
+                let cardOpacityClass = ''; 
+                let imgOpacityClass = 'opacity-100 group-hover:scale-105 transition-transform duration-500'; 
                 
                 if(camp.status === 'HOLDING') {
                     statusColor = 'border-yellow-900/50 bg-yellow-900/20 text-yellow-500';
-                    cardOpacity = 'opacity-100 border-amber-900/30 hover:border-amber-500/50';
                     statText = 'HOLD';
                 } else if(camp.status === 'CLOSED') {
                     statusColor = 'border-red-900/50 bg-red-900/20 text-red-500';
-                    cardOpacity = 'opacity-70 hover:opacity-100 border-zinc-800/80';
-                    imgOpacity = 'opacity-50 grayscale'; 
                     statText = 'CLOSED';
+                    cardOpacityClass = 'opacity-70 hover:opacity-100'; 
+                    imgOpacityClass = 'opacity-50 grayscale group-hover:scale-105 transition-transform duration-500'; 
                 }
 
                 // Kalkulasi Progress
                 const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
                 
                 // Format Harga
-                const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k);
+                const price = camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k;
+                const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
                 const priceLabel = camp.payment_type === 'video' ? '/ video' : '/ 1k views';
 
                 // Sanitasi XSS sebelum dirender
@@ -238,6 +294,22 @@
                 const safeTitle = escapeHTML(camp.title);
                 const safeNiche = escapeHTML(camp.niche);
                 const safeBanner = camp.banner_url ? escapeHTML(camp.banner_url) : null;
+
+                // TEMA CARD PRIVATE
+                let cardBaseClass = `w-full campaign-card rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:-translate-y-1 transition-all duration-300 shadow-xl group ${cardOpacityClass}`;
+                if (isPrivate) {
+                    cardBaseClass += " bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+                } else {
+                    cardBaseClass += " bg-cardBg border border-zinc-800/80 hover:border-zinc-500";
+                }
+
+                let privateBadge = isPrivate ? `
+                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-yellow-900/50 bg-yellow-900/20 flex items-center gap-1">
+                        <svg class="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        <span class="text-[7px] md:text-[9px] font-bold text-yellow-500 tracking-wider">PRIVATE</span>
+                    </div>` : '';
+
+                const priceColor = isPrivate ? 'text-yellow-400' : 'text-white';
 
                 // Menyiapkan Icon Platform Dinamis
                 let platformIcons = '';
@@ -247,13 +319,12 @@
                     if (camp.platforms.includes('youtube')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
                 }
 
-                // IDENTIK DENGAN CLIPPER CARD
                 html += `
-                <div class="w-full campaign-card bg-cardBg border rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:-translate-y-1 transition-all duration-300 shadow-xl group ${cardOpacity}">
+                <div class="${cardBaseClass}">
                     
                     <!-- BANNER -->
                     <div class="w-full aspect-[16/9] bg-zinc-950 rounded-xl mb-4 flex flex-col items-center justify-center relative overflow-hidden shrink-0 border border-zinc-800/50">
-                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${imgOpacity}">` : `<span class="text-zinc-600 text-xs font-medium">No Banner</span>`}
+                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover ${imgOpacityClass}">` : `<span class="text-zinc-600 text-xs font-medium">No Banner</span>`}
                     </div>
                     
                     <!-- BRAND & STATUS -->
@@ -261,7 +332,10 @@
                         <div class="flex items-center overflow-hidden pr-2">
                             <span class="text-[11px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrandName}</span>
                         </div>
-                        <div class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</div>
+                        <div class="flex items-center gap-1.5">
+                            ${privateBadge}
+                            <div class="shrink-0 px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</div>
+                        </div>
                     </div>
                     
                     <!-- JUDUL CAMPAIGN -->
@@ -269,7 +343,7 @@
                     
                     <!-- BUDGET -->
                     <div class="mb-3 md:mb-4 flex items-baseline gap-1">
-                        <span class="text-lg md:text-2xl font-extrabold text-white tracking-tight">${formattedPrice}</span>
+                        <span class="text-lg md:text-2xl font-extrabold ${priceColor} tracking-tight">${formattedPrice}</span>
                         <span class="text-zinc-500 text-[9px] md:text-xs font-medium">${priceLabel}</span>
                     </div>
                     
@@ -290,7 +364,7 @@
                             <span class="text-[9px] md:text-xs font-black text-white">${percentage}%</span>
                         </div>
                         <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-4">
-                            <div class="h-full bg-white rounded-full" style="width: ${percentage}%;"></div>
+                            <div class="h-full bg-white rounded-full transition-all duration-500" style="width: ${percentage}%;"></div>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-1.5 md:gap-2">
