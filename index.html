@@ -799,7 +799,8 @@
         }
 
         async function loadHotCampaigns() {
-            const { data, error } = await supabase
+            // 1. Ambil campaign ACTIVE (Prioritas Utama)
+            let { data: activeCampaigns, error: activeError } = await supabase
                 .from('campaigns')
                 .select('*')
                 .eq('status', 'ACTIVE')
@@ -807,17 +808,53 @@
                 .order('created_at', { ascending: false })
                 .limit(4);
 
+            let finalCampaigns = activeCampaigns || [];
+
+            // 2. Jika campaign aktif kurang dari 4, ambil status lain untuk memenuhi grid
+            if (!activeError && finalCampaigns.length < 4) {
+                const limitNeeded = 4 - finalCampaigns.length;
+                const { data: otherCampaigns } = await supabase
+                    .from('campaigns')
+                    .select('*')
+                    .neq('status', 'ACTIVE') // hold atau closed
+                    .eq('is_private', false)
+                    .order('created_at', { ascending: false })
+                    .limit(limitNeeded);
+
+                if (otherCampaigns && otherCampaigns.length > 0) {
+                    // Sort tambahan: prioritas HOLDING dulu baru CLOSED
+                    otherCampaigns.sort((a, b) => {
+                        if (a.status === 'HOLDING' && b.status === 'CLOSED') return -1;
+                        if (a.status === 'CLOSED' && b.status === 'HOLDING') return 1;
+                        return 0;
+                    });
+                    finalCampaigns = finalCampaigns.concat(otherCampaigns);
+                }
+            }
+
             const grid = document.getElementById('hot-campaign-grid');
 
-            if (error || !data || data.length === 0) {
-                grid.innerHTML = '<p class="col-span-full text-center text-zinc-500 py-10">Belum ada campaign aktif saat ini.</p>';
+            if (finalCampaigns.length === 0) {
+                grid.innerHTML = '<p class="col-span-full text-center text-zinc-500 py-10">Belum ada campaign saat ini.</p>';
                 return;
             }
 
             let html = '';
-            data.forEach((camp, index) => {
+            finalCampaigns.forEach((camp, index) => {
+                
+                // Variabel khusus berdasarkan status (menyesuaikan gaya dari explore.html)
                 let statusColor = 'border-zinc-700 bg-zinc-800/40 text-green-400';
                 let statText = 'ACTIVE';
+                let overlayOpacity = 'opacity-100';
+
+                if (camp.status === 'HOLDING') {
+                    statusColor = 'border-yellow-900/50 bg-yellow-900/20 text-yellow-500';
+                    statText = 'HOLD';
+                } else if (camp.status === 'CLOSED') {
+                    statusColor = 'border-red-900/50 bg-red-900/20 text-red-500';
+                    statText = 'CLOSED';
+                    overlayOpacity = 'opacity-50 grayscale'; 
+                }
 
                 const price = camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k;
                 const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
@@ -841,7 +878,7 @@
                 html += `
                 <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group" data-aos="fade-up" data-aos-delay="${delay}">
                     <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
-                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">` : `<div class="absolute inset-0 flex flex-col items-center justify-center"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
+                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center ${overlayOpacity}"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
                     </div>
                     
                     <div class="flex justify-between items-start mb-2 gap-2">
