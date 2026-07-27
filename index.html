@@ -116,7 +116,7 @@
     <!-- Memanggil Component Header -->
     <custom-header></custom-header>
 
-    <!-- Hero Section (Diperbaiki Jarak & Responsive Mobile) -->
+    <!-- Hero Section -->
     <section class="pt-28 pb-16 lg:pt-32 lg:pb-24 px-6 max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-10 lg:gap-16 overflow-hidden text-center lg:text-left">
         
         <!-- Bagian Kiri (Teks Hero) -->
@@ -188,7 +188,7 @@
                     <!-- Main Video Card (Tengah) -->
                     <div class="absolute w-60 sm:w-64 h-96 bg-cardBg/90 backdrop-blur-xl border border-zinc-700/60 rounded-[2rem] p-2 shadow-[0_0_40px_rgba(0,0,0,0.8)] animate-float-slow z-10 overflow-hidden">
                         <div class="w-full h-full bg-zinc-950 rounded-[1.5rem] relative overflow-hidden flex flex-col">
-                            <!-- Image asset diubah menggunakan mockup1.webp -->
+                            <!-- Image asset -->
                             <img src="asset/mockup1.webp" alt="Mockup Video" class="absolute inset-0 w-full h-full object-cover opacity-60">
                             <!-- Gradient overlay -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
@@ -215,7 +215,7 @@
                     <div class="absolute top-[8%] right-[2%] sm:right-[10%] lg:right-[15%] bg-zinc-800/80 backdrop-blur-lg border border-zinc-600/50 px-4 py-3 rounded-2xl shadow-2xl animate-float-fast anim-delay-1 z-20">
                         <p class="text-[10px] text-zinc-400 mb-0.5 font-semibold">Reward Masuk!</p>
                         <p class="text-sm font-black text-white flex items-center gap-1.5">
-                            <!-- Icon uang SVG sebagai pengganti emoji -->
+                            <!-- Icon uang SVG -->
                             <svg class="w-5 h-5 text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.4)]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.64-2.25 1.64-1.74 0-2.26-.8-2.36-1.73H7.81c.11 1.73 1.36 2.87 3.09 3.22V19h2.23v-1.66c1.64-.32 2.76-1.41 2.76-2.92 0-2.03-1.67-2.88-3.58-3.28z"/></svg>
                             Rp 12.000.000
                         </p>
@@ -307,7 +307,6 @@
     <!-- ========================================== -->
     <!-- CONTENT BAWAH (MENGIKUTI TOGGLE DI ATAS)   -->
     <!-- ========================================== -->
-    <!-- Diperbaiki jarak section keseluruhan -->
     <section class="py-10 md:py-12 px-6 max-w-7xl mx-auto relative border-t border-zinc-800/60 mt-4 mb-10 md:mb-12">
         
         <!-- ========================================== -->
@@ -799,37 +798,58 @@
         }
 
         async function loadHotCampaigns() {
-            // 1. Ambil campaign ACTIVE (Prioritas Utama)
-            let { data: activeCampaigns, error: activeError } = await supabase
+            let finalCampaigns = [];
+            let needed = 4;
+
+            // 1. ACTIVE Publik (Prioritas Pertama)
+            const { data: actPub } = await supabase
                 .from('campaigns')
                 .select('*')
                 .eq('status', 'ACTIVE')
                 .eq('is_private', false)
                 .order('created_at', { ascending: false })
-                .limit(4);
+                .limit(needed);
+            
+            if(actPub) finalCampaigns.push(...actPub);
+            needed = 4 - finalCampaigns.length;
 
-            let finalCampaigns = activeCampaigns || [];
-
-            // 2. Jika campaign aktif kurang dari 4, ambil status lain untuk memenuhi grid
-            if (!activeError && finalCampaigns.length < 4) {
-                const limitNeeded = 4 - finalCampaigns.length;
-                const { data: otherCampaigns } = await supabase
+            // 2. ACTIVE Private (Prioritas Kedua)
+            if (needed > 0) {
+                const { data: actPriv } = await supabase
                     .from('campaigns')
                     .select('*')
-                    .neq('status', 'ACTIVE') // hold atau closed
-                    .eq('is_private', false)
+                    .eq('status', 'ACTIVE')
+                    .eq('is_private', true)
                     .order('created_at', { ascending: false })
-                    .limit(limitNeeded);
+                    .limit(needed);
+                
+                if(actPriv) finalCampaigns.push(...actPriv);
+                needed = 4 - finalCampaigns.length;
+            }
 
-                if (otherCampaigns && otherCampaigns.length > 0) {
-                    // Sort tambahan: prioritas HOLDING dulu baru CLOSED
-                    otherCampaigns.sort((a, b) => {
-                        if (a.status === 'HOLDING' && b.status === 'CLOSED') return -1;
-                        if (a.status === 'CLOSED' && b.status === 'HOLDING') return 1;
-                        return 0;
-                    });
-                    finalCampaigns = finalCampaigns.concat(otherCampaigns);
-                }
+            // 3. HOLDING (Prioritas Ketiga)
+            if (needed > 0) {
+                const { data: hold } = await supabase
+                    .from('campaigns')
+                    .select('*')
+                    .eq('status', 'HOLDING')
+                    .order('created_at', { ascending: false })
+                    .limit(needed);
+                
+                if(hold) finalCampaigns.push(...hold);
+                needed = 4 - finalCampaigns.length;
+            }
+
+            // 4. CLOSED (Prioritas Keempat)
+            if (needed > 0) {
+                const { data: closed } = await supabase
+                    .from('campaigns')
+                    .select('*')
+                    .eq('status', 'CLOSED')
+                    .order('created_at', { ascending: false })
+                    .limit(needed);
+                
+                if(closed) finalCampaigns.push(...closed);
             }
 
             const grid = document.getElementById('hot-campaign-grid');
@@ -842,7 +862,10 @@
             let html = '';
             finalCampaigns.forEach((camp, index) => {
                 
-                // Variabel khusus berdasarkan status (menyesuaikan gaya dari explore.html)
+                // Karena ini Landing Page publik, Private selalu dianggap terkunci
+                const isPrivate = camp.is_private === true;
+                const isLocked = isPrivate; 
+
                 let statusColor = 'border-zinc-700 bg-zinc-800/40 text-green-400';
                 let statText = 'ACTIVE';
                 let overlayOpacity = 'opacity-100';
@@ -857,8 +880,18 @@
                 }
 
                 const price = camp.payment_type === 'video' ? camp.price_per_video : camp.reward_per_1k;
-                const priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
                 const priceLabel = camp.payment_type === 'video' ? '/ vid' : '/ 1k view';
+
+                let priceFormatted = '';
+                if (isLocked) {
+                    priceFormatted = 'Rp XXX.XXX';
+                } else {
+                    priceFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
+                }
+
+                const priceColor = isLocked ? 'text-yellow-500/90' : 'text-white';
+                const titleColor = isLocked ? 'text-zinc-400' : 'text-white group-hover:text-zinc-300';
+                const brandColor = isLocked ? 'text-zinc-500' : 'text-zinc-400 hover:text-white';
 
                 const safeTitle = escapeHTML(camp.title);
                 const safeBrand = escapeHTML(camp.brand_name);
@@ -875,21 +908,63 @@
                 const percentage = camp.budget_total > 0 ? Math.round((camp.budget_remaining / camp.budget_total) * 100) : 0;
                 const delay = (index % 4) * 100;
 
+                // Badge Private Logics
+                let privateBadge = isPrivate ? `
+                    <div class="shrink-0 px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full border border-yellow-900/50 bg-yellow-900/20 flex items-center gap-1">
+                        <svg class="w-2.5 h-2.5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <span class="text-[7px] md:text-[9px] font-bold text-yellow-500 tracking-wider">PRIVATE</span>
+                    </div>` : '';
+
+                // Card Styling
+                let cardBaseClass = "campaign-card rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full transition-all duration-300 shadow-xl group";
+                if (isPrivate) {
+                    cardBaseClass += " bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60 hover:-translate-y-1";
+                } else {
+                    cardBaseClass += " bg-cardBg border border-zinc-800/80 hover:border-zinc-500 hover:-translate-y-1";
+                }
+
+                // Banner & Icon Lock
+                let bannerClass = `absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${overlayOpacity}`;
+                let lockedIconOverlay = '';
+                if (isLocked) {
+                    lockedIconOverlay = `
+                    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 hover:bg-black/50 transition-colors duration-300">
+                        <div class="p-2.5 rounded-full bg-black/70 backdrop-blur-md mb-1 border border-zinc-800 shadow-lg">
+                            <svg class="w-6 h-6 text-yellow-500 drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                    </div>`;
+                }
+
+                // Action Button HTML
+                let actionBtnHTML = '';
+                if (isLocked) {
+                    actionBtnHTML = `<button disabled class="w-full bg-yellow-900/10 border border-yellow-900/30 text-yellow-600/60 py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm cursor-not-allowed tracking-wide">Eksklusif VIP</button>`;
+                } else {
+                    actionBtnHTML = `<button onclick="window.showLoginModal()" class="w-full bg-white text-black py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all focus:outline-none">Lihat Campaign</button>`;
+                }
+
                 html += `
-                <div class="campaign-card bg-cardBg border border-zinc-800/80 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:border-zinc-500 hover:-translate-y-1 transition-all duration-300 shadow-xl group" data-aos="fade-up" data-aos-delay="${delay}">
+                <div class="${cardBaseClass}" data-aos="fade-up" data-aos-delay="${delay}">
+                    
                     <div class="w-full relative pt-[56.25%] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 md:mb-4 border border-zinc-800/50 shrink-0">
-                        ${safeBanner ? `<img src="${safeBanner}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ${overlayOpacity}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center ${overlayOpacity}"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
+                        ${lockedIconOverlay}
+                        ${safeBanner ? `<img src="${safeBanner}" class="${bannerClass}">` : `<div class="absolute inset-0 flex flex-col items-center justify-center ${overlayOpacity}"><span class="text-zinc-600 text-[10px] md:text-xs font-medium">No Banner</span></div>`}
                     </div>
                     
                     <div class="flex justify-between items-start mb-2 gap-2">
-                        <span class="text-[10px] md:text-xs font-bold text-zinc-400 hover:text-white transition truncate">${safeBrand}</span>
-                        <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
+                        <span class="text-[10px] md:text-xs font-bold ${brandColor} transition truncate">${safeBrand}</span>
+                        <div class="flex items-center gap-1.5">
+                            ${privateBadge}
+                            <span class="shrink-0 px-1.5 md:px-2 py-0.5 rounded-full border text-[8px] md:text-[9px] font-bold tracking-wider ${statusColor}">${statText}</span>
+                        </div>
                     </div>
                     
-                    <h4 class="text-sm md:text-xl font-black text-white mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
+                    <h4 class="text-sm md:text-xl font-black ${titleColor} mb-2 truncate block w-full group-hover:text-zinc-300 transition-colors" title="${safeTitle}">${safeTitle}</h4>
                     
                     <div class="mb-3 flex items-baseline gap-1 flex-wrap">
-                        <span class="text-sm md:text-2xl font-extrabold text-white tracking-tight leading-none">${priceFormatted}</span>
+                        <span class="text-sm md:text-2xl font-extrabold ${priceColor} tracking-tight leading-none">${priceFormatted}</span>
                         <span class="text-zinc-500 text-[9px] md:text-xs font-medium whitespace-nowrap">${priceLabel}</span>
                     </div>
                     
@@ -905,15 +980,13 @@
                     <div class="mt-auto pt-3 border-t border-zinc-800/50">
                         <div class="flex justify-between items-end mb-1 md:mb-2">
                             <span class="text-[9px] md:text-xs text-zinc-400 font-semibold">Sisa Budget</span>
-                            <span class="text-[9px] md:text-xs font-black text-white">${percentage}%</span>
+                            <span class="text-[9px] md:text-xs font-black text-white">${isLocked ? 'Terkunci' : percentage + '%'}</span>
                         </div>
                         <div class="w-full h-1 md:h-1.5 bg-zinc-800 rounded-full overflow-hidden mb-3 md:mb-4">
-                            <div class="h-full bg-white rounded-full" style="width: ${percentage}%"></div>
+                            <div class="h-full ${isLocked ? 'bg-yellow-800/50' : 'bg-white'} rounded-full" style="width: ${isLocked ? '100' : percentage}%"></div>
                         </div>
                         
-                        <button onclick="window.showLoginModal()" class="w-full bg-white text-black py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold text-[10px] sm:text-xs md:text-sm hover:bg-zinc-200 active:scale-[0.98] transition-all focus:outline-none">
-                            Lihat Campaign
-                        </button>
+                        ${actionBtnHTML}
                     </div>
                 </div>`;
             });
