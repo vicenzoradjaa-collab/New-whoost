@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Kelola Creator Hub - Whoost Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        /* Animasi Modal Theme Whoost */
+        .modal-active { opacity: 1; pointer-events: auto; }
+        .modal-inactive { opacity: 0; pointer-events: none; }
+        .modal-content-active { transform: scale(1) translateY(0); }
+        .modal-content-inactive { transform: scale(0.95) translateY(10px); }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
+
+    <!-- Background Ornamen -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-blue-900/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- HEADER ADMIN -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logow.webp" alt="Whoost Admin Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/100x40?text=WHOOST'">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Kelola Creator Hub</h1>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-20 z-0 scroll-smooth w-full relative">
+        <div class="max-w-7xl mx-auto space-y-6">
+            
+            <!-- CONTROLS: ACTION BUTTON & SEARCH -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                
+                <button onclick="window.openFormModal()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-blue-900/20 w-full md:w-auto focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah Materi Baru
+                </button>
+
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                    <!-- Dropdown Kategori -->
+                    <select id="filterCategory" onchange="window.filterBlogs()" class="w-full sm:w-44 px-3 py-2.5 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 text-sm focus:outline-none focus:border-blue-500 shadow-lg cursor-pointer transition-colors appearance-none">
+                        <option value="All">Semua Kategori</option>
+                        <option value="Modul">Modul</option>
+                        <option value="Tips">Tips</option>
+                        <option value="Tools">Tools</option>
+                        <option value="Template">Template</option>
+                    </select>
+
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-72">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="searchInput" oninput="window.filterBlogs()" placeholder="Cari judul materi..." class="block w-full pl-10 pr-3 py-2.5 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors shadow-lg sm:text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE CONTAINER -->
+            <div class="bg-cardBg border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl relative min-h-[400px]">
+                
+                <div id="tableLoader" class="absolute inset-0 bg-cardBg/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+                    <svg class="w-10 h-10 text-blue-500 animate-spin mb-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span class="text-sm text-zinc-400 font-medium tracking-wide">Memuat Data...</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-zinc-800/50">
+                        <thead class="bg-zinc-900/80">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider w-20">Cover</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Detail Materi</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Kategori</th>
+                                <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider">Tipe Akses</th>
+                                <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-zinc-400 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="blogTableBody" class="divide-y divide-zinc-800/50 bg-transparent">
+                            <!-- Data Table -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden flex-col items-center justify-center py-16 px-4 text-center">
+                    <svg class="w-14 h-14 text-zinc-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"></path></svg>
+                    <h3 class="text-base font-semibold text-zinc-300">Belum ada materi</h3>
+                    <p class="text-xs text-zinc-500 mt-1">Tambahkan modul atau tips pertama Anda.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- MODAL FORM (TAMBAH / EDIT)                 -->
+    <!-- ========================================== -->
+    <div id="formModal" class="fixed inset-0 z-[990] flex items-center justify-center modal-inactive transition-all duration-300 px-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('formModal')"></div>
+        
+        <div id="formModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-full max-w-lg p-6 rounded-2xl flex flex-col transform modal-content-inactive transition-transform duration-300 max-h-[90vh] overflow-y-auto">
+            
+            <div class="flex justify-between items-center mb-5">
+                <h3 id="formModalTitle" class="text-lg font-bold text-white">Tambah Materi Baru</h3>
+                <button onclick="window.closeModal('formModal')" class="text-zinc-500 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form id="blogForm" onsubmit="window.submitBlog(event)" class="space-y-4">
+                <input type="hidden" id="blogId">
+                
+                <!-- Judul -->
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Judul Materi <span class="text-red-500">*</span></label>
+                    <input type="text" id="title" required class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Contoh: Cara FYP di TikTok...">
+                </div>
+
+                <!-- Kategori & Tipe Akses -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Kategori <span class="text-red-500">*</span></label>
+                        <select id="category" required class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none">
+                            <option value="Modul">Modul</option>
+                            <option value="Tips">Tips</option>
+                            <option value="Tools">Tools</option>
+                            <option value="Template">Template</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Tipe Akses</label>
+                        <div class="relative flex items-center bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 h-[42px]">
+                            <label class="flex items-center gap-2 cursor-pointer w-full">
+                                <input type="checkbox" id="isPremium" class="w-4 h-4 text-blue-600 bg-zinc-800 border-zinc-700 rounded focus:ring-blue-500 focus:ring-2">
+                                <span class="text-sm text-white font-medium">Premium / Pro</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Link/URL -->
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Link / Tautan Akses <span class="text-red-500">*</span></label>
+                    <input type="url" id="link" required class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="https://...">
+                    <p class="text-[10px] text-zinc-500 mt-1">Gunakan link YouTube, TikTok, CapCut untuk fitur auto-preview.</p>
+                </div>
+
+                <!-- Upload Gambar -->
+                <div class="pt-2 border-t border-zinc-800/80 mt-4">
+                    <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Thumbnail Cover (Opsional)</label>
+                    <p class="text-[10px] text-zinc-500 mb-2">Jika kosong, sistem akan mencoba mengambil thumbnail otomatis dari Link di atas.</p>
+                    
+                    <div class="space-y-3">
+                        <input type="url" id="imageUrl" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Atau paste URL Gambar langsung disini...">
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-zinc-500 font-semibold w-full text-center">ATAU UPLOAD FILE</span>
+                        </div>
+
+                        <div class="relative">
+                            <input type="file" id="imageFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="window.previewImage(this)">
+                            <div class="w-full border-2 border-dashed border-zinc-700 hover:border-blue-500 bg-zinc-900/50 rounded-xl p-4 flex flex-col items-center justify-center transition-colors">
+                                <svg class="w-6 h-6 text-zinc-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span class="text-xs text-zinc-400 font-medium" id="fileNameDisplay">Klik atau Drag file gambar kesini</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Btn -->
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="window.closeModal('formModal')" class="flex-1 py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-sm font-semibold transition-colors focus:outline-none">Batal</button>
+                    <button type="submit" id="btnSubmitForm" class="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-blue-900/20 focus:outline-none flex justify-center items-center gap-2">
+                        <span>Simpan Materi</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL DELETE KONFIRMASI                    -->
+    <!-- ========================================== -->
+    <div id="deleteModal" class="fixed inset-0 z-[1000] flex items-center justify-center modal-inactive transition-all duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('deleteModal')"></div>
+        <div id="deleteModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300 overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-500 blur-[50px] opacity-20 pointer-events-none"></div>
+
+            <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border-4 border-red-500/20 relative z-10 text-red-500">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 relative z-10">Hapus Materi?</h3>
+            <p class="text-[13px] text-zinc-400 mb-6 leading-relaxed relative z-10">Tindakan ini tidak dapat dibatalkan. Konten akan hilang secara permanen.</p>
+            
+            <div class="flex gap-3 w-full relative z-10">
+                <button onclick="window.closeModal('deleteModal')" class="flex-1 py-3 rounded-xl border border-zinc-700 bg-zinc-800 text-white text-[13px] font-semibold hover:bg-zinc-700 transition-colors disabled:opacity-50">Batal</button>
+                <button id="btnConfirmDelete" onclick="window.executeDelete()" class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[13px] font-semibold transition-all shadow-lg shadow-red-900/20 disabled:opacity-50">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL SUKSES -->
+    <div id="successModal" class="fixed inset-0 z-[1000] flex items-center justify-center modal-inactive transition-all duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('successModal')"></div>
+        <div id="successModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300 overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-green-500 blur-[50px] opacity-20 pointer-events-none"></div>
+            <div class="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center mb-4 border-4 border-green-500/20 relative z-10 text-green-500">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 relative z-10">Berhasil!</h3>
+            <p id="successMessage" class="text-[13px] text-zinc-400 mb-6 relative z-10 leading-relaxed">Aksi berhasil dilakukan.</p>
+            <button onclick="window.closeModal('successModal')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-bold transition-colors shadow-lg shadow-blue-900/20 relative z-10">Tutup</button>
+        </div>
+    </div>
+
+
+    <script>const ACTIVE_MENU = 'blog';</script>
+    <script src="attribute/navbaradmin.js"></script>
+
+    <!-- SUPABASE INTEGRATION -->
+    <script type="module">
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
+
+        window.blogsData = [];
+        window.pendingDeleteId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (typeof enforceRoleProtection === 'function') {
+                    await enforceRoleProtection();
+                }
+
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.replace('admin-login.html');
+                    return;
+                }
+
+                const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+                if (!profile || profile.role !== 'admin') {
+                    window.location.replace('login.html');
+                    return;
+                }
+
+                await loadBlogs();
+
+            } catch (error) {
+                console.error("Kesalahan otentikasi:", error);
+            }
+        });
+
+        // ==========================================
+        // 1. READ (LOAD DATA)
+        // ==========================================
+        async function loadBlogs() {
+            document.getElementById('tableLoader').style.display = 'flex';
+            try {
+                const { data, error } = await supabase
+                    .from('blogs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                window.blogsData = data || [];
+                window.filterBlogs(); 
+
+            } catch (err) {
+                console.error("Gagal memuat blog:", err);
+            } finally {
+                document.getElementById('tableLoader').style.display = 'none';
+            }
+        }
+
+        window.filterBlogs = function() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('filterCategory').value;
+
+            const filteredData = window.blogsData.filter(b => {
+                const matchSearch = b.title.toLowerCase().includes(search);
+                const matchCat = category === 'All' || b.category === category;
+                return matchSearch && matchCat;
+            });
+
+            renderTable(filteredData);
+        };
+
+        function renderTable(data) {
+            const tbody = document.getElementById('blogTableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+                
+                data.forEach(blog => {
+                    const safeTitle = escapeHTML(blog.title);
+                    const safeLink = escapeHTML(blog.link);
+                    const isPremium = blog.is_premium;
+
+                    // Fallback gambar jika kosong (Mencoba pakai thumbnail dr youtube placeholder/default)
+                    let displayImage = blog.image;
+                    if (!displayImage) {
+                        displayImage = 'https://placehold.co/400x225/121214/3f3f46?text=No+Cover';
+                    }
+
+                    // Warna Badge Kategori
+                    let badgeColor = 'bg-zinc-800 text-zinc-300 border-zinc-800';
+                    if(blog.category === 'Modul') badgeColor = 'bg-blue-900/50 text-blue-400 border border-blue-800/50';
+                    if(blog.category === 'Tips') badgeColor = 'bg-emerald-900/50 text-emerald-400 border border-emerald-800/50';
+                    if(blog.category === 'Tools') badgeColor = 'bg-purple-900/50 text-purple-400 border border-purple-800/50';
+                    if(blog.category === 'Template') badgeColor = 'bg-rose-900/50 text-rose-400 border border-rose-800/50';
+
+                    // Premium Badge
+                    const premiumBadge = isPremium 
+                        ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 uppercase tracking-widest"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Premium</span>`
+                        : `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-zinc-800/50 text-zinc-400 border border-zinc-700 uppercase tracking-widest">Free</span>`;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-zinc-800/30 transition-colors group";
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap w-24">
+                            <div class="w-20 h-12 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0">
+                                <img src="${displayImage}" alt="Cover" class="w-full h-full object-cover">
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 align-middle max-w-xs">
+                            <div class="flex flex-col">
+                                <span class="text-[13px] font-bold text-white truncate mb-1" title="${safeTitle}">${safeTitle}</span>
+                                <a href="${safeLink}" target="_blank" class="text-[11px] text-blue-400 hover:text-blue-300 truncate flex items-center gap-1 max-w-[200px]" title="${safeLink}">
+                                    <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    ${safeLink}
+                                </a>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap align-middle">
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${badgeColor}">${blog.category}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap align-middle">
+                            ${premiumBadge}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right align-middle">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="window.openEditModal('${blog.id}')" class="p-2 rounded-lg bg-zinc-800 border border-zinc-700 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-colors" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                                <button onclick="window.confirmDelete('${blog.id}')" class="p-2 rounded-lg bg-zinc-800 border border-zinc-700 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-500 transition-colors" title="Hapus">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        // ==========================================
+        // 2. CREATE & UPDATE (FORM LOGIC)
+        // ==========================================
+        window.previewImage = function(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) {
+                display.innerText = "File terpilih: " + input.files[0].name;
+                display.classList.add('text-blue-400');
+            } else {
+                display.innerText = "Klik atau Drag file gambar kesini";
+                display.classList.remove('text-blue-400');
+            }
+        };
+
+        window.openFormModal = function() {
+            document.getElementById('formModalTitle').innerText = 'Tambah Materi Baru';
+            document.getElementById('blogForm').reset();
+            document.getElementById('blogId').value = '';
+            document.getElementById('fileNameDisplay').innerText = "Klik atau Drag file gambar kesini";
+            document.getElementById('fileNameDisplay').classList.remove('text-blue-400');
+            window.openModal('formModal');
+        };
+
+        window.openEditModal = function(id) {
+            const blog = window.blogsData.find(b => b.id === id);
+            if (!blog) return;
+
+            document.getElementById('formModalTitle').innerText = 'Edit Materi';
+            document.getElementById('blogId').value = blog.id;
+            document.getElementById('title').value = blog.title;
+            document.getElementById('category').value = blog.category;
+            document.getElementById('link').value = blog.link;
+            document.getElementById('imageUrl').value = blog.image || '';
+            document.getElementById('isPremium').checked = blog.is_premium;
+            
+            document.getElementById('imageFile').value = ''; 
+            document.getElementById('fileNameDisplay').innerText = "Klik atau Drag file gambar kesini (Abaikan jika tak diubah)";
+            document.getElementById('fileNameDisplay').classList.remove('text-blue-400');
+
+            window.openModal('formModal');
+        };
+
+        window.submitBlog = async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitForm');
+            const originalHtml = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Menyimpan...`;
+
+            try {
+                const id = document.getElementById('blogId').value;
+                const title = document.getElementById('title').value;
+                const category = document.getElementById('category').value;
+                const link = document.getElementById('link').value;
+                const isPremium = document.getElementById('isPremium').checked;
+                let image = document.getElementById('imageUrl').value;
+
+                // Proses Upload Gambar Jika Ada File yang dipilih
+                const fileInput = document.getElementById('imageFile');
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const fileExt = file.name.split('.').pop();
+                    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+                    
+                    // Upload ke bucket 'blog_images'
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('blog_images')
+                        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+                    
+                    if (uploadError) {
+                        throw new Error("Gagal mengupload gambar. Pastikan bucket 'blog_images' sudah dibuat dan public.");
+                    }
+
+                    // Ambil Public URL
+                    const { data: publicUrlData } = supabase.storage.from('blog_images').getPublicUrl(fileName);
+                    image = publicUrlData.publicUrl;
+                }
+
+                const payload = { title, category, link, image, is_premium: isPremium };
+
+                if (id) {
+                    // Update
+                    const { error } = await supabase.from('blogs').update(payload).eq('id', id);
+                    if (error) throw error;
+                    document.getElementById('successMessage').innerText = "Materi berhasil diperbarui.";
+                } else {
+                    // Insert
+                    const { error } = await supabase.from('blogs').insert([payload]);
+                    if (error) throw error;
+                    document.getElementById('successMessage').innerText = "Materi baru berhasil ditambahkan.";
+                }
+
+                window.closeModal('formModal');
+                await loadBlogs();
+                setTimeout(() => { window.openModal('successModal'); }, 300);
+
+            } catch (error) {
+                alert("Gagal menyimpan data: " + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+            }
+        };
+
+        // ==========================================
+        // 3. DELETE LOGIC
+        // ==========================================
+        window.confirmDelete = function(id) {
+            window.pendingDeleteId = id;
+            window.openModal('deleteModal');
+        };
+
+        window.executeDelete = async function() {
+            if(!window.pendingDeleteId) return;
+
+            const btn = document.getElementById('btnConfirmDelete');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Menghapus...";
+
+            try {
+                const { error } = await supabase.from('blogs').delete().eq('id', window.pendingDeleteId);
+                if (error) throw error;
+
+                window.closeModal('deleteModal');
+                await loadBlogs();
+                
+                document.getElementById('successMessage').innerText = "Materi berhasil dihapus permanen.";
+                setTimeout(() => { window.openModal('successModal'); }, 300);
+            } catch(e) {
+                alert("Gagal menghapus materi: " + e.message);
+                window.closeModal('deleteModal');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+                window.pendingDeleteId = null;
+            }
+        };
+
+        // ==========================================
+        // SISTEM MODAL UTILITY
+        // ==========================================
+        window.openModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + 'Content');
+            modal.classList.remove('modal-inactive');
+            modal.classList.add('modal-active');
+            content.classList.remove('modal-content-inactive');
+            content.classList.add('modal-content-active');
+        };
+
+        window.closeModal = function(modalId) {
+            const modal = document.getElementById(modalId);
+            const content = document.getElementById(modalId + 'Content');
+            modal.classList.remove('modal-active');
+            modal.classList.add('modal-inactive');
+            content.classList.remove('modal-content-active');
+            content.classList.add('modal-content-inactive');
+        };
+
+    </script>
+</body>
+</html>
