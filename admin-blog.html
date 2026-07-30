@@ -74,29 +74,29 @@
 
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto relative">
                     
-                    <!-- CUSTOM DROPDOWN FILTER KATEGORI (TEMA WHOOST) -->
-                    <div class="relative w-full sm:w-44" id="customDropdownContainer">
-                        <button id="dropdownBtn" onclick="window.toggleDropdown()" class="flex items-center justify-between w-full pl-3 pr-3 py-2.5 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 hover:border-zinc-600 transition-colors shadow-lg">
-                            <span id="dropdownSelectedText">Semua Kategori</span>
-                            <svg class="w-4 h-4 text-zinc-500 transition-transform duration-200" id="dropdownIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <!-- CUSTOM DROPDOWN FILTER KATEGORI -->
+                    <div class="relative w-full sm:w-44" id="customFilterDropdownContainer">
+                        <button id="filterDropdownBtn" onclick="window.toggleFilterDropdown()" class="flex items-center justify-between w-full pl-3 pr-3 py-2.5 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 hover:border-zinc-600 transition-colors shadow-lg">
+                            <span id="filterDropdownSelectedText">Semua Kategori</span>
+                            <svg class="w-4 h-4 text-zinc-500 transition-transform duration-200" id="filterDropdownIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         
-                        <div id="dropdownMenu" class="absolute z-[60] w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl opacity-0 invisible transform scale-95 transition-all duration-200 origin-top-right overflow-hidden">
+                        <div id="filterDropdownMenu" class="absolute z-[60] w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl opacity-0 invisible transform scale-95 transition-all duration-200 origin-top-right overflow-hidden">
                             <div class="py-1">
                                 <div onclick="window.selectFilter('All', 'Semua Kategori')" class="cursor-pointer px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                                    Semua Kategori <svg class="w-4 h-4 text-blue-500 hidden" id="check-All" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Semua Kategori <svg class="w-4 h-4 text-blue-500 hidden" id="check-filter-All" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                                 <div onclick="window.selectFilter('Modul', 'Modul')" class="cursor-pointer px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                                    Modul <svg class="w-4 h-4 text-blue-500 hidden" id="check-Modul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Modul <svg class="w-4 h-4 text-blue-500 hidden" id="check-filter-Modul" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                                 <div onclick="window.selectFilter('Tips', 'Tips')" class="cursor-pointer px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                                    Tips <svg class="w-4 h-4 text-blue-500 hidden" id="check-Tips" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Tips <svg class="w-4 h-4 text-blue-500 hidden" id="check-filter-Tips" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                                 <div onclick="window.selectFilter('Tools', 'Tools')" class="cursor-pointer px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                                    Tools <svg class="w-4 h-4 text-blue-500 hidden" id="check-Tools" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Tools <svg class="w-4 h-4 text-blue-500 hidden" id="check-filter-Tools" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                                 <div onclick="window.selectFilter('Template', 'Template')" class="cursor-pointer px-3 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex items-center justify-between group">
-                                    Template <svg class="w-4 h-4 text-blue-500 hidden" id="check-Template" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Template <svg class="w-4 h-4 text-blue-500 hidden" id="check-filter-Template" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 </div>
                             </div>
                         </div>
@@ -165,6 +165,7 @@
 
             <form id="blogForm" onsubmit="window.submitBlog(event)" class="space-y-4">
                 <input type="hidden" id="blogId">
+                <input type="hidden" id="category" value="Modul"> <!-- Hidden Input untuk Dropdown Kategori Form -->
                 
                 <!-- Judul -->
                 <div>
@@ -176,12 +177,23 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Kategori <span class="text-red-500">*</span></label>
-                        <select id="category" required onchange="window.toggleCategoryFields()" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none">
-                            <option value="Modul">Modul</option>
-                            <option value="Tips">Tips</option>
-                            <option value="Tools">Tools</option>
-                            <option value="Template">Template</option>
-                        </select>
+                        
+                        <!-- CUSTOM DROPDOWN KATEGORI UNTUK FORM TEMA WHOOST -->
+                        <div class="relative w-full" id="formCategoryDropdownContainer">
+                            <button type="button" id="formCategoryBtn" onclick="window.toggleFormCategoryDropdown()" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-300 focus:outline-none focus:border-blue-500 transition-colors flex justify-between items-center">
+                                <span id="formCategorySelectedText">Modul</span>
+                                <svg class="w-4 h-4 text-zinc-500 transition-transform duration-200" id="formCategoryIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            
+                            <div id="formCategoryMenu" class="absolute z-[70] w-full mt-1 bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl opacity-0 invisible transform scale-95 transition-all duration-200 origin-top overflow-hidden">
+                                <div class="py-1">
+                                    <div onclick="window.selectFormCategory('Modul')" class="cursor-pointer px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors">Modul</div>
+                                    <div onclick="window.selectFormCategory('Tips')" class="cursor-pointer px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors border-t border-zinc-800/50">Tips</div>
+                                    <div onclick="window.selectFormCategory('Tools')" class="cursor-pointer px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors border-t border-zinc-800/50">Tools</div>
+                                    <div onclick="window.selectFormCategory('Template')" class="cursor-pointer px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors border-t border-zinc-800/50">Template</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Tipe Akses</label>
@@ -197,7 +209,7 @@
                 <!-- FIELD DINAMIS: Link URL atau Textarea Content -->
                 <div id="fieldContainer" class="p-3 bg-zinc-900/50 rounded-xl border border-zinc-800">
                     
-                    <!-- Form Link (Default untuk Modul, Tools, Template) -->
+                    <!-- Form Link (Default) -->
                     <div id="linkGroup">
                         <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Link / Tautan Akses <span class="text-red-500">*</span></label>
                         <input type="url" id="link" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="https://youtube.com/...">
@@ -213,12 +225,12 @@
 
                 <!-- Upload Gambar -->
                 <div class="pt-2 border-t border-zinc-800/80 mt-4">
-                    <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Gambar / Thumbnail Cover</label>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Gambar / Thumbnail Cover (Opsional)</label>
                     <div class="space-y-3">
                         <input type="url" id="imageUrl" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="URL Gambar Langsung (Opsional)...">
                         
                         <div class="flex items-center gap-3">
-                            <span class="text-xs text-zinc-500 font-semibold w-full text-center">ATAU UPLOAD FILE (OPSIONAL)</span>
+                            <span class="text-xs text-zinc-500 font-semibold w-full text-center">ATAU UPLOAD FILE</span>
                         </div>
 
                         <div class="relative">
@@ -249,7 +261,6 @@
         <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('deleteModal')"></div>
         <div id="deleteModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300 overflow-hidden">
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-500 blur-[50px] opacity-20 pointer-events-none"></div>
-
             <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border-4 border-red-500/20 relative z-10 text-red-500">
                 <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
             </div>
@@ -274,6 +285,20 @@
             <h3 class="text-xl font-bold text-white mb-2 relative z-10">Berhasil!</h3>
             <p id="successMessage" class="text-[13px] text-zinc-400 mb-6 relative z-10 leading-relaxed">Aksi berhasil dilakukan.</p>
             <button onclick="window.closeModal('successModal')" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[13px] font-bold transition-colors shadow-lg shadow-blue-900/20 relative z-10">Tutup</button>
+        </div>
+    </div>
+
+    <!-- MODAL ERROR / GAGAL (TEMA WHOOST) -->
+    <div id="errorModal" class="fixed inset-0 z-[1000] flex items-center justify-center modal-inactive transition-all duration-300">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('errorModal')"></div>
+        <div id="errorModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300 overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-red-500 blur-[50px] opacity-20 pointer-events-none"></div>
+            <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mb-4 border-4 border-red-500/20 relative z-10 text-red-500">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 relative z-10">Terjadi Kesalahan!</h3>
+            <p id="errorMessage" class="text-[13px] text-zinc-400 mb-6 relative z-10 leading-relaxed">Gagal memproses data.</p>
+            <button onclick="window.closeModal('errorModal')" class="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-[13px] font-bold transition-colors shadow-lg relative z-10">Tutup</button>
         </div>
     </div>
 
@@ -308,7 +333,6 @@
                 }
 
                 await loadBlogs();
-                window.selectFilter('All', 'Semua Kategori'); 
 
             } catch (error) {
                 console.error("Kesalahan otentikasi:", error);
@@ -316,24 +340,24 @@
         });
 
         // ==========================================
-        // 1. DROPDOWN THEME CUSTOM
+        // 1. DROPDOWN THEME CUSTOM (FILTER ATAS)
         // ==========================================
-        window.toggleDropdown = function() {
-            const menu = document.getElementById('dropdownMenu');
-            const icon = document.getElementById('dropdownIcon');
+        window.toggleFilterDropdown = function() {
+            const menu = document.getElementById('filterDropdownMenu');
+            const icon = document.getElementById('filterDropdownIcon');
             
             if (menu.classList.contains('invisible')) {
                 menu.classList.remove('invisible', 'opacity-0', 'scale-95');
                 menu.classList.add('visible', 'opacity-100', 'scale-100');
                 icon.classList.add('rotate-180');
             } else {
-                window.closeDropdown();
+                window.closeFilterDropdown();
             }
         };
 
-        window.closeDropdown = function() {
-            const menu = document.getElementById('dropdownMenu');
-            const icon = document.getElementById('dropdownIcon');
+        window.closeFilterDropdown = function() {
+            const menu = document.getElementById('filterDropdownMenu');
+            const icon = document.getElementById('filterDropdownIcon');
             menu.classList.add('invisible', 'opacity-0', 'scale-95');
             menu.classList.remove('visible', 'opacity-100', 'scale-100');
             icon.classList.remove('rotate-180');
@@ -341,34 +365,72 @@
 
         window.selectFilter = function(value, textName) {
             window.currentStatusFilter = value;
-            document.getElementById('dropdownSelectedText').textContent = textName;
+            document.getElementById('filterDropdownSelectedText').textContent = textName;
             
             // Reset checkmark
-            document.querySelectorAll('[id^="check-"]').forEach(el => el.classList.add('hidden'));
-            const check = document.getElementById('check-' + value);
+            document.querySelectorAll('[id^="check-filter-"]').forEach(el => el.classList.add('hidden'));
+            const check = document.getElementById('check-filter-' + value);
             if(check) check.classList.remove('hidden');
 
-            window.closeDropdown();
+            window.closeFilterDropdown();
             window.filterBlogs(); 
         };
 
+        // Tutup dropdown jika klik diluar
         document.addEventListener('click', (event) => {
-            const container = document.getElementById('customDropdownContainer');
-            if (container && !container.contains(event.target)) {
-                window.closeDropdown();
+            const filterContainer = document.getElementById('customFilterDropdownContainer');
+            if (filterContainer && !filterContainer.contains(event.target)) {
+                window.closeFilterDropdown();
+            }
+
+            const formCatContainer = document.getElementById('formCategoryDropdownContainer');
+            if (formCatContainer && !formCatContainer.contains(event.target)) {
+                window.closeFormCategoryDropdown();
             }
         });
 
         // ==========================================
-        // 2. READ (LOAD DATA) & FILTER
+        // 2. DROPDOWN THEME CUSTOM (FORM MODAL KATEGORI)
+        // ==========================================
+        window.toggleFormCategoryDropdown = function() {
+            const menu = document.getElementById('formCategoryMenu');
+            const icon = document.getElementById('formCategoryIcon');
+            
+            if (menu.classList.contains('invisible')) {
+                menu.classList.remove('invisible', 'opacity-0', 'scale-95');
+                menu.classList.add('visible', 'opacity-100', 'scale-100');
+                icon.classList.add('rotate-180');
+            } else {
+                window.closeFormCategoryDropdown();
+            }
+        };
+
+        window.closeFormCategoryDropdown = function() {
+            const menu = document.getElementById('formCategoryMenu');
+            const icon = document.getElementById('formCategoryIcon');
+            menu.classList.add('invisible', 'opacity-0', 'scale-95');
+            menu.classList.remove('visible', 'opacity-100', 'scale-100');
+            icon.classList.remove('rotate-180');
+        };
+
+        window.selectFormCategory = function(value) {
+            document.getElementById('category').value = value;
+            document.getElementById('formCategorySelectedText').textContent = value;
+            window.toggleCategoryFields();
+            window.closeFormCategoryDropdown();
+        };
+
+
+        // ==========================================
+        // 3. READ (LOAD DATA) & FILTER
         // ==========================================
         async function loadBlogs() {
             document.getElementById('tableLoader').style.display = 'flex';
             try {
-                // Tarik field termasuk content
+                // MENGGUNAKAN SELECT '*' AGAR TIDAK ERROR JIKA KOLOM 'CONTENT' BELUM ADA
                 const { data, error } = await supabase
                     .from('blogs')
-                    .select('id, title, category, image, link, content, is_premium, created_at')
+                    .select('*')
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
@@ -377,6 +439,7 @@
 
             } catch (err) {
                 console.error("Gagal memuat blog:", err);
+                window.showError("Gagal memuat data dari server.");
             } finally {
                 document.getElementById('tableLoader').style.display = 'none';
             }
@@ -394,6 +457,16 @@
 
             renderTable(filteredData);
         };
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
         function renderTable(data) {
             const tbody = document.getElementById('blogTableBody');
@@ -468,7 +541,7 @@
         }
 
         // ==========================================
-        // 3. CREATE & UPDATE (FORM LOGIC)
+        // 4. CREATE & UPDATE (FORM LOGIC)
         // ==========================================
         
         // Fungsi untuk hide/show kolom Link vs Konten Tips
@@ -509,10 +582,15 @@
             document.getElementById('formModalTitle').innerText = 'Tambah Materi Baru';
             document.getElementById('blogForm').reset();
             document.getElementById('blogId').value = '';
+            
+            // Default select Modal
+            document.getElementById('category').value = 'Modul';
+            document.getElementById('formCategorySelectedText').innerText = 'Modul';
+
             document.getElementById('fileNameDisplay').innerText = "Klik atau Drag file gambar kesini";
             document.getElementById('fileNameDisplay').classList.remove('text-blue-400');
             
-            window.toggleCategoryFields(); // Refresh view
+            window.toggleCategoryFields(); 
             window.openModal('formModal');
         };
 
@@ -523,7 +601,10 @@
             document.getElementById('formModalTitle').innerText = 'Edit Materi';
             document.getElementById('blogId').value = blog.id;
             document.getElementById('title').value = blog.title;
+            
+            // Set Custom Dropdown
             document.getElementById('category').value = blog.category;
+            document.getElementById('formCategorySelectedText').innerText = blog.category;
             
             document.getElementById('link').value = blog.link || '';
             document.getElementById('tipsContent').value = blog.content || '';
@@ -535,7 +616,7 @@
             document.getElementById('fileNameDisplay').innerText = "Klik atau Drag file gambar kesini (Abaikan jika tak diubah)";
             document.getElementById('fileNameDisplay').classList.remove('text-blue-400');
 
-            window.toggleCategoryFields(); // Refresh view berdasarkan kategori yg di load
+            window.toggleCategoryFields();
             window.openModal('formModal');
         };
 
@@ -577,24 +658,36 @@
                         .upload(fileName, file, { cacheControl: '3600', upsert: false });
                     
                     if (uploadError) {
-                        console.error("Upload error details:", uploadError);
-                        throw new Error("Gagal upload gambar. Pastikan bucket 'blog_images' sudah dibuat dan public di Supabase.");
+                        throw new Error("Gagal upload gambar. Pastikan bucket 'blog_images' sudah public.");
                     }
 
                     const { data: publicUrlData } = supabase.storage.from('blog_images').getPublicUrl(fileName);
                     image = publicUrlData.publicUrl;
                 }
 
-                // Payload pengiriman
-                const payload = { title, category, link, content, image, is_premium: isPremium };
+                // Susun Payload Dinamis agar tabel yg tidak punya kolom "content" tdk crash
+                const payload = { title, category, is_premium: isPremium };
+                if (image) payload.image = image;
+                if (link) payload.link = link;
+                
+                // Masukkan content hanya jika diisi (butuh kolom content di DB)
+                if (content) {
+                    payload.content = content;
+                }
 
                 if (id) {
                     const { error } = await supabase.from('blogs').update(payload).eq('id', id);
-                    if (error) throw error;
+                    if (error) {
+                        if(error.code === 'PGRST204') throw new Error("Gagal! Anda perlu menambahkan kolom 'content' (Tipe Text) pada tabel 'blogs' di Supabase.");
+                        throw error;
+                    }
                     document.getElementById('successMessage').innerText = "Materi berhasil diperbarui.";
                 } else {
                     const { error } = await supabase.from('blogs').insert([payload]);
-                    if (error) throw error;
+                    if (error) {
+                        if(error.code === 'PGRST204') throw new Error("Gagal! Anda perlu menambahkan kolom 'content' (Tipe Text) pada tabel 'blogs' di Supabase.");
+                        throw error;
+                    }
                     document.getElementById('successMessage').innerText = "Materi baru berhasil ditambahkan.";
                 }
 
@@ -603,8 +696,8 @@
                 setTimeout(() => { window.openModal('successModal'); }, 300);
 
             } catch (error) {
-                alert("Gagal menyimpan data: " + error.message);
-                console.error(error);
+                window.closeModal('formModal');
+                setTimeout(() => { window.showError(error.message); }, 300);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
@@ -612,7 +705,7 @@
         };
 
         // ==========================================
-        // 4. DELETE LOGIC
+        // 5. DELETE LOGIC
         // ==========================================
         window.confirmDelete = function(id) {
             window.pendingDeleteId = id;
@@ -637,8 +730,8 @@
                 document.getElementById('successMessage').innerText = "Materi berhasil dihapus permanen.";
                 setTimeout(() => { window.openModal('successModal'); }, 300);
             } catch(e) {
-                alert("Gagal menghapus materi: " + e.message);
                 window.closeModal('deleteModal');
+                setTimeout(() => { window.showError("Gagal menghapus: " + e.message); }, 300);
             } finally {
                 btn.disabled = false;
                 btn.innerText = originalText;
@@ -665,6 +758,11 @@
             modal.classList.add('modal-inactive');
             content.classList.remove('modal-content-active');
             content.classList.add('modal-content-inactive');
+        };
+
+        window.showError = function(msg) {
+            document.getElementById('errorMessage').innerText = msg;
+            window.openModal('errorModal');
         };
 
     </script>
