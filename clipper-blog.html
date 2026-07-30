@@ -88,8 +88,8 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             </div>
-            <!-- text-base penting agar iOS tidak auto-zoom -->
-            <input id="searchInput" type="text" placeholder="Cari materi..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-zinc-500 rounded-full py-2 pl-10 pr-4 text-base text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
+            <!-- text-[16px] penting agar iOS tidak auto-zoom -->
+            <input id="searchInput" type="text" placeholder="Cari materi..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-zinc-500 rounded-full py-2 pl-10 pr-4 text-[16px] md:text-sm text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
         </div>
     </header>
 
@@ -118,7 +118,7 @@
                 <button onclick="window.setCategory('Template')" id="tab-Template" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800">Template</button>
             </div>
 
-            <!-- BLOG GRID (2 Grid di Mobile, 3/4/5 di Tablet-Desktop) -->
+            <!-- BLOG GRID -->
             <div id="blog-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 z-10 relative"></div>
 
             <div id="no-data-alert" class="hidden text-center py-20">
@@ -151,7 +151,6 @@
             try {
                 await enforceRoleProtection();
                 
-                // 1. Dapatkan Sesi & Profil (Untuk Cek Premium)
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (session) {
                     sessionUser = session.user;
@@ -159,7 +158,6 @@
                     isUserPremium = profile?.is_premium || false;
                 }
 
-                // 2. Tarik Data Blog Dari Database (Tabel 'blogs' terbaru)
                 const { data: fetchedBlogs, error: blogsError } = await supabase
                     .from('blogs')
                     .select('*')
@@ -167,7 +165,6 @@
 
                 if (!blogsError && fetchedBlogs) {
                     blogData = fetchedBlogs.map(b => {
-                        // Ubah format date database menjadi lebih manusiawi (Misal: 30 Jul 2026)
                         const dateObj = new Date(b.created_at);
                         const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                         
@@ -218,7 +215,6 @@
             
             document.querySelectorAll('.cat-tab').forEach(tab => {
                 const catId = tab.id.replace('tab-', '');
-                
                 tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none border bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800";
                 
                 if (catId === activeCategory) {
@@ -238,24 +234,22 @@
             return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
+        // Fungsi fallback sementara (sebelum API mengembalikan cover asli)
         function extractThumbnail(url) {
-            if (!url) return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop'; 
+            if (!url) return 'https://placehold.co/600x400/121214/3f3f46?text=No+Cover'; 
 
             const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
             if (ytMatch && ytMatch[1]) {
                 return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
             }
 
-            if (url.includes('capcut.com')) return 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop';
-            if (url.includes('tiktok.com')) return 'https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=600&auto=format&fit=crop';
-            if (url.includes('instagram.com')) return 'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&auto=format&fit=crop'; 
-
-            return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop';
+            // Jika bukan Youtube dan Admin tidak upload gambar, tampilkan placeholder selagi ditarik oleh API
+            return 'https://placehold.co/600x400/121214/3f3f46?text=Memuat+Preview...';
         }
 
         async function extractMediaAsync(items) {
             for (let item of items) {
-                if (item.isPremium && !isUserPremium) continue; 
+                const isLocked = item.isPremium && !isUserPremium; 
 
                 const imgEl = document.getElementById(`thumb-${item.id}`);
                 if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
@@ -266,6 +260,8 @@
                 const container = imgEl.parentElement;
 
                 const renderVideo = (videoUrl) => {
+                    if (isLocked) return; // Jika belum langganan, hanya tampilkan Thumbnail Cover, JANGAN putar videonya
+                    
                     const videoEl = document.createElement('video');
                     videoEl.src = videoUrl;
                     videoEl.autoplay = true;
@@ -281,9 +277,15 @@
                         const tkRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
                         const tkJson = await tkRes.json();
                         
-                        if (tkJson.data && tkJson.data.play) {
-                            renderVideo(tkJson.data.play);
-                            imgEl.setAttribute('data-loaded', 'true');
+                        if (tkJson.data) {
+                            // Selalu ganti thumbnail dengan cover asli (Menghilangkan dummy)
+                            if (tkJson.data.cover && !item.image) {
+                                imgEl.src = tkJson.data.cover;
+                                imgEl.setAttribute('data-loaded', 'true');
+                            }
+                            if (tkJson.data.play) {
+                                renderVideo(tkJson.data.play);
+                            }
                         } else {
                             throw new Error("Tikwm limit"); 
                         }
@@ -291,19 +293,30 @@
                     else if (url.includes('instagram.com') || url.includes('capcut.com')) {
                         const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
                         const json = await res.json();
-                        if (json.status === 'success' && json.data && json.data.video && json.data.video.url) {
-                            renderVideo(json.data.video.url);
-                            imgEl.setAttribute('data-loaded', 'true');
+                        if (json.status === 'success' && json.data) {
+                            if (json.data.image && json.data.image.url && !item.image) {
+                                imgEl.src = json.data.image.url;
+                                imgEl.setAttribute('data-loaded', 'true');
+                            }
+                            if (json.data.video && json.data.video.url) {
+                                renderVideo(json.data.video.url);
+                            }
                         }
                     }
                 } catch(e) {
+                    // Fallback jika API Tikwm error
                     if (url.includes('tiktok.com')) {
                         try {
                             const resFallback = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
                             const jsonFallback = await resFallback.json();
-                            if (jsonFallback.status === 'success' && jsonFallback.data && jsonFallback.data.video && jsonFallback.data.video.url) {
-                                renderVideo(jsonFallback.data.video.url);
-                                imgEl.setAttribute('data-loaded', 'true');
+                            if (jsonFallback.status === 'success' && jsonFallback.data) {
+                                if (jsonFallback.data.image && jsonFallback.data.image.url && !item.image) {
+                                    imgEl.src = jsonFallback.data.image.url;
+                                    imgEl.setAttribute('data-loaded', 'true');
+                                }
+                                if (jsonFallback.data.video && jsonFallback.data.video.url) {
+                                    renderVideo(jsonFallback.data.video.url);
+                                }
                             }
                         } catch(errFallback) {}
                     }
@@ -358,7 +371,6 @@
                 if (isLocked) {
                     titleClass = "text-zinc-400";
                     
-                    // THUMBNAIL DILIATIN: Transparan gelap smooth + Logo gembok di tengah tanpa tulisan
                     lockedOverlay = `
                     <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/40 hover:bg-black/50 transition-colors duration-300 pointer-events-none">
                         <div class="p-2 md:p-3 rounded-full bg-black/70 backdrop-blur-md border border-zinc-800 shadow-xl flex flex-col items-center">
@@ -422,6 +434,7 @@
 
             grid.innerHTML = html;
 
+            // Jalankan Scraper otomatis ke API di background untuk mengambil Cover dan Video asli
             if (filteredData.length > 0) {
                 setTimeout(() => {
                     extractMediaAsync(filteredData);
