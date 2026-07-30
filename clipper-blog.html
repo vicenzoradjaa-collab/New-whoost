@@ -145,57 +145,45 @@
         let activeCategory = 'All';
         let searchQuery = '';
         
-        const blogData = [
-            {
-                id: 1,
-                title: "Cara FYP di TikTok Menggunakan Teknik Hook 3 Detik Pertama",
-                category: "Tips", 
-                image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop",
-                date: "24 Jul 2026",
-                isPremium: false,
-                link: "https://example.com/tiktok-tips" 
-            },
-            {
-                id: 2,
-                title: "Template CapCut Viral: Split Screen Gaming & Podcast",
-                category: "Template",
-                image: "", 
-                date: "29 Jul 2026",
-                isPremium: true, 
-                link: "https://www.capcut.com/t/ZS2H44N1j/" 
-            },
-            {
-                id: 3,
-                title: "Tips Subtitle Auto Generate dengan Youtube Studio",
-                category: "Modul",
-                image: "", 
-                date: "30 Jul 2026",
-                isPremium: false,
-                link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-            },
-            {
-                id: 4,
-                title: "Daftar Hashtag Tiktok Terupdate 2026 Untuk Konten Kreator",
-                category: "Tools",
-                image: "", 
-                date: "05 Aug 2026",
-                isPremium: true,
-                link: "https://www.tiktok.com/@mrbeast/video/7339893542289198369"
-            }
-        ];
+        let blogData = [];
 
         async function initializePage() {
             try {
                 await enforceRoleProtection();
                 
-                const { data: { session }, error } = await supabase.auth.getSession();
+                // 1. Dapatkan Sesi & Profil (Untuk Cek Premium)
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (session) {
                     sessionUser = session.user;
                     const { data: profile } = await supabase.from('profiles').select('is_premium').eq('id', sessionUser.id).single();
                     isUserPremium = profile?.is_premium || false;
                 }
+
+                // 2. Tarik Data Blog Dari Database (Tabel 'blogs' terbaru)
+                const { data: fetchedBlogs, error: blogsError } = await supabase
+                    .from('blogs')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (!blogsError && fetchedBlogs) {
+                    blogData = fetchedBlogs.map(b => {
+                        // Ubah format date database menjadi lebih manusiawi (Misal: 30 Jul 2026)
+                        const dateObj = new Date(b.created_at);
+                        const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                        
+                        return {
+                            id: b.id,
+                            title: b.title,
+                            category: b.category,
+                            image: b.image || "", 
+                            date: dateStr,
+                            isPremium: b.is_premium,
+                            link: b.link || "#"
+                        };
+                    });
+                }
             } catch(e) {
-                console.error("Gagal verifikasi role atau data tidak ditemukan:", e);
+                console.error("Gagal inisialisasi halaman:", e);
             } finally {
                 setTimeout(() => {
                     const loader = document.getElementById('pageLoader');
@@ -244,6 +232,11 @@
 
             renderBlogGrid();
         };
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
 
         function extractThumbnail(url) {
             if (!url) return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop'; 
@@ -326,7 +319,6 @@
 
             const filteredData = blogData.filter(item => {
                 const matchCategory = activeCategory === 'All' || item.category === activeCategory;
-                // Update: Fitur search sekarang menyesuaikan hanya pada judul
                 const matchSearch = item.title.toLowerCase().includes(searchQuery);
                 return matchCategory && matchSearch;
             });
@@ -341,6 +333,8 @@
             let html = '';
             filteredData.forEach((item, index) => {
                 const delay = (index % 10) * 50; 
+                
+                const safeTitle = escapeHTML(item.title);
 
                 let badgeColor = 'bg-zinc-800 text-zinc-300 border-zinc-800';
                 if(item.category === 'Modul') badgeColor = 'bg-blue-900/50 text-blue-400 border border-blue-800/50';
@@ -364,7 +358,7 @@
                 if (isLocked) {
                     titleClass = "text-zinc-400";
                     
-                    // THUMBNAIL DILIATIN: Hapus blur, overlay diganti transparan gelap yang smooth + Logo gembok di tengah tanpa tulisan
+                    // THUMBNAIL DILIATIN: Transparan gelap smooth + Logo gembok di tengah tanpa tulisan
                     lockedOverlay = `
                     <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/40 hover:bg-black/50 transition-colors duration-300 pointer-events-none">
                         <div class="p-2 md:p-3 rounded-full bg-black/70 backdrop-blur-md border border-zinc-800 shadow-xl flex flex-col items-center">
@@ -395,8 +389,7 @@
                     
                     <div class="relative w-full pt-[56.25%] bg-zinc-950 overflow-hidden shrink-0 border-b border-zinc-800/50">
                         ${lockedOverlay}
-                        <!-- Gambar dikembalikan jernih (hapus class grayscale dan opacity 50) -->
-                        <img id="thumb-${item.id}" src="${finalImage}" alt="${item.title}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
+                        <img id="thumb-${item.id}" src="${finalImage}" alt="${safeTitle}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100">
                         
                         <div class="absolute top-2 left-2 md:top-3 md:left-3 flex flex-wrap gap-1.5 md:gap-2 z-10 pointer-events-none">
                             <span class="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-md text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest backdrop-blur-md ${badgeColor}">
@@ -409,10 +402,9 @@
                         </div>
                     </div>
                     
-                    <!-- Desain Text Area Disesuaikan Tanpa Deskripsi -->
                     <div class="p-3 md:p-5 flex flex-col flex-1 justify-between gap-3">
-                        <h3 class="${titleClass} font-bold text-[12px] sm:text-sm md:text-base lg:text-lg transition-colors line-clamp-3 leading-snug" title="${item.title}">
-                            ${item.title}
+                        <h3 class="${titleClass} font-bold text-[12px] sm:text-sm md:text-base lg:text-lg transition-colors line-clamp-3 leading-snug" title="${safeTitle}">
+                            ${safeTitle}
                         </h3>
                         
                         <div class="mt-auto flex items-center justify-between border-t border-zinc-800/50 pt-3 md:pt-4">
