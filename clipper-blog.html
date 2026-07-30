@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Creator Hub - Whoost Clipper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes fadeInUpLocal {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up-local {
+            opacity: 0;
+            animation: fadeInUpLocal 0.6s ease-out forwards;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
+
+    <div class="hidden bg-blue-900/50 text-blue-400 border-blue-800/50 bg-emerald-900/50 text-emerald-400 border-emerald-800/50 bg-purple-900/50 text-purple-400 border-purple-800/50 bg-rose-900/50 text-rose-400 border-rose-800/50 bg-yellow-900/80 border-yellow-500/30 text-yellow-500 border border-transparent shadow-lg bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white bg-white text-black"></div>
+
+    <!-- LOADING SCREEN -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-10 sm:h-12 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <p class="mt-6 text-zinc-500 text-[11px] sm:text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Creator Hub...</p>
+        </div>
+    </div>
+
+    <!-- BACKGROUND EFFECT -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-[-20%] left-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full relative">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain" onerror="this.src='https://via.placeholder.com/150x50?text=WHOOST'">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Creator Hub</h1>
+        </div>
+        
+        <div class="hidden md:block relative w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <!-- text-base penting agar iOS tidak auto-zoom -->
+            <input id="searchInput" type="text" placeholder="Cari materi..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-zinc-500 rounded-full py-2 pl-10 pr-4 text-base text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
+        <div class="max-w-[1400px] mx-auto min-h-screen">
+            
+            <div class="mb-10 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800/80 shadow-2xl relative overflow-hidden animate-fade-in-up-local" style="animation-delay: 100ms;">
+                <div class="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                    <svg class="w-48 h-48 text-white transform rotate-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <h2 class="text-2xl md:text-4xl font-extrabold mb-3 tracking-tight">Tingkatkan Skill Clippingmu 🚀</h2>
+                    <p class="text-zinc-400 text-sm md:text-base mb-6 leading-relaxed">
+                        Pelajari trik terbaru, gunakan tools andalan, dan akses template eksklusif untuk memaksimalkan penghasilanmu di Whoost.
+                    </p>
+                </div>
+            </div>
+
+            <!-- TAB MENU FILTER KATEGORI -->
+            <div class="flex items-center gap-2 md:gap-3 mb-8 overflow-x-auto no-scrollbar pb-2 relative py-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <button onclick="window.setCategory('All')" id="tab-All" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg bg-white text-black border border-transparent">Semua</button>
+                <button onclick="window.setCategory('Modul')" id="tab-Modul" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800">Modul</button>
+                <button onclick="window.setCategory('Tips')" id="tab-Tips" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800">Tips</button>
+                <button onclick="window.setCategory('Tools')" id="tab-Tools" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800">Tools</button>
+                <button onclick="window.setCategory('Template')" id="tab-Template" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800">Template</button>
+            </div>
+
+            <!-- BLOG GRID (2 Grid di Mobile, 3/4/5 di Tablet-Desktop) -->
+            <div id="blog-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 z-10 relative"></div>
+
+            <div id="no-data-alert" class="hidden text-center py-20">
+                <svg class="w-16 h-16 text-zinc-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="text-xl font-bold text-white mb-2">Materi tidak ditemukan</h3>
+                <p class="text-zinc-500">Coba ubah kata kunci pencarian Anda.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- SCRIPT -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>const ACTIVE_MENU = 'blog';</script>
+    <script src="attribute/navbarclipper.js"></script>
+
+    <script type="module">
+        import { supabase, enforceRoleProtection } from './authentication/auth.js';
+
+        let isUserPremium = false;
+        let sessionUser = null;
+        let activeCategory = 'All';
+        let searchQuery = '';
+        
+        const blogData = [
+            {
+                id: 1,
+                title: "Cara FYP di TikTok Menggunakan Teknik Hook 3 Detik Pertama",
+                description: "Pelajari cara mempertahankan retensi penonton di 3 detik pertama video clipping kamu.",
+                category: "Tips", 
+                image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop",
+                date: "24 Jul 2026",
+                isPremium: false,
+                link: "https://example.com/tiktok-tips" 
+            },
+            {
+                id: 2,
+                title: "Template CapCut Viral: Split Screen Gaming & Podcast",
+                description: "Download template siap pakai untuk membagi layar menjadi dua bagian.",
+                category: "Template",
+                image: "", 
+                date: "29 Jul 2026",
+                isPremium: true, 
+                link: "https://www.capcut.com/t/ZS2H44N1j/" 
+            },
+            {
+                id: 3,
+                title: "Tips Subtitle Auto Generate dengan Youtube Studio",
+                description: "Cara mudah membuat subtitle otomatis menggunakan fitur dari youtube.",
+                category: "Modul",
+                image: "", 
+                date: "30 Jul 2026",
+                isPremium: false,
+                link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            },
+            {
+                id: 4,
+                title: "Daftar Hashtag Tiktok Terupdate 2026",
+                description: "Gunakan hashtag rahasia ini agar jangkauan konten UGC kamu di Tiktok makin luas.",
+                category: "Tools",
+                image: "", 
+                date: "05 Aug 2026",
+                isPremium: true,
+                link: "https://www.tiktok.com/@mrbeast/video/7339893542289198369"
+            }
+        ];
+
+        // MEMASTIKAN FUNGSI DIJALANKAN DENGAN BENAR AGAR LOADER HILANG
+        async function initializePage() {
+            try {
+                // Memastikan proteksi dipanggil (jika belum login, sistem auth.js biasanya mere-direct)
+                await enforceRoleProtection();
+                
+                // Cek Sesi dan Status Premium User
+                const { data: { session }, error } = await supabase.auth.getSession();
+                
+                if (session) {
+                    sessionUser = session.user;
+                    const { data: profile } = await supabase.from('profiles').select('is_premium').eq('id', sessionUser.id).single();
+                    isUserPremium = profile?.is_premium || false;
+                }
+            } catch(e) {
+                console.error("Gagal verifikasi role atau data tidak ditemukan:", e);
+            } finally {
+                // Loader HILANG DENGAN AMAN DI FINALLY (Terlepas dari sukses/error)
+                setTimeout(() => {
+                    const loader = document.getElementById('pageLoader');
+                    if (loader) {
+                        loader.classList.add('opacity-0'); 
+                        setTimeout(() => loader.style.display = 'none', 500); 
+                    }
+                }, 800);
+            }
+
+            AOS.init({ once: true, offset: 50, duration: 800 });
+            
+            // Render grid
+            renderBlogGrid();
+
+            const searchInput = document.getElementById('searchInput');
+            if(searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.toLowerCase();
+                    renderBlogGrid();
+                });
+            }
+        }
+
+        // Pengecekan readyState untuk mencegah bug "module terlalu lambat / DOMContentLoaded terlewat"
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePage);
+        } else {
+            initializePage();
+        }
+
+        // FUNGSI GANTI KATEGORI
+        window.setCategory = function(category) {
+            activeCategory = category;
+            
+            document.querySelectorAll('.cat-tab').forEach(tab => {
+                const catId = tab.id.replace('tab-', '');
+                
+                tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none border bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800";
+                
+                if (catId === activeCategory) {
+                    if(catId === 'All') tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg bg-white text-black border border-transparent";
+                    if(catId === 'Modul') tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg border bg-blue-900/50 text-blue-400 border-blue-800/50";
+                    if(catId === 'Tips') tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg border bg-emerald-900/50 text-emerald-400 border-emerald-800/50";
+                    if(catId === 'Tools') tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg border bg-purple-900/50 text-purple-400 border-purple-800/50";
+                    if(catId === 'Template') tab.className = "cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg border bg-rose-900/50 text-rose-400 border-rose-800/50";
+                }
+            });
+
+            renderBlogGrid();
+        };
+
+        function extractThumbnail(url) {
+            if (!url) return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop'; 
+
+            const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+            if (ytMatch && ytMatch[1]) {
+                return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+            }
+
+            if (url.includes('capcut.com')) return 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop';
+            if (url.includes('tiktok.com')) return 'https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=600&auto=format&fit=crop';
+            if (url.includes('instagram.com')) return 'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&auto=format&fit=crop'; 
+
+            return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop';
+        }
+
+        async function extractMediaAsync(items) {
+            for (let item of items) {
+                // Jangan load video / API request jika kontennya terkunci oleh Premium
+                if (item.isPremium && !isUserPremium) continue; 
+
+                const imgEl = document.getElementById(`thumb-${item.id}`);
+                if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
+                
+                const url = item.link;
+                if (!url || url === '#') continue;
+
+                const container = imgEl.parentElement;
+
+                const renderVideo = (videoUrl) => {
+                    const videoEl = document.createElement('video');
+                    videoEl.src = videoUrl;
+                    videoEl.autoplay = true;
+                    videoEl.loop = true;
+                    videoEl.muted = true;
+                    videoEl.playsInline = true;
+                    videoEl.className = "absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100";
+                    container.replaceChild(videoEl, imgEl);
+                };
+
+                try {
+                    if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+                        const tkJson = await tkRes.json();
+                        
+                        if (tkJson.data && tkJson.data.play) {
+                            renderVideo(tkJson.data.play);
+                            imgEl.setAttribute('data-loaded', 'true');
+                        } else {
+                            throw new Error("Tikwm limit"); 
+                        }
+                    } 
+                    else if (url.includes('instagram.com') || url.includes('capcut.com')) {
+                        const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                        const json = await res.json();
+                        if (json.status === 'success' && json.data && json.data.video && json.data.video.url) {
+                            renderVideo(json.data.video.url);
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) {
+                    if (url.includes('tiktok.com')) {
+                        try {
+                            const resFallback = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                            const jsonFallback = await resFallback.json();
+                            if (jsonFallback.status === 'success' && jsonFallback.data && jsonFallback.data.video && jsonFallback.data.video.url) {
+                                renderVideo(jsonFallback.data.video.url);
+                                imgEl.setAttribute('data-loaded', 'true');
+                            }
+                        } catch(errFallback) {}
+                    }
+                }
+            }
+        }
+
+        // FUNGSI RENDER GRID DATA
+        function renderBlogGrid() {
+            const grid = document.getElementById('blog-grid');
+            const alertNoData = document.getElementById('no-data-alert');
+            grid.innerHTML = '';
+
+            const filteredData = blogData.filter(item => {
+                const matchCategory = activeCategory === 'All' || item.category === activeCategory;
+                const matchSearch = item.title.toLowerCase().includes(searchQuery) || item.description.toLowerCase().includes(searchQuery);
+                return matchCategory && matchSearch;
+            });
+
+            if (filteredData.length === 0) {
+                alertNoData.classList.remove('hidden');
+                return;
+            } else {
+                alertNoData.classList.add('hidden');
+            }
+
+            let html = '';
+            filteredData.forEach((item, index) => {
+                const delay = (index % 10) * 50; 
+
+                // LOGIKA WARNA BADGE KATEGORI 
+                let badgeColor = 'bg-zinc-800 text-zinc-300 border-zinc-800';
+                if(item.category === 'Modul') badgeColor = 'bg-blue-900/50 text-blue-400 border border-blue-800/50';
+                if(item.category === 'Tips') badgeColor = 'bg-emerald-900/50 text-emerald-400 border border-emerald-800/50';
+                if(item.category === 'Tools') badgeColor = 'bg-purple-900/50 text-purple-400 border border-purple-800/50';
+                if(item.category === 'Template') badgeColor = 'bg-rose-900/50 text-rose-400 border border-rose-800/50';
+
+                // LOGIKA PREMIUM / WHALE / TERKUNCI
+                const isLocked = item.isPremium && !isUserPremium; 
+                let cardClass = "bg-cardBg border border-zinc-800/80 hover:border-zinc-500";
+                let titleClass = "text-white group-hover:text-zinc-300";
+                let btnClass = "bg-white text-black hover:bg-zinc-200";
+                let lockedOverlay = '';
+                let btnActionHTML = '';
+                
+                if (item.isPremium) {
+                    cardClass = "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+                    titleClass = "text-yellow-500 group-hover:text-yellow-400";
+                    btnClass = "bg-gradient-to-r from-yellow-600 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-400 shadow-lg shadow-yellow-900/20";
+                }
+
+                if (isLocked) {
+                    titleClass = "text-zinc-400";
+                    lockedOverlay = `
+                    <div class="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
+                        <div class="p-2 md:p-3 rounded-full bg-black/80 backdrop-blur-md border border-zinc-800 shadow-lg flex flex-col items-center">
+                            <svg class="w-5 h-5 md:w-6 md:h-6 text-yellow-500 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            <span class="text-[8px] md:text-[10px] font-bold text-yellow-500 tracking-widest uppercase">Premium</span>
+                        </div>
+                    </div>`;
+
+                    btnActionHTML = `<button disabled class="w-auto bg-zinc-900/80 border border-zinc-800/50 text-zinc-500 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl text-[9px] md:text-xs font-bold flex items-center gap-1.5 cursor-not-allowed ml-auto">
+                        <svg class="w-2.5 h-2.5 md:w-3 md:h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <span class="hidden sm:block">Locked</span>
+                    </button>`;
+                } else {
+                    let actionLink = item.link;
+                    let targetAttr = 'target="_blank"'; 
+                    if (item.category === 'Tips') { actionLink = `tips.html?id=${item.id}`; targetAttr = ''; }
+                    
+                    btnActionHTML = `<a href="${actionLink}" ${targetAttr} class="${btnClass} w-auto px-4 md:px-5 py-1.5 md:py-2 rounded-lg md:rounded-xl text-[10px] md:text-xs font-bold transition-all focus:outline-none active:scale-95 text-center ml-auto">
+                        Akses
+                    </a>`;
+                }
+
+                const finalImage = item.image ? item.image : extractThumbnail(item.link);
+
+                html += `
+                <div class="${cardClass} rounded-xl md:rounded-2xl overflow-hidden hover:-translate-y-1 transition-all duration-300 shadow-xl flex flex-col h-full group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
+                    
+                    <div class="relative w-full pt-[56.25%] bg-zinc-950 overflow-hidden shrink-0 border-b border-zinc-800/50">
+                        ${lockedOverlay}
+                        <img id="thumb-${item.id}" src="${finalImage}" alt="${item.title}" class="absolute inset-0 w-full h-full object-cover ${isLocked ? 'opacity-50 grayscale' : 'group-hover:scale-105 opacity-90 group-hover:opacity-100'} transition-transform duration-700">
+                        
+                        <div class="absolute top-2 left-2 md:top-3 md:left-3 flex flex-wrap gap-1.5 md:gap-2 z-10 pointer-events-none">
+                            <span class="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-md text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest backdrop-blur-md ${badgeColor}">
+                                ${item.category}
+                            </span>
+                            ${item.isPremium ? `
+                            <span class="px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-md text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest bg-yellow-900/80 border border-yellow-500/30 text-yellow-500 backdrop-blur-md flex items-center gap-0.5 md:gap-1">
+                                <svg class="w-2 h-2 md:w-2.5 md:h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Pro
+                            </span>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="p-2.5 md:p-5 flex flex-col flex-1">
+                        <h3 class="${titleClass} font-bold text-[11px] sm:text-xs md:text-lg mb-1 md:mb-2 transition-colors line-clamp-2 leading-snug" title="${item.title}">
+                            ${item.title}
+                        </h3>
+                        <p class="text-zinc-400 text-[9px] sm:text-xs md:text-sm mb-3 md:mb-5 line-clamp-3 leading-relaxed">
+                            ${item.description}
+                        </p>
+                        
+                        <div class="mt-auto flex items-center justify-between border-t border-zinc-800/50 pt-2.5 md:pt-4">
+                            <span class="text-zinc-500 text-[9px] md:text-xs font-medium flex items-center gap-1 md:gap-1.5 whitespace-nowrap">
+                                <svg class="w-3 h-3 md:w-3.5 md:h-3.5 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                ${item.date}
+                            </span>
+                            
+                            ${btnActionHTML}
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+
+            if (filteredData.length > 0) {
+                setTimeout(() => {
+                    extractMediaAsync(filteredData);
+                }, 100);
+            }
+        }
+    </script>
+</body>
+</html>
