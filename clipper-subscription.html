@@ -69,7 +69,7 @@
         </div>
     </header>
 
-    <!-- MAIN CONTENT (Ditambah pb-24 untuk ruang navbar bawah) -->
+    <!-- MAIN CONTENT -->
     <main class="flex-1 w-full z-10 py-10 px-4 sm:px-8 pb-24 relative">
         <div class="max-w-4xl mx-auto space-y-12">
             
@@ -79,10 +79,10 @@
                     <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
                     Whoost Premium
                 </div>
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
+                <h2 id="heroTitle" class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
                     Jalur Cepat Menuju <br class="hidden sm:block" /> <span class="text-gradient">Cuan Lebih Besar.</span>
                 </h2>
-                <p class="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+                <p id="heroDesc" class="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
                     Tingkatkan karir Clipper-mu. Dapatkan akses ke ekosistem eksklusif, tools rahasia, dan prioritas sistem hanya dengan sekali bayar.
                 </p>
             </div>
@@ -125,7 +125,7 @@
                     </ul>
                     
                     <div class="mt-auto pt-6 border-t border-zinc-800/50">
-                        <button disabled class="w-full py-3 rounded-xl bg-zinc-800 text-zinc-500 text-sm font-semibold cursor-not-allowed border border-zinc-700/50">Akun Anda Saat Ini</button>
+                        <button id="regulerBtn" disabled class="w-full py-3 rounded-xl bg-zinc-800 text-zinc-500 text-sm font-semibold cursor-not-allowed border border-zinc-700/50">Akun Anda Saat Ini</button>
                     </div>
                 </div>
 
@@ -189,9 +189,9 @@
                             <span class="text-sm text-zinc-500 mb-1">/ lifetime</span>
                         </div>
                         
-                        <button onclick="openFormModal()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 group focus:outline-none">
+                        <button id="proBtn" onclick="openFormModal()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2 group focus:outline-none">
                             Beli Akses Premium
-                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            <svg id="proBtnIcon" class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
                     </div>
                 </div>
@@ -205,7 +205,6 @@
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('buyModal')"></div>
         <div id="buyModalContent" class="bg-cardBg border border-zinc-800 rounded-2xl shadow-2xl relative z-10 w-full max-w-md p-6 sm:p-8 flex flex-col transform modal-content-inactive transition-transform duration-300">
             
-            <!-- Modal Header -->
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-white">Konfirmasi Pembelian</h3>
                 <button onclick="closeModal('buyModal')" class="text-zinc-500 hover:text-white transition-colors focus:outline-none">
@@ -215,16 +214,13 @@
 
             <p class="text-sm text-zinc-400 mb-6">Pembelian diproses manual melalui WhatsApp. Data di bawah disesuaikan dengan akun Whoost Anda saat ini.</p>
 
-            <!-- Form -->
             <div class="space-y-4 mb-8">
                 <div>
                     <label class="block text-xs font-medium text-zinc-400 mb-1.5">Nama Lengkap</label>
-                    <!-- Input otomatis diisi dan readonly -->
                     <input type="text" id="buyerName" readonly class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm focus:outline-none cursor-not-allowed placeholder-zinc-700" placeholder="Memuat nama...">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-zinc-400 mb-1.5">Alamat Email (Akun Whoost)</label>
-                    <!-- Input otomatis diisi dan readonly -->
                     <input type="email" id="buyerEmail" readonly class="w-full px-4 py-2.5 bg-zinc-900/50 border border-zinc-800 rounded-lg text-zinc-400 text-sm focus:outline-none cursor-not-allowed placeholder-zinc-700" placeholder="Memuat email...">
                 </div>
                 
@@ -234,7 +230,6 @@
                 </div>
             </div>
 
-            <!-- Tombol Lanjut WA -->
             <button onclick="processToWhatsApp()" class="w-full py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold transition-all shadow-lg flex items-center justify-center gap-2 focus:outline-none">
                 <svg class="w-5 h-5 text-[#25D366]" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 Lanjutkan ke WhatsApp
@@ -247,7 +242,6 @@
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('successModal')"></div>
         <div id="successModalContent" class="bg-cardBg border border-zinc-800 rounded-2xl shadow-2xl relative z-10 w-full max-w-sm p-8 flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300">
             <div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-5 border border-white/20 relative">
-                <!-- Animasi ping -->
                 <div class="absolute inset-0 rounded-full border border-white/40 animate-ping opacity-20"></div>
                 <svg class="w-8 h-8 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             </div>
@@ -265,7 +259,6 @@
     <script>
         const ACTIVE_MENU = 'premium';
     </script>
-    <!-- PEMANGGILAN NAVBAR CLIPPER -->
     <script src="attribute/navbarclipper.js"></script>
 
     <!-- ========================================== -->
@@ -274,46 +267,57 @@
     <script type="module">
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
-        // GANTI DENGAN NOMOR WA ADMIN (Gunakan format 62 tanpa + atau 0)
+        // GANTI DENGAN NOMOR WA ADMIN
         const ADMIN_WHATSAPP = "6281234567890"; 
         
-        // Fungsi Anti-XSS (Sanitasi String)
         function escapeHTML(str) {
             if (!str) return '';
-            return str.toString()
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Inisiasi data saat halaman dimuat
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. Validasi Keamanan (Hanya Clipper yang boleh masuk)
                 await enforceRoleProtection();
 
-                // 2. Ambil data asli dari User yang sedang Login
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                
                 if (sessionError || !session) {
                     throw new Error("Sesi tidak valid");
                 }
 
-                // Ambil Nama Lengkap dari tabel profiles
+                // Ambil Nama Lengkap dan Status Premium dari tabel profiles
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('full_name')
+                    .select('full_name, is_premium')
                     .eq('id', session.user.id)
                     .single();
 
                 const userName = profile?.full_name || "Clipper Tanpa Nama";
                 const userEmail = session.user.email;
+                const isPremium = profile?.is_premium || false;
 
-                // 3. Tampilkan di Form Modal (Sudah di-sanitasi)
+                // Tampilkan di Form Modal
                 document.getElementById('buyerName').value = escapeHTML(userName);
                 document.getElementById('buyerEmail').value = escapeHTML(userEmail);
+
+                // --- LOGIKA UPDATE UI JIKA USER SUDAH PREMIUM ---
+                if (isPremium) {
+                    // Update Text Hero
+                    document.getElementById('heroTitle').innerHTML = `Anda adalah member <br class="hidden sm:block" /> <span class="text-gradient">PRO VIP.</span>`;
+                    document.getElementById('heroDesc').innerText = "Terima kasih telah bergabung. Anda sekarang memiliki akses penuh ke fitur prioritas, tools eksklusif, dan komunitas rahasia Whoost.";
+                    
+                    // Update tombol di kartu Reguler
+                    const regBtn = document.getElementById('regulerBtn');
+                    regBtn.innerText = "Paket Sebelumnya";
+                    
+                    // Update tombol di kartu PRO (Ubah gaya, teks, icon & matikan fungsi modal)
+                    const proBtn = document.getElementById('proBtn');
+                    proBtn.removeAttribute('onclick');
+                    proBtn.className = "w-full py-3.5 rounded-xl bg-zinc-800 text-white text-sm font-bold border border-zinc-700/50 flex items-center justify-center gap-2 cursor-default";
+                    proBtn.innerHTML = `
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        PRO Aktif Seumur Hidup
+                    `;
+                }
 
             } catch (err) {
                 console.error("Auth Error:", err);
@@ -322,13 +326,11 @@
             }
         });
 
-        // BINDING FUNGSI KE WINDOW AGAR BISA DIPANGGIL HTML SETELAH JADI MODULE
         window.openFormModal = function() {
             window.openModal('buyModal');
         };
 
         window.processToWhatsApp = function() {
-            // Ambil dari inputan yang sudah terisi otomatis
             const name = document.getElementById('buyerName').value.trim();
             const email = document.getElementById('buyerEmail').value.trim();
 
@@ -337,22 +339,17 @@
                 return;
             }
 
-            // Menyusun format pesan WhatsApp (Encode agar rapi di URL)
             const message = `Halo Admin Whoost,%0A%0ASaya ingin melakukan pembelian *PRO Membership (LIFETIME)*.%0A%0A*Data Akun:*%0ANama: ${encodeURIComponent(name)}%0AEmail: ${encodeURIComponent(email)}%0A%0A*Tagihan:* Rp 499.000%0A%0AMohon instruksi pembayarannya. Terima kasih!`;
-            
             const waLink = `https://wa.me/${ADMIN_WHATSAPP}?text=${message}`;
 
-            // Buka tab WhatsApp
             window.open(waLink, '_blank');
 
-            // Tutup modal form dan tampilkan modal sukses
             window.closeModal('buyModal');
             setTimeout(() => {
                 window.openModal('successModal');
-            }, 400); // jeda sedikit agar transisi lebih smooth
+            }, 400); 
         };
 
-        // FUNGSI DASAR BUKA/TUTUP MODAL
         window.openModal = function(modalId) {
             const modal = document.getElementById(modalId);
             const content = document.getElementById(modalId + 'Content');
