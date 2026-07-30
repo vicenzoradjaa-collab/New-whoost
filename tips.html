@@ -95,7 +95,7 @@
 
     <!-- MAIN CONTENT (READER VIEW) -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 md:py-10 pb-32 z-0 scroll-smooth w-full relative">
-        <!-- Container dibuat max-w-3xl agar sangat nyaman dibaca (seperti medium/substack) -->
+        <!-- Container max-w-3xl agar sangat nyaman dibaca -->
         <div class="max-w-3xl mx-auto min-h-screen" id="articleContainer" style="display: none;">
             
             <!-- Badges -->
@@ -130,16 +130,20 @@
             </div>
 
             <!-- Content Area / Locked Area -->
-            <div id="contentWrapper" class="relative">
-                <div id="articleContent" class="article-content">
+            <!-- Ditambahkan min-h-[400px] agar modal popup punya ruang yang pas untuk di-tengah -->
+            <div id="contentWrapper" class="relative min-h-[400px]">
+                <div id="articleContent" class="article-content transition-all duration-300">
                     Memuat konten...
                 </div>
 
                 <!-- OVERLAY PREMIUM LOCKED (Muncul jika belum langganan) -->
-                <div id="premiumLockOverlay" class="hidden absolute inset-0 z-10 flex flex-col items-center justify-center pt-10">
-                    <div class="absolute inset-0 bg-gradient-to-b from-darkBg/0 via-darkBg/90 to-darkBg"></div>
+                <!-- Diubah menjadi flex items-center justify-center murni agar rata tengah vertikal & horizontal -->
+                <div id="premiumLockOverlay" class="hidden absolute inset-0 z-10 items-center justify-center px-4">
+                    <!-- Gradient Background Masking -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-darkBg/10 via-darkBg/90 to-darkBg pointer-events-none"></div>
                     
-                    <div class="relative z-20 w-full max-w-md mx-auto bg-cardBg/90 backdrop-blur-xl border border-yellow-900/50 rounded-3xl p-6 sm:p-8 text-center shadow-2xl mt-20">
+                    <!-- Modal Card Lock -->
+                    <div class="relative z-20 w-full max-w-md mx-auto bg-cardBg/90 backdrop-blur-xl border border-yellow-900/50 rounded-3xl p-6 sm:p-8 text-center shadow-2xl">
                         <div class="w-16 h-16 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-5 shadow-[0_0_30px_rgba(234,179,8,0.2)]">
                             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
@@ -150,7 +154,8 @@
                             Tips ini berisi rahasia tingkat lanjut yang hanya bisa diakses oleh kreator dengan status <b>Premium / Pro</b>.
                         </p>
                         
-                        <a href="clipper-dashboard.html" class="block w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black text-sm font-bold transition-all shadow-lg shadow-yellow-900/20 focus:outline-none mb-3">
+                        <!-- Link diganti ke clipper-subscription.html -->
+                        <a href="clipper-subscription.html" class="block w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black text-sm font-bold transition-all shadow-lg shadow-yellow-900/20 focus:outline-none mb-3">
                             Upgrade ke Premium
                         </a>
                         <a href="clipper-blog.html" class="block w-full py-3.5 px-4 rounded-xl bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 text-white text-sm font-bold transition-colors">
@@ -188,7 +193,6 @@
         let isUserPremium = false;
         let sessionUser = null;
 
-        // FUNGSI ANTI-XSS
         function escapeHTML(str) {
             if (!str) return '';
             return str.toString()
@@ -201,7 +205,6 @@
 
         async function initializePage() {
             try {
-                // 1. Validasi Akses
                 await enforceRoleProtection();
                 
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -211,7 +214,6 @@
                     isUserPremium = profile?.is_premium || false;
                 }
 
-                // 2. Ambil Parameter ID dari URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const tipId = urlParams.get('id');
 
@@ -220,7 +222,6 @@
                     return;
                 }
 
-                // 3. Tarik Data Tips dari DB
                 const { data: blog, error: fetchError } = await supabase
                     .from('blogs')
                     .select('*')
@@ -232,14 +233,12 @@
                     return;
                 }
 
-                // Render Data ke UI
                 renderArticle(blog);
 
             } catch(e) {
                 console.error("Gagal memuat materi:", e);
                 showError();
             } finally {
-                // Hilangkan Loader
                 setTimeout(() => {
                     const loader = document.getElementById('pageLoader');
                     if (loader) {
@@ -251,18 +250,14 @@
         }
 
         function renderArticle(blog) {
-            // Tampilkan container artikel
             document.getElementById('articleContainer').style.display = 'block';
             
-            // Format Tanggal
             const dateObj = new Date(blog.created_at);
             const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
             
-            // Set Text Element
             document.getElementById('articleTitle').innerText = blog.title || 'Tanpa Judul';
             document.getElementById('articleDate').innerText = 'Dipublikasikan: ' + dateStr;
 
-            // Handle Badge Premium
             if (blog.is_premium) {
                 const badgeHtml = `
                 <span class="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-extrabold uppercase tracking-widest bg-yellow-900/80 text-yellow-500 border border-yellow-500/30 flex items-center gap-1">
@@ -271,7 +266,6 @@
                 document.getElementById('badgesArea').insertAdjacentHTML('beforeend', badgeHtml);
             }
 
-            // Handle Cover Image
             if (blog.image && blog.image.trim() !== '') {
                 const coverContainer = document.getElementById('articleCoverContainer');
                 const coverImg = document.getElementById('articleCover');
@@ -279,24 +273,30 @@
                 coverContainer.classList.remove('hidden');
             }
 
-            // HANDLE PREMIUM CONTENT LOCK
             const contentBox = document.getElementById('articleContent');
             const lockOverlay = document.getElementById('premiumLockOverlay');
             
-            // Format Konten Teks: Sanitasi XSS lalu ubah Enter (newline) menjadi <br>
             let rawContent = blog.content || 'Isi konten belum ditambahkan oleh admin.';
             let safeContent = escapeHTML(rawContent).replace(/\n/g, '<br>');
 
+            // LOGIKA PENGUNCIAN KONTEN PREMIUM
             if (blog.is_premium && !isUserPremium) {
-                // JIKA TERKUNCI (Bukan User Premium)
-                // Hanya tampilkan sepotong teks (teaser) lalu potong dan berikan efek gradient lock
-                let teaserText = safeContent.substring(0, 150) + '...';
-                contentBox.innerHTML = teaserText;
                 
-                contentBox.classList.add('opacity-30', 'select-none', 'filter', 'blur-[2px]');
+                // Ambil cuplikan kalimat
+                let teaserText = safeContent.substring(0, 150) + '...';
+                
+                // Beri teks dummy samaran ke bawah, agar efek blur terlihat memenuhi halaman (mempercantik UI paywall)
+                let dummyText = "<br><br>Banyak kreator yang tidak menyadari bahwa algoritma sering kali merekomendasikan video berdasarkan interaksi awal. Oleh karena itu, penting untuk memperhatikan kualitas hook...<br><br>Selain itu, penggunaan sound yang sedang trending juga memiliki peran yang sangat krusial. Pastikan kamu selalu memantau trend terbaru di platform tersebut agar video clipping kamu bisa mendapatkan jangkauan yang lebih luas.";
+                
+                contentBox.innerHTML = teaserText + dummyText;
+                
+                // Tambahkan efek blur dan matikan interaksi pada teks
+                contentBox.classList.add('opacity-30', 'select-none', 'filter', 'blur-[5px]', 'pointer-events-none');
+                
+                // Tampilkan popup dan pastikan display flex agar rata tengah sempurna
                 lockOverlay.classList.remove('hidden');
+                lockOverlay.classList.add('flex');
             } else {
-                // JIKA BISA DIAKSES
                 contentBox.innerHTML = safeContent;
             }
 
@@ -309,7 +309,6 @@
             document.getElementById('errorState').classList.add('flex');
         }
 
-        // Pengecekan readyState
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializePage);
         } else {
