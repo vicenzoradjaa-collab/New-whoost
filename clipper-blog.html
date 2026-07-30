@@ -83,15 +83,21 @@
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">Creator Hub</h1>
         </div>
-        <!-- Search bar dihapus dari Header agar dipindah ke layout yang lebih terpusat dan rapi -->
+        
+        <div class="hidden md:block relative w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <!-- text-[16px] penting agar iOS tidak auto-zoom -->
+            <input id="searchInput" type="text" placeholder="Cari materi..." class="w-full bg-zinc-900 border border-zinc-800 focus:border-zinc-500 rounded-full py-2 pl-10 pr-4 text-[16px] md:text-sm text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
+        </div>
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
         <div class="max-w-[1400px] mx-auto min-h-screen">
             
-            <!-- Hero Banner -->
-            <div class="mb-8 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800/80 shadow-2xl relative overflow-hidden animate-fade-in-up-local" style="animation-delay: 100ms;">
+            <div class="mb-10 p-6 md:p-8 rounded-3xl bg-gradient-to-br from-zinc-900 to-zinc-950 border border-zinc-800/80 shadow-2xl relative overflow-hidden animate-fade-in-up-local" style="animation-delay: 100ms;">
                 <div class="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
                     <svg class="w-48 h-48 text-white transform rotate-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
@@ -106,8 +112,6 @@
             <!-- CONTROLS: TABS & PENCARIAN -->
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 md:gap-6 mb-8 z-40 relative">
                 
-                <!-- Pencarian (Mobile urutan 1 di atas, Desktop urutan 2 di kanan) -->
-                <!-- Penggunaan text-[16px] wajib agar iOS (iPhone/iPad) tidak auto zoom! -->
                 <div class="relative w-full lg:w-80 shrink-0 order-1 lg:order-2">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +121,6 @@
                     <input id="searchInput" type="text" placeholder="Cari materi konten..." class="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-500 focus:bg-zinc-900 rounded-full py-2.5 lg:py-3 pl-12 pr-6 text-[16px] text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
                 </div>
 
-                <!-- Tab Menu Filter Kategori (Mobile urutan 2 di bawah, Desktop urutan 1 di kiri) -->
                 <div class="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar w-full lg:w-auto order-2 lg:order-1 pb-2 lg:pb-0 -mx-4 px-4 sm:mx-0 sm:px-0">
                     <button onclick="window.setCategory('All')" id="tab-All" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none shadow-lg bg-white text-black border border-transparent">Semua</button>
                     <button onclick="window.setCategory('Modul')" id="tab-Modul" class="cat-tab whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition-all focus:outline-none bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800">Modul</button>
@@ -157,6 +160,27 @@
         let searchQuery = '';
         
         let blogData = [];
+
+        // Kumpulan gambar dummy estetik bertema kreator
+        const DUMMY_COVERS = [
+            'https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=600&auto=format&fit=crop', // TikTok
+            'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop', // Editing Setup
+            'https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=600&auto=format&fit=crop', // Social Media
+            'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&auto=format&fit=crop', // Instagram
+            'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop', // Code / PC
+            'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=600&auto=format&fit=crop', // Gaming
+            'https://images.unsplash.com/photo-1516280440502-5c0587289895?q=80&w=600&auto=format&fit=crop'  // Setup Lighting
+        ];
+
+        // Generator cover unik & konsisten per-ID
+        function getDummyCover(id) {
+            let hash = 0;
+            const strId = String(id);
+            for (let i = 0; i < strId.length; i++) {
+                hash = strId.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return DUMMY_COVERS[Math.abs(hash) % DUMMY_COVERS.length];
+        }
 
         async function initializePage() {
             try {
@@ -245,16 +269,16 @@
             return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Fungsi penampil sementara sebelum API memproses gambar aslinya
-        function extractThumbnail(url) {
-            if (!url) return 'https://placehold.co/600x400/121214/3f3f46?text=No+Cover'; 
+        function extractThumbnail(url, id) {
+            // Jika kosong (misal tips tanpa link), langsung ambil gambar random estetik
+            if (!url || url === '#') return getDummyCover(id); 
 
             const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
             if (ytMatch && ytMatch[1]) {
                 return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
             }
 
-            // Fallback animasi "Memuat Preview"
+            // Fallback awal sembari ditarik API Video Scraper
             return 'https://placehold.co/600x400/121214/3f3f46?text=Memuat+Preview...';
         }
 
@@ -266,17 +290,18 @@
                 if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
                 
                 const url = item.link;
+                
+                // JIka tidak ada link, ganti dengan Dummy Cover
                 if (!url || url === '#') {
-                    // Jika link kosong (Misal konten Tips text only)
                     if (!item.image) {
-                        imgEl.src = 'https://placehold.co/600x400/121214/3f3f46?text=No+Cover';
+                        imgEl.src = getDummyCover(item.id);
                         imgEl.setAttribute('data-loaded', 'true');
                     }
                     continue;
                 }
 
                 const container = imgEl.parentElement;
-                let isSuccess = false; // Flag penanda jika scrape berhasil
+                let isSuccess = false; 
 
                 const renderVideo = (videoUrl) => {
                     if (isLocked) return; 
@@ -324,7 +349,6 @@
                         }
                     }
                 } catch(e) {
-                    // Fallback jika API pertama error
                     if (url.includes('tiktok.com')) {
                         try {
                             const resFallback = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
@@ -343,10 +367,10 @@
                     }
                 }
 
-                // JIKA API SAMA SEKALI GAGAL MENDAPATKAN GAMBAR, GANTI JADI "NO COVER" (Anti Stuck)
+                // JIKA SCRAPE GAGAL, GANTI PLACEHOLDER "MEMUAT PREVIEW" MENJADI GAMBAR DUMMY ESTETIK
                 if (!isSuccess && !item.image) {
                     if (imgEl.src && imgEl.src.includes('Memuat+Preview')) {
-                        imgEl.src = 'https://placehold.co/600x400/121214/3f3f46?text=No+Cover';
+                        imgEl.src = getDummyCover(item.id);
                         imgEl.setAttribute('data-loaded', 'true');
                     }
                 }
@@ -423,7 +447,8 @@
                     </a>`;
                 }
 
-                const finalImage = item.image ? item.image : extractThumbnail(item.link);
+                // Call extractThumbnail dengan parameter tambahan 'ID'
+                const finalImage = item.image ? item.image : extractThumbnail(item.link, item.id);
 
                 html += `
                 <div class="${cardClass} rounded-xl md:rounded-2xl overflow-hidden hover:-translate-y-1 transition-all duration-300 shadow-xl flex flex-col h-full group animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
