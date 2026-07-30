@@ -102,12 +102,12 @@
                         </div>
                     </div>
 
-                    <!-- Search Input -->
+                    <!-- Search Input (Anti iOS Zoom text-[16px]) -->
                     <div class="relative w-full sm:w-72">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </div>
-                        <input type="text" id="searchInput" oninput="window.filterBlogs()" placeholder="Cari judul materi..." class="block w-full pl-10 pr-3 py-2.5 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors shadow-lg sm:text-sm">
+                        <input type="text" id="searchInput" oninput="window.filterBlogs()" placeholder="Cari judul materi..." class="block w-full pl-10 pr-3 py-2.5 border border-zinc-800 rounded-lg bg-cardBg text-zinc-300 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors shadow-lg text-[16px] sm:text-sm">
                     </div>
                 </div>
             </div>
@@ -165,12 +165,12 @@
 
             <form id="blogForm" onsubmit="window.submitBlog(event)" class="space-y-4">
                 <input type="hidden" id="blogId">
-                <input type="hidden" id="category" value="Modul"> <!-- Hidden Input untuk Dropdown Kategori Form -->
+                <input type="hidden" id="category" value="Modul"> 
                 
-                <!-- Judul -->
+                <!-- Judul (Anti iOS Zoom) -->
                 <div>
                     <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Judul Materi <span class="text-red-500">*</span></label>
-                    <input type="text" id="title" required class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Contoh: Cara FYP di TikTok...">
+                    <input type="text" id="title" required class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-[16px] sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Contoh: Cara FYP di TikTok...">
                 </div>
 
                 <!-- Kategori & Tipe Akses -->
@@ -178,7 +178,7 @@
                     <div>
                         <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Kategori <span class="text-red-500">*</span></label>
                         
-                        <!-- CUSTOM DROPDOWN KATEGORI UNTUK FORM TEMA WHOOST -->
+                        <!-- CUSTOM DROPDOWN KATEGORI UNTUK FORM -->
                         <div class="relative w-full" id="formCategoryDropdownContainer">
                             <button type="button" id="formCategoryBtn" onclick="window.toggleFormCategoryDropdown()" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-zinc-300 focus:outline-none focus:border-blue-500 transition-colors flex justify-between items-center">
                                 <span id="formCategorySelectedText">Modul</span>
@@ -209,25 +209,23 @@
                 <!-- FIELD DINAMIS: Link URL atau Textarea Content -->
                 <div id="fieldContainer" class="p-3 bg-zinc-900/50 rounded-xl border border-zinc-800">
                     
-                    <!-- Form Link (Default) -->
                     <div id="linkGroup">
                         <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Link / Tautan Akses <span class="text-red-500">*</span></label>
-                        <input type="url" id="link" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="https://youtube.com/...">
+                        <input type="url" id="link" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-[16px] sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="https://youtube.com/...">
                     </div>
 
-                    <!-- Form Isi Tips (Hanya muncul untuk kategori Tips) -->
                     <div id="contentGroup" class="hidden">
                         <label class="block text-xs font-semibold text-zinc-400 mb-1.5 uppercase tracking-wide">Isi Konten Tips <span class="text-red-500">*</span></label>
-                        <textarea id="tipsContent" rows="6" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ketik isi artikel tips di sini..."></textarea>
+                        <textarea id="tipsContent" rows="6" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-[16px] sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ketik isi artikel tips di sini..."></textarea>
                     </div>
 
                 </div>
 
                 <!-- Upload Gambar -->
                 <div class="pt-2 border-t border-zinc-800/80 mt-4">
-                    <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Gambar / Thumbnail Cover (Opsional)</label>
+                    <label class="block text-xs font-semibold text-zinc-400 mb-2 uppercase tracking-wide">Gambar / Thumbnail Cover</label>
                     <div class="space-y-3">
-                        <input type="url" id="imageUrl" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="URL Gambar Langsung (Opsional)...">
+                        <input type="url" id="imageUrl" class="w-full px-4 py-2.5 bg-zinc-900 border border-zinc-800 rounded-xl text-[16px] sm:text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors" placeholder="URL Gambar Langsung (Opsional)...">
                         
                         <div class="flex items-center gap-3">
                             <span class="text-xs text-zinc-500 font-semibold w-full text-center">ATAU UPLOAD FILE</span>
@@ -266,7 +264,6 @@
             </div>
             <h3 class="text-xl font-bold text-white mb-2 relative z-10">Hapus Materi?</h3>
             <p class="text-[13px] text-zinc-400 mb-6 leading-relaxed relative z-10">Tindakan ini tidak dapat dibatalkan. Konten akan hilang secara permanen.</p>
-            
             <div class="flex gap-3 w-full relative z-10">
                 <button onclick="window.closeModal('deleteModal')" class="flex-1 py-3 rounded-xl border border-zinc-700 bg-zinc-800 text-white text-[13px] font-semibold hover:bg-zinc-700 transition-colors disabled:opacity-50">Batal</button>
                 <button id="btnConfirmDelete" onclick="window.executeDelete()" class="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white text-[13px] font-semibold transition-all shadow-lg shadow-red-900/20 disabled:opacity-50">Ya, Hapus</button>
@@ -274,7 +271,7 @@
         </div>
     </div>
 
-    <!-- MODAL SUKSES (TEMA WHOOST) -->
+    <!-- MODAL SUKSES -->
     <div id="successModal" class="fixed inset-0 z-[1000] flex items-center justify-center modal-inactive transition-all duration-300">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('successModal')"></div>
         <div id="successModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300 overflow-hidden">
@@ -288,7 +285,7 @@
         </div>
     </div>
 
-    <!-- MODAL ERROR / GAGAL (TEMA WHOOST) -->
+    <!-- MODAL ERROR -->
     <div id="errorModal" class="fixed inset-0 z-[1000] flex items-center justify-center modal-inactive transition-all duration-300">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="window.closeModal('errorModal')"></div>
         <div id="errorModalContent" class="bg-cardBg border border-zinc-700 shadow-2xl relative z-10 w-[90%] max-w-sm p-6 rounded-2xl flex flex-col items-center text-center transform modal-content-inactive transition-transform duration-300 overflow-hidden">
@@ -333,6 +330,7 @@
                 }
 
                 await loadBlogs();
+                window.selectFilter('All', 'Semua Kategori'); 
 
             } catch (error) {
                 console.error("Kesalahan otentikasi:", error);
@@ -367,7 +365,6 @@
             window.currentStatusFilter = value;
             document.getElementById('filterDropdownSelectedText').textContent = textName;
             
-            // Reset checkmark
             document.querySelectorAll('[id^="check-filter-"]').forEach(el => el.classList.add('hidden'));
             const check = document.getElementById('check-filter-' + value);
             if(check) check.classList.remove('hidden');
@@ -376,17 +373,12 @@
             window.filterBlogs(); 
         };
 
-        // Tutup dropdown jika klik diluar
         document.addEventListener('click', (event) => {
             const filterContainer = document.getElementById('customFilterDropdownContainer');
-            if (filterContainer && !filterContainer.contains(event.target)) {
-                window.closeFilterDropdown();
-            }
+            if (filterContainer && !filterContainer.contains(event.target)) window.closeFilterDropdown();
 
             const formCatContainer = document.getElementById('formCategoryDropdownContainer');
-            if (formCatContainer && !formCatContainer.contains(event.target)) {
-                window.closeFormCategoryDropdown();
-            }
+            if (formCatContainer && !formCatContainer.contains(event.target)) window.closeFormCategoryDropdown();
         });
 
         // ==========================================
@@ -420,14 +412,12 @@
             window.closeFormCategoryDropdown();
         };
 
-
         // ==========================================
         // 3. READ (LOAD DATA) & FILTER
         // ==========================================
         async function loadBlogs() {
             document.getElementById('tableLoader').style.display = 'flex';
             try {
-                // MENGGUNAKAN SELECT '*' AGAR TIDAK ERROR JIKA KOLOM 'CONTENT' BELUM ADA
                 const { data, error } = await supabase
                     .from('blogs')
                     .select('*')
@@ -460,12 +450,62 @@
 
         function escapeHTML(str) {
             if (!str) return '';
-            return str.toString()
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            return str.toString().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // FUNGSI AUTO-COVER THUMBNAIL (JIKA GAMBAR KOSONG DI DATABASE)
+        function extractThumbnail(url) {
+            if (!url) return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop'; 
+            const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+            if (ytMatch && ytMatch[1]) {
+                return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+            }
+            if (url.includes('capcut.com')) return 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=600&auto=format&fit=crop';
+            if (url.includes('tiktok.com')) return 'https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=600&auto=format&fit=crop';
+            if (url.includes('instagram.com')) return 'https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=600&auto=format&fit=crop'; 
+            return 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop';
+        }
+
+        // FUNGSI FETCH COVER ASLI TIKTOK / IG SECARA ASINKRON
+        async function extractCoversAsync(items) {
+            for (let item of items) {
+                const imgEl = document.getElementById(`admin-thumb-${item.id}`);
+                // Jika sudah ada gambar dari DB, maka skip fetch API ini.
+                if (!imgEl || imgEl.getAttribute('data-loaded') === 'true' || item.image) continue;
+                
+                const url = item.link;
+                if (!url || url === '#') continue;
+
+                try {
+                    if (url.includes('tiktok.com')) {
+                        const tkRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
+                        const tkJson = await tkRes.json();
+                        if (tkJson.data && tkJson.data.cover) {
+                            imgEl.src = tkJson.data.cover;
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    } 
+                    else if (url.includes('instagram.com') || url.includes('capcut.com')) {
+                        const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                        const json = await res.json();
+                        if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                            imgEl.src = json.data.image.url;
+                            imgEl.setAttribute('data-loaded', 'true');
+                        }
+                    }
+                } catch(e) {
+                    if (url.includes('tiktok.com')) {
+                        try {
+                            const resFallback = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+                            const jsonFallback = await resFallback.json();
+                            if (jsonFallback.status === 'success' && jsonFallback.data && jsonFallback.data.image && jsonFallback.data.image.url) {
+                                imgEl.src = jsonFallback.data.image.url;
+                                imgEl.setAttribute('data-loaded', 'true');
+                            }
+                        } catch(errFallback) {}
+                    }
+                }
+            }
         }
 
         function renderTable(data) {
@@ -482,14 +522,13 @@
                 
                 data.forEach(blog => {
                     const safeTitle = escapeHTML(blog.title);
-                    
-                    // Jika kategori tips, link mungkin kosong
                     const linkOrTips = blog.category === 'Tips' ? 'Artikel Internal (Tips)' : escapeHTML(blog.link);
                     const isPremium = blog.is_premium;
 
+                    // Menggunakan Auto-Thumbnail fallback jika tidak ada gambar
                     let displayImage = blog.image;
                     if (!displayImage) {
-                        displayImage = 'https://placehold.co/400x225/121214/3f3f46?text=No+Cover';
+                        displayImage = extractThumbnail(blog.link);
                     }
 
                     let badgeColor = 'bg-zinc-800 text-zinc-300 border-zinc-800';
@@ -506,8 +545,8 @@
                     tr.className = "hover:bg-zinc-800/30 transition-colors group";
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap w-24">
-                            <div class="w-20 h-12 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0">
-                                <img src="${displayImage}" alt="Cover" class="w-full h-full object-cover">
+                            <div class="w-20 h-12 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 relative">
+                                <img id="admin-thumb-${blog.id}" src="${displayImage}" alt="Cover" class="w-full h-full object-cover">
                             </div>
                         </td>
                         <td class="px-6 py-4 align-middle max-w-xs">
@@ -537,14 +576,17 @@
                     `;
                     tbody.appendChild(tr);
                 });
+
+                // Ekstrak cover asli dari URL dengan jeda singkat agar tabel termuat dahulu
+                if (data.length > 0) {
+                    setTimeout(() => extractCoversAsync(data), 100);
+                }
             }
         }
 
         // ==========================================
         // 4. CREATE & UPDATE (FORM LOGIC)
         // ==========================================
-        
-        // Fungsi untuk hide/show kolom Link vs Konten Tips
         window.toggleCategoryFields = function() {
             const cat = document.getElementById('category').value;
             const linkGroup = document.getElementById('linkGroup');
@@ -583,7 +625,6 @@
             document.getElementById('blogForm').reset();
             document.getElementById('blogId').value = '';
             
-            // Default select Modal
             document.getElementById('category').value = 'Modul';
             document.getElementById('formCategorySelectedText').innerText = 'Modul';
 
@@ -602,7 +643,6 @@
             document.getElementById('blogId').value = blog.id;
             document.getElementById('title').value = blog.title;
             
-            // Set Custom Dropdown
             document.getElementById('category').value = blog.category;
             document.getElementById('formCategorySelectedText').innerText = blog.category;
             
@@ -636,7 +676,6 @@
                 
                 let image = document.getElementById('imageUrl').value || null;
                 
-                // Ambil data spesifik berdasarkan Kategori
                 let link = null;
                 let content = null;
 
@@ -658,34 +697,30 @@
                         .upload(fileName, file, { cacheControl: '3600', upsert: false });
                     
                     if (uploadError) {
-                        throw new Error("Gagal upload gambar. Pastikan bucket 'blog_images' sudah public.");
+                        throw new Error("Gagal upload gambar. Pastikan bucket 'blog_images' sudah public di Supabase.");
                     }
 
                     const { data: publicUrlData } = supabase.storage.from('blog_images').getPublicUrl(fileName);
                     image = publicUrlData.publicUrl;
                 }
 
-                // Susun Payload Dinamis agar tabel yg tidak punya kolom "content" tdk crash
+                // Susun Payload Dinamis
                 const payload = { title, category, is_premium: isPremium };
                 if (image) payload.image = image;
                 if (link) payload.link = link;
-                
-                // Masukkan content hanya jika diisi (butuh kolom content di DB)
-                if (content) {
-                    payload.content = content;
-                }
+                if (content) payload.content = content;
 
                 if (id) {
                     const { error } = await supabase.from('blogs').update(payload).eq('id', id);
                     if (error) {
-                        if(error.code === 'PGRST204') throw new Error("Gagal! Anda perlu menambahkan kolom 'content' (Tipe Text) pada tabel 'blogs' di Supabase.");
+                        if(error.code === 'PGRST204') throw new Error("Kolom 'content' belum ada di database.");
                         throw error;
                     }
                     document.getElementById('successMessage').innerText = "Materi berhasil diperbarui.";
                 } else {
                     const { error } = await supabase.from('blogs').insert([payload]);
                     if (error) {
-                        if(error.code === 'PGRST204') throw new Error("Gagal! Anda perlu menambahkan kolom 'content' (Tipe Text) pada tabel 'blogs' di Supabase.");
+                        if(error.code === 'PGRST204') throw new Error("Kolom 'content' belum ada di database.");
                         throw error;
                     }
                     document.getElementById('successMessage').innerText = "Materi baru berhasil ditambahkan.";
