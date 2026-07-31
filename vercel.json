@@ -1,3 +1,17 @@
 {
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "header",
+          "key": "x-vercel-error",
+          "value": "404"
+        }
+      ],
+      "destination": "/",
+      "permanent": true
+    }
+  ]
 }
