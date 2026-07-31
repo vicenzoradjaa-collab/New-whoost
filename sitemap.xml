@@ -9,31 +9,20 @@
   </url>
   <!-- Halaman Campaign -->
   <url>
-    <loc>https://whoost.id/campaign</loc>
+    <loc>https://whoost.id/explore.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <!-- Halaman FAQ -->
   <url>
-    <loc>https://whoost.id/faq</loc>
+    <loc>https://whoost.id/faq.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <!-- Halaman Contact -->
   <url>
-    <loc>https://whoost.id/contact</loc>
+    <loc>https://whoost.id/contact.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-  </url>
-  <!-- Halaman Legal (dari bahasan sebelumnya) -->
-  <url>
-    <loc>https://whoost.id/privacy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://whoost.id/terms-of-service</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
   </url>
 </urlset>
