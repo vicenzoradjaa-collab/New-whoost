@@ -1,17 +1,12 @@
 {
   "cleanUrls": true,
   "redirects": [
-    {
-      "source": "/(.*)",
-      "has": [
-        {
-          "type": "header",
-          "key": "x-vercel-error",
-          "value": "404"
-        }
-      ],
-      "destination": "/",
-      "permanent": true
-    }
+    { "source": "/tentang-kami", "destination": "/", "permanent": true },
+    { "source": "/company-profile", "destination": "/", "permanent": true },
+    { "source": "/kontak-komunitas", "destination": "/", "permanent": true },
+    { "source": "/tools-produksi-konten", "destination": "/", "permanent": true },
+    { "source": "/modul", "destination": "/", "permanent": true },
+    { "source": "/trik-rahasia-algoritma", "destination": "/", "permanent": true },
+    { "source": "/dashboard", "destination": "/", "permanent": true }
   ]
 }
