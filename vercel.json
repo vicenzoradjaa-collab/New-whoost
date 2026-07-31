@@ -3,10 +3,10 @@
   "redirects": [
     { "source": "/tentang-kami", "destination": "/", "permanent": true },
     { "source": "/company-profile", "destination": "/", "permanent": true },
-    { "source": "/kontak-komunitas", "destination": "/", "permanent": true },
-    { "source": "/tools-produksi-konten", "destination": "/", "permanent": true },
+    { "source": "/kontak", "destination": "/", "permanent": true },
+    { "source": "/tools", "destination": "/", "permanent": true },
     { "source": "/modul", "destination": "/", "permanent": true },
     { "source": "/trik-rahasia-algoritma", "destination": "/", "permanent": true },
-    { "source": "/dashboard", "destination": "/", "permanent": true }
+    { "source": "/dashboard-boost", "destination": "/", "permanent": true }
   ]
 }
