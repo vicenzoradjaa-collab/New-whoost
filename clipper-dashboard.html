@@ -58,6 +58,81 @@
             background-size: 12px 12px;
         }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+
+        /* Flatpickr Custom Theme - Disesuaikan Murni dengan Tema Dark/Zinc Web Anda */
+        .flatpickr-calendar {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+        .flatpickr-months .flatpickr-month {
+            background: transparent !important;
+            color: #fff !important;
+            fill: #fff !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #121214 !important;
+            color: #fff !important;
+            padding: 2px !important;
+        }
+        .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+            background: #27272a !important;
+        }
+        .flatpickr-current-month .numInputWrapper span.arrowUp:after { border-bottom-color: #fff !important; }
+        .flatpickr-current-month .numInputWrapper span.arrowDown:after { border-top-color: #fff !important; }
+        .flatpickr-weekdays {
+            background: transparent !important;
+        }
+        span.flatpickr-weekday {
+            color: #a1a1aa !important; /* zinc-400 */
+            font-weight: 600 !important;
+        }
+        .flatpickr-day {
+            color: #e4e4e7 !important; /* zinc-200 */
+            border-radius: 8px !important;
+        }
+        .flatpickr-day.inRange, 
+        .flatpickr-day.prevMonthDay.inRange, 
+        .flatpickr-day.nextMonthDay.inRange, 
+        .flatpickr-day.today.inRange, 
+        .flatpickr-day.prevMonthDay.today.inRange, 
+        .flatpickr-day.nextMonthDay.today.inRange {
+            background: #27272a !important; /* zinc-800 */
+            border-color: #27272a !important;
+            box-shadow: -5px 0 0 #27272a, 5px 0 0 #27272a !important;
+        }
+        .flatpickr-day.selected, 
+        .flatpickr-day.startRange, 
+        .flatpickr-day.endRange, 
+        .flatpickr-day.selected.inRange, 
+        .flatpickr-day.startRange.inRange, 
+        .flatpickr-day.endRange.inRange, 
+        .flatpickr-day.selected:focus, 
+        .flatpickr-day.startRange:focus, 
+        .flatpickr-day.endRange:focus, 
+        .flatpickr-day.selected:hover, 
+        .flatpickr-day.startRange:hover, 
+        .flatpickr-day.endRange:hover, 
+        .flatpickr-day.selected.prevMonthDay, 
+        .flatpickr-day.startRange.prevMonthDay, 
+        .flatpickr-day.endRange.prevMonthDay, 
+        .flatpickr-day.selected.nextMonthDay, 
+        .flatpickr-day.startRange.nextMonthDay, 
+        .flatpickr-day.endRange.nextMonthDay {
+            background: #ffffff !important;
+            color: #000000 !important;
+            border-color: #ffffff !important;
+            font-weight: 700;
+        }
+        .flatpickr-day.today {
+            border-color: #52525b !important; /* zinc-600 */
+        }
+        .flatpickr-day:hover, .flatpickr-day.prevMonthDay:hover, .flatpickr-day.nextMonthDay:hover, .flatpickr-day:focus, .flatpickr-day.prevMonthDay:focus, .flatpickr-day.nextMonthDay:focus {
+            background: #27272a !important;
+            border-color: #27272a !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -159,8 +234,8 @@
                 <div class="bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-lg shadow-black/20">
                     
                     <!-- Header Chart & Filter -->
-                    <!-- Menggunakan flex-row, nowrap, horizontal scroll untuk mobile agar sejajar 1 baris -->
-                    <div class="flex flex-row items-center justify-between w-full gap-4 mb-6 pb-2 overflow-x-auto hide-scrollbar">
+                    <!-- Flex-wrap agar mencegah elemen terpotong/hilang karena scroll pada mobile, z-10 agar menimpa isi chart -->
+                    <div class="flex flex-wrap sm:flex-nowrap items-center justify-between w-full gap-4 mb-6 pb-2 relative z-10">
                         
                         <div class="flex items-center gap-4 shrink-0">
                             <!-- Judul dihilangkan di mobile jika dirasa sempit, diganti inline -->
@@ -180,16 +255,29 @@
                                 <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
 
-                            <!-- Isi Menu Dropdown -->
-                            <div id="date-filter-menu" class="absolute right-0 mt-2 w-44 bg-[#18181b] border border-zinc-800 rounded-xl shadow-xl z-50 hidden flex-col overflow-hidden">
-                                <button class="date-option text-left px-4 py-2.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none" data-days="7">7 hari terakhir</button>
-                                <button class="date-option text-left px-4 py-2.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none" data-days="28">28 hari terakhir</button>
-                                <div class="border-t border-zinc-800/50 my-1"></div>
-                                <button id="date-option-custom" class="text-left px-4 py-2.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none">Pilih Tanggal</button>
+                            <!-- Isi Menu Dropdown Popover Sejajar (Preset + Calendar) -->
+                            <div id="date-filter-menu" class="absolute right-0 top-full mt-2 bg-[#121214] border border-zinc-800 rounded-xl shadow-2xl z-50 hidden flex-col md:flex-row overflow-hidden origin-top-right w-[310px] md:w-auto md:min-w-[500px]">
+                                
+                                <!-- Kiri: Panel Opsi Cepat (Preset) -->
+                                <div class="flex flex-col w-full md:w-44 bg-[#121214] border-b md:border-b-0 md:border-r border-zinc-800 shrink-0 p-2 gap-1">
+                                    <button class="date-option text-left px-3 py-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors focus:outline-none" data-days="7">7 hari terakhir</button>
+                                    <button class="date-option text-left px-3 py-2.5 rounded-lg text-xs font-medium text-white bg-zinc-800 transition-colors focus:outline-none" data-days="28">28 hari terakhir</button>
+                                    <div class="border-t border-zinc-800/50 my-1 mx-2"></div>
+                                    <button id="date-option-custom" class="text-left px-3 py-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors focus:outline-none">Pilih Tanggal</button>
+                                </div>
+
+                                <!-- Kanan: Area Kalender Interaktif -->
+                                <div class="flex flex-col bg-darkBg flex-1">
+                                    <div id="calendar-inline-container" class="p-2 sm:p-4 flex justify-center w-full overflow-x-auto hide-scrollbar">
+                                        <!-- Inline Flatpickr Input Render Area -->
+                                        <input type="text" id="flatpickr-input" class="hidden">
+                                    </div>
+                                    <div class="p-3 sm:p-4 border-t border-zinc-800 flex justify-end bg-[#121214]">
+                                        <button id="apply-date-btn" class="px-5 py-2 text-[11px] sm:text-xs font-bold rounded-lg bg-white text-black hover:bg-zinc-200 active:scale-95 transition-all focus:outline-none">Terapkan</button>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Invisible Input untuk Flatpickr (Kalender Murni) -->
-                            <input type="text" id="flatpickr-input" class="hidden">
                         </div>
                     </div>
 
@@ -304,28 +392,25 @@
             }
         }
 
-        // FUNGSI MEMUAT & MENGGENERATE DATA CHART BERDASARKAN RENTANG WAKTU
         function generateChartData(daysCount, endDate = new Date()) {
             labelsChart = [];
             dataTotal = [];
             dataKenaikan = [];
             
-            let currentCumulative = 50000; // Base dummy view untuk total awal
+            let currentCumulative = 50000; 
 
-            // Mengisi array dari ujung awal hingga akhir
             for (let i = daysCount - 1; i >= 0; i--) {
                 const d = new Date(endDate);
                 d.setDate(d.getDate() - i);
                 labelsChart.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
                 
-                let kenaikanHarian = Math.floor(Math.random() * 4000) + 100; // Mock kenaikan view harian
+                let kenaikanHarian = Math.floor(Math.random() * 4000) + 100; 
                 currentCumulative += kenaikanHarian;
 
                 dataKenaikan.push(kenaikanHarian);
                 dataTotal.push(currentCumulative);
             }
 
-            // Jika chart sudah pernah diinisialisasi, update isinya saja (transisi halus)
             if(analyticsChartInstance) {
                 analyticsChartInstance.data.labels = labelsChart;
                 analyticsChartInstance.data.datasets[0].data = currentChartMode === 'total' ? dataTotal : dataKenaikan;
@@ -336,7 +421,6 @@
             }
         }
 
-        // Fungsi Awal Load Analitik (Default 28 Hari)
         async function loadAnalyticsData(userId) {
             try {
                 generateChartData(28, new Date());
@@ -345,16 +429,13 @@
             }
         }
 
-        // FUNGSI INIT CHART.JS
         function initChart(datasetToShow) {
             const ctx = document.getElementById('analyticsChart').getContext('2d');
             
-            // Efek Gradien Elegan (Putih transparan ke hitam/transparan)
             const gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
             gradientFill.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
             gradientFill.addColorStop(1, 'rgba(255, 255, 255, 0)');
             
-            // Plugin Custom untuk Garis Vertikal (Crosshair) saat Hover
             const verticalCrosshairPlugin = {
                 id: 'verticalCrosshair',
                 afterDraw: (chart) => {
@@ -370,7 +451,7 @@
                         ctx.moveTo(x, topY);
                         ctx.lineTo(x, bottomY);
                         ctx.lineWidth = 1;
-                        ctx.strokeStyle = '#52525b'; // zinc-600
+                        ctx.strokeStyle = '#52525b'; 
                         ctx.setLineDash([5, 5]);
                         ctx.stroke();
                         ctx.restore();
@@ -389,7 +470,7 @@
                     datasets: [{
                         label: 'Views',
                         data: datasetToShow,
-                        borderColor: '#ffffff', // Putih elegan
+                        borderColor: '#ffffff',
                         backgroundColor: gradientFill,
                         tension: 0.4, 
                         fill: true,
@@ -415,17 +496,17 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#ffffff', // Background putih ala SaaS modern
+                            backgroundColor: '#ffffff', 
                             titleColor: '#000000',
                             bodyColor: '#000000',
-                            borderColor: '#e4e4e7', // zinc-200 border
+                            borderColor: '#e4e4e7', 
                             borderWidth: 1,
                             padding: { top: 6, bottom: 6, left: 10, right: 10 },
                             displayColors: false, 
-                            titleFont: { size: 0 }, // Sembunyikan title date
+                            titleFont: { size: 0 }, 
                             bodyFont: { family: "'Inter', sans-serif", size: 12, weight: '700' },
                             callbacks: {
-                                title: () => null, // Hilangkan judul tooltip
+                                title: () => null, 
                                 label: function(context) {
                                     return context.parsed.y.toLocaleString('id-ID') + ' Views';
                                 }
@@ -435,20 +516,20 @@
                     scales: {
                         x: {
                             grid: {
-                                color: '#27272a', // zinc-800
-                                borderDash: [4, 4], // Putus-putus
+                                color: '#27272a', 
+                                borderDash: [4, 4], 
                                 drawBorder: false
                             },
                             ticks: {
                                 color: '#71717a', 
                                 font: { family: "'Inter', sans-serif", size: 10 },
-                                maxTicksLimit: window.innerWidth < 600 ? 7 : 14 // Tampilan lebih renggang di HP
+                                maxTicksLimit: window.innerWidth < 600 ? 7 : 14 
                             }
                         },
                         y: {
                             type: 'linear',
                             display: true,
-                            position: 'right', // POSISI KANAN SESUAI REFERENSI
+                            position: 'right', 
                             grid: {
                                 color: '#27272a', 
                                 borderDash: [4, 4], 
@@ -470,12 +551,12 @@
             });
         }
 
-        // FUNGSI INTERAKSI BUTTON & DROPDOWN FILTER
+        // KONTROL CHART & DROPDOWN FILTER WAKTU BARU
         function setupChartControls() {
             const btnTotal = document.getElementById('btn-chart-total');
             const btnKenaikan = document.getElementById('btn-chart-kenaikan');
 
-            // --- Toggle Mode Total vs Kenaikan ---
+            // Toggle Mode Total vs Kenaikan Chart
             btnTotal.addEventListener('click', () => {
                 currentChartMode = 'total';
                 btnTotal.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none";
@@ -494,19 +575,22 @@
                 analyticsChartInstance.update();
             });
 
-            // --- Logika Custom Dropdown Filter Waktu ---
+            // Logika Dropdown Filter (Preset & Kalender Inline)
             const filterBtn = document.getElementById('date-filter-btn');
             const filterMenu = document.getElementById('date-filter-menu');
             const filterText = document.getElementById('date-filter-text');
+            const dateOptions = document.querySelectorAll('.date-option');
+            const customOptionBtn = document.getElementById('date-option-custom');
+            let selectedDateRange = [];
 
-            // Buka tutup Dropdown saat trigger di klik
+            // Trigger Pop-up
             filterBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 filterMenu.classList.toggle('hidden');
                 filterMenu.classList.toggle('flex');
             });
 
-            // Klik di luar menutup dropdown
+            // Tutup dropdown jika klik diluar panel
             document.addEventListener('click', (e) => {
                 if (!filterMenu.contains(e.target) && !filterBtn.contains(e.target)) {
                     filterMenu.classList.add('hidden');
@@ -514,50 +598,91 @@
                 }
             });
 
-            // Opsi 7 & 28 Hari (Preset)
-            document.querySelectorAll('.date-option').forEach(btn => {
+            // Cegah tertutup saat memilih kalender
+            filterMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Fungsi Helper Visual Tombol Sidebar
+            function setActiveSidebarOption(activeElement) {
+                dateOptions.forEach(btn => {
+                    btn.classList.remove('text-white', 'bg-zinc-800');
+                    btn.classList.add('text-zinc-400');
+                });
+                customOptionBtn.classList.remove('text-white', 'bg-zinc-800');
+                customOptionBtn.classList.add('text-zinc-400');
+                
+                activeElement.classList.remove('text-zinc-400');
+                activeElement.classList.add('text-white', 'bg-zinc-800');
+            }
+
+            // Aksi Pilihan Preset Cepat (7 Hari / 28 Hari)
+            dateOptions.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const days = parseInt(e.target.dataset.days);
-                    filterText.innerText = e.target.innerText; // Ubah teks tombol
+                    filterText.innerText = e.target.innerText;
+                    
+                    setActiveSidebarOption(e.target);
+                    
                     filterMenu.classList.add('hidden');
                     filterMenu.classList.remove('flex');
                     
-                    // Generate ulang grafik sesuai jumlah hari, patokan akhir = hari ini
                     generateChartData(days, new Date());
                 });
             });
 
-            // --- Logika Flatpickr (Pilih Tanggal) ---
+            // Visual Tombol Pilih Tanggal jika user menyentuh kalender/tombol manual
+            customOptionBtn.addEventListener('click', () => {
+                setActiveSidebarOption(customOptionBtn);
+            });
+
+            // Inisialisasi Flatpickr INLINE Murni
             const flatpickrInstance = flatpickr("#flatpickr-input", {
                 mode: "range",
                 locale: "id",
-                theme: "dark", // Menggunakan tema dark flatpickr
+                theme: "dark", 
+                inline: true, // WAJIB untuk mencetak langsung ke dalam kotak
+                disableMobile: "true", // WAJIB! Mematikan UI Pop-up Bawaan Browser HP
+                showMonths: window.innerWidth >= 768 ? 2 : 1, // 2 bulan untuk layar luas, 1 HP
                 maxDate: "today",
-                onClose: function(selectedDates, dateStr, instance) {
-                    if (selectedDates.length === 2) {
-                        const start = selectedDates[0];
-                        const end = selectedDates[1];
-                        
-                        // Menghitung selisih hari (+1 agar inklusif)
-                        const diffTime = Math.abs(end - start);
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                        
-                        // Ubah Teks Header Button Menjadi Format "Tanggal A - Tanggal B"
-                        filterText.innerText = 
-                            start.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}) + ' - ' + 
-                            end.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'});
-                            
-                        // Panggil ulang generate chart
-                        generateChartData(diffDays, end);
-                    }
+                onChange: function(selectedDates, dateStr, instance) {
+                    selectedDateRange = selectedDates;
+                    // Switch highlight warna sidebar ke "Pilih Tanggal" secara otomatis
+                    setActiveSidebarOption(customOptionBtn);
                 }
             });
 
-            // Membuka kalender flatpickr
-            document.getElementById('date-option-custom').addEventListener('click', () => {
-                filterMenu.classList.add('hidden');
-                filterMenu.classList.remove('flex');
-                flatpickrInstance.open();
+            // Respon UI kalender saat ukuran monitor diputar
+            window.addEventListener('resize', () => {
+                const months = window.innerWidth >= 768 ? 2 : 1;
+                if (flatpickrInstance.config.showMonths !== months) {
+                    flatpickrInstance.set('showMonths', months);
+                }
+            });
+
+            // Logic Tombol "Terapkan" Custom Tanggal
+            document.getElementById('apply-date-btn').addEventListener('click', () => {
+                if (selectedDateRange.length === 2) {
+                    const start = selectedDateRange[0];
+                    const end = selectedDateRange[1];
+                    
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    
+                    filterText.innerText = 
+                        start.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}) + ' - ' + 
+                        end.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'});
+                        
+                    generateChartData(diffDays, end);
+                    
+                    filterMenu.classList.add('hidden');
+                    filterMenu.classList.remove('flex');
+                } else if (selectedDateRange.length === 1) {
+                    alert("Silakan lengkapi pilihan jangkauan hari Anda (Tanggal Awal & Tanggal Akhir).");
+                } else {
+                    filterMenu.classList.add('hidden');
+                    filterMenu.classList.remove('flex');
+                }
             });
         }
 
