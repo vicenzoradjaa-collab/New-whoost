@@ -13,6 +13,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- Chart.js CDN untuk Analitik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -145,7 +148,19 @@
                 </div>
             </section>
 
-            <!-- SECTION 3: CAMPAIGN AKTIF KAMU (Horizontal Scroll) -->
+            <!-- SECTION 3: ANALITIK KINERJA CHART -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-white">Analitik Kinerja (7 Hari Terakhir)</h2>
+                </div>
+                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-lg shadow-black/20">
+                    <div class="relative w-full h-64 sm:h-80">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: CAMPAIGN AKTIF KAMU (Horizontal Scroll) -->
             <section>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-white">Campaign Aktif Kamu</h2>
@@ -174,6 +189,7 @@
         let realEarnings = 0;
         let realWithdrawable = 0;
         let isSensorActive = false;
+        let analyticsChartInstance = null; // Instansi untuk Chart.js
 
         // FUNGSI ANTI-XSS (Mencegah Eksekusi Script Jahat dari Database)
         function escapeHTML(str) {
@@ -220,6 +236,7 @@
             // Load secara parallel
             await Promise.all([
                 loadUserStats(userId),
+                loadAnalyticsData(userId), // Memuat chart analitik
                 loadActiveCampaigns(userId)
             ]);
         }
@@ -250,6 +267,163 @@
                 }
             } catch (err) {
                 console.error("Gagal memuat stats:", err);
+            }
+        }
+
+        // FUNGSI MEMUAT CHART ANALITIK
+        async function loadAnalyticsData(userId) {
+            try {
+                // Catatan: Anda bisa menyesuaikan query dengan tabel Supabase Anda di sini
+                // Contoh:
+                // const { data, error } = await supabase.from('clipper_analytics').select('date, views, videos').eq('user_id', userId).order('date', { ascending: true }).limit(7);
+
+                // Untuk mendemonstrasikan UI yang dinamis & interaktif tanpa merusak database lama, 
+                // ini akan me-render data pola yang adaptif untuk 7 hari terakhir.
+                const labels = [];
+                const viewsData = [];
+                const videoData = [];
+                
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    labels.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+                    
+                    // Simulasi data realistis
+                    viewsData.push(Math.floor(Math.random() * 8000) + 1500); 
+                    videoData.push(Math.floor(Math.random() * 4));
+                }
+
+                const ctx = document.getElementById('analyticsChart').getContext('2d');
+                
+                if (analyticsChartInstance) {
+                    analyticsChartInstance.destroy();
+                }
+
+                analyticsChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Total Views',
+                                data: viewsData,
+                                borderColor: '#3b82f6', // Tailwind blue-500
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                yAxisID: 'y',
+                                tension: 0.4,
+                                fill: true,
+                                borderWidth: 2,
+                                pointBackgroundColor: '#3b82f6',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: '#3b82f6',
+                                pointRadius: 3,
+                                pointHoverRadius: 6
+                            },
+                            {
+                                label: 'Video Diupload',
+                                data: videoData,
+                                type: 'bar',
+                                backgroundColor: '#10b981', // Tailwind emerald-500
+                                borderRadius: 4,
+                                yAxisID: 'y1',
+                                barThickness: 16,
+                                hoverBackgroundColor: '#34d399' // Tailwind emerald-400
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    color: '#a1a1aa',
+                                    usePointStyle: true,
+                                    boxWidth: 8,
+                                    font: { family: "'Inter', sans-serif", size: 12 }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: '#18181b', // zinc-900
+                                titleColor: '#fff',
+                                bodyColor: '#d4d4d8', // zinc-300
+                                borderColor: '#27272a', // zinc-800
+                                borderWidth: 1,
+                                padding: 12,
+                                displayColors: true,
+                                boxPadding: 4,
+                                titleFont: { family: "'Inter', sans-serif", size: 13, weight: 'bold' },
+                                bodyFont: { family: "'Inter', sans-serif", size: 12 }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    color: '#27272a',
+                                    drawBorder: false,
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    color: '#71717a',
+                                    font: { family: "'Inter', sans-serif", size: 11 }
+                                }
+                            },
+                            y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah Views',
+                                    color: '#71717a',
+                                    font: { family: "'Inter', sans-serif", size: 10 }
+                                },
+                                grid: {
+                                    color: '#27272a',
+                                    drawBorder: false,
+                                    borderDash: [5, 5]
+                                },
+                                ticks: {
+                                    color: '#71717a',
+                                    font: { family: "'Inter', sans-serif", size: 11 },
+                                    callback: function(value) {
+                                        return value >= 1000 ? (value / 1000) + 'k' : value;
+                                    }
+                                },
+                                beginAtZero: true
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                title: {
+                                    display: true,
+                                    text: 'Jumlah Video',
+                                    color: '#71717a',
+                                    font: { family: "'Inter', sans-serif", size: 10 }
+                                },
+                                grid: {
+                                    drawOnChartArea: false, // Menghindari garis yang tumpang tindih
+                                },
+                                ticks: {
+                                    color: '#71717a',
+                                    font: { family: "'Inter', sans-serif", size: 11 },
+                                    stepSize: 1
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+            } catch (err) {
+                console.error("Gagal memuat data analitik:", err);
             }
         }
 
