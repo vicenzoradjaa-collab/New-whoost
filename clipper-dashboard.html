@@ -59,13 +59,13 @@
         }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 
-        /* Flatpickr Custom Theme */
+        /* Flatpickr Custom Theme Murni */
         .flatpickr-calendar.inline {
             background: transparent !important;
             box-shadow: none !important;
             border: none !important;
             padding: 0 !important;
-            width: 100% !important;
+            margin: auto !important; /* Membuat kalender di tengah secara presisi */
         }
         .flatpickr-months .flatpickr-month {
             background: transparent !important;
@@ -265,10 +265,11 @@
                                     <button id="date-option-custom" class="text-left px-3 py-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors focus:outline-none">Pilih Tanggal</button>
                                 </div>
 
-                                <!-- Kanan: Area Kalender Interaktif (Hidden by Default) -->
+                                <!-- Kanan: Area Kalender Interaktif (Hidden by Default agar layout tidak bug) -->
                                 <div id="calendar-panel" class="hidden flex-col bg-darkBg border-t md:border-t-0 md:border-l border-zinc-800">
-                                    <div id="calendar-inline-container" class="p-2 sm:p-4 flex justify-center w-full md:min-w-[540px] min-h-[280px]">
-                                        <input type="text" id="flatpickr-input">
+                                    <div id="calendar-inline-container" class="p-2 sm:p-4 flex justify-center w-full md:min-w-[560px] min-h-[280px]">
+                                        <!-- Class hidden dipasang MURNI pada input agar tidak bocor menjadi kotak putih raksasa -->
+                                        <input type="text" id="flatpickr-input" class="hidden">
                                     </div>
                                     <div class="p-3 sm:p-4 border-t border-zinc-800 flex justify-end bg-[#121214]">
                                         <button id="apply-date-btn" class="px-5 py-2 text-[11px] sm:text-xs font-bold rounded-lg bg-white text-black hover:bg-zinc-200 active:scale-95 transition-all focus:outline-none">Terapkan</button>
@@ -317,7 +318,7 @@
         let realTotalViews = 0; 
         let isSensorActive = false;
         
-        let allSubmissionsData = []; // Menyimpan riwayat views harian asli pengguna
+        let allSubmissionsData = []; // Menyimpan riwayat views asli pengguna
         
         let analyticsChartInstance = null; 
         let labelsChart = [];
@@ -397,7 +398,7 @@
 
         async function loadAnalyticsData(userId) {
             try {
-                // Fetch data submissions untuk menghitung chart kenaikan (Real-Time History)
+                // Fetch riwayat views langsung dari database 'submissions' (Akurat sesuai yang di-klaim clipper)
                 const { data: subs, error } = await supabase
                     .from('submissions')
                     .select('created_at, views_paid, views_claimed, status')
@@ -418,7 +419,6 @@
             dataTotal = [];
             dataKenaikan = [];
             
-            // 1. Set rentang waktu chart yang dipilih (Start Date - End Date)
             let startDate = new Date(endDate);
             startDate.setDate(startDate.getDate() - daysCount + 1);
             startDate.setHours(0,0,0,0);
@@ -426,7 +426,6 @@
             let endD = new Date(endDate);
             endD.setHours(23,59,59,999);
 
-            // 2. Pemetaan View aktual per hari berdasarkan referensi claim logic
             let dailyMap = {};
             let viewsInRange = 0;
 
@@ -450,11 +449,9 @@
                 }
             });
 
-            // 3. Menghitung base akumulasi view SEBELUM rentang waktu dimulai
             let currentCumulative = realTotalViews - viewsInRange;
             if (currentCumulative < 0) currentCumulative = 0;
 
-            // 4. Memasukkan data historis ke dalam array Chart.js dari kiri (masa lalu) ke kanan (sekarang)
             for (let i = daysCount - 1; i >= 0; i--) {
                 const d = new Date(endDate);
                 d.setDate(d.getDate() - i);
@@ -472,12 +469,11 @@
                 dataTotal.push(currentCumulative);
             }
 
-            // Memastikan titik terakhir grafik 100% akurat menyentuh angka Total Views
+            // Memastikan titik terakhir grafik 100% akurat menyentuh angka Total Views sesungguhnya
             if (dataTotal.length > 0) {
                 dataTotal[dataTotal.length - 1] = realTotalViews;
             }
 
-            // Update atau Inisialisasi Chart
             if(analyticsChartInstance) {
                 analyticsChartInstance.data.labels = labelsChart;
                 analyticsChartInstance.data.datasets[0].data = currentChartMode === 'total' ? dataTotal : dataKenaikan;
@@ -610,7 +606,7 @@
             });
         }
 
-        // KONTROL CHART & DROPDOWN FILTER WAKTU (KALENDER HIDE/SHOW)
+        // KONTROL CHART & LOGIKA KALENDER LAZY INITIALIZATION
         function setupChartControls() {
             const btnTotal = document.getElementById('btn-chart-total');
             const btnKenaikan = document.getElementById('btn-chart-kenaikan');
@@ -640,18 +636,14 @@
             const customOptionBtn = document.getElementById('date-option-custom');
             const calendarPanel = document.getElementById('calendar-panel');
             let selectedDateRange = [];
+            let flatpickrInstance = null; // Menyimpan instance kalender
 
-            // Trigger Pop-up
+            // Buka tutup menu dropdown filter
             filterBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const isHidden = filterMenu.classList.contains('hidden');
-                
-                if (isHidden) {
+                if (filterMenu.classList.contains('hidden')) {
                     filterMenu.classList.remove('hidden');
                     filterMenu.classList.add('flex');
-                    // Saat menu dibuka ulang, pastikan kalender tersembunyi kecuali diklik custom
-                    calendarPanel.classList.add('hidden');
-                    calendarPanel.classList.remove('flex');
                 } else {
                     filterMenu.classList.add('hidden');
                     filterMenu.classList.remove('flex');
@@ -681,6 +673,7 @@
                 activeElement.classList.add('text-white', 'bg-zinc-800');
             }
 
+            // Opsi 7 & 28 Hari (Menutup kalender jika tadinya terbuka)
             dateOptions.forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const days = parseInt(e.target.dataset.days);
@@ -688,6 +681,10 @@
                     
                     setActiveSidebarOption(e.target);
                     
+                    // Sembunyikan panel kalender karena memilih preset
+                    calendarPanel.classList.add('hidden');
+                    calendarPanel.classList.remove('flex');
+
                     filterMenu.classList.add('hidden');
                     filterMenu.classList.remove('flex');
                     
@@ -695,38 +692,38 @@
                 });
             });
 
-            // LOGIKA MENAMPILKAN KALENDER SAAT TOMBOL CUSTOM DIKLIK
+            // TOMBOL CUSTOM TANGGAL (MEMBUAT KALENDER MUNCUL & DI-RENDER DENGAN BENAR)
             customOptionBtn.addEventListener('click', () => {
                 setActiveSidebarOption(customOptionBtn);
                 
-                // Menampilkan Panel Kalender
+                // Menampilkan UI kalender
                 calendarPanel.classList.remove('hidden');
                 calendarPanel.classList.add('flex');
                 
-                // Force redraw agar ukuran flatpickr me-render dengan tepat (tidak blank)
-                if(flatpickrInstance) {
-                    setTimeout(() => flatpickrInstance.redraw(), 10);
-                }
-            });
-
-            // Inisialisasi Flatpickr INLINE Murni
-            const flatpickrInstance = flatpickr("#flatpickr-input", {
-                mode: "range",
-                locale: "id",
-                theme: "dark", 
-                inline: true, 
-                disableMobile: "true", 
-                showMonths: window.innerWidth >= 768 ? 2 : 1, 
-                maxDate: "today",
-                onChange: function(selectedDates, dateStr, instance) {
-                    selectedDateRange = selectedDates;
+                // LAZY INITIALIZATION: Kalender baru diciptakan SAAT panelnya terbuka.
+                // Ini mencegah bug layout 0x0 flatpickr karena tidak ada lagi elemen tersembunyi.
+                if (!flatpickrInstance) {
+                    flatpickrInstance = flatpickr("#flatpickr-input", {
+                        mode: "range",
+                        locale: "id",
+                        theme: "dark", 
+                        inline: true, 
+                        disableMobile: "true", 
+                        showMonths: window.innerWidth >= 768 ? 2 : 1, 
+                        maxDate: "today",
+                        onChange: function(selectedDates, dateStr, instance) {
+                            selectedDateRange = selectedDates;
+                        }
+                    });
                 }
             });
 
             window.addEventListener('resize', () => {
-                const months = window.innerWidth >= 768 ? 2 : 1;
-                if (flatpickrInstance.config.showMonths !== months) {
-                    flatpickrInstance.set('showMonths', months);
+                if(flatpickrInstance) {
+                    const months = window.innerWidth >= 768 ? 2 : 1;
+                    if (flatpickrInstance.config.showMonths !== months) {
+                        flatpickrInstance.set('showMonths', months);
+                    }
                 }
             });
 
