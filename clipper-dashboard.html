@@ -16,6 +16,12 @@
     <!-- Chart.js CDN untuk Analitik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Flatpickr (Kalender) CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -153,22 +159,37 @@
                 <div class="bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-lg shadow-black/20">
                     
                     <!-- Header Chart & Filter -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                        <div class="flex items-center gap-4">
-                            <h2 class="text-lg font-bold text-white tracking-tight">Total Views</h2>
-                            <div class="flex bg-zinc-900/80 rounded-lg p-1 border border-zinc-800">
+                    <!-- Menggunakan flex-row, nowrap, horizontal scroll untuk mobile agar sejajar 1 baris -->
+                    <div class="flex flex-row items-center justify-between w-full gap-4 mb-6 pb-2 overflow-x-auto hide-scrollbar">
+                        
+                        <div class="flex items-center gap-4 shrink-0">
+                            <!-- Judul dihilangkan di mobile jika dirasa sempit, diganti inline -->
+                            <h2 class="text-base sm:text-lg font-bold text-white tracking-tight hidden sm:block">Total Views</h2>
+                            <div class="flex bg-zinc-900/80 rounded-lg p-1 border border-zinc-800 shrink-0">
                                 <button id="btn-chart-total" class="px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none">Total</button>
                                 <button id="btn-chart-kenaikan" class="px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md text-zinc-400 hover:text-white transition-all focus:outline-none">Kenaikan</button>
                             </div>
                         </div>
                         
-                        <div class="relative">
-                            <!-- Visual Dropdown Button (Mockup UI sesuai referensi) -->
-                            <button class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-lg text-[11px] sm:text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-600 transition-colors focus:outline-none">
+                        <!-- Dropdown Filter & Calendar Container -->
+                        <div class="relative shrink-0" id="date-filter-container">
+                            <!-- Tombol Trigger Dropdown -->
+                            <button id="date-filter-btn" class="flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-lg text-[11px] sm:text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-600 transition-colors focus:outline-none">
                                 <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                28 hari terakhir
+                                <span id="date-filter-text">28 hari terakhir</span>
                                 <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
+
+                            <!-- Isi Menu Dropdown -->
+                            <div id="date-filter-menu" class="absolute right-0 mt-2 w-44 bg-[#18181b] border border-zinc-800 rounded-xl shadow-xl z-50 hidden flex-col overflow-hidden">
+                                <button class="date-option text-left px-4 py-2.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none" data-days="7">7 hari terakhir</button>
+                                <button class="date-option text-left px-4 py-2.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none" data-days="28">28 hari terakhir</button>
+                                <div class="border-t border-zinc-800/50 my-1"></div>
+                                <button id="date-option-custom" class="text-left px-4 py-2.5 text-[11px] sm:text-xs font-medium text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors focus:outline-none">Pilih Tanggal</button>
+                            </div>
+
+                            <!-- Invisible Input untuk Flatpickr (Kalender Murni) -->
+                            <input type="text" id="flatpickr-input" class="hidden">
                         </div>
                     </div>
 
@@ -208,12 +229,14 @@
         let realEarnings = 0;
         let realWithdrawable = 0;
         let isSensorActive = false;
+        
         let analyticsChartInstance = null; 
         
         // Data Global untuk Chart
         let labelsChart = [];
         let dataTotal = [];
         let dataKenaikan = [];
+        let currentChartMode = 'total'; // Mode chart aktif ('total' atau 'kenaikan')
 
         function escapeHTML(str) {
             if (!str) return '';
@@ -281,30 +304,42 @@
             }
         }
 
-        // FUNGSI MEMUAT CHART ANALITIK
+        // FUNGSI MEMUAT & MENGGENERATE DATA CHART BERDASARKAN RENTANG WAKTU
+        function generateChartData(daysCount, endDate = new Date()) {
+            labelsChart = [];
+            dataTotal = [];
+            dataKenaikan = [];
+            
+            let currentCumulative = 50000; // Base dummy view untuk total awal
+
+            // Mengisi array dari ujung awal hingga akhir
+            for (let i = daysCount - 1; i >= 0; i--) {
+                const d = new Date(endDate);
+                d.setDate(d.getDate() - i);
+                labelsChart.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
+                
+                let kenaikanHarian = Math.floor(Math.random() * 4000) + 100; // Mock kenaikan view harian
+                currentCumulative += kenaikanHarian;
+
+                dataKenaikan.push(kenaikanHarian);
+                dataTotal.push(currentCumulative);
+            }
+
+            // Jika chart sudah pernah diinisialisasi, update isinya saja (transisi halus)
+            if(analyticsChartInstance) {
+                analyticsChartInstance.data.labels = labelsChart;
+                analyticsChartInstance.data.datasets[0].data = currentChartMode === 'total' ? dataTotal : dataKenaikan;
+                analyticsChartInstance.update();
+            } else {
+                initChart(currentChartMode === 'total' ? dataTotal : dataKenaikan);
+                setupChartControls();
+            }
+        }
+
+        // Fungsi Awal Load Analitik (Default 28 Hari)
         async function loadAnalyticsData(userId) {
             try {
-                // Generate simulasi data 28 hari (seperti tampilan referensi)
-                labelsChart = [];
-                dataTotal = [];
-                dataKenaikan = [];
-                let currentCumulative = 50000; // Mulai dari base view
-
-                for (let i = 27; i >= 0; i--) {
-                    const d = new Date();
-                    d.setDate(d.getDate() - i);
-                    labelsChart.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
-                    
-                    let kenaikanHarian = Math.floor(Math.random() * 4000) + 100;
-                    currentCumulative += kenaikanHarian;
-
-                    dataKenaikan.push(kenaikanHarian);
-                    dataTotal.push(currentCumulative);
-                }
-
-                initChart(dataTotal);
-                setupChartControls();
-
+                generateChartData(28, new Date());
             } catch (err) {
                 console.error("Gagal memuat data analitik:", err);
             }
@@ -435,32 +470,99 @@
             });
         }
 
-        // FUNGSI TOGGLE CHART BUTTONS
+        // FUNGSI INTERAKSI BUTTON & DROPDOWN FILTER
         function setupChartControls() {
             const btnTotal = document.getElementById('btn-chart-total');
             const btnKenaikan = document.getElementById('btn-chart-kenaikan');
 
+            // --- Toggle Mode Total vs Kenaikan ---
             btnTotal.addEventListener('click', () => {
-                // Ubah styling button aktif
+                currentChartMode = 'total';
                 btnTotal.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none";
                 btnKenaikan.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md text-zinc-400 hover:text-white transition-all focus:outline-none";
                 
-                // Update Data
                 analyticsChartInstance.data.datasets[0].data = dataTotal;
                 analyticsChartInstance.update();
             });
 
             btnKenaikan.addEventListener('click', () => {
-                // Ubah styling button aktif
+                currentChartMode = 'kenaikan';
                 btnKenaikan.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none";
                 btnTotal.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md text-zinc-400 hover:text-white transition-all focus:outline-none";
                 
-                // Update Data
                 analyticsChartInstance.data.datasets[0].data = dataKenaikan;
                 analyticsChartInstance.update();
             });
+
+            // --- Logika Custom Dropdown Filter Waktu ---
+            const filterBtn = document.getElementById('date-filter-btn');
+            const filterMenu = document.getElementById('date-filter-menu');
+            const filterText = document.getElementById('date-filter-text');
+
+            // Buka tutup Dropdown saat trigger di klik
+            filterBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                filterMenu.classList.toggle('hidden');
+                filterMenu.classList.toggle('flex');
+            });
+
+            // Klik di luar menutup dropdown
+            document.addEventListener('click', (e) => {
+                if (!filterMenu.contains(e.target) && !filterBtn.contains(e.target)) {
+                    filterMenu.classList.add('hidden');
+                    filterMenu.classList.remove('flex');
+                }
+            });
+
+            // Opsi 7 & 28 Hari (Preset)
+            document.querySelectorAll('.date-option').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const days = parseInt(e.target.dataset.days);
+                    filterText.innerText = e.target.innerText; // Ubah teks tombol
+                    filterMenu.classList.add('hidden');
+                    filterMenu.classList.remove('flex');
+                    
+                    // Generate ulang grafik sesuai jumlah hari, patokan akhir = hari ini
+                    generateChartData(days, new Date());
+                });
+            });
+
+            // --- Logika Flatpickr (Pilih Tanggal) ---
+            const flatpickrInstance = flatpickr("#flatpickr-input", {
+                mode: "range",
+                locale: "id",
+                theme: "dark", // Menggunakan tema dark flatpickr
+                maxDate: "today",
+                onClose: function(selectedDates, dateStr, instance) {
+                    if (selectedDates.length === 2) {
+                        const start = selectedDates[0];
+                        const end = selectedDates[1];
+                        
+                        // Menghitung selisih hari (+1 agar inklusif)
+                        const diffTime = Math.abs(end - start);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                        
+                        // Ubah Teks Header Button Menjadi Format "Tanggal A - Tanggal B"
+                        filterText.innerText = 
+                            start.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}) + ' - ' + 
+                            end.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'});
+                            
+                        // Panggil ulang generate chart
+                        generateChartData(diffDays, end);
+                    }
+                }
+            });
+
+            // Membuka kalender flatpickr
+            document.getElementById('date-option-custom').addEventListener('click', () => {
+                filterMenu.classList.add('hidden');
+                filterMenu.classList.remove('flex');
+                flatpickrInstance.open();
+            });
         }
 
+
+        // FUNGSI CAMPAIGN - TANPA DIUBAH SAMA SEKALI
         async function loadActiveCampaigns(userId) {
             const container = document.getElementById('campaign-container');
             try {
