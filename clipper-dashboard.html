@@ -59,7 +59,7 @@
         }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 
-        /* Flatpickr Custom Theme - Disesuaikan Murni dengan Tema Dark/Zinc Web Anda */
+        /* Flatpickr Custom Theme */
         .flatpickr-calendar.inline {
             background: transparent !important;
             box-shadow: none !important;
@@ -254,21 +254,20 @@
                                 <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
 
-                            <!-- Isi Menu Dropdown Popover Sejajar (Preset + Calendar) -->
-                            <div id="date-filter-menu" class="absolute right-0 top-full mt-2 bg-[#121214] border border-zinc-800 rounded-xl shadow-2xl z-50 hidden flex-col md:flex-row overflow-hidden origin-top-right w-[310px] md:w-auto md:min-w-[500px]">
+                            <!-- Isi Menu Dropdown -->
+                            <div id="date-filter-menu" class="absolute right-0 top-full mt-2 bg-[#121214] border border-zinc-800 rounded-xl shadow-2xl z-50 hidden flex-col md:flex-row overflow-hidden origin-top-right">
                                 
                                 <!-- Kiri: Panel Opsi Cepat (Preset) -->
-                                <div class="flex flex-col w-full md:w-44 bg-[#121214] border-b md:border-b-0 md:border-r border-zinc-800 shrink-0 p-2 gap-1">
+                                <div class="flex flex-col w-full md:w-44 bg-[#121214] shrink-0 p-2 gap-1 z-10">
                                     <button class="date-option text-left px-3 py-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors focus:outline-none" data-days="7">7 hari terakhir</button>
                                     <button class="date-option text-left px-3 py-2.5 rounded-lg text-xs font-medium text-white bg-zinc-800 transition-colors focus:outline-none" data-days="28">28 hari terakhir</button>
                                     <div class="border-t border-zinc-800/50 my-1 mx-2"></div>
                                     <button id="date-option-custom" class="text-left px-3 py-2.5 rounded-lg text-xs font-medium text-zinc-400 hover:bg-zinc-800/50 hover:text-white transition-colors focus:outline-none">Pilih Tanggal</button>
                                 </div>
 
-                                <!-- Kanan: Area Kalender Interaktif -->
-                                <div class="flex flex-col bg-darkBg flex-1">
-                                    <div id="calendar-inline-container" class="p-2 sm:p-4 flex justify-center w-full min-h-[280px]">
-                                        <!-- Menghilangkan class "hidden" agar bug height 0x0 flatpickr terhindari -->
+                                <!-- Kanan: Area Kalender Interaktif (Hidden by Default) -->
+                                <div id="calendar-panel" class="hidden flex-col bg-darkBg border-t md:border-t-0 md:border-l border-zinc-800">
+                                    <div id="calendar-inline-container" class="p-2 sm:p-4 flex justify-center w-full md:min-w-[540px] min-h-[280px]">
                                         <input type="text" id="flatpickr-input">
                                     </div>
                                     <div class="p-3 sm:p-4 border-t border-zinc-800 flex justify-end bg-[#121214]">
@@ -315,11 +314,12 @@
 
         let realEarnings = 0;
         let realWithdrawable = 0;
-        let realTotalViews = 0; // Data Riil Views untuk Sinkronisasi Chart
+        let realTotalViews = 0; 
         let isSensorActive = false;
         
-        let analyticsChartInstance = null; 
+        let allSubmissionsData = []; // Menyimpan riwayat views harian asli pengguna
         
+        let analyticsChartInstance = null; 
         let labelsChart = [];
         let dataTotal = [];
         let dataKenaikan = [];
@@ -358,14 +358,13 @@
             }
             const userId = session.user.id;
             
-            // Wajib ditunggu (await) terlebih dahulu agar `realTotalViews` berhasil didapatkan
-            // sebelum grafik analitik di-*generate*
-            await loadUserStats(userId);
-            
+            // Urutan Penting: Stats & Submissions diambil dulu agar data chart 100% akurat
             await Promise.all([
-                loadAnalyticsData(userId),
-                loadActiveCampaigns(userId)
+                loadUserStats(userId),
+                loadAnalyticsData(userId)
             ]);
+            
+            await loadActiveCampaigns(userId);
         }
 
         async function loadUserStats(userId) {
@@ -379,7 +378,7 @@
                 if (data && !error) {
                     realEarnings = data.total_earnings || 0;
                     realWithdrawable = data.withdrawable || 0;
-                    realTotalViews = data.total_views || 0; // Menyimpan Views Riil
+                    realTotalViews = data.total_views || 0; 
                     
                     document.getElementById('total-penghasilan').innerText = formatRupiahK(realEarnings);
                     document.getElementById('bisa-dicairkan').innerText = formatRupiahK(realWithdrawable);
@@ -396,52 +395,89 @@
             }
         }
 
-        // FUNGSI MEMUAT CHART YANG SINKRON DENGAN DATA TOTAL VIEWS RIIL
+        async function loadAnalyticsData(userId) {
+            try {
+                // Fetch data submissions untuk menghitung chart kenaikan (Real-Time History)
+                const { data: subs, error } = await supabase
+                    .from('submissions')
+                    .select('created_at, views_paid, views_claimed, status')
+                    .eq('user_id', userId);
+
+                if (!error && subs) {
+                    allSubmissionsData = subs;
+                }
+
+                generateChartData(28, new Date());
+            } catch (err) {
+                console.error("Gagal memuat data analitik:", err);
+            }
+        }
+
         function generateChartData(daysCount, endDate = new Date()) {
             labelsChart = [];
             dataTotal = [];
             dataKenaikan = [];
             
-            // Logika Sinkronisasi: Membuat simulasi distribusi data view
-            // sedemikian rupa agar hari terakhir chart akan TEPAT sama dengan `realTotalViews`.
-            // (Asumsi kasar: 1.5% dari total view per hari untuk periode tersebut)
-            let viewsToDistribute = Math.floor(realTotalViews * (daysCount * 0.015)); 
-            if (viewsToDistribute > realTotalViews) viewsToDistribute = realTotalViews;
-            if (viewsToDistribute === 0 && realTotalViews > 0) viewsToDistribute = realTotalViews;
+            // 1. Set rentang waktu chart yang dipilih (Start Date - End Date)
+            let startDate = new Date(endDate);
+            startDate.setDate(startDate.getDate() - daysCount + 1);
+            startDate.setHours(0,0,0,0);
+            
+            let endD = new Date(endDate);
+            endD.setHours(23,59,59,999);
 
-            let currentCumulative = realTotalViews - viewsToDistribute;
+            // 2. Pemetaan View aktual per hari berdasarkan referensi claim logic
+            let dailyMap = {};
+            let viewsInRange = 0;
+
+            allSubmissionsData.forEach(sub => {
+                let v = 0;
+                if (sub.status === 'PENDING') v = sub.views_paid || 0;
+                else if (sub.status === 'APPROVED') v = Math.max(sub.views_claimed || 0, sub.views_paid || 0);
+                else if (sub.status === 'REJECTED') v = sub.views_paid || 0;
+
+                if (v > 0 && sub.created_at) {
+                    let subDate = new Date(sub.created_at);
+                    if (subDate >= startDate && subDate <= endD) {
+                        let y = subDate.getFullYear();
+                        let m = String(subDate.getMonth() + 1).padStart(2, '0');
+                        let d = String(subDate.getDate()).padStart(2, '0');
+                        let dateKey = `${y}-${m}-${d}`; 
+
+                        dailyMap[dateKey] = (dailyMap[dateKey] || 0) + v;
+                        viewsInRange += v;
+                    }
+                }
+            });
+
+            // 3. Menghitung base akumulasi view SEBELUM rentang waktu dimulai
+            let currentCumulative = realTotalViews - viewsInRange;
             if (currentCumulative < 0) currentCumulative = 0;
 
-            let tempDaily = [];
-            let sumTemp = 0;
-            for(let i = 0; i < daysCount; i++) {
-                let v = Math.random() * 50 + 10;
-                tempDaily.push(v);
-                sumTemp += v;
-            }
-
+            // 4. Memasukkan data historis ke dalam array Chart.js dari kiri (masa lalu) ke kanan (sekarang)
             for (let i = daysCount - 1; i >= 0; i--) {
                 const d = new Date(endDate);
                 d.setDate(d.getDate() - i);
                 labelsChart.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
                 
-                let kenaikanHarian = 0;
-                if (i === 0) {
-                    // Penyesuaian akhir: memaksa total akhir persis sama dengan Real Data
-                    kenaikanHarian = realTotalViews - currentCumulative;
-                } else {
-                    kenaikanHarian = Math.round((tempDaily[i] / sumTemp) * viewsToDistribute);
-                }
-                
-                if (kenaikanHarian < 0) kenaikanHarian = 0;
-                if (realTotalViews === 0) kenaikanHarian = 0;
-                
+                let y = d.getFullYear();
+                let m = String(d.getMonth() + 1).padStart(2, '0');
+                let day = String(d.getDate()).padStart(2, '0');
+                let dateKey = `${y}-${m}-${day}`;
+
+                let kenaikanHarian = dailyMap[dateKey] || 0;
                 currentCumulative += kenaikanHarian;
-                
+
                 dataKenaikan.push(kenaikanHarian);
                 dataTotal.push(currentCumulative);
             }
 
+            // Memastikan titik terakhir grafik 100% akurat menyentuh angka Total Views
+            if (dataTotal.length > 0) {
+                dataTotal[dataTotal.length - 1] = realTotalViews;
+            }
+
+            // Update atau Inisialisasi Chart
             if(analyticsChartInstance) {
                 analyticsChartInstance.data.labels = labelsChart;
                 analyticsChartInstance.data.datasets[0].data = currentChartMode === 'total' ? dataTotal : dataKenaikan;
@@ -449,14 +485,6 @@
             } else {
                 initChart(currentChartMode === 'total' ? dataTotal : dataKenaikan);
                 setupChartControls();
-            }
-        }
-
-        async function loadAnalyticsData(userId) {
-            try {
-                generateChartData(28, new Date());
-            } catch (err) {
-                console.error("Gagal memuat data analitik:", err);
             }
         }
 
@@ -582,7 +610,7 @@
             });
         }
 
-        // KONTROL CHART & DROPDOWN FILTER WAKTU BARU
+        // KONTROL CHART & DROPDOWN FILTER WAKTU (KALENDER HIDE/SHOW)
         function setupChartControls() {
             const btnTotal = document.getElementById('btn-chart-total');
             const btnKenaikan = document.getElementById('btn-chart-kenaikan');
@@ -610,6 +638,7 @@
             const filterText = document.getElementById('date-filter-text');
             const dateOptions = document.querySelectorAll('.date-option');
             const customOptionBtn = document.getElementById('date-option-custom');
+            const calendarPanel = document.getElementById('calendar-panel');
             let selectedDateRange = [];
 
             // Trigger Pop-up
@@ -620,11 +649,9 @@
                 if (isHidden) {
                     filterMenu.classList.remove('hidden');
                     filterMenu.classList.add('flex');
-                    
-                    // PERBAIKAN BUG FLATPICKR BLANK: Wajib di-redraw saat wrapper di-unhide
-                    if(flatpickrInstance) {
-                        setTimeout(() => flatpickrInstance.redraw(), 10);
-                    }
+                    // Saat menu dibuka ulang, pastikan kalender tersembunyi kecuali diklik custom
+                    calendarPanel.classList.add('hidden');
+                    calendarPanel.classList.remove('flex');
                 } else {
                     filterMenu.classList.add('hidden');
                     filterMenu.classList.remove('flex');
@@ -668,8 +695,18 @@
                 });
             });
 
+            // LOGIKA MENAMPILKAN KALENDER SAAT TOMBOL CUSTOM DIKLIK
             customOptionBtn.addEventListener('click', () => {
                 setActiveSidebarOption(customOptionBtn);
+                
+                // Menampilkan Panel Kalender
+                calendarPanel.classList.remove('hidden');
+                calendarPanel.classList.add('flex');
+                
+                // Force redraw agar ukuran flatpickr me-render dengan tepat (tidak blank)
+                if(flatpickrInstance) {
+                    setTimeout(() => flatpickrInstance.redraw(), 10);
+                }
             });
 
             // Inisialisasi Flatpickr INLINE Murni
@@ -683,7 +720,6 @@
                 maxDate: "today",
                 onChange: function(selectedDates, dateStr, instance) {
                     selectedDateRange = selectedDates;
-                    setActiveSidebarOption(customOptionBtn);
                 }
             });
 
