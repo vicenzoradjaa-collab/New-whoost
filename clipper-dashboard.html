@@ -150,10 +150,29 @@
 
             <!-- SECTION 3: ANALITIK KINERJA CHART -->
             <section>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-white">Analitik Views (7 Hari Terakhir)</h2>
-                </div>
                 <div class="bg-cardBg border border-zinc-800 rounded-2xl p-4 sm:p-6 shadow-lg shadow-black/20">
+                    
+                    <!-- Header Chart & Filter -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-lg font-bold text-white tracking-tight">Total Views</h2>
+                            <div class="flex bg-zinc-900/80 rounded-lg p-1 border border-zinc-800">
+                                <button id="btn-chart-total" class="px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none">Total</button>
+                                <button id="btn-chart-kenaikan" class="px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md text-zinc-400 hover:text-white transition-all focus:outline-none">Kenaikan</button>
+                            </div>
+                        </div>
+                        
+                        <div class="relative">
+                            <!-- Visual Dropdown Button (Mockup UI sesuai referensi) -->
+                            <button class="flex items-center gap-2 px-3 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-lg text-[11px] sm:text-xs font-medium text-zinc-300 hover:text-white hover:border-zinc-600 transition-colors focus:outline-none">
+                                <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                28 hari terakhir
+                                <svg class="w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Area Chart -->
                     <div class="relative w-full h-64 sm:h-80">
                         <canvas id="analyticsChart"></canvas>
                     </div>
@@ -184,14 +203,18 @@
 
     <!-- SCRIPT UTAMA (MODULE) MENGGUNAKAN AUTH.JS -->
     <script type="module">
-        import { supabase, enforceRoleProtection } from './authentication/auth.js'; // Ditambahkan enforceRoleProtection
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; 
 
         let realEarnings = 0;
         let realWithdrawable = 0;
         let isSensorActive = false;
-        let analyticsChartInstance = null; // Instansi untuk Chart.js
+        let analyticsChartInstance = null; 
+        
+        // Data Global untuk Chart
+        let labelsChart = [];
+        let dataTotal = [];
+        let dataKenaikan = [];
 
-        // FUNGSI ANTI-XSS (Mencegah Eksekusi Script Jahat dari Database)
         function escapeHTML(str) {
             if (!str) return '';
             return str.toString()
@@ -204,16 +227,11 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. CEK PROTEKSI ROLE TERLEBIH DAHULU SEBELUM DATA DIMUAT
                 await enforceRoleProtection();
-
-                // 2. JIKA AMAN, LOAD DATA DASHBOARD
                 await syncDashboardData();
-
             } catch (error) {
                 console.error("Terjadi kesalahan sistem:", error);
             } finally {
-                // 3. SEMBUNYIKAN LOADER SETELAH SEMUA SELESAI
                 const loader = document.getElementById('pageLoader');
                 if (loader) {
                     loader.classList.add('opacity-0'); 
@@ -224,24 +242,18 @@
 
         async function syncDashboardData() {
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            
-            // Double check safety
             if (sessionError || !session) {
                 window.location.replace('login.html');
                 return;
             }
-            
             const userId = session.user.id;
-
-            // Load secara parallel
             await Promise.all([
                 loadUserStats(userId),
-                loadAnalyticsData(userId), // Memuat chart analitik
+                loadAnalyticsData(userId),
                 loadActiveCampaigns(userId)
             ]);
         }
 
-        // FUNGSI LOAD STATS DARI TABEL clipper_stats
         async function loadUserStats(userId) {
             try {
                 const { data, error } = await supabase
@@ -259,7 +271,6 @@
                     document.getElementById('total-views').innerText = formatK(data.total_views || 0);
                     document.getElementById('total-video').innerText = data.total_videos || 0;
                 } else {
-                    // Jika data tidak ada
                     document.getElementById('total-penghasilan').innerText = 'Rp 0';
                     document.getElementById('bisa-dicairkan').innerText = 'Rp 0';
                     document.getElementById('total-views').innerText = '0';
@@ -273,133 +284,186 @@
         // FUNGSI MEMUAT CHART ANALITIK
         async function loadAnalyticsData(userId) {
             try {
-                // Catatan: Anda bisa menyesuaikan query dengan tabel Supabase Anda di sini
-                // Contoh:
-                // const { data, error } = await supabase.from('clipper_analytics').select('date, views').eq('user_id', userId).order('date', { ascending: true }).limit(7);
+                // Generate simulasi data 28 hari (seperti tampilan referensi)
+                labelsChart = [];
+                dataTotal = [];
+                dataKenaikan = [];
+                let currentCumulative = 50000; // Mulai dari base view
 
-                // Simulasi render data adaptif untuk 7 hari terakhir.
-                const labels = [];
-                const viewsData = [];
-                
-                for (let i = 6; i >= 0; i--) {
+                for (let i = 27; i >= 0; i--) {
                     const d = new Date();
                     d.setDate(d.getDate() - i);
-                    labels.push(d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }));
+                    labelsChart.push(d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }));
                     
-                    // Simulasi data realistis
-                    viewsData.push(Math.floor(Math.random() * 8000) + 1500); 
+                    let kenaikanHarian = Math.floor(Math.random() * 4000) + 100;
+                    currentCumulative += kenaikanHarian;
+
+                    dataKenaikan.push(kenaikanHarian);
+                    dataTotal.push(currentCumulative);
                 }
 
-                const ctx = document.getElementById('analyticsChart').getContext('2d');
-                
-                // Membuat gradien elegan (Putih Transparan -> Benar-benar Transparan)
-                const gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
-                gradientFill.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
-                gradientFill.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                
-                if (analyticsChartInstance) {
-                    analyticsChartInstance.destroy();
-                }
-
-                analyticsChartInstance = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Total Views',
-                                data: viewsData,
-                                borderColor: '#ffffff', // Putih elegan dan tegas
-                                backgroundColor: gradientFill,
-                                tension: 0.4, // Membuat lengkungan garis halus
-                                fill: true,
-                                borderWidth: 2.5, // Tebal garis
-                                pointBackgroundColor: '#ffffff',
-                                pointBorderColor: '#121214', // Warna card agar terlihat bolong/elegan
-                                pointBorderWidth: 2,
-                                pointRadius: 0, // Titik disembunyikan agar terlihat lebih minimalis dan bersih
-                                pointHoverRadius: 6, // Titik baru muncul saat disentuh
-                                pointHoverBackgroundColor: '#ffffff',
-                                pointHoverBorderColor: '#ffffff',
-                                pointHoverBorderWidth: 3,
-                                pointHitRadius: 15
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        plugins: {
-                            legend: {
-                                display: false // Dihilangkan karena hanya ada 1 data (views), jadi lebih clean
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(24, 24, 27, 0.95)', // zinc-900 translusen
-                                titleColor: '#ffffff',
-                                bodyColor: '#d4d4d8', // zinc-300
-                                borderColor: '#3f3f46', // zinc-700
-                                borderWidth: 1,
-                                padding: 12,
-                                displayColors: false, // Menghilangkan kotak warna pada teks di tooltip
-                                titleFont: { family: "'Inter', sans-serif", size: 13, weight: '600' },
-                                bodyFont: { family: "'Inter', sans-serif", size: 12 },
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.parsed.y.toLocaleString('id-ID') + ' Views';
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: {
-                                    display: false, // Menghilangkan garis vertikal agar clean
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    color: '#71717a', // zinc-500
-                                    font: { family: "'Inter', sans-serif", size: 11 },
-                                    padding: 10
-                                }
-                            },
-                            y: {
-                                type: 'linear',
-                                display: true,
-                                position: 'left',
-                                grid: {
-                                    color: '#27272a', // zinc-800
-                                    drawBorder: false, // Menghilangkan batas tebal sumbu Y
-                                    borderDash: [5, 5] // Garis putus-putus minimalis
-                                },
-                                ticks: {
-                                    color: '#71717a', // zinc-500
-                                    font: { family: "'Inter', sans-serif", size: 11 },
-                                    padding: 10,
-                                    callback: function(value) {
-                                        return value >= 1000 ? (value / 1000) + 'k' : value;
-                                    }
-                                },
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+                initChart(dataTotal);
+                setupChartControls();
 
             } catch (err) {
                 console.error("Gagal memuat data analitik:", err);
             }
         }
 
-        // FUNGSI LOAD ACTIVE CAMPAIGNS
+        // FUNGSI INIT CHART.JS
+        function initChart(datasetToShow) {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            
+            // Efek Gradien Elegan (Putih transparan ke hitam/transparan)
+            const gradientFill = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientFill.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+            gradientFill.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            
+            // Plugin Custom untuk Garis Vertikal (Crosshair) saat Hover
+            const verticalCrosshairPlugin = {
+                id: 'verticalCrosshair',
+                afterDraw: (chart) => {
+                    if (chart.tooltip?._active?.length) {
+                        const activePoint = chart.tooltip._active[0];
+                        const ctx = chart.ctx;
+                        const x = activePoint.element.x;
+                        const topY = chart.scales.y.top;
+                        const bottomY = chart.scales.y.bottom;
+
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.moveTo(x, topY);
+                        ctx.lineTo(x, bottomY);
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = '#52525b'; // zinc-600
+                        ctx.setLineDash([5, 5]);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            };
+
+            if (analyticsChartInstance) {
+                analyticsChartInstance.destroy();
+            }
+
+            analyticsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labelsChart,
+                    datasets: [{
+                        label: 'Views',
+                        data: datasetToShow,
+                        borderColor: '#ffffff', // Putih elegan
+                        backgroundColor: gradientFill,
+                        tension: 0.4, 
+                        fill: true,
+                        borderWidth: 2, 
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#121214', 
+                        pointBorderWidth: 2,
+                        pointRadius: 0, 
+                        pointHoverRadius: 5, 
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: '#121214',
+                        pointHoverBorderWidth: 2,
+                        pointHitRadius: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#ffffff', // Background putih ala SaaS modern
+                            titleColor: '#000000',
+                            bodyColor: '#000000',
+                            borderColor: '#e4e4e7', // zinc-200 border
+                            borderWidth: 1,
+                            padding: { top: 6, bottom: 6, left: 10, right: 10 },
+                            displayColors: false, 
+                            titleFont: { size: 0 }, // Sembunyikan title date
+                            bodyFont: { family: "'Inter', sans-serif", size: 12, weight: '700' },
+                            callbacks: {
+                                title: () => null, // Hilangkan judul tooltip
+                                label: function(context) {
+                                    return context.parsed.y.toLocaleString('id-ID') + ' Views';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#27272a', // zinc-800
+                                borderDash: [4, 4], // Putus-putus
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#71717a', 
+                                font: { family: "'Inter', sans-serif", size: 10 },
+                                maxTicksLimit: window.innerWidth < 600 ? 7 : 14 // Tampilan lebih renggang di HP
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right', // POSISI KANAN SESUAI REFERENSI
+                            grid: {
+                                color: '#27272a', 
+                                borderDash: [4, 4], 
+                                drawBorder: false 
+                            },
+                            ticks: {
+                                color: '#71717a', 
+                                font: { family: "'Inter', sans-serif", size: 10 },
+                                padding: 10,
+                                callback: function(value) {
+                                    return value >= 1000 ? (value / 1000) + 'K' : value;
+                                }
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                },
+                plugins: [verticalCrosshairPlugin]
+            });
+        }
+
+        // FUNGSI TOGGLE CHART BUTTONS
+        function setupChartControls() {
+            const btnTotal = document.getElementById('btn-chart-total');
+            const btnKenaikan = document.getElementById('btn-chart-kenaikan');
+
+            btnTotal.addEventListener('click', () => {
+                // Ubah styling button aktif
+                btnTotal.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none";
+                btnKenaikan.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md text-zinc-400 hover:text-white transition-all focus:outline-none";
+                
+                // Update Data
+                analyticsChartInstance.data.datasets[0].data = dataTotal;
+                analyticsChartInstance.update();
+            });
+
+            btnKenaikan.addEventListener('click', () => {
+                // Ubah styling button aktif
+                btnKenaikan.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md bg-white text-black shadow-sm transition-all focus:outline-none";
+                btnTotal.className = "px-3 py-1 text-[11px] sm:text-xs font-semibold rounded-md text-zinc-400 hover:text-white transition-all focus:outline-none";
+                
+                // Update Data
+                analyticsChartInstance.data.datasets[0].data = dataKenaikan;
+                analyticsChartInstance.update();
+            });
+        }
+
         async function loadActiveCampaigns(userId) {
             const container = document.getElementById('campaign-container');
-            
             try {
-                // Ditambahkan field is_private pada seleksi tabel campaigns
                 const { data: userCampaigns, error } = await supabase
                     .from('user_campaigns')
                     .select(`
@@ -426,7 +490,6 @@
                     const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
                     const priceLabel = camp.payment_type === 'video' ? '/ video' : '/ 1k views';
                     
-                    // Sanitasi teks dari potensi kode berbahaya
                     const safeBrand = escapeHTML(camp.brand_name);
                     const safeTitle = escapeHTML(camp.title);
                     const safeNiche = escapeHTML(camp.niche);
@@ -439,7 +502,6 @@
                         if (camp.platforms.includes('youtube')) platformIcons += `<svg class="w-3.5 h-3.5 text-zinc-300" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
                     }
 
-                    // Logika Styling Card VIP / Whale
                     let cardBaseClass = "snap-center flex-shrink-0 w-[280px] md:w-[320px] campaign-card rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col h-full hover:-translate-y-1 transition-all duration-300 shadow-xl group";
                     if (isPrivate) {
                         cardBaseClass += " bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
@@ -527,7 +589,6 @@
             }
         };
 
-        // FUNGSI FORMAT RUPIAH
         function formatRupiahK(num) {
             if (num >= 1000000000000) return 'Rp ' + (num / 1000000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' T';
             if (num >= 1000000000) return 'Rp ' + (num / 1000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' M';
@@ -536,7 +597,6 @@
             return 'Rp ' + num;
         }
 
-        // FUNGSI FORMAT VIEWS (ANGKA BIASA)
         function formatK(num) {
             if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'B';
             if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'M';
