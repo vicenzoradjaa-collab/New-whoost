@@ -60,35 +60,44 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
 
         /* ========================================================
-           Flatpickr Custom Theme - Elegant Black & White 
+           Flatpickr Custom Theme - PURE Elegant Black & White 
            ======================================================== */
-        .flatpickr-calendar.inline {
+        
+        /* 1. MENGHANCURKAN SEMUA BACKGROUND ABU-ABU BAWAAN CDN */
+        .flatpickr-calendar,
+        .flatpickr-calendar.dark,
+        .flatpickr-calendar.inline,
+        .flatpickr-months,
+        .flatpickr-months .flatpickr-month,
+        .flatpickr-weekdays,
+        .flatpickr-weekdays .flatpickr-weekdaycontainer,
+        .flatpickr-innerContainer,
+        .flatpickr-days,
+        .dayContainer {
             background: transparent !important;
-            box-shadow: none !important;
+            background-color: transparent !important;
             border: none !important;
+            box-shadow: none !important;
             padding: 0 !important;
+        }
+
+        .flatpickr-calendar.inline {
             margin: auto !important; 
         }
-        .flatpickr-months .flatpickr-month {
-            background: transparent !important;
+
+        /* 2. STYLE HEADER BULAN/TAHUN */
+        .flatpickr-current-month {
+            padding-top: 0 !important;
             color: #fff !important;
-            fill: #fff !important;
+            font-weight: 700 !important;
         }
-        .flatpickr-current-month .flatpickr-monthDropdown-months {
-            background: #121214 !important;
+        .flatpickr-current-month input.cur-year {
             color: #fff !important;
-            padding: 2px !important;
-            border-radius: 4px;
+            font-weight: 700 !important;
         }
-        .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
-            background: #27272a !important;
-        }
-        .flatpickr-current-month .numInputWrapper span.arrowUp:after { border-bottom-color: #fff !important; }
-        .flatpickr-current-month .numInputWrapper span.arrowDown:after { border-top-color: #fff !important; }
-        
-        /* Hari dalam seminggu (Sen, Sel, Rab...) */
+
+        /* 3. STYLE NAMA HARI (Sen, Sel, Rab, dll) */
         .flatpickr-weekdays {
-            background: transparent !important;
             margin-bottom: 8px !important;
         }
         span.flatpickr-weekday {
@@ -97,7 +106,7 @@
             font-size: 12px !important;
         }
 
-        /* Tanggal Standar */
+        /* 4. STYLE TANGGAL STANDAR */
         .flatpickr-day {
             color: #d4d4d8 !important; /* zinc-300 */
             border-radius: 8px !important;
@@ -117,23 +126,24 @@
             color: #52525b !important; /* zinc-600 */
         }
 
-        /* TANGGAL MASA DEPAN (Disabled) - Dibuat Redup/Abu-abu */
+        /* 5. TANGGAL MASA DEPAN (Disabled) - Dibuat Sangat Redup/Abu-abu */
         .flatpickr-day.flatpickr-disabled,
         .flatpickr-day.flatpickr-disabled:hover {
-            color: #27272a !important; /* zinc-800, sangat redup */
+            color: #27272a !important; /* zinc-800, sangat redup menyatu background */
             background: transparent !important;
             border-color: transparent !important;
             cursor: not-allowed !important;
         }
 
-        /* Hover pada tanggal normal */
+        /* Hover pada tanggal normal yang aktif */
         .flatpickr-day:not(.flatpickr-disabled):not(.startRange):not(.endRange):not(.inRange):hover {
             background: #27272a !important; /* zinc-800 */
             border-color: #27272a !important;
             color: #fff !important;
         }
 
-        /* Dalam Jangkauan Range (Di antara titik awal & akhir) */
+        /* 6. STYLE JANGKAUAN/RANGE TANGGAL */
+        /* Di antara titik awal & akhir */
         .flatpickr-day.inRange, 
         .flatpickr-day.prevMonthDay.inRange, 
         .flatpickr-day.nextMonthDay.inRange, 
@@ -141,8 +151,8 @@
             background: #27272a !important; /* zinc-800 */
             border-color: #27272a !important;
             color: #ffffff !important;
-            box-shadow: -5px 0 0 #27272a, 5px 0 0 #27272a !important; /* Efek menyambung */
-            border-radius: 0 !important; /* Dibuat kotak agar menyambung */
+            box-shadow: -5px 0 0 #27272a, 5px 0 0 #27272a !important; 
+            border-radius: 0 !important; 
         }
 
         /* Titik Awal (Start) & Akhir (End) Range -> Tampilan Putih Elegan */
@@ -155,11 +165,11 @@
             color: #000000 !important;
             border-color: #ffffff !important;
             font-weight: 800 !important;
-            border-radius: 8px !important; /* Dibuat bulat/rounded kembali */
+            border-radius: 8px !important; 
             box-shadow: none !important;
         }
 
-        /* Memastikan hover di start/end tetap putih */
+        /* Hover pada batas Range */
         .flatpickr-day.startRange:hover, 
         .flatpickr-day.endRange:hover, 
         .flatpickr-day.selected:hover {
@@ -298,9 +308,9 @@
                                 </div>
 
                                 <!-- Kanan: Area Kalender Interaktif (Hidden by Default agar layout tidak bug) -->
-                                <div id="calendar-panel" class="hidden flex-col bg-darkBg border-t md:border-t-0 md:border-l border-zinc-800">
+                                <div id="calendar-panel" class="hidden flex-col bg-[#121214] border-t md:border-t-0 md:border-l border-zinc-800">
                                     <div id="calendar-inline-container" class="p-2 sm:p-4 flex justify-center w-full md:min-w-[560px] min-h-[280px]">
-                                        <!-- Class hidden dipasang MURNI pada input agar tidak bocor menjadi kotak putih raksasa -->
+                                        <!-- Class hidden dipasang MURNI pada input agar tidak bocor -->
                                         <input type="text" id="flatpickr-input" class="hidden">
                                     </div>
                                     <div class="p-3 sm:p-4 border-t border-zinc-800 flex justify-end bg-[#121214]">
@@ -391,7 +401,6 @@
             }
             const userId = session.user.id;
             
-            // Urutan Penting: Stats & Submissions diambil dulu agar data chart 100% akurat
             await Promise.all([
                 loadUserStats(userId),
                 loadAnalyticsData(userId)
@@ -732,9 +741,17 @@
                         locale: "id",
                         theme: "dark", 
                         inline: true, 
-                        disableMobile: "true", 
+                        disableMobile: true, // WAJIB: Mematikan UI Native Select HP
+                        monthSelectorType: "static", // WAJIB: Agar bulan hanya berupa teks dan dikontrol oleh panah (tanpa dropdown select)
                         showMonths: window.innerWidth >= 768 ? 2 : 1, 
                         maxDate: "today",
+                        onReady: function(selectedDates, dateStr, instance) {
+                            // WAJIB: Mencegah Numpad Keyboard di HP saat menekan tahun
+                            const yearInputs = instance.calendarContainer.querySelectorAll('.cur-year');
+                            yearInputs.forEach(input => {
+                                input.setAttribute('readonly', 'readonly');
+                            });
+                        },
                         onChange: function(selectedDates, dateStr, instance) {
                             selectedDateRange = selectedDates;
                         }
