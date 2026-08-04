@@ -182,6 +182,10 @@
         });
 
         async function loadLeaderboardData() {
+            // Ambil ID User yang sedang login
+            const { data: authData } = await supabase.auth.getUser();
+            const currentUserId = authData?.user?.id;
+
             // Ambil data stats clipper digabung dengan profile (nama, umur, avatar)
             const { data, error } = await supabase
                 .from('clipper_stats')
@@ -205,47 +209,69 @@
             // Filter user yang profilnya terhubung saja
             const validData = data.filter(d => d.profiles);
 
-            // Sorting Data (Top 10 Views & Top 10 Payout)
-            const topViews = [...validData].sort((a,b) => (b.total_views || 0) - (a.total_views || 0)).slice(0, 10);
-            const topPayout = [...validData].sort((a,b) => (b.total_earnings || 0) - (a.total_earnings || 0)).slice(0, 10);
+            // Sorting Data Full (Untuk mencari peringkat user yang login jika di luar Top 10)
+            const sortedViews = [...validData].sort((a,b) => (b.total_views || 0) - (a.total_views || 0));
+            const sortedPayout = [...validData].sort((a,b) => (b.total_earnings || 0) - (a.total_earnings || 0));
 
-            // Render ke UI
-            renderTabContent('content-views', topViews, 'views');
-            renderTabContent('content-payout', topPayout, 'payout');
+            // Ambil Top 10
+            const topViews = sortedViews.slice(0, 10);
+            const topPayout = sortedPayout.slice(0, 10);
+
+            // Render ke UI dengan membawa currentUserId & Data Keseluruhan
+            renderTabContent('content-views', topViews, sortedViews, currentUserId, 'views');
+            renderTabContent('content-payout', topPayout, sortedPayout, currentUserId, 'payout');
         }
 
-        function renderTabContent(containerId, dataArray, type) {
+        function renderTabContent(containerId, top10Array, fullSortedArray, currentUserId, type) {
             const container = document.getElementById(containerId);
             container.innerHTML = ''; // Kosongkan placeholder
 
-            if (dataArray.length === 0) {
+            if (top10Array.length === 0) {
                 container.innerHTML = '<p class="text-zinc-500 text-center py-10 text-sm">Belum ada data peringkat.</p>';
                 return;
             }
 
-            const top3 = dataArray.slice(0, 3);
-            const rest = dataArray.slice(3, 10);
+            const top3 = top10Array.slice(0, 3);
+            const rest = top10Array.slice(3, 10);
 
             // 1. Build Podium HTML (Top 3)
-            const podiumHtml = generatePodiumHTML(top3, type);
+            const podiumHtml = generatePodiumHTML(top3, type, currentUserId);
             
             // 2. Build List HTML (Rank 4 - 10)
             let listHtml = '';
             if (rest.length > 0) {
-                listHtml = generateListHTML(rest, type, 4);
+                listHtml = generateListHTML(rest, type, 4, currentUserId);
             }
 
-            container.innerHTML = podiumHtml + listHtml;
+            // 3. Cek Posisi User yang Login (Jika di luar Top 10)
+            let extraHtml = '';
+            if (currentUserId) {
+                const userIndex = fullSortedArray.findIndex(u => u.user_id === currentUserId);
+                if (userIndex >= 10) {
+                    // Berada di luar Top 10 (Rank 11+)
+                    extraHtml = generateExtraUserRow(fullSortedArray[userIndex], userIndex + 1, type);
+                } else if (userIndex === -1) {
+                    // Belum ada datanya di tabel clipper_stats
+                    extraHtml = generateNotRankedRow();
+                }
+            }
+
+            container.innerHTML = podiumHtml + listHtml + extraHtml;
         }
 
         // =====================================
         // HTML GENERATORS
         // =====================================
 
-        function generatePodiumHTML(top3, type) {
+        function generatePodiumHTML(top3, type, currentUserId) {
             const r1 = top3[0]; // Rank 1
             const r2 = top3[1]; // Rank 2
             const r3 = top3[2]; // Rank 3
+
+            // Pengecekan apakah itu User Saat Ini
+            const r1Me = r1?.user_id === currentUserId;
+            const r2Me = r2?.user_id === currentUserId;
+            const r3Me = r3?.user_id === currentUserId;
 
             let html = '<div class="flex items-end justify-center gap-2 sm:gap-4 pt-6 pb-4">';
 
@@ -259,7 +285,10 @@
                         </div>
                         <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-zinc-300 text-black text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#2</div>
                     </div>
-                    <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">${maskName(r2.profiles.full_name)}</h4>
+                    <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">
+                        ${maskName(r2.profiles.full_name)}
+                        ${r2Me ? '<span class="text-indigo-400 text-[9px] font-black ml-0.5">(Kamu)</span>' : ''}
+                    </h4>
                     <p class="text-[10px] sm:text-xs ${type === 'views' ? 'text-zinc-400' : 'text-green-400'} font-bold mb-3">${formatValue(r2, type)}</p>
                     <div class="w-full h-16 sm:h-20 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
                         <span class="text-zinc-500 font-black text-xl">2</span>
@@ -280,7 +309,10 @@
                         </div>
                         <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-[10px] sm:text-[11px] font-black px-2.5 py-0.5 rounded-full border-2 border-darkBg">#1</div>
                     </div>
-                    <h4 class="text-sm sm:text-base font-black text-yellow-400 truncate w-full text-center mt-1">${maskName(r1.profiles.full_name)}</h4>
+                    <h4 class="text-sm sm:text-base font-black text-yellow-400 truncate w-full text-center mt-1">
+                        ${maskName(r1.profiles.full_name)}
+                        ${r1Me ? '<span class="text-indigo-400 text-[10px] font-black ml-0.5">(Kamu)</span>' : ''}
+                    </h4>
                     <p class="text-[11px] sm:text-xs ${type === 'views' ? 'text-zinc-300' : 'text-green-400'} font-black mb-3">${formatValue(r1, type)}</p>
                     <div class="w-full h-24 sm:h-28 bg-gradient-to-t from-yellow-500/20 to-yellow-500/5 rounded-t-lg border-x border-t border-yellow-500/40 flex items-start justify-center pt-2">
                         <span class="text-yellow-500/50 font-black text-3xl">1</span>
@@ -298,7 +330,10 @@
                         </div>
                         <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 rounded-full border-2 border-darkBg">#3</div>
                     </div>
-                    <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">${maskName(r3.profiles.full_name)}</h4>
+                    <h4 class="text-xs sm:text-sm font-bold text-white truncate w-full text-center mt-1">
+                        ${maskName(r3.profiles.full_name)}
+                        ${r3Me ? '<span class="text-indigo-400 text-[9px] font-black ml-0.5">(Kamu)</span>' : ''}
+                    </h4>
                     <p class="text-[10px] sm:text-xs ${type === 'views' ? 'text-zinc-400' : 'text-green-400'} font-bold mb-3">${formatValue(r3, type)}</p>
                     <div class="w-full h-12 sm:h-16 bg-zinc-800/50 rounded-t-lg border-x border-t border-zinc-700/50 flex items-center justify-center">
                         <span class="text-zinc-500 font-black text-lg">3</span>
@@ -312,15 +347,19 @@
             return html;
         }
 
-        function generateListHTML(listData, type, startIndex) {
+        function generateListHTML(listData, type, startIndex, currentUserId) {
             let html = '<div class="flex flex-col gap-3">';
             listData.forEach((u, i) => {
                 const rank = startIndex + i;
+                const isMe = u.user_id === currentUserId;
                 const valClass = type === 'views' ? 'text-white' : 'text-green-400';
                 const labelStr = type === 'views' ? 'Views' : 'Pendapatan';
                 
                 // Gunakan EscapeHTML untuk sanitasi input sebelum dirender
                 const safeAgeStr = u.profiles.age ? `${escapeHTML(u.profiles.age)} Tahun` : 'Umur Rahasia';
+
+                // Jika isMe (Kamu) tampilkan badge kecil
+                const badgeKamu = isMe ? '<span class="bg-indigo-600 text-white text-[9px] px-1.5 py-0.5 rounded-full">Kamu</span>' : '';
 
                 html += `
                 <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:border-zinc-500 hover:-translate-y-0.5 transition-all group shadow-md hover:shadow-lg cursor-default">
@@ -330,7 +369,9 @@
                             <img src="${getAvatar(u.profiles)}" alt="Avatar" class="w-full h-full object-cover">
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors">${maskName(u.profiles.full_name)}</h4>
+                            <h4 class="text-sm font-bold text-white group-hover:text-zinc-300 transition-colors flex items-center flex-wrap gap-1.5">
+                                ${maskName(u.profiles.full_name)} ${badgeKamu}
+                            </h4>
                             <p class="text-[10px] sm:text-xs text-zinc-400">${safeAgeStr}</p>
                         </div>
                     </div>
@@ -342,6 +383,54 @@
             });
             html += '</div>';
             return html;
+        }
+
+        function generateExtraUserRow(u, rank, type) {
+            const valClass = type === 'views' ? 'text-white' : 'text-green-400';
+            const labelStr = type === 'views' ? 'Views' : 'Pendapatan';
+            const safeAgeStr = u.profiles.age ? `${escapeHTML(u.profiles.age)} Tahun` : 'Umur Rahasia';
+            
+            return `
+            <div class="mt-6 pt-6 border-t border-zinc-800/80 animate-fade-in">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-zinc-700"></div>
+                    <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center">Peringkat Kamu Saat Ini</p>
+                    <div class="h-px w-8 bg-zinc-700"></div>
+                </div>
+                <div class="bg-indigo-900/10 border border-indigo-500/40 rounded-xl p-3 sm:p-4 flex items-center justify-between hover:-translate-y-0.5 transition-transform shadow-[0_0_15px_rgba(99,102,241,0.05)] cursor-default">
+                    <div class="flex items-center gap-3 sm:gap-4">
+                        <span class="text-sm sm:text-base font-black text-indigo-400 w-4 text-center">${rank}</span>
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-800 overflow-hidden shrink-0 border border-indigo-500/50">
+                            <img src="${getAvatar(u.profiles)}" alt="Avatar" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-indigo-100 flex items-center flex-wrap gap-1.5">
+                                ${maskName(u.profiles.full_name)} 
+                                <span class="bg-indigo-600 text-white text-[9px] px-1.5 py-0.5 rounded-full">Kamu</span>
+                            </h4>
+                            <p class="text-[10px] sm:text-xs text-indigo-300/70">${safeAgeStr}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm sm:text-base font-bold ${valClass}">${formatValue(u, type).replace(' Views', '')}</p>
+                        <p class="text-[9px] sm:text-[10px] text-indigo-400/70 font-medium uppercase tracking-wider">${labelStr}</p>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function generateNotRankedRow() {
+            return `
+            <div class="mt-6 pt-6 border-t border-zinc-800/80 animate-fade-in">
+                <div class="flex items-center justify-center gap-2 mb-4">
+                    <div class="h-px w-8 bg-zinc-700"></div>
+                    <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center">Peringkat Kamu Saat Ini</p>
+                    <div class="h-px w-8 bg-zinc-700"></div>
+                </div>
+                <div class="bg-cardBg border border-zinc-800/80 rounded-xl p-4 text-center">
+                    <p class="text-sm text-zinc-400">Kamu belum masuk ke dalam leaderboard. Terus submit konten untuk meraih peringkat!</p>
+                </div>
+            </div>`;
         }
 
 
