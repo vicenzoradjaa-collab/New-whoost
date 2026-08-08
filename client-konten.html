@@ -177,11 +177,11 @@
                 }
                 sessionUser = session.user;
 
-                // 5. Ambil Kampanye (Untuk Filter Dropdown)
+                // 5. [PERBAIKAN] Ambil Kampanye (Untuk Filter Dropdown menggunakan .ilike)
                 const { data: camps, error: campError } = await supabase
                     .from('campaigns')
                     .select('id, title')
-                    .eq('client_id', sessionUser.id)
+                    .ilike('client_id', `%${sessionUser.id}%`)
                     .order('created_at', { ascending: false });
 
                 if (campError) throw campError;
