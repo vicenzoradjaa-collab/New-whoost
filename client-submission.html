@@ -96,9 +96,10 @@
                 </button>
                 
                 <div id="dropdownCampaignFilter" class="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-full sm:w-64 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                    <div id="campaignFilterList" class="max-h-56 overflow-y-auto custom-scrollbar flex flex-col">
+                    <!-- PERBAIKAN: Mengganti flex-col dengan block agar flex-shrink tidak menekan elemen teks yang panjang -->
+                    <div id="campaignFilterList" class="max-h-56 overflow-y-auto custom-scrollbar block">
                         <!-- Akan diisi otomatis via JS -->
-                        <button onclick="window.selectCampaignFilter('all', 'Semua Campaign')" class="text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white w-full">Semua Campaign</button>
+                        <button onclick="window.selectCampaignFilter('all', 'Semua Campaign')" class="block shrink-0 w-full text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white">Semua Campaign</button>
                     </div>
                 </div>
             </div>
@@ -209,7 +210,7 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let sessionUser = null;
-        let campaignsList = []; // Array untuk menyimpan semua daftar campaign client ini
+        let campaignsList = []; 
         let submissionsData = [];
         
         let currentItemCount = 14; 
@@ -441,15 +442,15 @@
             </div>`;
         }
 
-        // Render Dropdown Campaign Bersumber dari List Utuh, Bukan dari Submissions
+        // PERBAIKAN: Render Dropdown Campaign dengan Penyesuaian Flex-Shrink (Aman untuk teks panjang)
         function renderCampaignDropdown() {
             const listContainer = document.getElementById('campaignFilterList');
             
-            let html = `<button onclick="window.selectCampaignFilter('all', 'Semua Campaign')" class="text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white w-full border-b border-zinc-800/50">Semua Campaign</button>`;
+            let html = `<button onclick="window.selectCampaignFilter('all', 'Semua Campaign')" class="block shrink-0 w-full text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white border-b border-zinc-800/50">Semua Campaign</button>`;
             
             campaignsList.forEach(c => {
                 const safeTitle = escapeHTML(c.title);
-                html += `<button onclick="window.selectCampaignFilter('${c.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="text-left px-5 py-3 text-[13px] text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors border-b border-zinc-800/30 last:border-0 w-full truncate" title="${safeTitle}">${safeTitle}</button>`;
+                html += `<button onclick="window.selectCampaignFilter('${c.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="block shrink-0 w-full text-left px-5 py-3 text-[13px] text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors border-b border-zinc-800/30 last:border-0 truncate" title="${safeTitle}">${safeTitle}</button>`;
             });
 
             listContainer.innerHTML = html;
