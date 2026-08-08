@@ -261,10 +261,10 @@
             }
         });
 
-        // 1. Tarik Data dari Supabase (Hanya yang Client_ID nya cocok)
+        // 1. Tarik Data dari Supabase (Hanya yang Client_ID nya cocok menggunakan .ilike)
         async function loadSubmissions() {
             try {
-                // Modifikasi fetch untuk ikut mengambil is_private
+                // Modifikasi fetch untuk ikut mengambil is_private dan mendukung pencarian text berformat JSON Array
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
@@ -272,7 +272,7 @@
                         profiles (full_name, email),
                         campaigns!inner (id, title, client_id, platforms, is_private)
                     `)
-                    .eq('campaigns.client_id', sessionUser.id)
+                    .ilike('campaigns.client_id', `%${sessionUser.id}%`)
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
