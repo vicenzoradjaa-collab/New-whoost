@@ -98,16 +98,18 @@
                     <div class="bg-cardBg border border-zinc-800 rounded-2xl p-5 flex flex-col flex-1">
                         <h3 class="text-lg font-bold text-white mb-4 border-b border-zinc-800 pb-2">Informasi Dasar & Kategori</h3>
                         
-                        <label class="block text-sm font-medium text-cyan-400 mb-1">Hubungkan ke Akun Client</label>
+                        <!-- MULTI SELECT CLIENT -->
+                        <label class="block text-sm font-medium text-cyan-400 mb-1">Hubungkan ke Akun Client (Pilih Banyak)</label>
                         <div class="relative custom-select-container w-full mb-4">
-                            <div class="bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 text-sm text-white outline-none cursor-pointer flex justify-between items-center transition-colors" onclick="window.toggleSelect('client-options')">
-                                <span id="client-selected-text" class="truncate">-- Tidak dihubungkan (Hanya di Admin) --</span>
+                            <div class="bg-zinc-900 border border-zinc-800 focus:border-white rounded-xl px-4 py-3 min-h-[46px] text-sm text-white outline-none cursor-pointer flex justify-between items-center transition-colors" onclick="if(event.target.closest('button')) return; window.toggleSelect('client-options')">
+                                <div id="client-selected-container" class="flex flex-wrap gap-2">
+                                    <span id="client-placeholder" class="text-zinc-500">-- Tidak dihubungkan (Hanya di Admin) --</span>
+                                </div>
                                 <svg class="w-4 h-4 text-zinc-400 shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
-                            <div id="client-options" class="custom-select-options hidden absolute top-[52px] left-0 w-full bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
+                            <div id="client-options" class="custom-select-options hidden absolute top-full mt-1 left-0 w-full bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
                                 <div class="p-4 text-center text-xs text-zinc-500">Memuat data client...</div>
                             </div>
-                            <input type="hidden" id="client_id" value="">
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 mb-4">
@@ -308,7 +310,9 @@
         let selectedPlatforms = { tiktok: false, ig: false, yt: false };
         let linksData = [];
         let currentPaymentType = 'views';
+        
         let clientsList = [];
+        let selectedClients = []; // Data structure for multiple clients {id, name}
 
         const niches = {
             clipping: ['WhaleClipping', 'Brand', 'Music', 'Podcast', 'Stream', 'Film', 'Tourism', 'Show', 'Entertainment'],
@@ -323,12 +327,10 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. CEK PROTEKSI ROLE UMUM
                 if (typeof enforceRoleProtection === 'function') {
                     await enforceRoleProtection();
                 }
 
-                // 2. DOUBLE CHECK KHUSUS ADMIN (Keamanan Tambahan)
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                 if (sessionError || !session) {
                     window.location.replace('admin-login.html');
@@ -352,7 +354,6 @@
                     return;
                 }
 
-                // 3. JIKA AMAN, LANJUTKAN INISIALISASI
                 if(!campaignId) {
                     alert("ID Campaign tidak ditemukan!");
                     window.location.replace('admin-campaign.html');
@@ -377,14 +378,7 @@
             
             if (!error && data && data.length > 0) {
                 clientsList = data;
-                let html = `<div onclick="window.selectClient('', '-- Tidak dihubungkan (Hanya di Admin) --')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-zinc-400">-- Tidak dihubungkan (Hanya di Admin) --</div>`;
-                data.forEach(c => {
-                    let bName = c.business_name && String(c.business_name).toLowerCase() !== 'null' ? c.business_name : '';
-                    let fName = c.full_name && String(c.full_name).toLowerCase() !== 'null' ? c.full_name : '';
-                    let dName = bName || fName || c.email;
-                    html += `<div onclick="window.selectClient('${c.id}', '${dName.replace(/'/g, "\\'")}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-t border-zinc-700/50 truncate">${dName}</div>`;
-                });
-                selectEl.innerHTML = html;
+                window.renderClientOptions();
             } else {
                 selectEl.innerHTML = '<div class="p-4 text-center text-xs text-zinc-500">Belum ada user Client terdaftar</div>';
             }
@@ -403,15 +397,29 @@
             const statusVal = data.status || 'HOLDING';
             window.selectStatus(statusVal);
 
-            // Client
+            // Client (Mendukung array data multi-client maupun string lawas)
             if(data.client_id) {
-                const c = clientsList.find(x => x.id === data.client_id);
-                if(c) {
-                    let bName = c.business_name && String(c.business_name).toLowerCase() !== 'null' ? c.business_name : '';
-                    let fName = c.full_name && String(c.full_name).toLowerCase() !== 'null' ? c.full_name : '';
-                    let dName = bName || fName || c.email;
-                    window.selectClient(c.id, dName);
+                let ids = [];
+                if (Array.isArray(data.client_id)) {
+                    ids = data.client_id;
+                } else if (typeof data.client_id === 'string') {
+                    if (data.client_id.startsWith('[')) {
+                        try { ids = JSON.parse(data.client_id); } catch(e) { ids = [data.client_id]; }
+                    } else {
+                        ids = [data.client_id];
+                    }
                 }
+                
+                ids.forEach(id => {
+                    const c = clientsList.find(x => x.id === id);
+                    if(c) {
+                        let bName = c.business_name && String(c.business_name).toLowerCase() !== 'null' ? c.business_name : '';
+                        let fName = c.full_name && String(c.full_name).toLowerCase() !== 'null' ? c.full_name : '';
+                        let dName = bName || fName || c.email;
+                        selectedClients.push({ id: c.id, name: dName });
+                    }
+                });
+                window.renderClientOptions();
             }
 
             // Toggle Private
@@ -422,7 +430,7 @@
             document.getElementById('title-input').value = data.title || '';
             if(data.deadline) document.getElementById('deadline-input').value = data.deadline;
             
-            // Type & Niche (FIXED BUG - Mencegah Error jika Niche UpperCase)
+            // Type & Niche
             const typeVal = String(data.type || 'clipping').toLowerCase();
             const typeText = typeVal === 'ugc' ? 'UGC' : 'Clipping';
             
@@ -502,7 +510,64 @@
             }
         });
 
-        // FIXED STATUS MAP UPDATE
+        // MULTI-SELECT CLIENT UI LOGIC
+        window.renderClientOptions = function() {
+            const selectEl = document.getElementById('client-options');
+            let html = '';
+            clientsList.forEach(c => {
+                let bName = c.business_name && String(c.business_name).toLowerCase() !== 'null' ? c.business_name : '';
+                let fName = c.full_name && String(c.full_name).toLowerCase() !== 'null' ? c.full_name : '';
+                let dName = bName || fName || c.email;
+                
+                const isSelected = selectedClients.some(sc => sc.id === c.id);
+                const checkIcon = isSelected 
+                    ? `<svg class="w-4 h-4 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>` 
+                    : `<div class="w-4 h-4 shrink-0"></div>`;
+                
+                html += `<div onclick="window.toggleClient('${c.id}', '${dName.replace(/'/g, "\\'")}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-b border-zinc-700/50 flex items-center justify-between gap-2">
+                    <span class="truncate">${dName}</span>
+                    ${checkIcon}
+                </div>`;
+            });
+            selectEl.innerHTML = html;
+            window.updateClientUI();
+        };
+
+        window.toggleClient = function(id, name) {
+            const existingIdx = selectedClients.findIndex(c => c.id === id);
+            if (existingIdx >= 0) {
+                selectedClients.splice(existingIdx, 1);
+            } else {
+                selectedClients.push({ id, name });
+            }
+            window.renderClientOptions();
+        };
+
+        window.removeClient = function(e, id) {
+            e.stopPropagation();
+            selectedClients = selectedClients.filter(c => c.id !== id);
+            window.renderClientOptions();
+        };
+
+        window.updateClientUI = function() {
+            const container = document.getElementById('client-selected-container');
+            if (selectedClients.length === 0) {
+                container.innerHTML = `<span id="client-placeholder" class="text-zinc-500">-- Tidak dihubungkan (Hanya di Admin) --</span>`;
+            } else {
+                let html = '';
+                selectedClients.forEach(c => {
+                    html += `<div class="bg-zinc-800 text-cyan-400 border border-zinc-700 px-2 py-1 rounded-md text-xs flex items-center gap-1">
+                        <span class="truncate max-w-[120px] sm:max-w-[150px]">${c.name}</span>
+                        <button type="button" onclick="window.removeClient(event, '${c.id}')" class="hover:text-red-400 focus:outline-none ml-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }
+        };
+
+        // STATUS, TYPE, NICHE LOGIC
         window.selectStatus = function(val) {
             const map = {
                 'ACTIVE': `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ACTIVE`,
@@ -514,12 +579,6 @@
             document.getElementById('status-options').classList.add('hidden');
         };
 
-        window.selectClient = function(id, text) {
-            document.getElementById('client_id').value = id;
-            document.getElementById('client-selected-text').innerText = text;
-            document.getElementById('client-options').classList.add('hidden');
-        };
-
         window.selectType = function(val, text) {
             document.getElementById('type_val').value = val;
             document.getElementById('type-selected-text').innerText = text;
@@ -527,7 +586,6 @@
             window.updateNicheOptions();
         };
 
-        // FIXED BUG NICHE SELECTION
         window.updateNicheOptions = function() {
             const type = document.getElementById('type_val').value;
             const container = document.getElementById('niche-options');
@@ -538,7 +596,6 @@
             });
             container.innerHTML = html;
             
-            // Hanya ganti ke niche pertama jika nilai saat ini kosong atau tidak ada di list
             const currentNiche = document.getElementById('niche_val').value;
             if(!currentNiche || !nicheList.includes(currentNiche)){
                 window.selectNiche(nicheList[0]);
@@ -631,7 +688,7 @@
         };
 
         // ==========================================
-        // 4. FORMAT CURRENCY & NUMBER (DIPERBAIKI)
+        // 4. FORMAT CURRENCY & NUMBER
         // ==========================================
         function parseRupiah(val) { 
             if (!val) return 0;
@@ -665,7 +722,6 @@
                     this.value = 'Rp ' + formatNumberWithDot(val);
                 }
 
-                // Adjust cursor position
                 let newLength = this.value.length;
                 cursorPosition = cursorPosition + (newLength - oldLength);
                 this.setSelectionRange(cursorPosition, cursorPosition);
@@ -684,7 +740,6 @@
                     this.value = formatNumberWithDot(val);
                 }
 
-                // Adjust cursor position
                 let newLength = this.value.length;
                 cursorPosition = cursorPosition + (newLength - oldLength);
                 this.setSelectionRange(cursorPosition, cursorPosition);
@@ -702,7 +757,6 @@
 
             const textEl = document.getElementById('banner-text');
 
-            // Hapus file lama jika replace (agar storage tidak numpuk)
             if (uploadedBannerPath) {
                 textEl.innerText = "Mengganti Banner...";
                 await supabase.storage.from('avatars').remove([uploadedBannerPath]);
@@ -792,13 +846,12 @@
             if(selectedPlatforms.ig) platforms.push('instagram');
             if(selectedPlatforms.yt) platforms.push('youtube');
             
-            const clientId = document.getElementById('client_id').value;
-
             const jsonLinks = linksData.map(obj => JSON.stringify(obj));
 
             const payload = {
                 status: document.getElementById('status_val').value,
-                client_id: clientId ? clientId : null,
+                // Mengirim Array UUIDs jika client dipilih, atau mengirim 'null' jika dibiarkan kosong
+                client_id: selectedClients.length > 0 ? selectedClients.map(c => c.id) : null,
                 type: document.getElementById('type_val').value,
                 niche: document.getElementById('niche_val').value,
                 brand_name: bName,
