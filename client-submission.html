@@ -209,11 +209,12 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js';
 
         let sessionUser = null;
+        let campaignsList = []; // Array untuk menyimpan semua daftar campaign client ini
         let submissionsData = [];
         
         let currentItemCount = 14; 
         let currentFilter = 'PENDING_CLIENT'; 
-        let currentCampaignFilter = 'all'; // State Filter Campaign Baru
+        let currentCampaignFilter = 'all'; 
         let searchQuery = '';
         let activeCardId = null;
         let currentDecision = null;
@@ -290,24 +291,41 @@
             }
         });
 
-        // 1. Tarik Data dari Supabase (Hanya yang Client_ID nya cocok menggunakan .ilike)
+        // 1. Tarik Data dari Supabase secara BERTAHAP
         async function loadSubmissions() {
             try {
-                const { data, error } = await supabase
-                    .from('submissions')
-                    .select(`
-                        id, video_link, status, created_at, user_id, views_claimed,
-                        profiles (full_name, email),
-                        campaigns!inner (id, title, client_id, platforms, is_private)
-                    `)
-                    .ilike('campaigns.client_id', `%${sessionUser.id}%`)
+                // TAHAP 1: Tarik seluruh campaign milik client
+                const { data: camps, error: campError } = await supabase
+                    .from('campaigns')
+                    .select('id, title, platforms, is_private')
+                    .ilike('client_id', `%${sessionUser.id}%`)
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
-                submissionsData = data || [];
-                
-                // Render List Campaign Dropdown
+                if (campError) throw campError;
+                campaignsList = camps || [];
+
+                // Render List Campaign Dropdown agar semua campaign terdaftar
                 renderCampaignDropdown();
+
+                // TAHAP 2: Tarik submissions hanya berdasarkan deretan campaign di atas
+                if (campaignsList.length > 0) {
+                    const campIds = campaignsList.map(c => c.id);
+                    
+                    const { data, error } = await supabase
+                        .from('submissions')
+                        .select(`
+                            id, video_link, status, created_at, user_id, views_claimed,
+                            profiles (full_name, email),
+                            campaigns (id, title, platforms, is_private)
+                        `)
+                        .in('campaign_id', campIds)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+                    submissionsData = data || [];
+                } else {
+                    submissionsData = [];
+                }
                 
                 // Terapkan Filter
                 applyFilters();
@@ -423,21 +441,13 @@
             </div>`;
         }
 
+        // Render Dropdown Campaign Bersumber dari List Utuh, Bukan dari Submissions
         function renderCampaignDropdown() {
             const listContainer = document.getElementById('campaignFilterList');
-            const uniqueCampaigns = [];
-            const campMap = new Set();
             
-            submissionsData.forEach(sub => {
-                if (sub.campaigns && !campMap.has(sub.campaigns.id)) {
-                    campMap.add(sub.campaigns.id);
-                    uniqueCampaigns.push({ id: sub.campaigns.id, title: sub.campaigns.title });
-                }
-            });
-
             let html = `<button onclick="window.selectCampaignFilter('all', 'Semua Campaign')" class="text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white w-full border-b border-zinc-800/50">Semua Campaign</button>`;
             
-            uniqueCampaigns.forEach(c => {
+            campaignsList.forEach(c => {
                 const safeTitle = escapeHTML(c.title);
                 html += `<button onclick="window.selectCampaignFilter('${c.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="text-left px-5 py-3 text-[13px] text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors border-b border-zinc-800/30 last:border-0 w-full truncate" title="${safeTitle}">${safeTitle}</button>`;
             });
