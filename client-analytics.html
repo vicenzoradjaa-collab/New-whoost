@@ -295,7 +295,8 @@
                 const { data: campaignsData, error: campError } = await supabase
                     .from('campaigns')
                     .select('*')
-                    .eq('client_id', userId)
+                    // [PERBAIKAN]: Menggunakan .ilike agar bisa membaca array stringified JSON di dalam kolom text
+                    .ilike('client_id', `%${userId}%`)
                     .order('created_at', { ascending: false });
                 
                 if (campError) throw campError;
