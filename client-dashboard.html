@@ -187,11 +187,11 @@
         // 1. Tarik & Hitung Data Dashboard
         async function loadDashboardData() {
             try {
-                // Ambil daftar Campaign milik Client
+                // [PERBAIKAN]: Menggunakan .ilike untuk mendukung client_id yg disimpan dalam array stringified JSON di dalam kolom text
                 const { data: campaigns, error: campError } = await supabase
                     .from('campaigns')
                     .select('id, status')
-                    .eq('client_id', sessionUser.id);
+                    .ilike('client_id', `%${sessionUser.id}%`);
                 
                 if (campError) throw campError;
 
@@ -337,8 +337,8 @@
                 if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
                     const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
                     if (ytMatch && ytMatch[1]) {
-                        // PERBAIKAN: Memperbaiki URL img youtube yang terputus di kode sebelumnya
-                        img.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+                        // [PERBAIKAN]: Memperbaiki URL img youtube yang terputus di kode sebelumnya
+                        img.src = `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
                         img.setAttribute('data-loaded', 'true');
                     }
                     continue;
