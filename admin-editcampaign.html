@@ -72,13 +72,11 @@
                 <div id="banner-upload-box" class="w-full aspect-video border-2 border-dashed border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800/50 transition-colors rounded-2xl flex flex-col items-center justify-center relative overflow-hidden group">
                     <img id="banner-preview" class="absolute inset-0 w-full h-full object-cover hidden z-10">
                     
-                    <!-- Overlay Muncul jika gambar sudah diupload -->
                     <div id="banner-overlay" class="absolute inset-0 bg-black/60 hidden z-20 items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button type="button" onclick="event.stopPropagation(); window.triggerUpload()" class="px-5 py-2 bg-white text-black text-sm font-bold rounded-xl hover:bg-zinc-200 shadow-xl focus:outline-none transition-transform active:scale-95">Ganti</button>
                         <button type="button" onclick="event.stopPropagation(); window.deleteBanner()" class="px-5 py-2 bg-red-500 text-white text-sm font-bold rounded-xl hover:bg-red-600 shadow-xl focus:outline-none transition-transform active:scale-95">Hapus</button>
                     </div>
 
-                    <!-- State ketika Kosong -->
                     <div id="banner-empty-state" onclick="window.triggerUpload()" class="z-0 flex flex-col items-center justify-center w-full h-full cursor-pointer absolute inset-0">
                         <div class="w-12 h-12 bg-zinc-800 text-zinc-400 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-all">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -135,7 +133,6 @@
                                     <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </div>
                                 <div id="niche-options" class="custom-select-options hidden absolute top-[72px] left-0 w-full bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto custom-scrollbar">
-                                    <!-- Diisi oleh JS -->
                                 </div>
                                 <input type="hidden" id="niche_val" value="">
                             </div>
@@ -312,7 +309,7 @@
         let currentPaymentType = 'views';
         
         let clientsList = [];
-        let selectedClients = []; // Data structure for multiple clients {id, name}
+        let selectedClients = []; 
 
         const niches = {
             clipping: ['WhaleClipping', 'Brand', 'Music', 'Podcast', 'Stream', 'Film', 'Tourism', 'Show', 'Entertainment'],
@@ -397,7 +394,7 @@
             const statusVal = data.status || 'HOLDING';
             window.selectStatus(statusVal);
 
-            // Client (Mendukung array data multi-client maupun string lawas)
+            // Client (Mendukung array maupun string UUID lawas)
             if(data.client_id) {
                 let ids = [];
                 if (Array.isArray(data.client_id)) {
@@ -478,7 +475,7 @@
                 window.renderLinks();
             }
 
-            // Banner Load & Extract Path
+            // Banner
             if(data.banner_url) {
                 uploadedBannerUrl = data.banner_url;
                 const parts = uploadedBannerUrl.split('/avatars/');
@@ -590,7 +587,7 @@
             const type = document.getElementById('type_val').value;
             const container = document.getElementById('niche-options');
             let html = '';
-            const nicheList = niches[type] || niches['clipping']; // Fallback safety
+            const nicheList = niches[type] || niches['clipping'];
             nicheList.forEach(n => {
                 html += `<div onclick="window.selectNiche('${n}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white border-b border-zinc-700/50 truncate">${n}</div>`;
             });
@@ -850,8 +847,8 @@
 
             const payload = {
                 status: document.getElementById('status_val').value,
-                // Mengirim Array UUIDs jika client dipilih, atau mengirim 'null' jika dibiarkan kosong
-                client_id: selectedClients.length > 0 ? selectedClients.map(c => c.id) : null,
+                // [DIUBAH]: Mengubah array JS menjadi stringified JSON agar aman masuk ke kolom 'text'
+                client_id: selectedClients.length > 0 ? JSON.stringify(selectedClients.map(c => c.id)) : null,
                 type: document.getElementById('type_val').value,
                 niche: document.getElementById('niche_val').value,
                 brand_name: bName,
