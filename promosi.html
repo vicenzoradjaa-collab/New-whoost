@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="id" class="bg-darkBg">
+<html lang="id" class="bg-black">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whoost - Dashboard Promosi</title>
+    <title>Whoost - Exclusive Dashboard</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
@@ -14,8 +14,11 @@
             theme: {
                 extend: {
                     colors: {
-                        darkBg: '#0a0a0c',
-                        cardBg: '#121214',
+                        black: '#050505',
+                        zinc: {
+                            900: '#121212',
+                            800: '#1e1e1e',
+                        }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -26,254 +29,273 @@
     </script>
     <style>
         * { -webkit-tap-highlight-color: transparent !important; outline: none; }
-        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        html, body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #333; }
         
-        .donut-ring { stroke: #27272a; stroke-width: 3.5; fill: transparent; }
-        .donut-segment { stroke: #22c55e; stroke-width: 3.5; fill: transparent; stroke-linecap: round; transition: stroke-dasharray 1.5s ease-out; }
-        
-        /* Animasi masuk perlahan untuk efek rekaman video yang smooth */
+        /* Animasi */
         .fade-in-up { animation: fadeInUp 1s ease-out forwards; opacity: 0; transform: translateY(20px); }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Efek Blur Khusus */
+        .blur-text { filter: blur(6px); opacity: 0.8; user-select: none; transition: filter 0.3s; }
+        .blur-image { filter: blur(15px) grayscale(100%); transform: scale(1.1); }
+        
+        /* Gradient Monokrom */
+        .bg-mono-grad { background: linear-gradient(135deg, #1e1e1e 0%, #050505 100%); }
     </style>
 </head>
-<body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
+<body class="antialiased selection:bg-white selection:text-black flex flex-col relative w-full h-full overflow-y-auto">
 
-    <!-- LOADING SCREEN (Cepat hilang) -->
-    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-700">
-        <div class="relative flex flex-col items-center">
-            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-green-500/20 blur-[50px] rounded-full w-40 h-40 animate-pulse"></div>
-            <!-- Ganti src ke logo Anda jika ada, atau gunakan icon -->
-            <h1 class="text-3xl font-black text-white relative z-10 tracking-widest animate-bounce">WHOOST</h1>
-            <p class="mt-4 text-zinc-500 text-xs font-semibold tracking-widest uppercase animate-pulse">Memuat Dashboard...</p>
-        </div>
-    </div>
-
-    <!-- BACKGROUND GLOW -->
-    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-green-500/5 rounded-full blur-[150px]"></div>
-        <div class="absolute bottom-[-10%] left-[-10%] w-[40rem] h-[40rem] bg-cyan-500/5 rounded-full blur-[120px]"></div>
+    <!-- LOADING SCREEN -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center transition-opacity duration-700">
+        <h1 class="text-4xl font-black text-white tracking-[0.3em] animate-pulse">WHOOST</h1>
+        <p class="mt-4 text-zinc-500 text-[10px] font-bold tracking-[0.5em] uppercase">Secured Data</p>
     </div>
 
     <!-- HEADER -->
-    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
-        <div class="flex items-center gap-3 sm:gap-4 relative z-10">
-            <h1 class="text-xl font-black text-white tracking-widest">WHOOST</h1>
-            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            <h2 class="text-sm sm:text-lg text-zinc-400 font-medium tracking-tight">Client Dashboard</h2>
+    <header class="h-20 flex items-center justify-between px-6 sm:px-10 border-b border-zinc-800/50 bg-black/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center gap-4">
+            <h1 class="text-xl font-black text-white tracking-widest uppercase">Whoost</h1>
+            <div class="h-4 w-px bg-zinc-800"></div>
+            <h2 class="text-xs text-zinc-400 font-medium tracking-widest uppercase">Promotional Deck</h2>
         </div>
-
-        <div class="relative z-10 flex gap-3">
-            <div class="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full text-green-400 text-xs font-bold uppercase tracking-wider">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live Sync
-            </div>
+        <div class="px-3 py-1.5 border border-zinc-700 rounded-full flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <span class="text-[10px] font-bold text-white uppercase tracking-wider">Live System</span>
         </div>
     </header>
 
-    <!-- MAIN DASHBOARD -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-8 pb-32 scroll-smooth w-full relative z-10">
-        <div class="max-w-6xl mx-auto space-y-6">
+    <!-- MAIN CONTENT -->
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-8 py-10 pb-32">
+        
+        <!-- 1. HERO STATS (TOP METRICS) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 fade-in-up" style="animation-delay: 0.1s;">
+            <!-- Card 1 -->
+            <div class="bg-mono-grad border border-zinc-800 rounded-3xl p-8 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] rounded-full"></div>
+                <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Campaign Masuk</h3>
+                <h1 class="text-6xl font-black text-white tracking-tighter">13</h1>
+            </div>
+            <!-- Card 2 -->
+            <div class="bg-mono-grad border border-zinc-800 rounded-3xl p-8 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] rounded-full"></div>
+                <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Total Kreator (Clippers)</h3>
+                <h1 class="text-6xl font-black text-white tracking-tighter">1.500<span class="text-3xl text-zinc-600">+</span></h1>
+            </div>
+            <!-- Card 3 -->
+            <div class="bg-mono-grad border border-zinc-800 rounded-3xl p-8 relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] rounded-full"></div>
+                <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Video Distribusi</h3>
+                <h1 class="text-6xl font-black text-white tracking-tighter">2.200<span class="text-3xl text-zinc-600">+</span></h1>
+            </div>
+        </div>
 
-            <!-- 1. BUDGET CARD (Highlight Utama) -->
-            <div class="fade-in-up" style="animation-delay: 0.1s;">
-                <div class="w-full bg-gradient-to-br from-zinc-900 to-[#0d1510] border border-green-500/20 rounded-3xl p-8 sm:p-10 relative overflow-hidden shadow-[0_0_40px_rgba(34,197,94,0.05)]">
-                    <div class="absolute -top-20 -right-20 w-64 h-64 bg-green-500/10 blur-[60px] rounded-full pointer-events-none"></div>
-                    
-                    <div class="flex justify-between items-start mb-6 relative z-10">
-                        <div>
-                            <h2 class="text-sm font-bold text-green-500 tracking-widest uppercase mb-2 flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                                Total Budget Campaign
-                            </h2>
-                            <p class="text-xs text-zinc-400">Total alokasi dana untuk seluruh campaign aktif</p>
-                        </div>
-                    </div>
-
-                    <!-- Angka Budget Dibuat Besar dan Mencolok -->
-                    <div class="mb-10 relative z-10">
-                        <h1 class="text-5xl sm:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-green-100 tracking-tighter">
-                            Rp 2.450<span class="text-3xl sm:text-5xl text-zinc-500">.000.000</span>
-                        </h1>
-                    </div>
-
-                    <div class="w-full relative z-10">
-                        <div class="flex justify-between text-xs font-semibold text-zinc-400 mb-3">
-                            <span>Distribusi Kreator</span>
-                            <span class="text-green-400">85% Terpenuhi</span>
-                        </div>
-                        <div class="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-green-600 to-green-400 w-[85%] rounded-full shadow-[0_0_15px_rgba(34,197,94,0.6)] relative">
-                                <div class="absolute inset-0 bg-white/20 w-full animate-[pulse_2s_ease-in-out_infinite]"></div>
-                            </div>
-                        </div>
-                    </div>
+        <!-- 2. CHART SECTION (Black & White Style) -->
+        <div class="bg-mono-grad border border-zinc-800 rounded-3xl p-8 mb-12 shadow-2xl fade-in-up" style="animation-delay: 0.2s;">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white tracking-tight">Traffic Pertumbuhan</h2>
+                    <p class="text-sm text-zinc-500 mt-1">Volume eksekusi konten dalam 30 hari terakhir</p>
                 </div>
             </div>
+            <div class="w-full h-56 relative">
+                <canvas id="bwChart"></canvas>
+            </div>
+        </div>
 
-            <!-- 2. QUICK STATS (Tanpa Payout/Views, fokus ke engagement & kreator) -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 fade-in-up" style="animation-delay: 0.2s;">
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center shadow-sm">
-                    <h3 class="text-3xl font-black text-white mb-1">42</h3>
-                    <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Campaign Berjalan</p>
-                </div>
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center shadow-sm">
-                    <h3 class="text-3xl font-black text-white mb-1">1,284</h3>
-                    <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Kreator Aktif</p>
-                </div>
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center shadow-sm">
-                    <h3 class="text-3xl font-black text-white mb-1">3,450+</h3>
-                    <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Konten Dipublikasi</p>
-                </div>
-                <div class="bg-cardBg border border-zinc-800/50 rounded-2xl p-5 text-center flex flex-col items-center justify-center shadow-sm">
-                    <h3 class="text-3xl font-black text-green-400 mb-1">98%</h3>
-                    <p class="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">Tingkat Kesuksesan</p>
-                </div>
+        <!-- 3. CAMPAIGN LIST SECTION -->
+        <div class="fade-in-up" style="animation-delay: 0.3s;">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-black text-white tracking-tight uppercase">Data Distribusi Campaign</h2>
+                <span class="text-xs text-zinc-500 border border-zinc-800 px-3 py-1 rounded-full">Confidential Data</span>
             </div>
 
-            <!-- 3. GRAFIK TREN (Pemanis, Data Palsu Menanjak) -->
-            <div class="bg-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 shadow-lg fade-in-up" style="animation-delay: 0.3s;">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h2 class="text-lg font-bold text-white tracking-tight mb-1">Tren Pertumbuhan</h2>
-                        <p class="text-xs text-zinc-500">Volume produksi konten dalam 30 hari terakhir</p>
-                    </div>
-                </div>
-                <div class="w-full h-64 sm:h-80 relative">
-                    <canvas id="promoChart"></canvas>
-                </div>
+            <!-- GRID KARTU CAMPAIGN -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="campaignGrid">
+                <!-- Diisi via JavaScript agar rapi -->
             </div>
-
-            <!-- 4. PLATFORM BREAKDOWN (Hanya persentase distribusi) -->
-            <div class="mb-10 fade-in-up" style="animation-delay: 0.4s;">
-                <div class="bg-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-8 shadow-lg">
-                    
-                    <div class="relative w-48 h-48 sm:w-56 sm:h-56 shrink-0 flex items-center justify-center">
-                        <svg viewBox="0 0 36 36" class="w-full h-full transform -rotate-90 drop-shadow-2xl">
-                            <path class="donut-ring" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path id="donutSegment" class="donut-segment" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-3xl font-black text-white">3</span>
-                            <span class="text-[10px] font-bold text-zinc-500 mt-1 uppercase tracking-widest">Platform Top</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex-1 w-full grid grid-cols-1 gap-3">
-                        <!-- TikTok -->
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-cyan-400">
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-sm font-bold text-white mb-0.5">TikTok</h3>
-                                    <p class="text-[11px] font-semibold text-zinc-500">65% Dominasi</p>
-                                </div>
-                            </div>
-                            <div class="w-32 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="w-[65%] h-full bg-cyan-400 rounded-full"></div>
-                            </div>
-                        </div>
-
-                        <!-- Instagram -->
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-pink-500">
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                                </div>
-                                <div>
-                                    <h3 class="text-sm font-bold text-white mb-0.5">Instagram</h3>
-                                    <p class="text-[11px] font-semibold text-zinc-500">25% Dominasi</p>
-                                </div>
-                            </div>
-                            <div class="w-32 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="w-[25%] h-full bg-pink-500 rounded-full"></div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
         </div>
     </main>
 
+    <!-- SCRIPT DATA & RENDER -->
     <script>
+        // Data Campaign berdasarkan permintaan (Nama Asli disimpan di variabel, tapi saat render diblur)
+        const campaigns = [
+            { client: 'Sefruit Media', status: 'ACTIVE', title: 'OOTD Eps Dustin', rate: 'Rp 1.000', view: '/ 1k view', category: 'Podcast', sisa: '100%' },
+            { client: 'Sefruit Media', status: 'ACTIVE', title: 'OOTD Eps Yasmin Karenina', rate: 'Rp 1.000', view: '/ 1k view', category: 'Podcast', sisa: '57%' },
+            { client: 'Tanda Tanya Podcast', status: 'ACTIVE', title: 'Tanda Tanya Podcast', rate: 'Rp 2.500', view: '/ 1k view', category: 'Podcast', sisa: '97%' },
+            { client: 'Whoost.id', status: 'HOLD', title: 'Inkathh (Pure Matcha Pikulabs)', rate: 'Rp 2.000', view: '/ 1k view', category: 'Brand', sisa: '57%' },
+            { client: 'Whoost.id', status: 'HOLD', title: 'Inkathh (Scrub HeyGurl)', rate: 'Rp 2.000', view: '/ 1k view', category: 'Brand', sisa: '39%' },
+            { client: 'Whoost.id', status: 'HOLD', title: 'Inkathh (Parfume Positano Allumere)', rate: 'Rp 2.000', view: '/ 1k view', category: 'Brand', sisa: '26%' },
+            { client: 'Whoost.id', status: 'PRIVATE ACTIVE', title: 'UGC Topi Miring', rate: 'Rp XXX.XXX', view: '/ 1k view', category: 'Produk Fisik', sisa: 'Terkunci', btn: 'Eksklusif VIP' },
+            { client: 'Whoost.id', status: 'PRIVATE ACTIVE', title: 'UGC Iceland Vodka', rate: 'Rp XXX.XXX', view: '/ 1k view', category: 'Produk Fisik', sisa: 'Terkunci', btn: 'Eksklusif VIP' },
+            { client: 'Sefruit Media', status: 'CLOSED', title: 'Babydoo', rate: 'Rp 2.000', view: '/ 1k view', category: 'Film', sisa: '0%' },
+            { client: 'Sefruit Media', status: 'CLOSED', title: 'Cerita Gue', rate: 'Rp 2.000', view: '/ 1k view', category: 'Podcast', sisa: '0%' },
+            { client: 'Sefruit Media', status: 'CLOSED', title: 'Bilik Dosa', rate: 'Rp 2.000', view: '/ 1k view', category: 'Podcast', sisa: '0%' },
+            { client: 'Whoost.id', status: 'CLOSED', title: 'Djarum Super Kretek', rate: 'Rp 50.000', view: '/ vid', category: 'Brand', sisa: '0%' },
+            { client: 'Whoost.id', status: 'CLOSED', title: 'Shopee Belanja Instant 1 Jam Tiba', rate: 'Rp 2.500', view: '/ 1k view', category: 'Brand', sisa: '0%' }
+        ];
+
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Matikan Loading Screen Setelah 1.2 Detik (Biar terkesan aplikasi canggih memuat data)
+            // Hilangkan Loader
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
-                if(loader) {
-                    loader.classList.add('opacity-0');
-                    setTimeout(() => loader.style.display = 'none', 700);
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.style.display = 'none', 700);
+            }, 1000);
+
+            // Render Chart B&W
+            renderChart();
+
+            // Render Campaign Cards
+            renderCampaigns();
+        });
+
+        function renderCampaigns() {
+            const grid = document.getElementById('campaignGrid');
+            let html = '';
+
+            campaigns.forEach((camp, index) => {
+                // Menentukan Badge Status B&W
+                let statusBadge = '';
+                if(camp.status === 'ACTIVE') {
+                    statusBadge = `<div class="absolute top-3 left-3 bg-white text-black text-[9px] font-black px-2.5 py-1 rounded-sm uppercase tracking-widest shadow-lg">ACTIVE</div>`;
+                } else if(camp.status === 'HOLD') {
+                    statusBadge = `<div class="absolute top-3 left-3 bg-zinc-600 text-white text-[9px] font-black px-2.5 py-1 rounded-sm uppercase tracking-widest shadow-lg">HOLD</div>`;
+                } else if(camp.status === 'CLOSED') {
+                    statusBadge = `<div class="absolute top-3 left-3 bg-zinc-900 border border-zinc-700 text-zinc-500 text-[9px] font-black px-2.5 py-1 rounded-sm uppercase tracking-widest">CLOSED</div>`;
+                } else {
+                    statusBadge = `<div class="absolute top-3 left-3 bg-black border border-white text-white text-[9px] font-black px-2.5 py-1 rounded-sm uppercase tracking-widest shadow-[0_0_10px_rgba(255,255,255,0.2)] flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> PRIVATE</div>`;
                 }
-                
-                // Animasikan lingkaran donut sesaat setelah render
-                setTimeout(() => {
-                    document.getElementById('donutSegment').setAttribute('stroke-dasharray', '100, 100');
-                }, 500);
 
-            }, 1200);
+                // Menentukan Button Acton
+                let btnHtml = '';
+                if(camp.btn) {
+                    btnHtml = `<button class="mt-5 w-full py-2.5 bg-transparent border border-dashed border-white text-white hover:bg-white hover:text-black font-bold text-[11px] uppercase tracking-widest rounded-lg transition-all">Eksklusif VIP</button>`;
+                } else if(camp.status === 'CLOSED') {
+                    btnHtml = `<button class="mt-5 w-full py-2.5 bg-zinc-900 text-zinc-600 border border-zinc-800 font-bold text-[11px] uppercase tracking-widest rounded-lg cursor-not-allowed">Selesai</button>`;
+                } else {
+                    btnHtml = `<button class="mt-5 w-full py-2.5 bg-white text-black font-bold text-[11px] uppercase tracking-widest rounded-lg hover:bg-zinc-200 transition-all">Lihat Campaign</button>`;
+                }
 
-            // 2. Setup Chart.js (Data Dummy Up-Trend yang Mulus)
-            const ctx = document.getElementById('promoChart').getContext('2d');
+                // Kalkulasi Bar Budget (Abaikan jika "Terkunci")
+                let barWidth = camp.sisa.replace('%', '');
+                let barHtml = '';
+                if(camp.sisa === 'Terkunci') {
+                    barHtml = `
+                        <div class="flex justify-between text-[10px] mb-1.5 font-semibold">
+                            <span class="text-zinc-500 uppercase tracking-wider">Sisa Budget</span>
+                            <span class="text-white flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> Terkunci</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden relative">
+                            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMTBMMTAgMFpNMTUgMTVMMjUgNVoiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9zdmc+')]"></div>
+                        </div>
+                    `;
+                } else {
+                    barHtml = `
+                        <div class="flex justify-between text-[10px] mb-1.5 font-semibold">
+                            <span class="text-zinc-500 uppercase tracking-wider">Sisa Budget</span>
+                            <span class="text-white">${camp.sisa}</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]" style="width: ${barWidth}%"></div>
+                        </div>
+                    `;
+                }
+
+                // Pseudo random background/image style untuk setiap kartu agar terlihat "ada isinya" yang diblur
+                let randGradient = `linear-gradient(${45 * index}deg, #121212, #2a2a2a, #000)`;
+
+                html += `
+                <div class="bg-zinc-900/40 border border-zinc-800 rounded-2xl overflow-hidden flex flex-col hover:border-zinc-600 transition-colors">
+                    
+                    <!-- Feed Image (Blurred) -->
+                    <div class="h-28 relative overflow-hidden bg-zinc-900 flex items-center justify-center">
+                        <div class="absolute inset-0 blur-image opacity-60" style="background: ${randGradient};"></div>
+                        ${statusBadge}
+                        <div class="absolute top-3 right-3 bg-black/80 backdrop-blur-md border border-zinc-700 text-zinc-300 text-[9px] font-bold px-2 py-1 rounded uppercase tracking-widest">${camp.category}</div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-5 flex-1 flex flex-col">
+                        <div class="text-[9px] text-zinc-500 font-bold uppercase tracking-widest mb-1">${camp.client}</div>
+                        
+                        <!-- Nama Campaign Diblur -->
+                        <div class="text-lg font-black text-white blur-text leading-tight min-h-[3.5rem] flex items-start" title="Data Dirahasiakan">
+                            ${camp.title}
+                        </div>
+                        
+                        <!-- Rate -->
+                        <div class="mt-3 pb-4 border-b border-zinc-800/80">
+                            <div class="text-xl font-black text-white">${camp.rate} <span class="text-[10px] font-medium text-zinc-500 tracking-widest uppercase">${camp.view}</span></div>
+                        </div>
+
+                        <!-- Budget Bar -->
+                        <div class="mt-4">
+                            ${barHtml}
+                        </div>
+
+                        ${btnHtml}
+                    </div>
+                </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('bwChart').getContext('2d');
             
-            // Gradasi menawan untuk fill grafiknya
-            let gradient = ctx.createLinearGradient(0, 0, 0, 300);
-            gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)'); // Green 500
-            gradient.addColorStop(1, 'rgba(34, 197, 94, 0)');
+            // Gradient Putih ke Transparan
+            let gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)'); 
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-            // Label Bulan/Tanggal dummy
-            const labels = ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4", "Minggu 5", "Minggu 6", "Minggu 7"];
-            // Data dibikin kurva naik mulus
-            const dataPoints = [120, 180, 290, 480, 850, 1400, 2300];
+            // Data curve eksponensial halus
+            const labels = ["W1", "W2", "W3", "W4", "W5", "W6", "W7"];
+            const dataPoints = [300, 450, 700, 1100, 1800, 2900, 4500];
 
             new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: ' Pertumbuhan',
+                        label: ' Traffic',
                         data: dataPoints,
-                        borderColor: '#22c55e', 
+                        borderColor: '#ffffff', 
                         backgroundColor: gradient,
-                        borderWidth: 4,
-                        pointBackgroundColor: '#121214',
-                        pointBorderColor: '#22c55e',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#000000',
+                        pointBorderColor: '#ffffff',
                         pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
                         fill: true,
-                        tension: 0.4 // Membuat garis melengkung indah (smooth)
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: {
-                        duration: 2000,
+                        duration: 2500,
                         easing: 'easeOutQuart'
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: false } // Matikan tooltip karena ini buat direkam
-                    },
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
                     scales: {
                         x: {
-                            grid: { display: false },
-                            ticks: { color: '#71717a', font: { family: 'Inter', size: 12 } }
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#52525b', font: { family: 'Inter', size: 10, weight: 'bold' } }
                         },
-                        y: {
-                            display: false, // Sembunyikan axis Y agar fokus ke kurvanya aja
-                            beginAtZero: true
-                        }
+                        y: { display: false, beginAtZero: true }
                     },
                     interaction: { mode: 'index', intersect: false }
                 }
             });
-        });
+        }
     </script>
 </body>
 </html>
