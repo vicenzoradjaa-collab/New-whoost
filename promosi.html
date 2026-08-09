@@ -54,92 +54,88 @@
         <p class="mt-4 text-zinc-500 text-xs font-bold tracking-[0.5em] uppercase">Secured Data</p>
     </div>
 
-    <!-- HEADER (DIperbesar & Dipertegas) -->
-    <header class="h-24 sm:h-28 flex items-center justify-between px-6 sm:px-12 border-b border-zinc-800/80 bg-black/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
-        <div class="flex items-center gap-5 sm:gap-6">
-            <h1 class="text-2xl sm:text-3xl font-black text-white tracking-widest uppercase">Whoost</h1>
-            <div class="h-8 w-px bg-zinc-700 hidden sm:block"></div>
-            <h2 class="text-sm sm:text-base text-zinc-400 font-bold tracking-widest uppercase mt-1 sm:mt-0">Dashboard Analytics</h2>
-        </div>
-        <div class="px-4 py-2 border border-zinc-700 rounded-full flex items-center gap-2.5 bg-zinc-900/50 shadow-inner">
-            <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
-            <span class="text-xs font-black text-white uppercase tracking-widest">Live System</span>
-        </div>
-    </header>
-
     <!-- MAIN CONTENT -->
-    <main class="w-full max-w-7xl mx-auto px-4 sm:px-8 py-10 pb-32">
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-8 pt-10 pb-32">
         
-        <!-- 0. HERO BUDGET (SOROTAN UTAMA) -->
-        <div class="w-full bg-mono-grad border border-zinc-700 rounded-3xl p-8 sm:p-12 mb-8 relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.06)] fade-in-up" style="animation-delay: 0.1s;">
-            <!-- Efek Cahaya (Glow) di Background -->
-            <div class="absolute -top-20 -right-20 w-80 h-80 bg-white/10 blur-[80px] rounded-full pointer-events-none"></div>
-            <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-white/5 blur-[60px] rounded-full pointer-events-none"></div>
+        <!-- 1. TOP ROW: BUDGET + CAMPAIGN & KREATOR -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4 fade-in-up" style="animation-delay: 0.1s;">
             
-            <div class="relative z-10 flex flex-col justify-center">
-                <h2 class="text-sm sm:text-base font-bold text-zinc-400 tracking-widest uppercase mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Total Budget Dialokasikan
-                </h2>
-                <!-- Angka dibuat sangat raksasa -->
-                <h1 class="text-6xl sm:text-8xl lg:text-[7rem] font-black text-white tracking-tighter leading-none drop-shadow-2xl">
-                    Rp 58.4<span class="text-4xl sm:text-6xl lg:text-7xl text-zinc-600">.000.000</span>
-                </h1>
+            <!-- Kartu Budget (Lebar 2 Kolom) -->
+            <div class="lg:col-span-2 w-full bg-mono-grad border border-zinc-700 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.06)] flex flex-col justify-center">
+                <div class="absolute -top-20 -right-20 w-80 h-80 bg-white/10 blur-[80px] rounded-full pointer-events-none"></div>
+                <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-white/5 blur-[60px] rounded-full pointer-events-none"></div>
                 
-                <div class="w-full max-w-2xl mt-8">
-                    <div class="flex justify-between text-xs font-bold text-zinc-500 mb-2 uppercase tracking-widest">
-                        <span>Distribusi Keseluruhan</span>
-                        <span class="text-white">Active</span>
-                    </div>
-                    <div class="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
-                        <div class="h-full bg-white w-full rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)] relative">
-                            <div class="absolute inset-0 bg-white/20 w-full animate-[pulse_2s_ease-in-out_infinite]"></div>
+                <div class="relative z-10">
+                    <h2 class="text-sm sm:text-base font-bold text-zinc-400 tracking-widest uppercase mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Total Budget Dialokasikan
+                    </h2>
+                    
+                    <h1 class="text-6xl sm:text-8xl lg:text-[7rem] font-black text-white tracking-tighter leading-none drop-shadow-2xl">
+                        Rp 58.4<span class="text-4xl sm:text-6xl lg:text-7xl text-zinc-600">+M</span>
+                    </h1>
+                    
+                    <div class="w-full max-w-xl mt-8">
+                        <div class="flex justify-between text-xs font-bold text-zinc-500 mb-2 uppercase tracking-widest">
+                            <span>Distribusi Keseluruhan</span>
+                            <span class="text-white">Active</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
+                            <div class="h-full bg-white w-full rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)] relative">
+                                <div class="absolute inset-0 bg-white/20 w-full animate-[pulse_2s_ease-in-out_infinite]"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Kartu Sebelah Kanan (Campaign & Kreator) -->
+            <div class="flex flex-col gap-4 h-full">
+                <!-- Card Campaign -->
+                <div class="flex-1 bg-mono-grad border border-zinc-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden group flex flex-col justify-center">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] rounded-full"></div>
+                    <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Campaign Masuk</h3>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tighter">13</h1>
+                </div>
+                
+                <!-- Card Kreator -->
+                <div class="flex-1 bg-mono-grad border border-zinc-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden group flex flex-col justify-center">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[50px] rounded-full"></div>
+                    <h3 class="text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Total Kreator</h3>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tighter">1.500<span class="text-2xl sm:text-3xl lg:text-4xl text-zinc-600">+</span></h1>
+                </div>
+            </div>
+            
         </div>
 
-        <!-- 1. HERO STATS (6 CARDS METRIKS) -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10 fade-in-up" style="animation-delay: 0.2s;">
+        <!-- 2. SECONDARY STATS (4 CARDS) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10 fade-in-up" style="animation-delay: 0.2s;">
             <!-- Card Impressions -->
             <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
                 <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Impressions</h3>
-                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tighter">49.6<span class="text-xl sm:text-3xl text-zinc-600">M</span></h1>
+                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tighter">49.66<span class="text-xl sm:text-2xl text-zinc-600">+M</span></h1>
             </div>
             
             <!-- Card Reach -->
             <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
                 <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Reach</h3>
-                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tighter">41.3<span class="text-xl sm:text-3xl text-zinc-600">M</span></h1>
+                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tighter">41.3<span class="text-xl sm:text-2xl text-zinc-600">+M</span></h1>
             </div>
             
             <!-- Card Views -->
-            <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group col-span-2 md:col-span-1">
-                <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1 sm:mb-2">Total Views Generated</h3>
-                <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tighter">41.292.207</h1>
+            <div class="bg-mono-grad border border-zinc-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group shadow-[0_0_20px_rgba(255,255,255,0.03)]">
+                <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-1 sm:mb-2">Views Generated</h3>
+                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tighter">41.292.207</h1>
             </div>
 
-            <!-- Card Campaign -->
-            <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
-                <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Campaign Masuk</h3>
-                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tighter">13</h1>
-            </div>
-            
-            <!-- Card Kreator -->
-            <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
-                <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Total Kreator</h3>
-                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tighter">1.500<span class="text-xl sm:text-3xl text-zinc-600">+</span></h1>
-            </div>
-            
             <!-- Card Video -->
-            <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group col-span-2 md:col-span-1">
+            <div class="bg-mono-grad border border-zinc-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 relative overflow-hidden group">
                 <h3 class="text-[10px] sm:text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-1 sm:mb-2">Video Distribusi</h3>
-                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tighter">2.200<span class="text-xl sm:text-3xl text-zinc-600">+</span></h1>
+                <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tighter">2.200<span class="text-xl sm:text-2xl text-zinc-600">+</span></h1>
             </div>
         </div>
 
-        <!-- 2. CHART SECTION (Black & White Style, Dynamic organic growth) -->
+        <!-- 3. CHART SECTION -->
         <div class="bg-mono-grad border border-zinc-800 rounded-3xl p-6 sm:p-8 mb-12 shadow-2xl fade-in-up" style="animation-delay: 0.3s;">
             <div class="flex justify-between items-end mb-6">
                 <div>
@@ -152,7 +148,7 @@
             </div>
         </div>
 
-        <!-- 3. CAMPAIGN LIST SECTION -->
+        <!-- 4. CAMPAIGN LIST SECTION -->
         <div class="fade-in-up" style="animation-delay: 0.4s;">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
                 <h2 class="text-lg sm:text-xl font-black text-white tracking-tight uppercase">Data Distribusi Campaign</h2>
@@ -168,7 +164,6 @@
 
     <!-- SCRIPT DATA & RENDER -->
     <script>
-        // Data Campaign: Tidak ada budget habis (0%), ditambahkan campaign 5.000 CPM
         const campaigns = [
             { client: 'Sefruit Media', status: 'ACTIVE', title: 'OOTD Eps Dustin', rate: 'Rp 1.000', view: '/ 1k view', category: 'Podcast', sisa: '100%' },
             { client: 'Sefruit Media', status: 'ACTIVE', title: 'OOTD Eps Yasmin Karenina', rate: 'Rp 1.000', view: '/ 1k view', category: 'Podcast', sisa: '57%' },
@@ -183,22 +178,17 @@
             { client: 'Sefruit Media', status: 'HOLD', title: 'Bilik Dosa', rate: 'Rp 2.000', view: '/ 1k view', category: 'Podcast', sisa: '33%' },
             { client: 'Whoost.id', status: 'ACTIVE', title: 'Djarum Super Kretek', rate: 'Rp 50.000', view: '/ vid', category: 'Brand', sisa: '62%' },
             { client: 'Whoost.id', status: 'ACTIVE', title: 'Shopee Belanja Instant 1 Jam Tiba', rate: 'Rp 2.500', view: '/ 1k view', category: 'Brand', sisa: '21%' },
-            // Campaign Baru CPM 5.000
             { client: 'Premium Partner', status: 'ACTIVE', title: 'Campaign Premium Spesial', rate: 'Rp 5.000', view: '/ 1k view', category: 'Eksklusif', sisa: '88%' }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Hilangkan Loader
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 loader.classList.add('opacity-0');
                 setTimeout(() => loader.style.display = 'none', 700);
             }, 1000);
 
-            // Render Chart B&W
             renderChart();
-
-            // Render Campaign Cards
             renderCampaigns();
         });
 
@@ -283,7 +273,6 @@
             gradient.addColorStop(0, 'rgba(255, 255, 255, 0.2)'); 
             gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-            // Data curve dinamis
             const labels = ["Minggu 1", "Minggu 2", "Minggu 3", "Minggu 4", "Minggu 5", "Minggu 6", "Minggu 7"];
             const dataPoints = [310, 480, 410, 720, 680, 950, 1300];
 
