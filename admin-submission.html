@@ -728,11 +728,10 @@
             try {
                 if (currentDecision === 'setuju') {
                     // --- PROSES PERSETUJUAN & BAYAR ---
-                    
                     const newEarned = (activeSubmission.earned || 0) + calculatedPayout;
                     
-                    // 1. UPDATE SUBMISSIONS: views_paid diisi dengan newUncappedViewsPaid
-                    await supabase.from('submissions').update({
+                    // 1. UPDATE SUBMISSIONS (Cek Error dengan Ketat)
+                    const { error: subError } = await supabase.from('submissions').update({
                         views_paid: newUncappedViewsPaid,
                         earned: newEarned,
                         est_payout: 0,
@@ -740,13 +739,18 @@
                         reject_reason: null
                     }).eq('id', activeSubmission.id);
 
-                    // 2. POTONG BUDGET CAMPAIGN (Berdasarkan Views Uncapped)
+                    // JIKA GAGAL UPDATE STATUS, BERHENTIKAN SEMUA! JANGAN TRANSFER SALDO!
+                    if (subError) throw new Error("Gagal mengubah status submission: " + subError.message);
+
+                    // 2. POTONG BUDGET CAMPAIGN
                     if (calculatedCampaignDeduction > 0) {
                         const campId = activeSubmission.campaigns.id;
                         const newBudget = (activeSubmission.campaigns.budget_remaining || 0) - calculatedCampaignDeduction;
-                        await supabase.from('campaigns').update({
+                        const { error: campError } = await supabase.from('campaigns').update({
                             budget_remaining: newBudget < 0 ? 0 : newBudget
                         }).eq('id', campId);
+                        
+                        if (campError) throw new Error("Gagal memotong budget campaign: " + campError.message);
                     }
 
                     // 3. TAMBAHKAN UANG KE CLIPPER STATS
@@ -755,32 +759,40 @@
 
                     if (calculatedPayout > 0 || addedViews > 0) {
                         const userId = activeSubmission.user_id;
-                        const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', userId).single();
+                        const { data: stats, error: fetchStatError } = await supabase.from('clipper_stats').select('*').eq('user_id', userId).single();
+                        
+                        // Kode error PGRST116 berarti data belum ada, ini wajar untuk kreator baru
+                        if (fetchStatError && fetchStatError.code !== 'PGRST116') {
+                            throw new Error("Gagal mengambil dompet kreator: " + fetchStatError.message);
+                        }
                         
                         if (stats) {
-                            await supabase.from('clipper_stats').update({
+                            const { error: statUpdateError } = await supabase.from('clipper_stats').update({
                                 total_earnings: (stats.total_earnings || 0) + calculatedPayout,
                                 withdrawable: (stats.withdrawable || 0) + calculatedPayout,
                                 total_views: (stats.total_views || 0) + addedViews
                             }).eq('user_id', userId);
+                            if (statUpdateError) throw new Error("Gagal update dompet kreator: " + statUpdateError.message);
                         } else {
-                            await supabase.from('clipper_stats').insert([{
+                            const { error: statInsertError } = await supabase.from('clipper_stats').insert([{
                                 user_id: userId,
                                 total_earnings: calculatedPayout,
                                 withdrawable: calculatedPayout,
                                 total_views: addedViews,
                                 total_videos: 1
                             }]);
+                            if (statInsertError) throw new Error("Gagal membuat dompet kreator: " + statInsertError.message);
                         }
                     }
 
                     // 4. Notifikasi Success
-                    await supabase.from('notifications').insert([{
+                    const { error: notifError } = await supabase.from('notifications').insert([{
                         user_id: activeSubmission.user_id,
                         title: 'Klaim Berhasil Dicairkan! 🎉',
                         message: `Selamat! Klaim views untuk campaign "${activeSubmission.campaigns.title}" telah disetujui. Rp ${calculatedPayout.toLocaleString('id-ID')} telah ditambahkan ke saldo Anda.`,
                         type: 'approved'
                     }]);
+                    if (notifError) console.warn("Peringatan: Gagal kirim notif", notifError);
 
                     window.showAlert("Klaim disetujui. Saldo Kreator & Potongan Client berhasil diupdate.", "success");
 
@@ -792,11 +804,13 @@
                         reason = document.getElementById('customReason').value.trim();
                     }
 
-                    await supabase.from('submissions').update({
+                    const { error: rejectError } = await supabase.from('submissions').update({
                         status: 'REJECTED',
                         est_payout: 0,
                         reject_reason: reason
                     }).eq('id', activeSubmission.id);
+
+                    if (rejectError) throw new Error("Gagal menolak klaim: " + rejectError.message);
 
                     await supabase.from('notifications').insert([{
                         user_id: activeSubmission.user_id,
@@ -814,7 +828,8 @@
                 await loadSubmissions();
 
             } catch (err) {
-                window.showAlert("Terjadi kesalahan saat menyimpan: " + err.message, "error");
+                console.error(err);
+                window.showAlert("PROSES DIBATALKAN: " + err.message, "error");
                 btnSubmit.disabled = false;
                 btnSubmit.innerText = "Konfirmasi Tindakan";
             }
