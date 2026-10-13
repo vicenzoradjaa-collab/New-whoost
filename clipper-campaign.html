@@ -54,6 +54,15 @@
             background-size: 16px 16px;
         }
 
+        /* Class tambahan untuk menyembunyikan scrollbar di menu filter mobile */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         .load-hidden { display: none !important; }
         .filter-hidden { display: none !important; }
 
@@ -112,8 +121,8 @@
                 </div>
 
                 <!-- Filters -->
-                <div class="flex flex-wrap gap-3 w-full lg:w-auto">
-                    <div class="relative inline-block text-left filter-dropdown" id="dropdown-category">
+                <div class="flex overflow-x-auto no-scrollbar gap-3 w-full lg:w-auto relative z-50 pointer-events-none" style="padding-bottom: 300px; margin-bottom: -300px;">
+                    <div class="relative inline-block text-left filter-dropdown pointer-events-auto shrink-0" id="dropdown-category">
                         <button onclick="window.toggleDropdown('menu-category')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                             <span id="label-category">All Categories</span>
                             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -127,7 +136,7 @@
                         </div>
                     </div>
 
-                    <div class="relative inline-block text-left filter-dropdown" id="dropdown-content">
+                    <div class="relative inline-block text-left filter-dropdown pointer-events-auto shrink-0" id="dropdown-content">
                         <button onclick="window.toggleDropdown('menu-content')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                             <span id="label-content">All Content</span>
                             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -148,7 +157,7 @@
                         </div>
                     </div>
 
-                    <div class="relative inline-block text-left filter-dropdown" id="dropdown-status">
+                    <div class="relative inline-block text-left filter-dropdown pointer-events-auto shrink-0" id="dropdown-status">
                         <button onclick="window.toggleDropdown('menu-status')" class="whitespace-nowrap flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-5 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
                             <span id="label-status">Semua Status</span>
                             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
