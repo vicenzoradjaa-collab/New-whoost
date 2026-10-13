@@ -241,8 +241,10 @@
                 </div>
                 <!-- Iframe fallback untuk youtube / embed biasa -->
                 <iframe id="videoIframe" class="w-full h-full relative z-10 hidden" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen onload="document.getElementById('videoLoader').style.display='none'"></iframe>
+                
                 <!-- Native Video Tag untuk Clean Video (Tiktok/IG) -->
-                <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain" controls autoplay playsinline oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
+                <!-- Penambahan referrerpolicy="no-referrer" sangat penting agar CDN IG/TikTok tidak mendeteksi web asal -->
+                <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain" controls autoplay playsinline referrerpolicy="no-referrer" oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
             </div>
             <div class="p-3 sm:p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center z-20 shrink-0">
                 <p class="text-[10px] sm:text-xs text-zinc-400">Jika error/tidak memuat, <a id="videoDirectLink" href="#" target="_blank" class="text-white hover:text-blue-400 underline font-medium">Buka di tab baru</a></p>
@@ -361,7 +363,6 @@
 
             try {
                 if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
-                    // Update regex mendeteksi youtube shorts juga
                     let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
                     if (ytMatch && ytMatch[1]) {
                         iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
@@ -370,7 +371,6 @@
                         throw new Error("No YouTube match");
                     }
                 } else if (url.includes('tiktok.com')) {
-                    // Fetch Clean Video (Tanpa watermark & iframe blocker)
                     const res = await fetch(`https://www.tikwm.com/api/?url=${url}`);
                     const json = await res.json();
                     if (json.data && json.data.play) {
@@ -380,21 +380,54 @@
                         throw new Error("TikTok API Error");
                     }
                 } else if (url.includes('instagram.com')) {
-                    // Fetch Clean Video dari Microlink
-                    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
-                    const json = await res.json();
-                    if (json.data && json.data.video && json.data.video.url) {
-                        nativeVideo.src = json.data.video.url;
+                    // Fetch Clean Video untuk IG menggunakan API berjenjang agar lebih kebal error
+                    let igVideoUrl = null;
+                    
+                    // API 1: Cobalt Tools
+                    try {
+                        const res = await fetch('https://api.cobalt.tools/api/json', {
+                            method: 'POST',
+                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ url: url })
+                        });
+                        const json = await res.json();
+                        if (json && json.url) igVideoUrl = json.url;
+                    } catch(e) {}
+
+                    // API 2: Siputzx API
+                    if (!igVideoUrl) {
+                        try {
+                            const res = await fetch(`https://api.siputzx.my.id/api/d/igdl?url=${encodeURIComponent(url)}`);
+                            const json = await res.json();
+                            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
+                                igVideoUrl = json.data[0].url;
+                            }
+                        } catch(e) {}
+                    }
+                    
+                    // API 3: Ryzendesu API
+                    if (!igVideoUrl) {
+                        try {
+                            const res = await fetch(`https://api.ryzendesu.vip/api/downloader/igdl?url=${encodeURIComponent(url)}`);
+                            const json = await res.json();
+                            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
+                                igVideoUrl = json.data[0].url;
+                            }
+                        } catch(e) {}
+                    }
+
+                    if (igVideoUrl) {
+                        nativeVideo.src = igVideoUrl;
                         nativeVideo.classList.remove('hidden');
                     } else {
-                        throw new Error("IG Video Not Found in Microlink");
+                        throw new Error("Semua API IG gagal mendapatkan direktori file");
                     }
                 } else {
                     iframe.src = url;
                     iframe.classList.remove('hidden');
                 }
             } catch (e) {
-                // Fallback jika API Gagal
+                // Fallback terakhir: jika semua API direct link gagal, tetap munculin iframe native IG
                 if (url.includes('tiktok.com')) {
                     let tkMatch = url.match(/video\/(\d+)/);
                     if (tkMatch && tkMatch[1]) {
