@@ -180,8 +180,8 @@
                     </div>
                 </div>
 
-                <!-- Grid Video Cards Dinamis -->
-                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6" id="cards-container">
+                <!-- Grid Video Cards Dinamis - DIUBAH MENYESUAIKAN 3:4 LAYOUT -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5" id="cards-container">
                     <p class="text-zinc-500 text-sm col-span-full">Memuat data...</p>
                 </div>
 
@@ -315,12 +315,14 @@
             if (cb) cb();
         });
 
-
+        // Perhitungan jumlah grid untuk 3:4 layout card (Mirip client-konten)
         function getCols() {
             const w = window.innerWidth;
-            if (w >= 1280) return 4; 
-            if (w >= 1024) return 3; 
-            return 2;                
+            if (w >= 1280) return 6; // xl
+            if (w >= 1024) return 5; // lg
+            if (w >= 768)  return 4; // md
+            if (w >= 640)  return 3; // sm
+            return 2;                // mobile
         }
 
         // Pagination & Filter States
@@ -488,7 +490,7 @@
         }
 
         // ==========================================
-        // 3. LOGIKA RENDER & SMART THUMBNAIL
+        // 3. LOGIKA RENDER & SMART THUMBNAIL 3:4
         // ==========================================
         function getVideoMeta(url) {
             url = url || '';
@@ -545,7 +547,7 @@
             if (isBrandReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
                 actionArea = `
-                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight">
+                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight">
                         <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         Menunggu ACC Brand
                     </button>`;
@@ -555,21 +557,21 @@
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Ditolak Brand</div>`;
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Brand:</b> ${safeRejectReason || 'Video tidak sesuai kriteria/brief.'}</p>
+                        <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Brand:</b> ${safeRejectReason || 'Video tidak sesuai kriteria/brief.'}</p>
                     </div>
-                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
+                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
             }
             else if (isClaimReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
                 
                 let inputHTML = `
-                    <div class="flex gap-1.5 sm:gap-2 mb-2">
-                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
+                    <div class="flex mb-1.5">
+                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
                     </div>`;
                 
                 actionArea = `
                     ${inputHTML}
-                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
+                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
                         <span>Reviewing Claim...</span>
                         <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
                     </button>`;
@@ -580,9 +582,9 @@
                 
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
-                        <p class="text-[9px] sm:text-[10px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
+                        <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
                     </div>
-                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-xs py-2 sm:py-2.5 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
+                    <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
             }
             else {
                 const paidViews = sub.views_paid || 0;
@@ -591,37 +593,37 @@
                 
                 if(isCampClosed) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Closed</div>`;
-                    warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed. Cuma bisa update views.</p>`;
+                    warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed.</p>`;
                 } else if (isClaimApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
                     if (isPerVideo) {
-                        warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views jika mau.</p>`;
+                        warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views.</p>`;
                     }
                 } else if (isBrandApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
 
                 let inputHTML = `
-                    <div class="flex gap-1.5 sm:gap-2">
-                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
+                    <div class="flex mb-1.5">
+                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
                     </div>`;
 
-                let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Pembayaran Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
+                let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
                 
                 let claimBtnClass = isPrivate 
-                    ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-all mt-2 shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
-                    : "w-full bg-white text-black font-bold text-[10px] sm:text-sm py-2 sm:py-2.5 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1.5 sm:gap-2 focus:outline-none transition-colors mt-2 active:scale-[0.98]";
+                    ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center gap-1 focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
+                    : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1 focus:outline-none transition-colors active:scale-[0.98]";
 
                 actionArea = `
                     ${warningText}
                     ${inputHTML}
                     <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">
-                        ${btnText} <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        ${btnText} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                     </button>`;
             }
 
             // Logika Styling Card VIP / Whale
-            let cardBaseClass = `rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
+            let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
             if (isPrivate) {
                 cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
             } else {
@@ -629,44 +631,50 @@
             }
 
             let privateBadge = isPrivate ? `
-                <div class="absolute top-2 left-10 sm:top-3 sm:left-12 z-20 bg-yellow-900/80 text-yellow-500 text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg backdrop-blur flex items-center gap-1 border border-yellow-500/20">
-                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
+                <div class="absolute top-9 left-2 sm:top-11 sm:left-3 z-20 bg-yellow-900/80 text-yellow-500 text-[7px] sm:text-[8px] font-bold px-1.5 py-0.5 rounded-lg backdrop-blur flex items-center gap-1 border border-yellow-500/20">
+                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
                 </div>` : '';
 
             return `
             <div class="${cardBaseClass}">
-                <div class="relative w-full h-24 sm:h-36 bg-zinc-900 overflow-hidden shrink-0">
+                <!-- IMAGE PREVIEW (ASPECT 3:4) -->
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group">
                     ${badgeHTML}
                     ${privateBadge}
+                    
                     <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
+                    
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg z-10">
                         ${meta.platHTML}
                     </div>
+                    
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10">
                         <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${safeTitle}">${safeTitle}</h4>
                         <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="By ${safeSessionName}">${dateStr} • By ${safeSessionName}</p>
                     </div>
                 </div>
                 
-                <a href="${sub.video_link}" target="_blank" class="bg-zinc-900 border-b border-zinc-800 py-1.5 sm:py-2 flex justify-center items-center gap-1.5 text-[9px] sm:text-xs text-zinc-400 hover:text-white transition-colors focus:outline-none">
-                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    Lihat Video Link
+                <!-- LINK VIDEO -->
+                <a href="${sub.video_link}" target="_blank" class="mt-2 mb-2 flex items-center justify-center gap-1.5 py-2 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[10px] sm:text-xs font-medium text-white transition-colors focus:outline-none">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Lihat Video Asli
                 </a>
                 
-                <div class="p-2 sm:p-4 flex-1 flex flex-col justify-between">
+                <!-- CONTENT BELOW IMAGE -->
+                <div class="flex-1 flex flex-col justify-between">
                     <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
                         <div>
-                            <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
-                            <p class="text-[10px] sm:text-sm font-bold text-white">${uiViews}</p>
+                            <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
+                            <p class="text-[10px] sm:text-xs font-bold text-white">${uiViews}</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-[7px] sm:text-[9px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
-                            <p class="text-[10px] sm:text-sm font-bold ${earnedColor}">${uiEarned}</p>
+                            <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
+                            <p class="text-[10px] sm:text-xs font-bold ${earnedColor}">${uiEarned}</p>
                         </div>
                     </div>
                     
-                    <div class="mt-auto space-y-2">
+                    <div class="mt-auto space-y-1.5 sm:space-y-2">
                         ${actionArea}
                     </div>
                 </div>
