@@ -244,7 +244,7 @@
                 
                 <!-- Native Video Tag untuk Clean Video (Tiktok/IG) -->
                 <!-- Penambahan referrerpolicy="no-referrer" sangat penting agar CDN IG/TikTok tidak mendeteksi web asal -->
-                <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain" controls autoplay playsinline referrerpolicy="no-referrer" oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
+                <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain bg-black" controls autoplay playsinline referrerpolicy="no-referrer" oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
             </div>
             <div class="p-3 sm:p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center z-20 shrink-0">
                 <p class="text-[10px] sm:text-xs text-zinc-400">Jika error/tidak memuat, <a id="videoDirectLink" href="#" target="_blank" class="text-white hover:text-blue-400 underline font-medium">Buka di tab baru</a></p>
@@ -333,7 +333,6 @@
             confirmCallback = null; // Bersihkan agar tidak nyangkut
         };
 
-        // Eksekusi CallBack Konfirmasi
         document.getElementById('confirmYesBtn').addEventListener('click', () => {
             const cb = confirmCallback;
             window.closeConfirm();
@@ -341,7 +340,7 @@
         });
 
         // ==========================================
-        // FUNGSI BUKA TUTUP MODAL VIDEO PREVIEW
+        // FUNGSI BUKA TUTUP MODAL VIDEO PREVIEW (DIPERBAIKI)
         // ==========================================
         window.openVideoModal = async function(url) {
             const m = document.getElementById('videoModal');
@@ -371,7 +370,9 @@
                         throw new Error("No YouTube match");
                     }
                 } else if (url.includes('tiktok.com')) {
-                    const res = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                    // Bersihkan parameter (contoh: ?is_from_webapp=1)
+                    let cleanTkUrl = url.split('?')[0];
+                    const res = await fetch(`https://www.tikwm.com/api/?url=${cleanTkUrl}`);
                     const json = await res.json();
                     if (json.data && json.data.play) {
                         nativeVideo.src = json.data.play;
@@ -380,54 +381,51 @@
                         throw new Error("TikTok API Error");
                     }
                 } else if (url.includes('instagram.com')) {
-                    // Fetch Clean Video untuk IG menggunakan API berjenjang agar lebih kebal error
+                    // SANGAT PENTING: Bersihkan link IG dari parameter tracking (?igsh=...) yang sering bikin Error Server API
+                    let cleanIgUrl = url.split('?')[0];
+                    const encodedUrl = encodeURIComponent(cleanIgUrl);
                     let igVideoUrl = null;
-                    
-                    // API 1: Cobalt Tools
-                    try {
-                        const res = await fetch('https://api.cobalt.tools/api/json', {
-                            method: 'POST',
-                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ url: url })
-                        });
-                        const json = await res.json();
-                        if (json && json.url) igVideoUrl = json.url;
-                    } catch(e) {}
 
-                    // API 2: Siputzx API
-                    if (!igVideoUrl) {
+                    // Menggunakan 3 API Cadangan yang sering digunakan di Bot WhatsApp (Anti-CORS, Cepat)
+                    const igApis = [
+                        `https://api.siputzx.my.id/api/d/igdl?url=${encodedUrl}`,
+                        `https://api.ryzendesu.vip/api/downloader/igdl?url=${encodedUrl}`,
+                        `https://api.agatz.xyz/api/instagram?url=${encodedUrl}`
+                    ];
+
+                    for (let api of igApis) {
+                        if (igVideoUrl) break; // Jika sudah dapat linknya, stop looping
                         try {
-                            const res = await fetch(`https://api.siputzx.my.id/api/d/igdl?url=${encodeURIComponent(url)}`);
+                            const res = await fetch(api);
                             const json = await res.json();
-                            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
-                                igVideoUrl = json.data[0].url;
+                            
+                            // Deteksi format balasan JSON dari berbagai versi API
+                            if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+                                igVideoUrl = json.data[0].url || json.data[0];
+                            } else if (json.data && json.data.url) {
+                                igVideoUrl = json.data.url;
+                            } else if (json.url) {
+                                igVideoUrl = json.url;
+                            } else if (json.result && Array.isArray(json.result) && json.result.length > 0) {
+                                igVideoUrl = json.result[0].url || json.result[0];
                             }
-                        } catch(e) {}
-                    }
-                    
-                    // API 3: Ryzendesu API
-                    if (!igVideoUrl) {
-                        try {
-                            const res = await fetch(`https://api.ryzendesu.vip/api/downloader/igdl?url=${encodeURIComponent(url)}`);
-                            const json = await res.json();
-                            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
-                                igVideoUrl = json.data[0].url;
-                            }
-                        } catch(e) {}
+                        } catch(e) {
+                            console.warn("IG API Fetch Failed:", api);
+                        }
                     }
 
                     if (igVideoUrl) {
                         nativeVideo.src = igVideoUrl;
                         nativeVideo.classList.remove('hidden');
                     } else {
-                        throw new Error("Semua API IG gagal mendapatkan direktori file");
+                        throw new Error("Semua API IG gagal mendapatkan direktori file MP4");
                     }
                 } else {
                     iframe.src = url;
                     iframe.classList.remove('hidden');
                 }
             } catch (e) {
-                // Fallback terakhir: jika semua API direct link gagal, tetap munculin iframe native IG
+                // Fallback terakhir jika SEMUA API error (Kembali menggunakan embed dasar)
                 if (url.includes('tiktok.com')) {
                     let tkMatch = url.match(/video\/(\d+)/);
                     if (tkMatch && tkMatch[1]) {
@@ -448,7 +446,7 @@
                 iframe.classList.remove('hidden');
             }
 
-            // Safety timeout menyembunyikan loader jika video macet
+            // Safety timeout menyembunyikan loader jika video macet buffering
             setTimeout(() => { loader.style.display = 'none'; }, 6000);
         };
 
@@ -536,7 +534,6 @@
                 if (allSubs) {
                     calcVideos = allSubs.length; 
                     allSubs.forEach(sub => {
-                        // FIX BUG: Saldo yang sudah didapat (earned) TIDAK BOLEH HILANG 
                         calcEarnings += (sub.earned || 0);
 
                         if (sub.status === 'PENDING') {
