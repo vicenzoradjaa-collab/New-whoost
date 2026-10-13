@@ -180,7 +180,7 @@
                     </div>
                 </div>
 
-                <!-- Grid Video Cards Dinamis - DIUBAH MENYESUAIKAN 3:4 LAYOUT -->
+                <!-- Grid Video Cards Dinamis -->
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5" id="cards-container">
                     <p class="text-zinc-500 text-sm col-span-full">Memuat data...</p>
                 </div>
@@ -223,6 +223,27 @@
             <div class="grid grid-cols-2 gap-3 w-full">
                 <button onclick="window.closeConfirm()" class="w-full px-4 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 text-sm font-bold hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
                 <button id="confirmYesBtn" class="w-full px-4 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIDEO PLAYER MODAL (BARU) -->
+    <div id="videoModal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 transition-opacity opacity-0">
+        <div class="relative w-full max-w-lg aspect-[9/16] sm:aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-zinc-800">
+            <div class="absolute top-3 right-3 z-50">
+                <button onclick="window.closeVideoModal()" class="bg-black/50 text-white p-2 rounded-full hover:bg-red-500 transition-colors backdrop-blur-md border border-white/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="flex-1 w-full bg-zinc-950 flex items-center justify-center relative">
+                <div id="videoLoader" class="absolute inset-0 flex items-center justify-center z-0">
+                    <svg class="w-8 h-8 text-zinc-600 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </div>
+                <!-- Iframe untuk play embed socmed -->
+                <iframe id="videoIframe" class="w-full h-full relative z-10" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen onload="document.getElementById('videoLoader').style.display='none'"></iframe>
+            </div>
+            <div class="p-3 sm:p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center z-20">
+                <p class="text-[10px] sm:text-xs text-zinc-400">Jika error/tidak memuat, <a id="videoDirectLink" href="#" target="_blank" class="text-white hover:text-blue-400 underline font-medium">Buka di tab baru</a></p>
             </div>
         </div>
     </div>
@@ -308,12 +329,56 @@
             confirmCallback = null; // Bersihkan agar tidak nyangkut
         };
 
-        // Eksekusi CallBack Konfirmasi (Telah Diperbaiki)
+        // Eksekusi CallBack Konfirmasi
         document.getElementById('confirmYesBtn').addEventListener('click', () => {
             const cb = confirmCallback;
             window.closeConfirm();
             if (cb) cb();
         });
+
+        // ==========================================
+        // FUNGSI BUKA TUTUP MODAL VIDEO PREVIEW
+        // ==========================================
+        window.openVideoModal = function(url) {
+            const m = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            const directLink = document.getElementById('videoDirectLink');
+            const loader = document.getElementById('videoLoader');
+            
+            let embedUrl = url;
+            loader.style.display = 'flex'; // Reset loader
+            
+            // Parsing logik url iframe otomatis
+            if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                if (ytMatch && ytMatch[1]) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+            } else if (url.includes('tiktok.com')) {
+                let tkMatch = url.match(/video\/(\d+)/);
+                if (tkMatch && tkMatch[1]) embedUrl = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
+            } else if (url.includes('instagram.com')) {
+                let igMatch = url.match(/(?:p|reel)\/([a-zA-Z0-9_-]+)/);
+                if (igMatch && igMatch[1]) embedUrl = `https://www.instagram.com/p/${igMatch[1]}/embed`;
+            }
+
+            iframe.src = embedUrl;
+            directLink.href = url;
+
+            m.classList.remove('hidden'); 
+            m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); }, 10);
+        };
+
+        window.closeVideoModal = function() {
+            const m = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            m.classList.add('opacity-0'); 
+            setTimeout(() => { 
+                m.classList.add('hidden'); 
+                m.classList.remove('flex'); 
+                iframe.src = ''; // Stop video
+            }, 300);
+        };
+
 
         // Perhitungan jumlah grid untuk 3:4 layout card (Mirip client-konten)
         function getCols() {
@@ -381,12 +446,11 @@
                     calcVideos = allSubs.length; 
                     allSubs.forEach(sub => {
                         // FIX BUG: Saldo yang sudah didapat (earned) TIDAK BOLEH HILANG 
-                        // Meskipun statusnya kembali jadi PENDING saat update views
                         calcEarnings += (sub.earned || 0);
 
                         if (sub.status === 'PENDING') {
                             p++;
-                            calcViews += (sub.views_paid || 0); // Tetap hitung views yang sudah dibayar
+                            calcViews += (sub.views_paid || 0);
                         } else if (sub.status === 'APPROVED') {
                             a++;
                             calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0);
@@ -452,7 +516,6 @@
         // ==========================================
         async function loadSubmissions() {
             try {
-                // Diperbarui: Tambahkan field is_private pada saat fetching data campaigns
                 const { data, error } = await supabase
                     .from('submissions')
                     .select(`
@@ -521,6 +584,7 @@
             const safeTitle = escapeHTML(camp.title);
             const safeRejectReason = escapeHTML(sub.reject_reason);
             const safeSessionName = escapeHTML(sessionFullName);
+            const safeUrl = encodeURI(sub.video_link || '');
 
             const viewsClaimed = sub.views_claimed || 0;
             const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
@@ -543,6 +607,10 @@
             let cardOpacityClass = 'opacity-100';
 
             const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
+            
+            // Logika Placeholder Otomatis 
+            const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+            let placeholder = maxPrevViews > 0 ? `views sebelumnya : ${maxPrevViews.toLocaleString('id-ID')}` : 'masukkan views yang akan di claim';
 
             if (isBrandReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
@@ -566,7 +634,7 @@
                 
                 let inputHTML = `
                     <div class="flex mb-1.5">
-                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[10px] sm:text-xs font-medium text-zinc-500 cursor-not-allowed text-center">
+                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-zinc-500 cursor-not-allowed text-center truncate">
                     </div>`;
                 
                 actionArea = `
@@ -588,7 +656,6 @@
             }
             else {
                 const paidViews = sub.views_paid || 0;
-                let placeholder = paidViews > 0 ? `> ${paidViews.toLocaleString('id-ID')}` : 'Jml views asli';
                 let warningText = '';
                 
                 if(isCampClosed) {
@@ -605,20 +672,20 @@
 
                 let inputHTML = `
                     <div class="flex mb-1.5">
-                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[10px] sm:text-xs font-medium text-white outline-none transition-colors text-center">
+                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-white placeholder-zinc-500 outline-none transition-colors text-center truncate">
                     </div>`;
 
                 let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
                 
                 let claimBtnClass = isPrivate 
-                    ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center gap-1 focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
-                    : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center gap-1 focus:outline-none transition-colors active:scale-[0.98]";
+                    ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
+                    : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center focus:outline-none transition-colors active:scale-[0.98]";
 
                 actionArea = `
                     ${warningText}
                     ${inputHTML}
                     <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">
-                        ${btnText} <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        ${btnText}
                     </button>`;
             }
 
@@ -637,32 +704,33 @@
 
             return `
             <div class="${cardBaseClass}">
-                <!-- IMAGE PREVIEW (ASPECT 3:4) -->
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group">
+                <!-- IMAGE PREVIEW (ASPECT 3:4) & MODAL TRIGGER -->
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
                     ${badgeHTML}
                     ${privateBadge}
                     
                     <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
                     
+                    <!-- TOMBOL PLAY OVERLAY -->
+                    <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+
                     <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg z-10">
                         ${meta.platHTML}
                     </div>
                     
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10">
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10 pointer-events-none">
                         <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${safeTitle}">${safeTitle}</h4>
                         <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="By ${safeSessionName}">${dateStr} • By ${safeSessionName}</p>
                     </div>
                 </div>
                 
-                <!-- LINK VIDEO -->
-                <a href="${sub.video_link}" target="_blank" class="mt-2 mb-2 flex items-center justify-center gap-1.5 py-2 bg-zinc-900 hover:bg-white hover:text-black border border-zinc-800 rounded-lg text-[10px] sm:text-xs font-medium text-white transition-colors focus:outline-none">
-                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    Lihat Video Asli
-                </a>
-                
                 <!-- CONTENT BELOW IMAGE -->
-                <div class="flex-1 flex flex-col justify-between">
+                <div class="flex-1 flex flex-col justify-between mt-2 sm:mt-3">
                     <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
                         <div>
                             <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
@@ -761,7 +829,7 @@
         };
 
         // ==========================================
-        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE (DENGAN CUSTOM MODAL CONFIRM)
+        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE
         // ==========================================
         window.claimViews = function(subId) {
             const inputEl = document.getElementById(`input-${subId}`);
@@ -775,7 +843,7 @@
             const camp = sub.campaigns;
             const isPerVideo = camp.payment_type === 'video';
             
-            // Wajib masukkan jumlah views, baik tipe Per Views maupun Per Video
+            // Wajib masukkan jumlah views
             const newClaimStr = inputEl.value.trim();
             if (!newClaimStr) return showAlert("Masukkan jumlah views yang valid.", "error");
             
@@ -812,7 +880,6 @@
                         estPayout = camp.budget_remaining;
                     }
                 } else if (camp.payment_type === 'video') {
-                    // FIX: Jika Tipe Per Video dan sudah pernah cair, otomatis gak dapet bayaran tambahan (0)
                     if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
                         estPayout = 0;
                     } else {
@@ -839,7 +906,7 @@
             }
             
             window.showConfirm(confirmMsg, async () => {
-                // Nonaktifkan tombol sementara agar tidak dobel klik
+                // Nonaktifkan tombol sementara
                 const originalBtnHtml = btnEl.innerHTML;
                 inputEl.disabled = true;
                 btnEl.disabled = true;
@@ -847,7 +914,6 @@
                 btnEl.classList.add('cursor-not-allowed', 'opacity-80');
 
                 try {
-                    // Pastikan user masih login sebelum klaim (Anti bypass)
                     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
                     if (sessionError || !session || session.user.id !== sub.user_id) {
                         showAlert('Sesi tidak valid, mohon muat ulang halaman.', 'error');
