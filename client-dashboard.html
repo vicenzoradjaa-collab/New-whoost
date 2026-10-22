@@ -131,6 +131,29 @@
         </div>
     </main>
 
+    <!-- ========================================== -->
+    <!-- VIDEO PLAYER MODAL                         -->
+    <!-- ========================================== -->
+    <div id="videoModal" class="fixed inset-0 z-[10005] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 transition-opacity opacity-0">
+        <div class="relative w-full max-w-[400px] h-[75vh] sm:h-[85vh] bg-black rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-zinc-800">
+            <div class="absolute top-3 right-3 z-50">
+                <button onclick="window.closeVideoModal()" class="bg-black/50 text-white p-2 rounded-full hover:bg-red-500 transition-colors backdrop-blur-md border border-white/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="flex-1 w-full bg-zinc-950 flex items-center justify-center relative overflow-hidden">
+                <div id="videoLoader" class="absolute inset-0 flex items-center justify-center z-20">
+                    <svg class="w-8 h-8 text-zinc-600 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </div>
+                <iframe id="videoIframe" class="w-full h-full relative z-10 hidden" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen onload="document.getElementById('videoLoader').style.display='none'"></iframe>
+                <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain bg-black" controls autoplay playsinline referrerpolicy="no-referrer" oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
+            </div>
+            <div class="p-3 sm:p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center z-20 shrink-0">
+                <p class="text-[10px] sm:text-xs text-zinc-400">Jika error/tidak memuat, <a id="videoDirectLink" href="#" target="_blank" class="text-white hover:text-blue-400 underline font-medium">Buka di tab baru</a></p>
+            </div>
+        </div>
+    </div>
+
     <!-- BOTTOM NAVBAR -->
     <script>const ACTIVE_MENU = 'beranda';</script>
     <script src="attribute/navbarclient.js"></script>
@@ -155,6 +178,126 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
+        // ==========================================
+        // FUNGSI VIDEO PLAYER MODAL
+        // ==========================================
+        window.openVideoModal = async function(url) {
+            const m = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            const nativeVideo = document.getElementById('videoNative');
+            const directLink = document.getElementById('videoDirectLink');
+            const loader = document.getElementById('videoLoader');
+            
+            loader.style.display = 'flex'; 
+            iframe.src = '';
+            nativeVideo.src = '';
+            iframe.classList.add('hidden');
+            nativeVideo.classList.add('hidden');
+            directLink.href = url;
+
+            m.classList.remove('hidden'); 
+            m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); }, 10);
+
+            try {
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+                        iframe.classList.remove('hidden');
+                    } else {
+                        throw new Error("No YouTube match");
+                    }
+                } else if (url.includes('tiktok.com')) {
+                    let cleanTkUrl = url.split('?')[0];
+                    const res = await fetch(`https://www.tikwm.com/api/?url=${cleanTkUrl}`);
+                    const json = await res.json();
+                    if (json.data && json.data.play) {
+                        nativeVideo.src = json.data.play;
+                        nativeVideo.classList.remove('hidden');
+                    } else {
+                        throw new Error("TikTok API Error");
+                    }
+                } else if (url.includes('instagram.com')) {
+                    let cleanIgUrl = url.split('?')[0];
+                    const encodedUrl = encodeURIComponent(cleanIgUrl);
+                    let igVideoUrl = null;
+
+                    const igApis = [
+                        `https://api.siputzx.my.id/api/d/igdl?url=${encodedUrl}`,
+                        `https://api.ryzendesu.vip/api/downloader/igdl?url=${encodedUrl}`,
+                        `https://api.agatz.xyz/api/instagram?url=${encodedUrl}`
+                    ];
+
+                    for (let api of igApis) {
+                        if (igVideoUrl) break; 
+                        try {
+                            const res = await fetch(api);
+                            const json = await res.json();
+                            
+                            if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+                                igVideoUrl = json.data[0].url || json.data[0];
+                            } else if (json.data && json.data.url) {
+                                igVideoUrl = json.data.url;
+                            } else if (json.url) {
+                                igVideoUrl = json.url;
+                            } else if (json.result && Array.isArray(json.result) && json.result.length > 0) {
+                                igVideoUrl = json.result[0].url || json.result[0];
+                            }
+                        } catch(e) { }
+                    }
+
+                    if (igVideoUrl) {
+                        nativeVideo.src = igVideoUrl;
+                        nativeVideo.classList.remove('hidden');
+                    } else {
+                        throw new Error("Semua API IG gagal mendapatkan direktori file MP4");
+                    }
+                } else {
+                    iframe.src = url;
+                    iframe.classList.remove('hidden');
+                }
+            } catch (e) {
+                if (url.includes('tiktok.com')) {
+                    let tkMatch = url.match(/video\/(\d+)/);
+                    if (tkMatch && tkMatch[1]) {
+                        iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
+                    } else {
+                        iframe.src = url;
+                    }
+                } else if (url.includes('instagram.com')) {
+                    let igMatch = url.match(/(?:p|reel)\/([a-zA-Z0-9_-]+)/);
+                    if (igMatch && igMatch[1]) {
+                        iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
+                    } else {
+                        iframe.src = url;
+                    }
+                } else {
+                    iframe.src = url;
+                }
+                iframe.classList.remove('hidden');
+            }
+
+            setTimeout(() => { loader.style.display = 'none'; }, 6000);
+        };
+
+        window.closeVideoModal = function() {
+            const m = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            const nativeVideo = document.getElementById('videoNative');
+            
+            m.classList.add('opacity-0'); 
+            setTimeout(() => { 
+                m.classList.add('hidden'); 
+                m.classList.remove('flex'); 
+                
+                iframe.src = ''; 
+                nativeVideo.pause();
+                nativeVideo.removeAttribute('src');
+                nativeVideo.load();
+            }, 300);
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -187,7 +330,7 @@
         // 1. Tarik & Hitung Data Dashboard
         async function loadDashboardData() {
             try {
-                // [PERBAIKAN]: Menggunakan .ilike untuk mendukung client_id yg disimpan dalam array stringified JSON di dalam kolom text
+                // Menggunakan .ilike untuk mendukung client_id yg disimpan dalam array stringified JSON di dalam kolom text
                 const { data: campaigns, error: campError } = await supabase
                     .from('campaigns')
                     .select('id, status')
@@ -206,13 +349,13 @@
                     return;
                 }
 
-                // Ambil semua Submission yang terkait dengan Campaign Client ini
+                // Ambil semua Submission yang terkait dengan Campaign Client ini (Tambahkan is_private di query)
                 const { data: submissions, error: subError } = await supabase
                     .from('submissions')
                     .select(`
                         id, video_link, status, created_at, views_claimed, views_paid,
                         profiles (full_name, email),
-                        campaigns (title, platforms)
+                        campaigns (title, platforms, is_private)
                     `)
                     .in('campaign_id', myCampaignIds)
                     .order('created_at', { ascending: false });
@@ -263,12 +406,24 @@
             return num.toString();
         }
 
-        // 3. Tentukan Platform Info
-        function getPlatformInfo(url) {
-            if (url.includes('tiktok.com')) return { color: 'bg-cyan-400', name: 'TikTok' };
-            if (url.includes('instagram.com')) return { color: 'bg-fuchsia-500', name: 'IG Reels' };
-            if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) return { color: 'bg-red-600', name: 'YT Shorts' };
-            return { color: 'bg-zinc-100', name: 'Link Web' };
+        // 3. Tentukan Meta & Info Platform Video
+        function getVideoMeta(url) {
+            url = url || '';
+            let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
+            let thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Video...';
+            
+            if (url.includes('tiktok.com')) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+                thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+TikTok...';
+            } else if (url.includes('instagram.com')) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+                thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Reels...';
+            } else if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+                let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                if (ytMatch && ytMatch[1]) thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+            }
+            return { platHTML, thumbUrl };
         }
 
         // 4. Render Grid HTML
@@ -286,36 +441,58 @@
                 const title = escapeHTML(sub.campaigns?.title || 'Campaign Dihapus');
                 const safeUrl = encodeURI(sub.video_link);
                 
-                const plat = getPlatformInfo(sub.video_link);
+                const meta = getVideoMeta(sub.video_link);
                 const reachViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
 
+                const isPrivate = sub.campaigns?.is_private === true;
+                let cardBaseClass = "p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ";
+                
+                // Pembedaan khusus styling Private (Sama dengan Menu Clipper/Client)
+                if (isPrivate) {
+                    cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+                } else {
+                    cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
+                }
+
                 html += `
-                <div class="bg-cardBg border border-zinc-800 rounded-2xl p-1.5 sm:p-2 flex flex-col hover:border-zinc-500 transition-all duration-300">
-                    <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group">
-                        <img id="thumb-${sub.id}" data-video-link="${safeUrl}" src="https://placehold.co/300x400/121214/27272a?text=..." alt="Video Thumbnail" class="client-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                <div class="${cardBaseClass}">
+                    <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
                         
                         <!-- Badge Platform Kiri Atas -->
-                        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${plat.color} flex-shrink-0"></span>
-                            <span class="text-[8px] sm:text-[10px] font-semibold tracking-wider text-white truncate">${plat.name}</span>
+                        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 items-start z-20 pointer-events-none">
+                            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg flex items-center justify-center shadow-sm">
+                                ${meta.platHTML}
+                            </div>
                         </div>
                         
                         <!-- Badge Views Kanan Atas -->
-                        <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm max-w-[45%]">
+                        <div class="absolute top-2 right-2 sm:top-3 sm:right-3 bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2 py-0.5 rounded flex items-center gap-1 shadow-sm z-20 pointer-events-none">
                             <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            <span class="text-[8px] sm:text-[10px] font-semibold text-white truncate">${formatK(reachViews)}</span>
+                            <span class="text-[8px] sm:text-[10px] font-semibold text-white">${formatK(reachViews)}</span>
                         </div>
 
-                        <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                            <p class="text-[11px] sm:text-sm font-semibold text-white truncate">${creator}</p>
-                            <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5" title="${title}">${title}</p>
+                        <!-- Image -->
+                        <img id="thumb-${sub.id}" data-video-link="${safeUrl}" src="${meta.thumbUrl}" alt="Video Thumbnail" class="client-thumb w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
+                        
+                        <!-- Play Button Overlay -->
+                        <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        </div>
+
+                        <!-- Info Teks Bawah Gambar -->
+                        <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10 pointer-events-none">
+                            <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${creator}">${creator}</h4>
+                            <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="${title}">${title}</p>
                         </div>
                     </div>
-                    <div class="mt-1.5 sm:mt-2">
-                        <!-- Link ke video aslinya -->
-                        <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors shadow-sm focus:outline-none">
-                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat Konten
+
+                    <!-- Tombol Action Area Bawah -->
+                    <div class="flex-1 flex flex-col justify-end mt-2 sm:mt-3">
+                        <a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors shadow-sm focus:outline-none">
+                            <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Buka Tautan Asli
                         </a>
                     </div>
                 </div>`;
@@ -335,12 +512,8 @@
                 if(!url || img.getAttribute('data-loaded') === 'true') continue;
 
                 if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
-                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-                    if (ytMatch && ytMatch[1]) {
-                        // [PERBAIKAN]: Memperbaiki URL img youtube yang terputus di kode sebelumnya
-                        img.src = `https://img.youtube.com/vi/${ytMatch[1]}/maxresdefault.jpg`;
-                        img.setAttribute('data-loaded', 'true');
-                    }
+                    // Karena Youtube sdh dihandle oleh meta thumbUrl default saat rendering, di skip di sini
+                    img.setAttribute('data-loaded', 'true');
                     continue;
                 }
 
