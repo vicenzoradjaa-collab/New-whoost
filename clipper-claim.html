@@ -157,27 +157,28 @@
 
             <!-- SECTION 2: LIST KONTEN -->
             <section>
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
-                    <h2 class="text-base sm:text-lg font-semibold text-white">Konten Tersedia</h2>
+                <!-- Z-Index 60 ditambahkan agar dropdown tidak tertutup card video -->
+                <div class="flex flex-row items-center justify-between mb-6 gap-2 sm:gap-4 relative z-[60]">
+                    <h2 class="text-sm sm:text-lg font-semibold text-white truncate pr-2">Konten Tersedia</h2>
                     
-                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                         <!-- Filter Campaign -->
                         <div class="relative custom-select-container">
-                            <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-lg px-3 py-2 text-xs text-white cursor-pointer flex justify-between items-center transition-colors min-w-[140px]" onclick="window.toggleSelect('campaign-options')">
-                                <span id="campaign-selected-text" class="truncate max-w-[120px]">Semua Campaign</span>
-                                <svg class="w-3 h-3 text-zinc-400 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white cursor-pointer flex justify-between items-center transition-colors min-w-[120px] sm:min-w-[140px]" onclick="window.toggleSelect('campaign-options')">
+                                <span id="campaign-selected-text" class="truncate max-w-[90px] sm:max-w-[120px]">Semua Campaign</span>
+                                <svg class="w-3 h-3 text-zinc-400 ml-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
-                            <div id="campaign-options" class="custom-select-options hidden absolute top-full right-0 mt-2 w-48 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto custom-scrollbar">
+                            <div id="campaign-options" class="custom-select-options hidden absolute top-full right-0 mt-2 w-48 bg-zinc-800 border border-zinc-700 rounded-xl shadow-xl z-[70] max-h-48 overflow-y-auto custom-scrollbar">
                                 <!-- Diisi JS -->
                             </div>
                         </div>
 
                         <!-- Filter Status & Sort -->
                         <div class="relative" id="filter-container">
-                            <button onclick="window.toggleFilter()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 p-2 rounded-lg transition-colors flex items-center gap-2 focus:outline-none">
+                            <button onclick="window.toggleFilter()" class="bg-zinc-900 border border-zinc-700 hover:bg-zinc-800 p-1.5 sm:p-2 rounded-lg transition-colors flex items-center gap-2 focus:outline-none">
                                 <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
                             </button>
-                            <div id="filter-dropdown" class="absolute right-0 mt-2 w-48 bg-cardBg border border-zinc-700 rounded-xl shadow-2xl z-50 hidden flex-col p-2 gap-2">
+                            <div id="filter-dropdown" class="absolute right-0 mt-2 w-48 bg-cardBg border border-zinc-700 rounded-xl shadow-2xl z-[70] hidden flex-col p-2 gap-2">
                                 <div>
                                     <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Urutkan</p>
                                     <button onclick="window.applyFilter('sort', 'newest')" class="filter-btn sort-newest w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Terbaru</button>
@@ -261,10 +262,10 @@
                     <label class="block text-xs font-semibold text-zinc-300 mb-2">Pilih Campaign</label>
                     <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-xl px-4 py-3 text-sm text-white cursor-pointer flex justify-between items-center transition-colors shadow-inner" onclick="window.toggleSubmitCampaignSelect()">
                         <span id="submit-campaign-selected-text" class="truncate text-zinc-400">Pilih campaign kamu...</span>
-                        <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                     <!-- Pilihan Item JS -->
-                    <div id="submit-campaign-options" class="hidden absolute top-[75px] left-0 right-0 bg-zinc-800 border border-zinc-700 rounded-xl shadow-2xl z-50 max-h-48 overflow-y-auto custom-scrollbar">
+                    <div id="submit-campaign-options" class="hidden absolute top-[75px] left-0 right-0 bg-zinc-800 border border-zinc-700 rounded-xl shadow-2xl z-[70] max-h-48 overflow-y-auto custom-scrollbar">
                         <!-- Diisi otomatis oleh JS -->
                     </div>
                     <!-- Hidden input data submit -->
@@ -573,6 +574,7 @@
                         showInputError(input, "Link tidak valid. Gunakan URL utuh yang menyertakan (http/https).");
                         hasError = true;
                     } else {
+                        // Cek karakter duplikat secara presisi
                         if (intraCheck.has(val)) {
                             intraDuplicates.add(val);
                         }
@@ -1151,18 +1153,12 @@
                 cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
             }
 
-            // Memperbaiki penempatan badge Private agar rapi bersusun dengan icon platform
-            let privateBadge = isPrivate ? `
-                <div class="bg-yellow-900/80 text-yellow-500 text-[7px] sm:text-[8px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur flex items-center gap-1 border border-yellow-500/20 shadow-sm">
-                    <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
-                </div>` : '';
-
+            // Badge PRIVATE dihilangkan sesuai permintaan, cukup mengandalkan styling border/background khusus isPrivate
             let topLeftBadges = `
                 <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 items-start z-20 pointer-events-none">
                     <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
                         ${meta.platHTML}
                     </div>
-                    ${privateBadge}
                 </div>
             `;
 
