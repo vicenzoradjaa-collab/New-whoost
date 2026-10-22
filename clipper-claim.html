@@ -138,6 +138,14 @@
                 </div>
             </section>
 
+            <!-- SECTION BARU: TOMBOL SUBMIT VIDEO MULTIPLE -->
+            <div class="flex justify-end -mt-2 -mb-2">
+                <button onclick="window.openSubmitModal()" class="bg-white hover:bg-zinc-200 text-black font-bold text-sm px-6 py-3 rounded-xl flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] focus:outline-none active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Kirim Video Baru
+                </button>
+            </div>
+
             <!-- SECTION 2: LIST KONTEN -->
             <section>
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
@@ -226,9 +234,71 @@
         </div>
     </div>
 
-    <!-- VIDEO PLAYER MODAL (BARU) -->
+    <!-- SUBMIT VIDEO MODAL (BARU) -->
+    <div id="submitVideoModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-[1.5rem] w-full max-w-lg p-6 transform scale-95 transition-transform flex flex-col relative" id="submitVideoContent">
+            <!-- Close Button -->
+            <button onclick="window.closeSubmitModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <h3 class="text-xl font-bold text-white mb-1">Kirim Video</h3>
+            <p class="text-[13px] text-zinc-400 mb-6">Pilih campaign dulu</p>
+
+            <form id="submitForm" onsubmit="window.processSubmit(event)" novalidate>
+                <!-- Campaign Selection -->
+                <div class="mb-5">
+                    <label class="block text-xs font-semibold text-zinc-300 mb-2">Campaign</label>
+                    <div class="relative">
+                        <select id="submitCampaignSelect" required class="w-full bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-xl px-4 py-3 text-sm text-white focus:border-white focus:outline-none appearance-none cursor-pointer transition-colors shadow-inner">
+                            <option value="" disabled selected>Memuat campaign...</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Link Inputs -->
+                <div class="mb-3">
+                    <label class="block text-xs font-semibold text-zinc-300 mb-2">Link Video</label>
+                    <div id="linkInputsContainer" class="space-y-3 max-h-[30vh] overflow-y-auto custom-scrollbar pr-1 pb-1">
+                        <!-- Input 1 Default -->
+                        <div class="relative flex items-center gap-2">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            </div>
+                            <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Link Button -->
+                <button type="button" onclick="window.addLinkInput()" class="flex items-center gap-1.5 text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800/50 border border-zinc-700/50 hover:bg-zinc-800 px-3 py-2 rounded-lg transition-colors mb-6 focus:outline-none">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tambah link
+                </button>
+
+                <!-- Info text -->
+                <div class="flex items-start gap-2.5 mb-6">
+                    <svg class="w-4 h-4 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    <p class="text-[10px] sm:text-xs text-zinc-400 leading-relaxed">Akun dan hashtag dicek otomatis, views terbaca sendiri tiap hari. Bisa TikTok, Instagram, YouTube, dan Facebook - link dari tombol Share di HP juga bisa.</p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-3 pt-5 border-t border-zinc-800/80">
+                    <button type="button" onclick="window.closeSubmitModal()" class="px-5 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 text-sm font-bold hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
+                    <button type="submit" id="btnSubmitVideo" class="px-7 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition-colors focus:outline-none flex items-center gap-2 shadow-lg shadow-blue-900/20 active:scale-95">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        Kirim
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- VIDEO PLAYER MODAL -->
     <div id="videoModal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 transition-opacity opacity-0">
-        <!-- Kotak vertikal di HP maupun desktop -->
         <div class="relative w-full max-w-[400px] h-[75vh] sm:h-[85vh] bg-black rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-zinc-800">
             <div class="absolute top-3 right-3 z-50">
                 <button onclick="window.closeVideoModal()" class="bg-black/50 text-white p-2 rounded-full hover:bg-red-500 transition-colors backdrop-blur-md border border-white/20">
@@ -239,11 +309,7 @@
                 <div id="videoLoader" class="absolute inset-0 flex items-center justify-center z-20">
                     <svg class="w-8 h-8 text-zinc-600 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                 </div>
-                <!-- Iframe fallback untuk youtube / embed biasa -->
                 <iframe id="videoIframe" class="w-full h-full relative z-10 hidden" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen onload="document.getElementById('videoLoader').style.display='none'"></iframe>
-                
-                <!-- Native Video Tag untuk Clean Video (Tiktok/IG) -->
-                <!-- Penambahan referrerpolicy="no-referrer" sangat penting agar CDN IG/TikTok tidak mendeteksi web asal -->
                 <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain bg-black" controls autoplay playsinline referrerpolicy="no-referrer" oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
             </div>
             <div class="p-3 sm:p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center z-20 shrink-0">
@@ -263,6 +329,7 @@
         let sessionUser = null;
         let sessionFullName = 'Pengguna'; 
         let submissionsData = [];
+        let joinedActiveCampaigns = []; // State untuk modal Submit Baru
         
         let realEarnings = 0;
         let realWithdrawable = 0;
@@ -339,8 +406,149 @@
             if (cb) cb();
         });
 
+
         // ==========================================
-        // FUNGSI BUKA TUTUP MODAL VIDEO PREVIEW (DIPERBAIKI)
+        // FITUR BARU: MODAL MULTIPLE SUBMIT VIDEO
+        // ==========================================
+        window.openSubmitModal = function() {
+            const select = document.getElementById('submitCampaignSelect');
+            
+            if (joinedActiveCampaigns.length === 0) {
+                select.innerHTML = '<option value="" disabled selected>Belum ada campaign aktif / Tersedia</option>';
+            } else {
+                select.innerHTML = '<option value="" disabled selected>Pilih campaign kamu</option>';
+                joinedActiveCampaigns.forEach(camp => {
+                    const opt = document.createElement('option');
+                    opt.value = camp.id;
+                    opt.textContent = escapeHTML(camp.title);
+                    select.appendChild(opt);
+                });
+            }
+
+            // Reset form input link ke default 1 kolom
+            document.getElementById('linkInputsContainer').innerHTML = `
+                <div class="relative flex items-center gap-2">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </div>
+                    <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
+                </div>
+            `;
+
+            const m = document.getElementById('submitVideoModal');
+            const c = document.getElementById('submitVideoContent');
+            m.classList.remove('hidden'); m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+        };
+
+        window.closeSubmitModal = function() {
+            const m = document.getElementById('submitVideoModal');
+            const c = document.getElementById('submitVideoContent');
+            m.classList.add('opacity-0'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+        };
+
+        window.addLinkInput = function() {
+            const container = document.getElementById('linkInputsContainer');
+            const div = document.createElement('div');
+            div.className = 'relative flex items-center gap-2 mt-3';
+            div.innerHTML = `
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                </div>
+                <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
+                <button type="button" onclick="this.parentElement.remove()" class="p-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 hover:border-red-500 rounded-xl transition-colors shrink-0 focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            `;
+            container.appendChild(div);
+            // Auto scroll ke bawah
+            container.scrollTop = container.scrollHeight;
+        };
+
+        window.processSubmit = async function(e) {
+            e.preventDefault();
+            const campaignId = document.getElementById('submitCampaignSelect').value;
+            
+            if(!campaignId) {
+                showAlert("Silakan pilih campaign terlebih dahulu.", "error");
+                return;
+            }
+
+            const inputs = document.querySelectorAll('input[name="video_links[]"]');
+            let urls = [];
+            
+            // Validator Link Kuat
+            const isValidUrl = (str) => {
+                const pattern = new RegExp('^(https?:\\/\\/)?'+ 
+                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ 
+                    '((\\d{1,3}\\.){3}\\d{1,3}))'+ 
+                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*'+ 
+                    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
+                    '(\\#[-a-z\\d_]*)?$','i');
+                return !!pattern.test(str) && (str.startsWith('http://') || str.startsWith('https://'));
+            };
+
+            for(let input of inputs) {
+                let val = input.value.trim();
+                if(val) {
+                    if(!isValidUrl(val)) {
+                        input.classList.add('border-red-500', 'bg-red-950/20');
+                        input.classList.remove('border-zinc-700');
+                        showAlert("Terdapat link yang tidak valid. Harap gunakan URL utuh (http/https).", "error");
+                        return;
+                    }
+                    input.classList.remove('border-red-500', 'bg-red-950/20');
+                    urls.push(val);
+                }
+            }
+
+            if(urls.length === 0) {
+                showAlert("Harap masukkan setidaknya satu link video.", "error");
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmitVideo');
+            const originalBtn = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+
+            try {
+                // Susun array data multiple insert
+                const insertData = urls.map(url => ({
+                    campaign_id: campaignId,
+                    user_id: sessionUser.id,
+                    video_link: escapeHTML(url),
+                    status: 'PENDING',
+                    views_claimed: 0,
+                    views_paid: 0,
+                    earned: 0
+                }));
+
+                // Kirim ke database (Supabase otomatis handle multiple insert array)
+                const { error } = await supabase.from('submissions').insert(insertData);
+                if(error) throw error;
+
+                showAlert(`Berhasil mengirim ${urls.length} video. Status video saat ini PENDING menunggu Review.`, "success");
+                window.closeSubmitModal();
+                
+                // Segarkan grid data di belakang
+                await Promise.all([
+                    loadUserStats(),
+                    loadSubmissions()
+                ]);
+
+            } catch(err) {
+                showAlert("Gagal mengirim video: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtn;
+            }
+        };
+
+
+        // ==========================================
+        // FUNGSI BUKA TUTUP MODAL VIDEO PREVIEW
         // ==========================================
         window.openVideoModal = async function(url) {
             const m = document.getElementById('videoModal');
@@ -507,6 +715,7 @@
 
                 // Load data paralel dengan error handling aman
                 await Promise.all([
+                    loadActiveCampaigns(),
                     loadUserStats(),
                     loadSubmissions()
                 ]);
@@ -515,6 +724,27 @@
                 console.error("Kesalahan inisialisasi:", e);
             }
         });
+
+        // ==========================================
+        // 0. FETCH ACTIVE CAMPAIGNS (UNTUK MODAL SUBMIT)
+        // ==========================================
+        async function loadActiveCampaigns() {
+            try {
+                const { data, error } = await supabase
+                    .from('user_campaigns')
+                    .select(`
+                        campaigns ( id, title, status, budget_remaining )
+                    `)
+                    .eq('user_id', sessionUser.id);
+
+                if (!error && data) {
+                    // Ambil hanya campaign yang tidak 'CLOSED' dan budget > 0
+                    joinedActiveCampaigns = data
+                        .map(item => item.campaigns)
+                        .filter(camp => camp && camp.status !== 'CLOSED' && camp.budget_remaining > 0);
+                }
+            } catch (e) { console.error("Gagal load joined campaigns", e); }
+        }
 
         // ==========================================
         // 1. AUTO SYNC STATS (Pendapatan & Penghitungan Status)
