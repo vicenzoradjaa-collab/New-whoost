@@ -218,7 +218,7 @@
         </div>
     </main>
 
-    <!-- CUSTOM ALERT MODAL (Ditingkatkan Z-Index ke 10000 agar diatas form) -->
+    <!-- CUSTOM ALERT MODAL -->
     <div id="customAlertModal" class="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform flex flex-col items-center" id="customAlertContent">
             <div id="alertIcon" class="w-16 h-16 rounded-full flex items-center justify-center mb-4"></div>
@@ -228,7 +228,7 @@
         </div>
     </div>
 
-    <!-- CUSTOM CONFIRM MODAL (Ditingkatkan Z-Index ke 10000 agar diatas form) -->
+    <!-- CUSTOM CONFIRM MODAL -->
     <div id="customConfirmModal" class="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform flex flex-col items-center" id="customConfirmContent">
             <div class="w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full flex items-center justify-center mb-4">
@@ -459,7 +459,7 @@
             textEl.classList.remove('text-white');
             infoText.innerText = "Pilih campaign terlebih dahulu untuk melihat platform yang diizinkan.";
 
-            // Render opsi campaign di dropdown kustom
+            // Render opsi campaign di dropdown kustom (hanya yg unik)
             if (joinedActiveCampaigns.length === 0) {
                 container.innerHTML = '<div class="px-4 py-3 text-sm text-zinc-500 text-center">Belum ada campaign aktif</div>';
             } else {
@@ -607,11 +607,14 @@
             btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
 
             try {
-                // Pengecekan 2: Cek Duplikat ke Database (Mencegah submit ulang link yang sudah ada)
+                // Pengecekan 2: Cek Duplikat ke Database dengan Escape String (Akurat)
+                // Escape URL terlebih dahulu karena database menyimpannya dalam format yang sudah di-escape
+                const escapedUrls = urls.map(u => escapeHTML(u));
+
                 const { data: existingSubs, error: dbError } = await supabase
                     .from('submissions')
                     .select('video_link')
-                    .in('video_link', urls);
+                    .in('video_link', escapedUrls);
                     
                 if (dbError) throw dbError;
 
@@ -620,10 +623,12 @@
                     existingSubs.forEach(s => dbDuplicates.add(s.video_link));
                 }
 
+                // Jika ditemukan duplikat di DB, tandai input mana yang bersalah
                 if (dbDuplicates.size > 0) {
                     inputs.forEach(input => {
                         let val = input.value.trim();
-                        if(dbDuplicates.has(val)) {
+                        let escapedVal = escapeHTML(val); // Bandingkan string yang sudah di escape
+                        if(dbDuplicates.has(escapedVal)) {
                             showInputError(input, "Link ini sudah pernah disubmit ke sistem sebelumnya.");
                             hasError = true;
                         }
@@ -665,8 +670,10 @@
             } catch(err) {
                 showAlert("Gagal mengirim video: " + err.message, "error");
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = originalBtn;
+                if(!hasError) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtn;
+                }
             }
         };
 
@@ -862,10 +869,15 @@
                     .eq('user_id', sessionUser.id);
 
                 if (!error && data) {
-                    // Ambil hanya campaign yang tidak 'CLOSED' dan budget > 0
-                    joinedActiveCampaigns = data
-                        .map(item => item.campaigns)
-                        .filter(camp => camp && camp.status !== 'CLOSED' && camp.budget_remaining > 0);
+                    // Menyaring hanya campaign yang tidak 'CLOSED' dan menghindari duplikasi
+                    const uniqueCampsMap = new Map();
+                    data.forEach(item => {
+                        const camp = item.campaigns;
+                        if (camp && camp.status !== 'CLOSED') {
+                            uniqueCampsMap.set(camp.id, camp);
+                        }
+                    });
+                    joinedActiveCampaigns = Array.from(uniqueCampsMap.values());
                 }
             } catch (e) { console.error("Gagal load joined campaigns", e); }
         }
@@ -1139,17 +1151,27 @@
                 cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
             }
 
+            // Memperbaiki penempatan badge Private agar rapi bersusun dengan icon platform
             let privateBadge = isPrivate ? `
-                <div class="absolute top-9 left-2 sm:top-11 sm:left-3 z-20 bg-yellow-900/80 text-yellow-500 text-[7px] sm:text-[8px] font-bold px-1.5 py-0.5 rounded-lg backdrop-blur flex items-center gap-1 border border-yellow-500/20">
+                <div class="bg-yellow-900/80 text-yellow-500 text-[7px] sm:text-[8px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur flex items-center gap-1 border border-yellow-500/20 shadow-sm">
                     <svg class="w-2 h-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
                 </div>` : '';
+
+            let topLeftBadges = `
+                <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 items-start z-20 pointer-events-none">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
+                        ${meta.platHTML}
+                    </div>
+                    ${privateBadge}
+                </div>
+            `;
 
             return `
             <div class="${cardBaseClass}">
                 <!-- IMAGE PREVIEW (ASPECT 3:4) & MODAL TRIGGER -->
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
                     ${badgeHTML}
-                    ${privateBadge}
+                    ${topLeftBadges}
                     
                     <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
@@ -1159,10 +1181,6 @@
                         <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </div>
-                    </div>
-
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg z-10">
-                        ${meta.platHTML}
                     </div>
                     
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10 pointer-events-none">
