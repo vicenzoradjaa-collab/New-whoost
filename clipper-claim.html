@@ -243,7 +243,7 @@
         </div>
     </div>
 
-    <!-- SUBMIT VIDEO MODAL (MULTIPLE) -->
+    <!-- SUBMIT VIDEO MODAL (MULTIPLE DENGAN VALIDASI) -->
     <div id="submitVideoModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-[1.5rem] w-full max-w-lg p-6 transform scale-95 transition-transform flex flex-col relative" id="submitVideoContent">
             <!-- Close Button -->
@@ -275,13 +275,7 @@
                 <div class="mb-3">
                     <label class="block text-xs font-semibold text-zinc-300 mb-2">Link Video</label>
                     <div id="linkInputsContainer" class="space-y-3 max-h-[25vh] overflow-y-auto custom-scrollbar pr-1 pb-1">
-                        <!-- Input 1 Default -->
-                        <div class="relative flex items-center gap-2">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                            </div>
-                            <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
-                        </div>
+                        <!-- Input Default disiapkan oleh JS -->
                     </div>
                 </div>
 
@@ -291,10 +285,10 @@
                     Tambah link
                 </button>
 
-                <!-- Info text -->
+                <!-- Info text (Dinamis Sesuai Campaign) -->
                 <div class="flex items-start gap-2.5 mb-6">
                     <svg class="w-4 h-4 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    <p class="text-[10px] sm:text-xs text-zinc-400 leading-relaxed">Sistem menerima video dari TikTok, Instagram Reels, maupun YouTube Shorts. Pastikan video bersifat publik.</p>
+                    <p id="submitPlatformInfoText" class="text-[10px] sm:text-xs text-zinc-400 leading-relaxed">Pilih campaign terlebih dahulu untuk melihat platform yang diizinkan.</p>
                 </div>
 
                 <!-- Actions -->
@@ -436,17 +430,34 @@
             textEl.classList.add('text-white');
             
             document.getElementById('submit-campaign-options').classList.add('hidden');
+
+            // Sinkronisasi platform info yang dinamis
+            const camp = joinedActiveCampaigns.find(c => c.id === id);
+            let infoText = "Campaign ini menerima video dari: ";
+            if (camp && camp.platforms && camp.platforms.length > 0) {
+                const platNames = [];
+                if(camp.platforms.includes('tiktok')) platNames.push('TikTok');
+                if(camp.platforms.includes('instagram')) platNames.push('Instagram Reels');
+                if(camp.platforms.includes('youtube')) platNames.push('YouTube Shorts');
+                infoText += platNames.join(', ');
+            } else {
+                infoText += "TikTok, Instagram Reels, dan YouTube Shorts";
+            }
+            infoText += ". Pastikan video bersifat publik.";
+            document.getElementById('submitPlatformInfoText').innerText = infoText;
         };
 
         window.openSubmitModal = function() {
             const container = document.getElementById('submit-campaign-options');
             const textEl = document.getElementById('submit-campaign-selected-text');
+            const infoText = document.getElementById('submitPlatformInfoText');
             
-            // Reset Dropdown
+            // Reset Form State
             document.getElementById('submitCampaignValue').value = '';
             textEl.innerText = 'Pilih campaign kamu...';
             textEl.classList.add('text-zinc-400');
             textEl.classList.remove('text-white');
+            infoText.innerText = "Pilih campaign terlebih dahulu untuk melihat platform yang diizinkan.";
 
             // Render opsi campaign di dropdown kustom
             if (joinedActiveCampaigns.length === 0) {
@@ -460,13 +471,16 @@
                 container.innerHTML = html;
             }
 
-            // Reset form input link ke default 1 kolom
+            // Reset form input link ke default 1 kolom yang dilengkapi elemen error
             document.getElementById('linkInputsContainer').innerHTML = `
-                <div class="relative flex items-center gap-2">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                <div class="link-group">
+                    <div class="relative flex items-center gap-2">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        </div>
+                        <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
                     </div>
-                    <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
+                    <p class="error-msg hidden text-red-500 text-[10px] sm:text-xs mt-1.5 font-medium ml-1"></p>
                 </div>
             `;
 
@@ -487,20 +501,34 @@
         window.addLinkInput = function() {
             const container = document.getElementById('linkInputsContainer');
             const div = document.createElement('div');
-            div.className = 'relative flex items-center gap-2 mt-3';
+            div.className = 'link-group mt-3';
             div.innerHTML = `
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                <div class="relative flex items-center gap-2">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    </div>
+                    <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
+                    <button type="button" onclick="this.closest('.link-group').remove()" class="p-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 hover:border-red-500 rounded-xl transition-colors shrink-0 focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
                 </div>
-                <input type="text" name="video_links[]" placeholder="Tempel link video..." class="flex-1 bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-9 pr-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-colors shadow-inner">
-                <button type="button" onclick="this.parentElement.remove()" class="p-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 hover:border-red-500 rounded-xl transition-colors shrink-0 focus:outline-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
+                <p class="error-msg hidden text-red-500 text-[10px] sm:text-xs mt-1.5 font-medium ml-1"></p>
             `;
             container.appendChild(div);
             // Auto scroll ke bawah agar input selalu terlihat
             container.scrollTop = container.scrollHeight;
         };
+
+        // Fungsi Helper memunculkan tulisan error di bawah kolom input
+        function showInputError(inputEl, msg) {
+            inputEl.classList.add('border-red-500', 'bg-red-950/20');
+            inputEl.classList.remove('border-zinc-700');
+            const errP = inputEl.closest('.link-group').querySelector('.error-msg');
+            if (errP) {
+                errP.innerText = msg;
+                errP.classList.remove('hidden');
+            }
+        }
 
         window.processSubmit = async function(e) {
             e.preventDefault();
@@ -513,6 +541,16 @@
 
             const inputs = document.querySelectorAll('input[name="video_links[]"]');
             let urls = [];
+            let intraCheck = new Set();
+            let intraDuplicates = new Set();
+            
+            // Bersihkan semua error form sebelum validasi ulang
+            inputs.forEach(input => {
+                input.classList.remove('border-red-500', 'bg-red-950/20');
+                input.classList.add('border-zinc-700');
+                const errP = input.closest('.link-group').querySelector('.error-msg');
+                if (errP) errP.classList.add('hidden');
+            });
             
             // Validator Link Kuat
             const isValidUrl = (str) => {
@@ -525,32 +563,80 @@
                 return !!pattern.test(str) && (str.startsWith('http://') || str.startsWith('https://'));
             };
 
+            let hasError = false;
+
+            // Pengecekan 1: Validasi Format & Duplikat dalam Form yang sama
             for(let input of inputs) {
                 let val = input.value.trim();
                 if(val) {
                     if(!isValidUrl(val)) {
-                        input.classList.add('border-red-500', 'bg-red-950/20');
-                        input.classList.remove('border-zinc-700');
-                        showAlert("Terdapat link yang tidak valid. Harap gunakan URL utuh yang menyertakan (http/https).", "error");
-                        return;
+                        showInputError(input, "Link tidak valid. Gunakan URL utuh yang menyertakan (http/https).");
+                        hasError = true;
+                    } else {
+                        if (intraCheck.has(val)) {
+                            intraDuplicates.add(val);
+                        }
+                        intraCheck.add(val);
+                        urls.push(val);
                     }
-                    input.classList.remove('border-red-500', 'bg-red-950/20');
-                    urls.push(val);
                 }
             }
 
-            if(urls.length === 0) {
+            if (urls.length === 0 && !hasError) {
                 showAlert("Harap masukkan setidaknya satu link video.", "error");
                 return;
             }
 
+            // Tandai duplikat dalam form
+            if (intraDuplicates.size > 0) {
+                inputs.forEach(input => {
+                    let val = input.value.trim();
+                    if(intraDuplicates.has(val)) {
+                        showInputError(input, "Link duplikat. Anda memasukkan link yang sama di formulir ini.");
+                        hasError = true;
+                    }
+                });
+            }
+
+            if (hasError) return;
+
+            // Loading state
             const btn = document.getElementById('btnSubmitVideo');
             const originalBtn = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
 
             try {
-                // Susun array data multiple insert
+                // Pengecekan 2: Cek Duplikat ke Database (Mencegah submit ulang link yang sudah ada)
+                const { data: existingSubs, error: dbError } = await supabase
+                    .from('submissions')
+                    .select('video_link')
+                    .in('video_link', urls);
+                    
+                if (dbError) throw dbError;
+
+                let dbDuplicates = new Set();
+                if (existingSubs && existingSubs.length > 0) {
+                    existingSubs.forEach(s => dbDuplicates.add(s.video_link));
+                }
+
+                if (dbDuplicates.size > 0) {
+                    inputs.forEach(input => {
+                        let val = input.value.trim();
+                        if(dbDuplicates.has(val)) {
+                            showInputError(input, "Link ini sudah pernah disubmit ke sistem sebelumnya.");
+                            hasError = true;
+                        }
+                    });
+                }
+
+                if (hasError) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtn;
+                    return;
+                }
+
+                // Jika semua lolos, jalankan multiple insert
                 const insertData = urls.map(url => ({
                     campaign_id: campaignId,
                     user_id: sessionUser.id,
@@ -561,9 +647,8 @@
                     earned: 0
                 }));
 
-                // Kirim ke database (Supabase otomatis handle multiple insert array)
-                const { error } = await supabase.from('submissions').insert(insertData);
-                if(error) throw error;
+                const { error: insertError } = await supabase.from('submissions').insert(insertData);
+                if(insertError) throw insertError;
 
                 // Tutup modal, lalu pop up success
                 window.closeSubmitModal();
@@ -772,7 +857,7 @@
                 const { data, error } = await supabase
                     .from('user_campaigns')
                     .select(`
-                        campaigns ( id, title, status, budget_remaining )
+                        campaigns ( id, title, status, budget_remaining, platforms )
                     `)
                     .eq('user_id', sessionUser.id);
 
