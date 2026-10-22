@@ -96,7 +96,6 @@
                 </button>
                 
                 <div id="dropdownCampaignFilter" class="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-full sm:w-64 bg-cardBg border border-zinc-800 rounded-xl shadow-2xl hidden flex-col overflow-hidden z-50">
-                    <!-- PERBAIKAN: Mengganti flex-col dengan block agar flex-shrink tidak menekan elemen teks yang panjang -->
                     <div id="campaignFilterList" class="max-h-56 overflow-y-auto custom-scrollbar block">
                         <!-- Akan diisi otomatis via JS -->
                         <button onclick="window.selectCampaignFilter('all', 'Semua Campaign')" class="block shrink-0 w-full text-left px-5 py-3 text-[13px] hover:bg-zinc-800 transition-colors text-white">Semua Campaign</button>
@@ -127,7 +126,7 @@
 
     <!-- MAIN GRID KONTEN -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 pt-4 pb-32 z-0 scroll-smooth w-full relative">
-        <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-5 w-full">
+        <div id="contentGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5 w-full">
             <p class="text-zinc-500 text-sm col-span-full">Memuat pengajuan...</p>
         </div>
 
@@ -191,12 +190,35 @@
     <!-- ========================================== -->
     <!-- CUSTOM ALERT MODAL                         -->
     <!-- ========================================== -->
-    <div id="customAlertModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+    <div id="customAlertModal" class="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform flex flex-col items-center" id="customAlertContent">
             <div id="alertIcon" class="w-16 h-16 rounded-full flex items-center justify-center mb-4"></div>
             <h3 id="alertTitle" class="text-xl font-bold text-white mb-2">Pemberitahuan</h3>
             <p id="alertMessage" class="text-[13px] text-zinc-400 mb-6 leading-relaxed"></p>
             <button onclick="window.closeAlert()" class="w-full px-4 py-2.5 rounded-xl bg-white text-black text-sm font-bold hover:bg-zinc-200 transition-colors focus:outline-none">Tutup</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- VIDEO PLAYER MODAL                         -->
+    <!-- ========================================== -->
+    <div id="videoModal" class="fixed inset-0 z-[10005] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 transition-opacity opacity-0">
+        <div class="relative w-full max-w-[400px] h-[75vh] sm:h-[85vh] bg-black rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-zinc-800">
+            <div class="absolute top-3 right-3 z-50">
+                <button onclick="window.closeVideoModal()" class="bg-black/50 text-white p-2 rounded-full hover:bg-red-500 transition-colors backdrop-blur-md border border-white/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="flex-1 w-full bg-zinc-950 flex items-center justify-center relative overflow-hidden">
+                <div id="videoLoader" class="absolute inset-0 flex items-center justify-center z-20">
+                    <svg class="w-8 h-8 text-zinc-600 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </div>
+                <iframe id="videoIframe" class="w-full h-full relative z-10 hidden" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen onload="document.getElementById('videoLoader').style.display='none'"></iframe>
+                <video id="videoNative" class="w-full h-full relative z-10 hidden object-contain bg-black" controls autoplay playsinline referrerpolicy="no-referrer" oncanplay="document.getElementById('videoLoader').style.display='none'"></video>
+            </div>
+            <div class="p-3 sm:p-4 bg-zinc-900 border-t border-zinc-800 flex justify-between items-center z-20 shrink-0">
+                <p class="text-[10px] sm:text-xs text-zinc-400">Jika error/tidak memuat, <a id="videoDirectLink" href="#" target="_blank" class="text-white hover:text-blue-400 underline font-medium">Buka di tab baru</a></p>
+            </div>
         </div>
     </div>
 
@@ -266,6 +288,126 @@
             setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
         };
 
+        // ==========================================
+        // FUNGSI VIDEO PLAYER MODAL
+        // ==========================================
+        window.openVideoModal = async function(url) {
+            const m = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            const nativeVideo = document.getElementById('videoNative');
+            const directLink = document.getElementById('videoDirectLink');
+            const loader = document.getElementById('videoLoader');
+            
+            loader.style.display = 'flex'; 
+            iframe.src = '';
+            nativeVideo.src = '';
+            iframe.classList.add('hidden');
+            nativeVideo.classList.add('hidden');
+            directLink.href = url;
+
+            m.classList.remove('hidden'); 
+            m.classList.add('flex');
+            setTimeout(() => { m.classList.remove('opacity-0'); }, 10);
+
+            try {
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                    let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                    if (ytMatch && ytMatch[1]) {
+                        iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+                        iframe.classList.remove('hidden');
+                    } else {
+                        throw new Error("No YouTube match");
+                    }
+                } else if (url.includes('tiktok.com')) {
+                    let cleanTkUrl = url.split('?')[0];
+                    const res = await fetch(`https://www.tikwm.com/api/?url=${cleanTkUrl}`);
+                    const json = await res.json();
+                    if (json.data && json.data.play) {
+                        nativeVideo.src = json.data.play;
+                        nativeVideo.classList.remove('hidden');
+                    } else {
+                        throw new Error("TikTok API Error");
+                    }
+                } else if (url.includes('instagram.com')) {
+                    let cleanIgUrl = url.split('?')[0];
+                    const encodedUrl = encodeURIComponent(cleanIgUrl);
+                    let igVideoUrl = null;
+
+                    const igApis = [
+                        `https://api.siputzx.my.id/api/d/igdl?url=${encodedUrl}`,
+                        `https://api.ryzendesu.vip/api/downloader/igdl?url=${encodedUrl}`,
+                        `https://api.agatz.xyz/api/instagram?url=${encodedUrl}`
+                    ];
+
+                    for (let api of igApis) {
+                        if (igVideoUrl) break; 
+                        try {
+                            const res = await fetch(api);
+                            const json = await res.json();
+                            
+                            if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+                                igVideoUrl = json.data[0].url || json.data[0];
+                            } else if (json.data && json.data.url) {
+                                igVideoUrl = json.data.url;
+                            } else if (json.url) {
+                                igVideoUrl = json.url;
+                            } else if (json.result && Array.isArray(json.result) && json.result.length > 0) {
+                                igVideoUrl = json.result[0].url || json.result[0];
+                            }
+                        } catch(e) { }
+                    }
+
+                    if (igVideoUrl) {
+                        nativeVideo.src = igVideoUrl;
+                        nativeVideo.classList.remove('hidden');
+                    } else {
+                        throw new Error("Semua API IG gagal mendapatkan direktori file MP4");
+                    }
+                } else {
+                    iframe.src = url;
+                    iframe.classList.remove('hidden');
+                }
+            } catch (e) {
+                if (url.includes('tiktok.com')) {
+                    let tkMatch = url.match(/video\/(\d+)/);
+                    if (tkMatch && tkMatch[1]) {
+                        iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
+                    } else {
+                        iframe.src = url;
+                    }
+                } else if (url.includes('instagram.com')) {
+                    let igMatch = url.match(/(?:p|reel)\/([a-zA-Z0-9_-]+)/);
+                    if (igMatch && igMatch[1]) {
+                        iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
+                    } else {
+                        iframe.src = url;
+                    }
+                } else {
+                    iframe.src = url;
+                }
+                iframe.classList.remove('hidden');
+            }
+
+            setTimeout(() => { loader.style.display = 'none'; }, 6000);
+        };
+
+        window.closeVideoModal = function() {
+            const m = document.getElementById('videoModal');
+            const iframe = document.getElementById('videoIframe');
+            const nativeVideo = document.getElementById('videoNative');
+            
+            m.classList.add('opacity-0'); 
+            setTimeout(() => { 
+                m.classList.add('hidden'); 
+                m.classList.remove('flex'); 
+                
+                iframe.src = ''; 
+                nativeVideo.pause();
+                nativeVideo.removeAttribute('src');
+                nativeVideo.load();
+            }, 300);
+        };
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 await enforceRoleProtection();
@@ -295,7 +437,6 @@
         // 1. Tarik Data dari Supabase secara BERTAHAP
         async function loadSubmissions() {
             try {
-                // TAHAP 1: Tarik seluruh campaign milik client
                 const { data: camps, error: campError } = await supabase
                     .from('campaigns')
                     .select('id, title, platforms, is_private')
@@ -305,10 +446,8 @@
                 if (campError) throw campError;
                 campaignsList = camps || [];
 
-                // Render List Campaign Dropdown agar semua campaign terdaftar
                 renderCampaignDropdown();
 
-                // TAHAP 2: Tarik submissions hanya berdasarkan deretan campaign di atas
                 if (campaignsList.length > 0) {
                     const campIds = campaignsList.map(c => c.id);
                     
@@ -328,7 +467,6 @@
                     submissionsData = [];
                 }
                 
-                // Terapkan Filter
                 applyFilters();
             } catch (err) {
                 console.error("Error loading submissions:", err);
@@ -336,71 +474,69 @@
             }
         }
 
-        function getPlatformInfo(url, campPlatforms) {
-            if (!url) return { color: 'bg-zinc-100', name: 'Link Web' };
-            if (url.includes('tiktok.com')) return { color: 'bg-cyan-400', name: 'TikTok' };
-            if (url.includes('instagram.com')) return { color: 'bg-fuchsia-500', name: 'IG Reels' };
-            if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) return { color: 'bg-red-600', name: 'YT Shorts' };
-            return { color: 'bg-zinc-100', name: 'Link Web' };
+        // ==========================================
+        // FUNGSI INTI: METADATA & UI GENERATION
+        // ==========================================
+        function getVideoMeta(url) {
+            url = url || '';
+            let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
+            let thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Video...';
+            
+            if (url.includes('tiktok.com')) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+                thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+TikTok...';
+            } else if (url.includes('instagram.com')) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+                thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Reels...';
+            } else if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+                platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+                let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+                if (ytMatch && ytMatch[1]) thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+            }
+            return { platHTML, thumbUrl };
         }
 
-        // ==========================================
-        // FUNGSI INTI: IDENTIFIKASI STATUS KHUSUS CLIENT
-        // ==========================================
         function getClientUIStatus(sub) {
-            // PENDING_CLIENT = Video baru submit, views masih 0, butuh ACC Client.
             if (sub.status === 'PENDING' && (!sub.views_claimed || sub.views_claimed === 0)) return 'PENDING_CLIENT';
-            
-            // PENDING_ADMIN = User sudah klaim views (>0), butuh ACC bayaran dari Admin. Client cukup pantau.
             if (sub.status === 'PENDING' && sub.views_claimed > 0) return 'PENDING_ADMIN';
-            
-            // Jika tidak, kembalikan APPROVED atau REJECTED aslinya
             return sub.status; 
         }
 
-        // 3. Render Kartu HTML
         function generateCard(sub) {
             const creator = escapeHTML(sub.profiles?.full_name || sub.profiles?.email || 'Unknown Creator');
             const title = escapeHTML(sub.campaigns?.title || 'Campaign Dihapus');
             const safeUrl = encodeURI(sub.video_link || '');
-            const platInfo = getPlatformInfo(sub.video_link, sub.campaigns?.platforms);
+            const meta = getVideoMeta(sub.video_link);
             
-            // Variabel Logika Private
             const isPrivate = sub.campaigns?.is_private === true;
             let uiStatus = getClientUIStatus(sub);
             
-            let badgeClass = 'bg-zinc-500/20 border-zinc-500/50 text-zinc-500';
-            let badgeText = 'UNKNOWN';
-            let btnReviewHTML = '';
-            let opacityClass = 'opacity-80';
+            let badgeHTML = '';
+            let actionArea = '';
+            let cardOpacityClass = 'opacity-100';
 
-            // ATUR TAMPILAN BERDASARKAN STATUS
+            // PENGATURAN STATUS DAN TOMBOL
             if (uiStatus === 'PENDING_CLIENT') {
-                opacityClass = '';
-                badgeClass = 'bg-amber-500/20 border-amber-500/50 text-amber-500';
-                badgeText = 'Review Brand';
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
                 
-                if (isPrivate) {
-                    btnReviewHTML = `<button onclick="window.openReviewModal('${sub.id}')" class="py-1.5 sm:py-2.5 bg-gradient-to-r from-yellow-600 to-yellow-500 text-black hover:from-yellow-500 hover:to-yellow-400 rounded-lg text-[10px] sm:text-[13px] font-bold transition-all active:scale-95 shadow-lg shadow-yellow-900/20 focus:outline-none">Review Kualitas</button>`;
-                } else {
-                    btnReviewHTML = `<button onclick="window.openReviewModal('${sub.id}')" class="py-1.5 sm:py-2.5 bg-white text-black hover:bg-zinc-200 rounded-lg text-[10px] sm:text-[13px] font-semibold transition-colors active:scale-95 shadow-sm focus:outline-none">Review Kualitas</button>`;
-                }
+                let btnClass = isPrivate 
+                    ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
+                    : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center focus:outline-none transition-colors active:scale-[0.98]";
+                
+                actionArea = `<button onclick="window.openReviewModal('${sub.id}')" class="${btnClass}">Review Kualitas</button>`;
             } else if (uiStatus === 'PENDING_ADMIN') {
-                badgeClass = 'bg-blue-500/20 border-blue-500/50 text-blue-400';
-                badgeText = 'Proses Admin';
-                btnReviewHTML = `<button disabled class="py-1.5 sm:py-2.5 bg-zinc-800/80 text-zinc-500 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-semibold cursor-not-allowed">Proses Admin</button>`;
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Proses Admin</div>`;
+                actionArea = `<button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Proses Admin</button>`;
             } else if (uiStatus === 'APPROVED') {
-                badgeClass = 'bg-green-500/20 border-green-500/50 text-green-500';
-                badgeText = 'Disetujui';
-                btnReviewHTML = `<button disabled class="py-1.5 sm:py-2.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-lg text-[10px] sm:text-[13px] font-semibold cursor-not-allowed">Video Di-ACC</button>`;
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Disetujui</div>`;
+                actionArea = `<button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Video Di-ACC</button>`;
             } else if (uiStatus === 'REJECTED') {
-                badgeClass = 'bg-red-500/20 border-red-500/50 text-red-500';
-                badgeText = 'Ditolak';
-                btnReviewHTML = `<button disabled class="py-1.5 sm:py-2.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-[10px] sm:text-[13px] font-semibold cursor-not-allowed">Video Ditolak</button>`;
+                cardOpacityClass = 'opacity-80 border-red-900/50';
+                badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Ditolak</div>`;
+                actionArea = `<button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Video Ditolak</button>`;
             }
 
-            // Card Base Styling Berdasarkan Is_Private
-            let cardBaseClass = `content-card flex flex-col rounded-2xl p-1.5 sm:p-2 transition-all duration-300 ${opacityClass} `;
+            let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
             if (isPrivate) {
                 cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
             } else {
@@ -408,41 +544,51 @@
             }
 
             let privateBadgeHTML = isPrivate ? `
-                <div class="bg-yellow-900/80 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold tracking-wider flex items-center gap-1 shadow-sm backdrop-blur-md">
+                <div class="bg-yellow-900/80 text-yellow-500 border border-yellow-500/20 px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold tracking-wider flex items-center gap-1 mt-1 shadow-sm backdrop-blur-md">
                     <svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> PRIVATE
                 </div>` : '';
 
+            let topLeftBadges = `
+                <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col items-start z-20 pointer-events-none">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg flex items-center justify-center">
+                        ${meta.platHTML}
+                    </div>
+                    ${privateBadgeHTML}
+                </div>
+            `;
+
             return `
             <div class="${cardBaseClass}">
-                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden group border border-zinc-800/50">
-                    <img id="thumb-${sub.id}" data-video-link="${safeUrl}" src="https://placehold.co/300x400/121214/27272a?text=..." class="sub-thumb w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                <!-- IMAGE PREVIEW (ASPECT 3:4) & MODAL TRIGGER -->
+                <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
+                    ${badgeHTML}
+                    ${topLeftBadges}
                     
-                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 sm:gap-1.5 items-start">
-                        <div class="bg-black/60 backdrop-blur-md border border-white/10 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-md flex items-center gap-1 sm:gap-1.5 shadow-sm">
-                            <span class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${platInfo.color}"></span>
-                            <span class="text-[9px] sm:text-[11px] font-semibold tracking-wider text-white">${platInfo.name}</span>
+                    <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
+                    
+                    <!-- TOMBOL PLAY OVERLAY -->
+                    <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </div>
-                        ${privateBadgeHTML}
                     </div>
                     
-                    <div class="absolute top-2 right-2 sm:top-3 sm:right-3 ${badgeClass} px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] font-bold uppercase tracking-wider">${badgeText}</div>
-
-                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
-                        <p class="text-[11px] sm:text-sm font-semibold text-white truncate">${creator}</p>
-                        <p class="text-[9px] sm:text-[11px] text-zinc-300 truncate mt-0.5" title="${title}">${title}</p>
+                    <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10 pointer-events-none">
+                        <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${creator}">${creator}</h4>
+                        <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="${title}">${title}</p>
                     </div>
                 </div>
-                <div class="mt-1.5 sm:mt-2 grid grid-cols-2 gap-1.5 sm:gap-2">
-                    <a href="${safeUrl}" target="_blank" class="flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] sm:text-[13px] font-medium text-zinc-300 hover:text-white transition-colors focus:outline-none">
-                        <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> Lihat
-                    </a>
-                    ${btnReviewHTML}
+                
+                <!-- CONTENT BELOW IMAGE -->
+                <div class="flex-1 flex flex-col justify-end mt-2 sm:mt-3">
+                    <div class="space-y-1.5 sm:space-y-2">
+                        ${actionArea}
+                    </div>
                 </div>
             </div>`;
         }
 
-        // PERBAIKAN: Render Dropdown Campaign dengan Penyesuaian Flex-Shrink (Aman untuk teks panjang)
         function renderCampaignDropdown() {
             const listContainer = document.getElementById('campaignFilterList');
             
@@ -465,17 +611,13 @@
                 const title = (sub.campaigns?.title || '').toLowerCase();
                 const uiStatus = getClientUIStatus(sub);
                 
-                // Cek Match Filter Status
                 let matchesStatus = false;
                 if (currentFilter === 'Semua') matchesStatus = true;
                 else if (currentFilter === 'PENDING_CLIENT') matchesStatus = (uiStatus === 'PENDING_CLIENT');
                 else if (currentFilter === 'PENDING_ADMIN') matchesStatus = (uiStatus === 'PENDING_ADMIN');
                 else if (currentFilter === 'SELESAI') matchesStatus = (uiStatus === 'APPROVED' || uiStatus === 'REJECTED');
                 
-                // Cek Match Filter Campaign
                 let matchesCampaign = (currentCampaignFilter === 'all') || (sub.campaigns?.id === currentCampaignFilter);
-
-                // Cek Pencarian Keyword
                 const matchesSearch = creator.includes(searchQuery) || title.includes(searchQuery);
                 
                 return matchesStatus && matchesSearch && matchesCampaign;
@@ -512,11 +654,7 @@
                 if (!url) continue;
 
                 if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
-                    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
-                    if (ytMatch && ytMatch[1]) {
-                        imgEl.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-                        imgEl.setAttribute('data-loaded', 'true');
-                    }
+                    imgEl.setAttribute('data-loaded', 'true');
                     continue;
                 }
 
@@ -587,7 +725,6 @@
         };
 
         window.addEventListener('click', function(e) {
-            // Dropdown Filter Status
             const filterBtn = document.getElementById('btnFilter');
             const dropdown = document.getElementById('dropdownFilter');
             if(filterBtn && dropdown) {
@@ -597,7 +734,6 @@
                 }
             }
 
-            // Dropdown Filter Campaign
             const campBtn = document.getElementById('btnCampaignFilter');
             const campDropdown = document.getElementById('dropdownCampaignFilter');
             if(campBtn && campDropdown) {
@@ -697,7 +833,7 @@
             }
         });
 
-        // SUBMIT KE SUPABASE (TANPA PERHITUNGAN UANG KARENA INI CLIENT)
+        // SUBMIT KE SUPABASE
         window.submitReview = async function() {
             if (!activeCardId || !currentDecision) return;
             
@@ -720,10 +856,8 @@
                 
                 if (error) throw error;
 
-                // Dapatkan user_id dari submissionsData lokal
                 const sub = submissionsData.find(s => s.id === activeCardId);
                 if (sub) {
-                    // Kirim Notif ke Clipper
                     const notifTitle = currentDecision === 'setuju' ? 'Video Disetujui Brand! ✅' : 'Video Ditolak Brand ❌';
                     const notifMsg = currentDecision === 'setuju' 
                         ? `Selamat! Video untuk campaign "${escapeHTML(sub.campaigns.title)}" telah lolos review kualitas. Sekarang Anda bisa mengajukan klaim views di Dashboard Anda.`
