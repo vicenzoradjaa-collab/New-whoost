@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     let actorId = '';
     let runInput = {};
 
-    // PENAMBAHAN YOUTUBE
+    // PENENTUAN SCRAPER SESUAI PLATFORM
     if (platform.toLowerCase() === 'instagram') {
         actorId = 'apify~instagram-profile-scraper'; 
         runInput = { usernames: [username] };
@@ -31,7 +31,6 @@ export default async function handler(req, res) {
         actorId = 'clockworks~tiktok-profile-scraper'; 
         runInput = { profiles: [username] };
     } else if (platform.toLowerCase() === 'youtube') {
-        // Menggunakan scraper youtube untuk mengecek channel description
         actorId = 'streamers~youtube-scraper'; 
         runInput = { startUrls: [{ url: `https://www.youtube.com/@${username}/about` }], maxResults: 1 };
     } else {
@@ -49,32 +48,48 @@ export default async function handler(req, res) {
     if (!response.ok) {
         const errorDetail = await response.text();
         console.error("Apify Error Response:", errorDetail);
-        throw new Error(`Apify menolak request. Status: ${response.status}. Detail: ${errorDetail}`);
+        throw new Error(`Gagal menghubungi server scraper (Apify). Status: ${response.status}.`);
     }
 
-    const data = await response.json();
+    let data = await response.json();
     
-    if (!data || data.length === 0) {
-        throw new Error('Profil tidak ditemukan. Pastikan username benar.');
+    // Normalisasi bentuk data (Jaga-jaga jika Apify mereturn { data: [] } atau { items: [] })
+    let items = [];
+    if (Array.isArray(data)) {
+        items = data;
+    } else if (data && Array.isArray(data.items)) {
+        items = data.items;
+    } else if (data && Array.isArray(data.data)) {
+        items = data.data;
+    } else {
+        items = [data]; // Force array
+    }
+    
+    if (!items || items.length === 0 || !items[0] || Object.keys(items[0]).length === 0) {
+        throw new Error('Profil tidak ditemukan. Pastikan username benar dan akun Anda bersifat publik.');
     }
 
-    const profileData = data[0];
-    let bio = '';
-    let socialId = '';
+    const profileData = items[0];
+    
+    // Tarik Social ID secara dinamis dari berbagai kemungkinan nama variable
+    let socialId = profileData.id || profileData.pk || profileData.userId || profileData.channelId || profileData?.userInfo?.user?.id || username;
 
-    // Penyesuaian variabel response JSON karena beda platform beda nama datanya
-    if (platform.toLowerCase() === 'youtube') {
-        bio = profileData.description || profileData.text || profileData.channelDescription || '';
-        socialId = profileData.channelId || username;
-    } else {
-        bio = profileData.biography || profileData.signature || profileData.bio || '';
-        socialId = profileData.id || profileData.pk || profileData.userId || '';
-    }
+    // TEKNIK SUPER AMAN: Ubah seluruh object JSON dari Apify menjadi String text.
+    // Ini memastikan kode 6-digit tetap ketemu walau apify merubah-rubah letak data bio (signature/description/dll).
+    const rawJsonString = JSON.stringify(profileData);
 
-    if (bio.includes(code)) {
-        return res.status(200).json({ verified: true, social_id: socialId, message: 'Verifikasi Berhasil' });
+    // Cek apakah 6 digit kode ada di dalam text profil tersebut
+    if (rawJsonString.includes(code.toString())) {
+        return res.status(200).json({ 
+            verified: true, 
+            social_id: socialId, 
+            message: 'Verifikasi Berhasil' 
+        });
     } else {
-        return res.status(200).json({ verified: false, message: 'Kode 6-digit tidak ditemukan di Bio (Deskripsi) Anda. Silakan periksa kembali.' });
+        return res.status(200).json({ 
+            verified: false, 
+            message: 'Kode 6-digit belum terdeteksi. Sistem butuh waktu ±1 menit untuk sinkronisasi setelah Anda update Bio. Silakan tunggu sebentar lalu Coba Lagi.' 
+        });
     }
 
   } catch (error) {
