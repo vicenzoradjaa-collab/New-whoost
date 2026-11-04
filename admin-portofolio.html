@@ -605,10 +605,11 @@
                 const handles = []; document.querySelectorAll('.handle-row').forEach(n => handles.push({ username: n.querySelector('.h-username').value, link: n.querySelector('.h-link').value }));
 
                 const payload = {
-                    name, category: cat, niche: cat, // Niche disamakan dgn kategori
-                    stats: document.getElementById('porto-stats').value, desc: document.getElementById('porto-desc').value,
-                    portraitImg, banner: '', handles
-                };
+    name, category: cat, 
+    stats: document.getElementById('porto-stats').value, 
+    desc: document.getElementById('porto-desc').value,
+    portraitImg, handles
+};
 
                 if(id) await supabase.from('portfolios').update(payload).eq('id', id);
                 else await supabase.from('portfolios').insert([payload]);
