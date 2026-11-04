@@ -749,38 +749,54 @@
             btn.innerHTML = `<svg class="w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memverifikasi...`;
 
             try {
-                // TODO: [UNTUK DEV BACKEND]
-                // Ganti simulasi delay ini dengan pemanggilan asli ke Edge Function
-                // Kode Asli:
-                // const { data, error } = await supabase.functions.invoke('verify-social-bio', {
-                //     body: { platform: tempVerification.platform, username: tempVerification.username, code: tempVerification.code }
-                // });
-                // if (error || !data.verified) throw new Error("Kode verifikasi tidak ditemukan di Bio Anda. Pastikan sudah menyimpannya di profile.");
-                // const socialId = data.social_id;
+                // Pastikan user masih login
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError || !session) throw new Error("Sesi tidak valid, mohon login ulang.");
 
-                // --- SIMULASI API ---
-                await new Promise(resolve => setTimeout(resolve, 2500));
-                // Anggap sukses dan dapat ID
-                const mockSocialId = Math.floor(Math.random() * 10000000000).toString();
+                // Panggil VERCEL API yang baru kita buat
+                const response = await fetch('/api/verify-bio', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        platform: tempVerification.platform, 
+                        username: tempVerification.username, 
+                        code: tempVerification.code 
+                    })
+                });
 
-                // Tambahkan ke State Lokal
+                const data = await response.json();
+
+                // Tangani error dari API
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || "Sistem Verifikasi sedang sibuk. Coba lagi dalam 1 menit.");
+                }
+                
+                // Tangani jika kode tidak ada di bio
+                if (!data.verified) {
+                    throw new Error(data.message || "Kode verifikasi tidak ditemukan di Bio Anda.");
+                }
+
+                // JIKA BERHASIL: Ambil social_id
+                const socialId = data.social_id;
+
+                // Tambahkan ke State Lokal (Tampilan)
                 verifiedSocials.push({
                     platform: tempVerification.platform,
                     username: tempVerification.username,
-                    social_id: mockSocialId,
+                    social_id: socialId.toString(),
                     is_verified: true
                 });
 
-                // Update Tampilan
+                // Update Tampilan Layar
                 window.renderSocmedList();
                 updateHealthBar();
                 window.closeBioModal();
 
-                window.showCustomAlert("Terverifikasi!", `Akun ${tempVerification.platform} @${tempVerification.username} berhasil ditautkan. Anda kini dapat menghapus kode dari bio. Jangan lupa klik "Simpan Perubahan" di bawah.`, "success");
+                window.showCustomAlert("Terverifikasi!", `Akun ${tempVerification.platform} @${tempVerification.username} berhasil ditautkan. Jangan lupa klik "Simpan Perubahan" di bawah layar!`, "success");
 
             } catch (e) {
                 console.error(e);
-                window.showCustomAlert("Verifikasi Gagal", "Kode tidak ditemukan di Bio Anda. Tunggu 1-2 menit agar sistem/API memperbarui cache, lalu coba lagi.", "error");
+                window.showCustomAlert("Verifikasi Gagal", e.message, "error");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
