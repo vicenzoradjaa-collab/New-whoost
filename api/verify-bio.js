@@ -23,11 +23,12 @@ export default async function handler(req, res) {
     let actorId = '';
     let runInput = {};
 
+    // PERBAIKAN: Mengganti garis miring (/) menjadi tanda tilde (~) sesuai aturan API Apify
     if (platform.toLowerCase() === 'instagram') {
-        actorId = 'apify/instagram-profile-scraper'; 
+        actorId = 'apify~instagram-profile-scraper'; 
         runInput = { usernames: [username] };
     } else if (platform.toLowerCase() === 'tiktok') {
-        actorId = 'clockworks/tiktok-profile-scraper'; 
+        actorId = 'clockworks~tiktok-profile-scraper'; 
         runInput = { profiles: [username] };
     } else {
         throw new Error('Platform tidak didukung.');
@@ -41,7 +42,6 @@ export default async function handler(req, res) {
         body: JSON.stringify(runInput)
     });
 
-    // --- BAGIAN YANG DIPERBARUI UNTUK MELACAK ERROR APIFY ---
     if (!response.ok) {
         const errorDetail = await response.text();
         console.error("Apify Error Response:", errorDetail);
@@ -58,6 +58,7 @@ export default async function handler(req, res) {
     const bio = profileData.biography || profileData.signature || profileData.bio || '';
     const socialId = profileData.id || profileData.pk || profileData.userId || '';
 
+    // Cek keberadaan kode di bio
     if (bio.includes(code)) {
         return res.status(200).json({ verified: true, social_id: socialId, message: 'Verifikasi Berhasil' });
     } else {
@@ -65,7 +66,6 @@ export default async function handler(req, res) {
     }
 
   } catch (error) {
-    // Menampilkan error asli dari Apify ke layar web Anda
     return res.status(400).json({ error: error.message, verified: false });
   }
 }
