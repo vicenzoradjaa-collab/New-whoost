@@ -28,6 +28,11 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        
+        /* Animasi Card Terpilih */
+        .video-card { transition: all 0.2s ease; cursor: pointer; }
+        .video-card.selected { border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .video-card.selected .check-icon { opacity: 1; transform: scale(1); }
     </style>
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
@@ -66,28 +71,50 @@
             <form id="submitForm" class="bg-cardBg border border-zinc-800 rounded-3xl p-5 sm:p-8 shadow-2xl relative overflow-hidden" novalidate>
                 
                 <!-- Platform yang diizinkan (Diisi Dinamis) -->
-                <div class="mb-6">
+                <div class="mb-6 border-b border-zinc-800/80 pb-6">
                     <label class="block text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">Platform Yang Diizinkan</label>
                     <div id="platformsContainer" class="flex flex-wrap gap-2">
                         <p class="text-zinc-600 text-xs">Memuat platform...</p>
                     </div>
                 </div>
 
-                <!-- Input Link -->
+                <!-- [PERUBAHAN UTAMA] AUTO-FETCH VIDEO GRID -->
                 <div class="mb-8">
-                    <label for="videoLink" class="block text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">Link Konten Kamu</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                        </div>
-                        <input type="text" id="videoLink" placeholder="https://..." class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-xl pl-11 pr-4 py-3 sm:py-4 text-sm text-white placeholder-zinc-500 focus:outline-none transition-colors shadow-inner">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="block text-[10px] sm:text-xs font-bold text-zinc-400 uppercase tracking-widest">Pilih Video Terbaru (< 24 Jam)</label>
+                        <button type="button" onclick="window.fetchVideos(true)" class="text-xs font-medium text-blue-400 hover:text-blue-300 flex items-center gap-1 focus:outline-none transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            Refresh
+                        </button>
                     </div>
+                    
+                    <!-- Hidden Input pengganti URL manual -->
+                    <input type="hidden" id="videoLink" required>
+
+                    <!-- Area Loader Auto-Fetch -->
+                    <div id="videoFetchLoader" class="flex flex-col items-center justify-center p-10 bg-zinc-900/40 border border-zinc-800 rounded-2xl">
+                        <svg class="w-8 h-8 animate-spin text-zinc-500 mb-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Menarik Data Sosmed...</span>
+                    </div>
+
+                    <!-- Area Grid Konten -->
+                    <div id="videoGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 hidden">
+                        <!-- Digenerate via JS -->
+                    </div>
+
+                    <!-- Area Jika Kosong / Tidak Ada Video / Belum Ada Akun -->
+                    <div id="noVideoState" class="hidden flex-col items-center justify-center p-8 bg-zinc-900/30 border border-zinc-800 border-dashed rounded-2xl text-center">
+                        <svg class="w-12 h-12 text-zinc-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <h4 class="text-sm font-bold text-white mb-1" id="noVideoTitle">Belum Ada Video Baru</h4>
+                        <p class="text-[11px] text-zinc-500 max-w-[250px]" id="noVideoDesc">Sistem hanya menampilkan video yang di-upload dalam 24 jam terakhir dari akun Anda.</p>
+                        <a href="clipper-profile.html" id="linkToProfileBtn" class="hidden mt-4 px-4 py-2 bg-zinc-800 text-white rounded-lg text-xs font-bold hover:bg-zinc-700 transition-colors">Tautkan Akun Sosmed</a>
+                    </div>
+
                     <!-- Tempat error dinamis -->
-                    <p id="urlError" class="hidden text-red-500 text-xs mt-2 font-medium flex items-center gap-1">
+                    <p id="urlError" class="hidden text-red-500 text-xs mt-3 font-medium flex items-center gap-1">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Link tidak valid. Harap masukkan format link yang benar (mengandung http:// atau https://).
+                        Silakan pilih salah satu video di atas terlebih dahulu.
                     </p>
-                    <p class="text-[10px] text-zinc-500 mt-2">Pastikan link video bersifat publik dan dapat diakses.</p>
                 </div>
 
                 <!-- Tombol Submit -->
@@ -136,11 +163,12 @@
 
     <!-- SCRIPT UTAMA (SUPABASE & LOGIC) -->
     <script type="module">
-        import { supabase, enforceRoleProtection } from './authentication/auth.js'; // Tambahan keamanan role
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; 
 
         let sessionUser = null;
         let campaignId = new URLSearchParams(window.location.search).get('campaign_id');
         let campaignData = null;
+        let userVerifiedAccounts = [];
 
         // FUNGSI ANTI-XSS
         function escapeHTML(str) {
@@ -187,14 +215,18 @@
                     return;
                 }
 
-                // 5. Fetch Data Campaign
+                // 5. Fetch Data Campaign & Jalankan Auto Fetch
                 await fetchCampaign();
+                await fetchUserAccounts();
 
             } catch (err) {
                 console.error("Terjadi kesalahan sistem:", err);
             }
         });
 
+        // ===============================================
+        // MENGAMBIL DATA CAMPAIGN (TIDAK BERUBAH)
+        // ===============================================
         async function fetchCampaign() {
             try {
                 const { data, error } = await supabase
@@ -208,17 +240,14 @@
 
                 const safeTitle = escapeHTML(campaignData.title);
 
-                // Update UI Judul secara aman
                 const titleEl = document.getElementById('campaignTitle');
                 titleEl.innerText = safeTitle;
                 titleEl.classList.remove('animate-pulse');
                 document.title = "Submit: " + safeTitle + " - Whoost Clipper";
 
-                // Memperbarui URL History dengan aman
                 const safeUrlName = safeTitle.replace(/[^a-zA-Z0-9]/g, '-').replace(/-+/g, '-').toLowerCase();
                 window.history.replaceState({}, '', `?campaign_id=${campaignId}&name=${safeUrlName}`);
 
-                // Render Platforms Badge
                 renderPlatforms(campaignData.platforms);
 
             } catch (err) {
@@ -247,7 +276,179 @@
             container.innerHTML = html;
         }
 
-        // Handle Validasi & Submit
+        // ===============================================
+        // MENGAMBIL AKUN & MENGJALANKAN AUTO-FETCH VIDEO
+        // ===============================================
+        async function fetchUserAccounts() {
+            try {
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('social_media')
+                    .eq('id', sessionUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (profile && profile.social_media && Array.isArray(profile.social_media)) {
+                    // Ambil HANYA yang statusnya terverifikasi
+                    userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
+                }
+
+                // Jalankan Fetch Videos
+                window.fetchVideos(false);
+
+            } catch (err) {
+                console.error("Gagal mengambil profil", err);
+            }
+        }
+
+        window.fetchVideos = async function(forceRefresh = false) {
+            const loader = document.getElementById('videoFetchLoader');
+            const grid = document.getElementById('videoGrid');
+            const emptyState = document.getElementById('noVideoState');
+            
+            // 1. Reset UI ke Loading
+            loader.classList.remove('hidden');
+            grid.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            document.getElementById('videoLink').value = ''; // Reset input link
+
+            // Cek jika akun belum ada yg diverifikasi
+            if (userVerifiedAccounts.length === 0) {
+                loader.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                document.getElementById('noVideoTitle').innerText = "Belum Ada Akun Terverifikasi";
+                document.getElementById('noVideoDesc').innerText = "Silakan tautkan dan verifikasi akun TikTok/IG Anda di halaman profil untuk bisa submit video.";
+                document.getElementById('linkToProfileBtn').classList.remove('hidden');
+                return;
+            }
+
+            const cacheKey = `whoost_videos_${sessionUser.id}`;
+            const now = new Date().getTime();
+            
+            // 2. Cek Redis / SessionStorage Cache (TTL 15 Menit)
+            if (!forceRefresh) {
+                const cachedData = sessionStorage.getItem(cacheKey);
+                if (cachedData) {
+                    try {
+                        const parsed = JSON.parse(cachedData);
+                        // Cek apakah belum lebih dari 15 menit (15 * 60 * 1000 ms)
+                        if ((now - parsed.timestamp) < 900000) {
+                            renderVideoGrid(parsed.videos);
+                            return;
+                        }
+                    } catch(e) {}
+                }
+            }
+
+            // 3. Panggil API Pihak ke-3 (Backend / Edge Function Simulation)
+            try {
+                // TODO [UNTUK DEV BACKEND]:
+                // Ganti simulasi delay & dummy data ini dengan pemanggilan asli ke Edge Function 
+                // yang akan menarik data Latest Posts dari Apify / TokAPI, lalu memfilternya (Waktu Sekarang - Waktu Upload < 24 Jam).
+                // const { data, error } = await supabase.functions.invoke('fetch-latest-videos', {
+                //     body: { accounts: userVerifiedAccounts }
+                // });
+                // const fetchedVideos = data.videos; // Video yg usianya < 24 jam sudah difilter oleh backend
+                
+                await new Promise(res => setTimeout(res, 2000)); // Simulasi Jaringan
+                
+                // MOCK DATA: Anggap backend mengembalikan 3 video dari TikTok/IG milik user yang umurnya di bawah 24 jam.
+                const fetchedVideos = [
+                    { id: "101", platform: "TikTok", url: "https://www.tiktok.com/@user/video/7123456789", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=200", upload_time: "2 Jam yang lalu" },
+                    { id: "102", platform: "Instagram", url: "https://www.instagram.com/reel/CxgJzP1/", thumbnail: "https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=200", upload_time: "5 Jam yang lalu" },
+                    { id: "103", platform: "TikTok", url: "https://www.tiktok.com/@user/video/7987654321", thumbnail: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=200", upload_time: "14 Jam yang lalu" }
+                ];
+
+                // 4. Simpan ke Cache
+                sessionStorage.setItem(cacheKey, JSON.stringify({
+                    timestamp: now,
+                    videos: fetchedVideos
+                }));
+
+                // 5. Render ke Layar
+                renderVideoGrid(fetchedVideos);
+
+            } catch (err) {
+                console.error("Gagal menarik data video:", err);
+                loader.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                document.getElementById('noVideoTitle').innerText = "Gagal Mengambil Video";
+                document.getElementById('noVideoDesc').innerText = "Terjadi gangguan saat menarik data dari sosial media. Silakan coba klik refresh lagi.";
+            }
+        };
+
+        function renderVideoGrid(videosArray) {
+            const loader = document.getElementById('videoFetchLoader');
+            const grid = document.getElementById('videoGrid');
+            const emptyState = document.getElementById('noVideoState');
+
+            loader.classList.add('hidden');
+
+            if (!videosArray || videosArray.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                document.getElementById('noVideoTitle').innerText = "Belum Ada Video Baru";
+                document.getElementById('noVideoDesc').innerText = "Sistem hanya menampilkan video yang diposting dalam 24 jam terakhir dari akun yang Anda tautkan.";
+                document.getElementById('linkToProfileBtn').classList.add('hidden');
+                return;
+            }
+
+            grid.innerHTML = '';
+            videosArray.forEach(vid => {
+                
+                // Set Icon Platform
+                let iconHtml = '';
+                if(vid.platform === 'TikTok') {
+                    iconHtml = `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+                } else {
+                    iconHtml = `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+                }
+
+                grid.innerHTML += `
+                    <div onclick="window.selectVideo(this, '${escapeHTML(vid.url)}')" class="video-card relative aspect-[3/4] rounded-xl border-2 border-zinc-800 overflow-hidden group">
+                        <img src="${escapeHTML(vid.thumbnail)}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+                        
+                        <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/20 p-1.5 rounded-lg flex items-center shadow-sm">
+                            ${iconHtml}
+                        </div>
+                        
+                        <!-- Checkmark Indicator -->
+                        <div class="check-icon absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full opacity-0 transform scale-50 transition-all shadow-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        
+                        <div class="absolute bottom-2 left-2 right-2 text-center pointer-events-none">
+                            <p class="text-[10px] sm:text-xs font-bold text-white tracking-wide">${escapeHTML(vid.upload_time)}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.classList.remove('hidden');
+        }
+
+        // Logic Seleksi Video dari Grid
+        window.selectVideo = function(cardElement, url) {
+            // Hapus seleksi sebelumnya
+            document.querySelectorAll('.video-card').forEach(el => el.classList.remove('selected'));
+            
+            // Tambahkan class selected ke elemen yg diklik
+            cardElement.classList.add('selected');
+            
+            // Simpan URL ke hidden input
+            document.getElementById('videoLink').value = url;
+            
+            // Hilangkan pesan error jika sebelumnya ada
+            document.getElementById('urlError').classList.add('hidden');
+        };
+
+        // ===============================================
+        // HANDLE SUBMIT DATA KE SUPABASE
+        // ===============================================
         const form = document.getElementById('submitForm');
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -257,38 +458,47 @@
             const errorMsg = document.getElementById('urlError');
             const submitBtn = document.getElementById('submitBtn');
 
-            // Regex Validator Link Kuat
-            const isValidUrl = (str) => {
-                const pattern = new RegExp('^(https?:\\/\\/)?'+ 
-                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ 
-                    '((\\d{1,3}\\.){3}\\d{1,3}))'+ 
-                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*'+ 
-                    '(\\?[;&a-z\\d%_.~+=-]*)?'+ 
-                    '(\\#[-a-z\\d_]*)?$','i');
-                return !!pattern.test(str) && (str.startsWith('http://') || str.startsWith('https://'));
-            };
-
-            // Jika Bukan Link Valid
-            if (!isValidUrl(urlVal)) {
-                inputEl.classList.add('border-red-500', 'bg-red-950/20');
-                inputEl.classList.remove('border-zinc-700', 'focus:border-white');
+            // Validasi apakah user sudah memilih video dari grid
+            if (!urlVal) {
                 errorMsg.classList.remove('hidden');
-                inputEl.focus();
                 return;
             }
 
-            // Jika Lolos Validasi
-            inputEl.classList.remove('border-red-500', 'bg-red-950/20');
-            inputEl.classList.add('border-zinc-700', 'focus:border-white');
+            // Validasi Platform yang diizinkan Campaign
+            let isPlatformValid = false;
+            let videoPlat = urlVal.includes('tiktok') ? 'tiktok' : (urlVal.includes('instagram') ? 'instagram' : 'youtube');
+            
+            if (campaignData.platforms && campaignData.platforms.length > 0) {
+                if (campaignData.platforms.includes(videoPlat)) {
+                    isPlatformValid = true;
+                }
+            } else {
+                isPlatformValid = true; // Jika campaign tidak melimit platform
+            }
+
+            if (!isPlatformValid) {
+                errorMsg.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Platform video tidak diizinkan di Campaign ini.`;
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
             errorMsg.classList.add('hidden');
 
-            // Nonaktifkan tombol sementara agar tidak dobel klik / submit beruntun
+            // Nonaktifkan tombol sementara
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
 
             try {
-                // Sanitasi input link terakhir kali sebelum masuk database
-                const sanitizedUrl = escapeHTML(urlVal);
+                // Cek Duplikat URL di Database agar tidak ada user yg spam video yg sama
+                const { data: duplicateCheck } = await supabase
+                    .from('submissions')
+                    .select('id')
+                    .eq('video_link', urlVal)
+                    .single();
+
+                if (duplicateCheck) {
+                    throw new Error("Video ini sudah pernah diajukan sebelumnya.");
+                }
 
                 // Insert Data Baru ke Supabase `submissions` dengan status PENDING
                 const { error } = await supabase
@@ -296,11 +506,13 @@
                     .insert([{
                         campaign_id: campaignId,
                         user_id: sessionUser.id,
-                        video_link: sanitizedUrl,
+                        video_link: urlVal,
                         status: 'PENDING',
                         views_claimed: 0,
                         views_paid: 0,
-                        earned: 0
+                        earned: 0,
+                        // [Optional] published_at bisa diambil dari respon API saat auto-fetch
+                        // published_at: new Date().toISOString() 
                     }]);
 
                 if (error) throw error;
@@ -326,7 +538,8 @@
             modal.classList.add('opacity-0', 'pointer-events-none');
             modalContent.classList.remove('scale-100');
             modalContent.classList.add('scale-95');
-            document.getElementById('videoLink').value = ''; // Kosongkan form jika di-close
+            document.getElementById('videoLink').value = ''; 
+            document.querySelectorAll('.video-card').forEach(el => el.classList.remove('selected'));
         };
 
         window.goBack = function() {
