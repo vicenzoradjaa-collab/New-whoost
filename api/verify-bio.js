@@ -23,13 +23,17 @@ export default async function handler(req, res) {
     let actorId = '';
     let runInput = {};
 
-    // PERBAIKAN: Mengganti garis miring (/) menjadi tanda tilde (~) sesuai aturan API Apify
+    // PENAMBAHAN YOUTUBE
     if (platform.toLowerCase() === 'instagram') {
         actorId = 'apify~instagram-profile-scraper'; 
         runInput = { usernames: [username] };
     } else if (platform.toLowerCase() === 'tiktok') {
         actorId = 'clockworks~tiktok-profile-scraper'; 
         runInput = { profiles: [username] };
+    } else if (platform.toLowerCase() === 'youtube') {
+        // Menggunakan scraper youtube untuk mengecek channel description
+        actorId = 'streamers~youtube-scraper'; 
+        runInput = { startUrls: [{ url: `https://www.youtube.com/@${username}/about` }], maxResults: 1 };
     } else {
         throw new Error('Platform tidak didukung.');
     }
@@ -51,18 +55,26 @@ export default async function handler(req, res) {
     const data = await response.json();
     
     if (!data || data.length === 0) {
-        throw new Error('Profil tidak ditemukan. Pastikan username benar dan akun tidak di-private.');
+        throw new Error('Profil tidak ditemukan. Pastikan username benar.');
     }
 
     const profileData = data[0];
-    const bio = profileData.biography || profileData.signature || profileData.bio || '';
-    const socialId = profileData.id || profileData.pk || profileData.userId || '';
+    let bio = '';
+    let socialId = '';
 
-    // Cek keberadaan kode di bio
+    // Penyesuaian variabel response JSON karena beda platform beda nama datanya
+    if (platform.toLowerCase() === 'youtube') {
+        bio = profileData.description || profileData.text || profileData.channelDescription || '';
+        socialId = profileData.channelId || username;
+    } else {
+        bio = profileData.biography || profileData.signature || profileData.bio || '';
+        socialId = profileData.id || profileData.pk || profileData.userId || '';
+    }
+
     if (bio.includes(code)) {
         return res.status(200).json({ verified: true, social_id: socialId, message: 'Verifikasi Berhasil' });
     } else {
-        return res.status(200).json({ verified: false, message: 'Kode 6-digit tidak ditemukan di Bio Anda. Silakan periksa kembali.' });
+        return res.status(200).json({ verified: false, message: 'Kode 6-digit tidak ditemukan di Bio (Deskripsi) Anda. Silakan periksa kembali.' });
     }
 
   } catch (error) {
