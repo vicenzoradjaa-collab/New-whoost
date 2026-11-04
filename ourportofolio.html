@@ -324,7 +324,7 @@
 
             dataToRender.forEach((item, index) => {
                 const delay = (index % 10) * 50;
-                const safeNiche = item.niche || item.category;
+                const safeCategory = item.category;
 
                 gridContainer.innerHTML += `
                     <div onclick="window.openModal('${item.id}', this)" class="bg-cardBg border border-zinc-800/80 hover:border-zinc-500 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col transition-all duration-300 shadow-xl group hover:-translate-y-1 cursor-pointer animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
