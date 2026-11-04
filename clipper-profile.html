@@ -98,9 +98,7 @@
     <div id="alertModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCustomAlert()"></div>
         <div class="relative bg-cardBg border border-zinc-800 rounded-3xl p-8 max-w-sm w-[90%] text-center shadow-2xl scale-95 transition-transform duration-300" id="alertContent">
-            <div id="alertIcon" class="w-16 h-16 bg-zinc-900 border border-zinc-700 text-white rounded-full flex items-center justify-center mx-auto mb-5">
-                <!-- SVG Icon dinamis -->
-            </div>
+            <div id="alertIcon" class="w-16 h-16 bg-zinc-900 border border-zinc-700 text-white rounded-full flex items-center justify-center mx-auto mb-5"></div>
             <h3 id="alertTitle" class="text-xl font-bold text-white mb-2">Pesan</h3>
             <p id="alertMessage" class="text-zinc-400 text-sm mb-6 leading-relaxed">Isi pesan ada di sini.</p>
             <button onclick="closeCustomAlert()" class="w-full py-3.5 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors">
@@ -125,80 +123,142 @@
         </div>
     </div>
 
-    <!-- 4. MODAL VERIFIKASI BIO CODE (BLACK & WHITE + PANDUAN) -->
+    <!-- 4. MODAL VERIFIKASI BIO CODE (BLACK & WHITE DESIGN MATCHING IMAGE) -->
     <div id="bioModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="window.closeBioModal()"></div>
-        <!-- max-h-[90vh] dan overflow-y-auto agar aman di layar kecil -->
-        <div class="relative bg-cardBg border border-zinc-800 rounded-3xl p-6 sm:p-8 max-w-sm w-[90%] shadow-2xl scale-95 transition-transform duration-300 flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar" id="bioModalContent">
+        <div class="relative bg-[#121214] border border-zinc-800 shadow-2xl rounded-[1.5rem] w-full max-w-lg p-5 sm:p-7 transform scale-95 transition-transform flex flex-col max-h-[90vh]" id="bioModalContent">
             
-            <!-- STEP 1: Input Platform & Username -->
-            <div id="bioStep1" class="block">
-                <div class="w-12 h-12 bg-white/10 text-white border border-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 text-center">Tautkan Akun</h3>
-                <p class="text-zinc-400 text-xs mb-6 text-center leading-relaxed">Masukkan username platform Anda untuk memulai proses verifikasi kepemilikan.</p>
-                
-                <div class="space-y-4 mb-6 text-left">
-                    <div>
-                        <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Platform</label>
-                        <select id="bioPlatform" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-white appearance-none">
-                            <option value="TikTok">TikTok</option>
-                            <option value="Instagram">Instagram</option>
-                            <option value="YouTube">YouTube</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Username (Tanpa @)</label>
-                        <input type="text" id="bioUsername" class="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-white" placeholder="username_anda">
-                    </div>
-                </div>
-                <button onclick="window.generateBioCode()" class="w-full py-3.5 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors focus:outline-none shadow-[0_4px_15px_rgba(255,255,255,0.1)]">Lanjutkan &rarr;</button>
-                <button onclick="window.closeBioModal()" class="w-full mt-2 py-3.5 rounded-xl text-zinc-400 font-bold hover:text-white transition-colors focus:outline-none">Batal</button>
-            </div>
+            <!-- Close Button -->
+            <button onclick="window.closeBioModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors focus:outline-none z-50">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
 
-            <!-- STEP 2: Verifikasi & Cek Bio dengan Panduan -->
-            <div id="bioStep2" class="hidden">
-                <div class="w-12 h-12 bg-white/10 text-white border border-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 text-center">Verifikasi Bio</h3>
+            <!-- Scrollable Inner Content -->
+            <div class="overflow-y-auto custom-scrollbar flex-1 min-h-0 -mx-2 px-2 pb-2">
                 
-                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex items-center justify-between mb-4 shadow-inner mt-4">
-                    <span class="text-3xl font-black text-white tracking-[0.3em]" id="txtBioCode">000000</span>
-                    <button onclick="window.copyBioCode()" class="p-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white transition-colors focus:outline-none">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                <!-- STEP 1: Input Platform & Username -->
+                <div id="bioStep1" class="flex-col">
+                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">Add Account</h3>
+                    <p class="text-xs text-zinc-400 mb-6 leading-relaxed max-w-[90%]">Pilih platform dan masukkan username kamu untuk mulai verifikasi. Pastikan akun kamu dalam mode publik agar bisa disambungkan!</p>
+                    
+                    <div class="space-y-4 mb-6">
+                        <!-- Pilihan Platform -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-2">Platform</label>
+                            <input type="hidden" id="bioPlatform" value="TikTok">
+                            <div class="space-y-2">
+                                <div id="plat-TikTok" onclick="window.setBioPlatform('TikTok')" class="plat-option flex items-center gap-3 p-3.5 bg-white border border-white rounded-xl cursor-pointer transition-colors text-black font-semibold shadow-sm">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                                    TikTok
+                                </div>
+                                <div id="plat-Instagram" onclick="window.setBioPlatform('Instagram')" class="plat-option flex items-center gap-3 p-3.5 bg-zinc-900 border border-zinc-800 rounded-xl cursor-pointer hover:border-zinc-500 transition-colors text-white font-semibold">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                                    Instagram
+                                </div>
+                                <div id="plat-YouTube" onclick="window.setBioPlatform('YouTube')" class="plat-option flex items-center gap-3 p-3.5 bg-zinc-900 border border-zinc-800 rounded-xl cursor-pointer hover:border-zinc-500 transition-colors text-white font-semibold">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                    YouTube
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Username Input -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-2">Username (Tidak perlu pakai "@")</label>
+                            <div class="relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden focus-within:border-white transition-colors flex items-center">
+                                <div class="pl-4 pr-2 text-zinc-500" id="platIconInput">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
+                                </div>
+                                <input type="text" id="bioUsername" class="w-full bg-transparent py-3.5 pr-4 text-sm text-white outline-none" placeholder="username">
+                            </div>
+                        </div>
+                        
+                        <!-- Metode Verifikasi (Statis) -->
+                        <div>
+                            <label class="block text-xs font-semibold text-zinc-400 mb-2">Metode Verifikasi</label>
+                            <div class="border border-zinc-700 bg-zinc-800/30 p-4 rounded-xl flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                    <div>
+                                        <p class="text-sm font-bold text-white">Verifikasi dengan Bio Code</p>
+                                        <p class="text-[10px] sm:text-xs text-zinc-400 mt-0.5">Taruh kode verifikasi di bio, lalu kami cek</p>
+                                    </div>
+                                </div>
+                                <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="window.generateBioCode()" class="w-full mt-2 py-3.5 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors focus:outline-none shadow-[0_4px_15px_rgba(255,255,255,0.1)]">Selanjutnya</button>
+                </div>
+
+                <!-- STEP 2: Verifikasi & Cek Bio -->
+                <div id="bioStep2" class="hidden flex-col">
+                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Masukan kode verifikasi di bio kamu</h3>
+                    <p class="text-xs text-zinc-400 mb-6 leading-relaxed max-w-[95%]">Taruh kode di bawah pada bio <span id="step2PlatName" class="font-bold text-white">TikTok</span>, lalu klik tombol Check Verifikasi.</p>
+
+                    <!-- Selected Account Info -->
+                    <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 mb-5 shadow-sm">
+                        <div class="flex items-center gap-3 text-white font-bold text-sm">
+                            <span id="step2Icon"></span>
+                            <span id="step2User">@username</span>
+                        </div>
+                        <button onclick="window.resetBioModal()" class="text-xs text-zinc-400 hover:text-white transition-colors focus:outline-none underline underline-offset-2">Change account</button>
+                    </div>
+                    
+                    <!-- Code Display -->
+                    <div class="mb-5">
+                        <label class="block text-xs font-semibold text-zinc-400 mb-2">Kode Verifikasi</label>
+                        <div class="bg-white rounded-xl p-4 flex justify-between items-center shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+                            <span class="text-3xl font-black text-black tracking-[0.3em]" id="txtBioCode">000000</span>
+                            <button onclick="window.copyBioCode()" class="p-2.5 bg-zinc-200 hover:bg-zinc-300 rounded-lg text-black transition-colors focus:outline-none" title="Salin Kode">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Expiration Timer -->
+                    <div class="mb-5">
+                        <div class="flex justify-between text-[10px] font-semibold text-zinc-400 mb-1.5">
+                            <span>Kode akan expired dalam</span>
+                            <span id="expireTimerTxt" class="text-white">10:00</span>
+                        </div>
+                        <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-white h-full rounded-full transition-all duration-1000 ease-linear" style="width: 100%" id="expireBar"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- PANDUAN LANGKAH -->
+                    <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-6 text-left space-y-3">
+                        <p class="text-[11px] font-bold text-white mb-2 uppercase tracking-wide flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Cara Verifikasi:
+                        </p>
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5 border border-zinc-700">1</div>
+                            <p class="text-[11px] text-zinc-400 leading-snug">Salin kode 6-digit di atas.</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5 border border-zinc-700">2</div>
+                            <p class="text-[11px] text-zinc-400 leading-snug">Buka profil <b id="stepPlatInst" class="text-white">TikTok</b> Anda, lalu klik <b class="text-white">Edit Profil</b>.</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5 border border-zinc-700">3</div>
+                            <p class="text-[11px] text-zinc-400 leading-snug">Tempelkan (Paste) kode tersebut ke dalam kolom <b class="text-white">Bio / Deskripsi</b> dan simpan.</p>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5 border border-zinc-700">4</div>
+                            <p class="text-[11px] text-zinc-400 leading-snug">Tunggu hingga waktu di bawah ini habis, lalu klik <b class="text-white">Check Verifikasi</b>.</p>
+                        </div>
+                        <p class="text-[9px] text-zinc-500 mt-2 italic pt-2 border-t border-zinc-800/50">Jika sudah sukses verifikasi, Anda boleh menghapus kode tersebut dari bio Anda.</p>
+                    </div>
+
+                    <button id="btnVerifyBio" onclick="window.verifyBioCode()" disabled class="w-full py-3.5 bg-zinc-800 text-zinc-500 font-bold rounded-xl cursor-not-allowed transition-colors focus:outline-none flex justify-center items-center gap-2">
+                        Tunggu 0:60
                     </button>
                 </div>
-                
-                <!-- PANDUAN LANGKAH -->
-                <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-6 text-left space-y-3">
-                    <p class="text-[11px] font-bold text-white mb-2 uppercase tracking-wide">Cara Verifikasi:</p>
-                    <div class="flex items-start gap-2.5">
-                        <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">1</div>
-                        <p class="text-[11px] text-zinc-400 leading-snug">Salin kode 6-digit di atas.</p>
-                    </div>
-                    <div class="flex items-start gap-2.5">
-                        <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">2</div>
-                        <p class="text-[11px] text-zinc-400 leading-snug">Buka aplikasi <b id="stepPlatName" class="text-white">TikTok</b>, pergi ke profil Anda lalu klik <b class="text-white">Edit Profil</b>.</p>
-                    </div>
-                    <div class="flex items-start gap-2.5">
-                        <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">3</div>
-                        <p class="text-[11px] text-zinc-400 leading-snug">Tempelkan (Paste) kode tersebut ke dalam kolom <b class="text-white">Bio / Deskripsi</b>, lalu simpan perubahan profil Anda.</p>
-                    </div>
-                    <div class="flex items-start gap-2.5">
-                        <div class="w-4 h-4 rounded-full bg-zinc-800 text-white flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5">4</div>
-                        <p class="text-[11px] text-zinc-400 leading-snug">Kembali ke sini dan klik tombol <b class="text-white">Cek & Verifikasi</b> di bawah ini.</p>
-                    </div>
-                    <p class="text-[9px] text-zinc-500 mt-2 italic pt-2 border-t border-zinc-800/50">Jika sudah berhasil terverifikasi, Anda boleh menghapus kode tersebut dari bio Anda.</p>
-                </div>
 
-                <button id="btnVerifyBio" onclick="window.verifyBioCode()" class="w-full py-3.5 rounded-xl bg-white text-black font-bold hover:bg-zinc-200 transition-colors focus:outline-none flex justify-center items-center gap-2 shadow-[0_4px_15px_rgba(255,255,255,0.1)]">
-                    Cek & Verifikasi Sekarang
-                </button>
-                <button onclick="window.resetBioModal()" class="w-full mt-2 py-3.5 rounded-xl text-zinc-400 font-bold hover:text-white transition-colors focus:outline-none">Kembali</button>
             </div>
-
         </div>
     </div>
 
@@ -317,7 +377,7 @@
                 </div>
             </div>
 
-            <!-- 4. FORM AKUN SOSIAL MEDIA CLIPPING (TERVERIFIKASI) -->
+            <!-- 4. FORM AKUN SOSIAL MEDIA CLIPPING (TERVERIFIKASI) B&W THEME -->
             <div class="mb-10 relative z-20">
                 <div class="flex items-center gap-4 mb-2">
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media Konten</h4>
@@ -328,12 +388,12 @@
                 </p>
 
                 <!-- List Container Terverifikasi -->
-                <div id="socmed-container" class="space-y-3">
+                <div id="socmed-container" class="space-y-3 mb-4">
                     <!-- Digenerate via JS -->
                 </div>
 
-                <!-- Tombol Tambah Akun (Sesuai Referensi Gambar) -->
-                <button type="button" onclick="window.openBioModal()" class="w-full py-4 bg-zinc-900/40 border border-zinc-800 border-dashed text-center text-sm font-medium text-zinc-400 hover:text-white rounded-xl transition-colors flex items-center justify-center gap-1.5 focus:outline-none">
+                <!-- Tombol Tambah Akun Baru (Gaya Referensi) -->
+                <button type="button" onclick="window.openBioModal()" class="w-full py-4 bg-zinc-900/40 border border-zinc-800 border-dashed text-center text-sm font-medium text-zinc-400 hover:text-white hover:border-zinc-500 rounded-xl transition-colors flex items-center justify-center gap-1.5 focus:outline-none">
                     Tambahkan akun baru <span class="text-white font-bold text-lg leading-none mb-0.5">+</span>
                 </button>
             </div>
@@ -354,7 +414,7 @@
                 </div>
 
                 <!-- Tombol Tambah Rekening -->
-                <button type="button" onclick="addBankRow()" class="mt-2 w-full border border-dashed border-zinc-700 hover:border-zinc-400 bg-zinc-900/30 hover:bg-zinc-800 text-zinc-400 hover:text-white py-3 rounded-xl flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all shadow-sm focus:outline-none">
+                <button type="button" onclick="addBankRow()" class="mt-4 w-full py-4 bg-zinc-900/40 border border-zinc-800 border-dashed text-center text-sm font-medium text-zinc-400 hover:text-white hover:border-zinc-500 rounded-xl transition-colors flex items-center justify-center gap-2 focus:outline-none">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Tambah Rekening / E-Wallet
                 </button>
@@ -367,7 +427,7 @@
                     Simpan Perubahan
                 </button>
 
-                <button onclick="openLogoutModal()" class="w-full px-6 py-3.5 rounded-xl border border-red-500/20 bg-red-500/5 text-red-500 text-sm font-bold hover:bg-red-500/10 hover:border-red-500/40 transition-all focus:outline-none flex items-center justify-center gap-2">
+                <button onclick="openLogoutModal()" class="w-full px-6 py-3.5 rounded-xl border border-zinc-800 bg-zinc-900/50 text-red-500 text-sm font-bold hover:bg-zinc-800 transition-all focus:outline-none flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     Keluar Akun
                 </button>
@@ -394,6 +454,17 @@
         // STATE UNTUK SOSIAL MEDIA TERVERIFIKASI
         let verifiedSocials = []; 
         let tempVerification = { platform: '', username: '', code: '' };
+        
+        // Timer Variables
+        let bioTimerInterval = null;
+        let cooldownLeft = 60;
+        let expireLeft = 600; // 10 minutes (600 seconds)
+
+        const ICONS = {
+            TikTok: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`,
+            Instagram: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`,
+            YouTube: `<svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`
+        };
 
         // FUNGSI KEAMANAN (ANTI-XSS)
         function escapeHTML(str) {
@@ -625,7 +696,7 @@
         }
 
         // ==========================================
-        // 4. SISTEM VERIFIKASI BIO CODE
+        // 4. SISTEM VERIFIKASI BIO CODE (BLACK & WHITE DESIGN)
         // ==========================================
         
         window.renderSocmedList = function() {
@@ -633,47 +704,54 @@
             container.innerHTML = '';
             
             if (verifiedSocials.length === 0) {
-                container.innerHTML = ''; // Dibiarkan kosong, hanya tombol tambah yang terlihat
+                // Tampilan dibiarkan kosong untuk menonjolkan tombol tambah akun baru
                 return;
             }
 
             verifiedSocials.forEach((soc, index) => {
                 const safePlat = escapeHTML(soc.platform);
                 const safeUser = escapeHTML(soc.username);
+                const fChar = safeUser.charAt(0).toUpperCase();
                 
-                let iconHtml = `<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10z"/></svg>`;
-                if (safePlat === 'TikTok') {
-                    iconHtml = `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
-                } else if (safePlat === 'Instagram') {
-                    iconHtml = `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
-                } else if (safePlat === 'YouTube') {
-                    iconHtml = `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
-                }
+                let iconHtml = ICONS[safePlat] || ICONS['TikTok'];
 
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between p-4 rounded-xl border border-zinc-800 bg-zinc-900 hover:border-zinc-500 transition-colors mb-3";
+                div.className = "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-zinc-950 border border-zinc-800 rounded-2xl shadow-sm";
                 div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="bg-zinc-800 p-2.5 rounded-xl text-white flex items-center justify-center w-11 h-11 shrink-0">
+                    <div class="flex items-center gap-4 w-full">
+                        <div class="text-white shrink-0">
                             ${iconHtml}
                         </div>
-                        <div class="flex flex-col truncate pr-2">
-                            <p class="font-bold text-white text-base truncate">@${safeUser}</p>
-                            <div class="flex items-center gap-1.5 mt-1">
-                                <span class="text-[11px] text-zinc-400 font-medium">${safePlat}</span>
-                                <span class="w-1 h-1 rounded-full bg-zinc-700"></span>
-                                <span class="text-[9px] text-zinc-900 bg-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider flex items-center gap-0.5">
-                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Verified
-                                </span>
+                        <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 border border-zinc-700 text-white font-bold text-sm">
+                            ${fChar}
+                        </div>
+                        <div class="flex flex-col truncate pr-2 w-full">
+                            <span class="text-sm font-bold text-white truncate">@${safeUser}</span>
+                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">0 followers · diperbarui belum pernah</span>
+                            <div class="mt-1.5 flex gap-2">
+                                <span class="text-[9px] border border-zinc-700 text-zinc-400 px-2 py-0.5 rounded-full font-medium tracking-wide">Bio Code</span>
                             </div>
                         </div>
                     </div>
-                    <button type="button" onclick="window.removeVerifiedSocmed(${index})" class="p-2.5 shrink-0 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-colors focus:outline-none" title="Putuskan Tautan">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                    </button>
+                    <div class="flex items-center gap-1 mt-3 sm:mt-0 self-end sm:self-auto shrink-0 border-t border-zinc-800/50 sm:border-0 pt-2 sm:pt-0 w-full sm:w-auto justify-end">
+                        <button type="button" onclick="window.refreshMockData(this)" class="p-2 shrink-0 text-zinc-400 hover:text-white transition-colors focus:outline-none" title="Refresh Data">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        </button>
+                        <button type="button" onclick="window.removeVerifiedSocmed(${index})" class="p-2 shrink-0 text-zinc-400 hover:text-red-500 transition-colors focus:outline-none" title="Hapus Akun">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
                 `;
                 container.appendChild(div);
             });
+        };
+
+        window.refreshMockData = function(btn) {
+            const svg = btn.querySelector('svg');
+            svg.classList.add('animate-spin');
+            setTimeout(() => {
+                svg.classList.remove('animate-spin');
+            }, 1000);
         };
 
         window.removeVerifiedSocmed = function(index) {
@@ -684,13 +762,13 @@
 
         // Kontrol Modal Bio
         window.openBioModal = function() {
-            document.getElementById('bioPlatform').value = 'TikTok';
+            window.setBioPlatform('TikTok');
             document.getElementById('bioUsername').value = '';
             
             document.getElementById('bioStep1').classList.remove('hidden');
-            document.getElementById('bioStep1').classList.add('block');
+            document.getElementById('bioStep1').classList.add('flex');
             document.getElementById('bioStep2').classList.add('hidden');
-            document.getElementById('bioStep2').classList.remove('block');
+            document.getElementById('bioStep2').classList.remove('flex');
 
             const m = document.getElementById('bioModal');
             const c = document.getElementById('bioModalContent');
@@ -698,7 +776,23 @@
             setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
         };
 
+        window.setBioPlatform = function(plat) {
+            document.getElementById('bioPlatform').value = plat;
+            document.querySelectorAll('.plat-option').forEach(el => {
+                el.classList.remove('border-white', 'bg-white', 'text-black');
+                el.classList.add('border-zinc-800', 'bg-zinc-900', 'text-white');
+            });
+            const activeEl = document.getElementById(`plat-${plat}`);
+            activeEl.classList.remove('border-zinc-800', 'bg-zinc-900', 'text-white');
+            activeEl.classList.add('border-white', 'bg-white', 'text-black');
+            
+            // Ubah icon input form sesuai platform
+            const iconContainer = document.getElementById('platIconInput');
+            iconContainer.innerHTML = ICONS[plat] || ICONS['TikTok'];
+        };
+
         window.closeBioModal = function() {
+            if(bioTimerInterval) clearInterval(bioTimerInterval);
             const m = document.getElementById('bioModal');
             const c = document.getElementById('bioModalContent');
             m.classList.add('opacity-0'); c.classList.add('scale-95');
@@ -706,8 +800,54 @@
         };
 
         window.resetBioModal = function() {
+            if(bioTimerInterval) clearInterval(bioTimerInterval);
             document.getElementById('bioStep2').classList.add('hidden');
+            document.getElementById('bioStep2').classList.remove('flex');
             document.getElementById('bioStep1').classList.remove('hidden');
+            document.getElementById('bioStep1').classList.add('flex');
+        };
+
+        window.startBioTimers = function() {
+            if (bioTimerInterval) clearInterval(bioTimerInterval);
+            cooldownLeft = 60;
+            expireLeft = 600; // 10 menit
+            
+            const btn = document.getElementById('btnVerifyBio');
+            const expireTxt = document.getElementById('expireTimerTxt');
+            const expireBar = document.getElementById('expireBar');
+
+            btn.disabled = true;
+            btn.className = "w-full py-3.5 bg-zinc-800 text-zinc-500 font-bold rounded-xl cursor-not-allowed transition-colors focus:outline-none flex justify-center items-center gap-2";
+
+            bioTimerInterval = setInterval(() => {
+                expireLeft--;
+                
+                // Logic Cooldown Button (Wait 60s)
+                if (cooldownLeft > 0) {
+                    cooldownLeft--;
+                    btn.innerHTML = `Tunggu 0:${cooldownLeft.toString().padStart(2, '0')}`;
+                } else if (cooldownLeft === 0) {
+                    cooldownLeft--; // Set to -1 to avoid running again
+                    btn.disabled = false;
+                    btn.innerHTML = "Check Verifikasi";
+                    btn.className = "w-full py-3.5 bg-white text-black font-bold hover:bg-zinc-200 rounded-xl transition-colors focus:outline-none flex justify-center items-center gap-2 shadow-[0_4px_15px_rgba(255,255,255,0.1)]";
+                }
+
+                // Logic Expiration 10 mins
+                if (expireLeft >= 0) {
+                    const m = Math.floor(expireLeft / 60);
+                    const s = expireLeft % 60;
+                    expireTxt.innerText = `${m}:${s.toString().padStart(2, '0')}`;
+                    expireBar.style.width = `${(expireLeft / 600) * 100}%`;
+                } else {
+                    clearInterval(bioTimerInterval);
+                    expireTxt.innerText = "0:00";
+                    expireBar.style.width = "0%";
+                    window.showCustomAlert("Expired", "Kode verifikasi telah kadaluarsa. Silakan ulangi kembali.", "error");
+                    window.resetBioModal();
+                }
+
+            }, 1000);
         };
 
         window.generateBioCode = function() {
@@ -730,18 +870,28 @@
             const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
             tempVerification = { platform: plat, username: user, code: randomCode };
 
-            document.getElementById('stepPlatName').innerText = plat;
+            document.getElementById('step2PlatName').innerText = plat;
+            document.getElementById('stepPlatInst').innerText = plat;
+            document.getElementById('step2User').innerText = '@' + user;
+            document.getElementById('step2Icon').innerHTML = ICONS[plat] || ICONS['TikTok'];
             document.getElementById('txtBioCode').innerText = randomCode;
 
             document.getElementById('bioStep1').classList.add('hidden');
+            document.getElementById('bioStep1').classList.remove('flex');
             document.getElementById('bioStep2').classList.remove('hidden');
-            document.getElementById('bioStep2').classList.add('block');
+            document.getElementById('bioStep2').classList.add('flex');
+
+            window.startBioTimers();
         };
 
         window.copyBioCode = function() {
             const code = document.getElementById('txtBioCode').innerText;
             navigator.clipboard.writeText(code).then(() => {
-                alert("Kode berhasil disalin!");
+                // simple feedback without alert
+                const codeTxt = document.getElementById('txtBioCode');
+                const orig = codeTxt.style.opacity;
+                codeTxt.style.opacity = '0.5';
+                setTimeout(() => codeTxt.style.opacity = orig, 200);
             });
         };
 
@@ -772,7 +922,7 @@
                 }
                 
                 if (!data.verified) {
-                    throw new Error(data.message || "Kode verifikasi tidak ditemukan di Bio Anda.");
+                    throw new Error(data.message || "Kode verifikasi tidak ditemukan di Bio Anda. Pastikan kode sudah tersimpan di profil dengan benar.");
                 }
 
                 const socialId = data.social_id;
