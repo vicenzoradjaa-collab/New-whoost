@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Kelola Portofolio - Admin Whoost</title>
+    <title>Kelola Data Publik - Admin Whoost</title>
 
     <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,6 +42,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #18181b; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
 
+        /* Styling Input File */
         input[type="file"]::file-selector-button {
             border: 1px solid #3f3f46; background: #27272a; color: #60a5fa; padding: 6px 12px;
             border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; font-weight: 700; margin-right: 12px;
@@ -87,7 +88,8 @@
     </header>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth w-full relative z-0 custom-scrollbar">
+    <!-- PERHATIKAN: pb-40 agar tidak ketutup navbar admin di bawah -->
+    <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-40 scroll-smooth w-full relative z-0 custom-scrollbar">
         <div class="block max-w-7xl mx-auto space-y-6">
             
             <!-- Toolbar Portofolio -->
@@ -138,11 +140,11 @@
                     </div>
                 </div>
                 
-                <div class="mt-auto">
+                <div class="mt-auto" id="upload-input-container">
                     <p class="text-[10px] text-zinc-500 mb-2 leading-tight">Gunakan rasio 3:4 (Potrait). Format JPG/PNG.</p>
                     <input type="file" id="porto-file" accept="image/*" onchange="previewImage(this)" class="w-full text-[11px] text-zinc-400 cursor-pointer">
-                    <input type="hidden" id="porto-old-file">
                 </div>
+                <input type="hidden" id="porto-old-file">
             </div>
 
             <!-- KANAN: Form Pengisian -->
@@ -222,7 +224,6 @@
         </div>
     </div>
 
-
     <!-- MODAL CUSTOM KATEGORI BARU -->
     <div id="modal-new-cat" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 p-4">
         <div class="bg-cardBg border border-zinc-700 w-full max-w-sm rounded-[1.5rem] p-6 relative shadow-2xl transform scale-95 transition-transform duration-200" id="content-new-cat">
@@ -236,12 +237,34 @@
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-10 right-4 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-        <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <div class="flex flex-col">
-            <span class="font-bold text-sm" id="toast-title">Sukses</span>
-            <span class="text-[11px] text-green-500/80" id="toast-msg">Tindakan berhasil.</span>
+    <!-- CUSTOM ALERT MODAL (Pengganti Toast/Alert) -->
+    <div id="custom-alert-modal" class="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div id="custom-alert-content" class="bg-cardBg border border-zinc-700 shadow-2xl rounded-[1.5rem] w-full max-w-sm p-6 text-center transform scale-95 transition-transform duration-300">
+            <div id="alert-icon"></div>
+            <h3 id="alert-title" class="text-xl font-bold text-white mb-2">Pesan</h3>
+            <p id="alert-msg" class="text-[13px] text-zinc-400 mb-6 leading-relaxed">Pesan detail...</p>
+            <button id="alert-btn" onclick="closeCustomAlert()" class="w-full px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition-colors focus:outline-none">
+                OK Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRM MODAL -->
+    <div id="custom-confirm-modal" class="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div id="custom-confirm-content" class="bg-cardBg border border-zinc-700 shadow-2xl rounded-[1.5rem] w-full max-w-sm p-6 text-center transform scale-95 transition-transform duration-300">
+            <div class="w-16 h-16 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 id="confirm-title" class="text-xl font-bold text-white mb-2">Konfirmasi</h3>
+            <p id="confirm-msg" class="text-[13px] text-zinc-400 mb-6 leading-relaxed">Apakah Anda yakin?</p>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeCustomConfirm()" class="w-full px-4 py-2.5 rounded-xl border border-zinc-700 text-zinc-300 text-sm font-bold hover:bg-zinc-800 transition-colors focus:outline-none">
+                    Batal
+                </button>
+                <button id="btn-confirm-yes" class="w-full px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-500 transition-colors focus:outline-none">
+                    Ya, Lanjutkan
+                </button>
+            </div>
         </div>
     </div>
 
@@ -277,7 +300,7 @@
         });
 
         // =====================================
-        // UI & HELPERS
+        // UI & HELPERS (CUSTOM ALERT & CONFIRM)
         // =====================================
         window.searchGrid = function() {
             const inputVal = document.getElementById('search-porto').value.toLowerCase();
@@ -288,16 +311,54 @@
             });
         }
 
-        window.showToast = function(title, msg, isError = false) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-title').innerText = title;
-            document.getElementById('toast-msg').innerText = msg;
-            toast.className = isError 
-                ? 'fixed bottom-10 right-4 sm:right-10 z-[999] bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none'
-                : 'fixed bottom-10 right-4 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none';
-            
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        window.showCustomAlert = function(title, msg, isError = false) {
+            const modal = document.getElementById('custom-alert-modal');
+            const content = document.getElementById('custom-alert-content');
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-msg').textContent = msg;
+            const iconEl = document.getElementById('alert-icon');
+            const btnEl = document.getElementById('alert-btn');
+
+            if (isError) {
+                iconEl.innerHTML = `<div class="w-16 h-16 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></div>`;
+                btnEl.className = "w-full px-4 py-2.5 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-500 transition-colors focus:outline-none";
+            } else {
+                iconEl.innerHTML = `<div class="w-16 h-16 bg-green-500/10 text-green-500 border border-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>`;
+                btnEl.className = "w-full px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition-colors focus:outline-none";
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+        }
+
+        window.closeCustomAlert = function() {
+            const modal = document.getElementById('custom-alert-modal');
+            const content = document.getElementById('custom-alert-content');
+            content.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        window.showCustomConfirm = function(title, msg, onConfirmCallback) {
+            const modal = document.getElementById('custom-confirm-modal');
+            const content = document.getElementById('custom-confirm-content');
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-msg').textContent = msg;
+
+            const confirmBtn = document.getElementById('btn-confirm-yes');
+            confirmBtn.onclick = function() {
+                closeCustomConfirm();
+                if(onConfirmCallback) onConfirmCallback();
+            };
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-95');
+        }
+
+        window.closeCustomConfirm = function() {
+            const modal = document.getElementById('custom-confirm-modal');
+            const content = document.getElementById('custom-confirm-content');
+            content.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
         }
 
         // =====================================
@@ -327,15 +388,16 @@
             document.getElementById('preview-porto-img').classList.add('hidden');
             document.getElementById('preview-porto-placeholder').classList.remove('hidden');
             document.getElementById('btn-delete-cover').classList.add('hidden');
+            document.getElementById('upload-input-container').classList.remove('hidden'); // Munculkan kembali kolom upload
         }
 
-        window.deleteCurrentCover = async function() {
+        window.deleteCurrentCover = function() {
             const id = document.getElementById('porto-id').value;
             const oldFileUrl = document.getElementById('porto-old-file').value;
 
-            // Jika cover sudah di-save di DB sebelumnya (Mode Edit)
+            // Jika cover sudah di-save di DB (Mode Edit)
             if (oldFileUrl) {
-                if(confirm("Yakin ingin menghapus cover permanen dari database?")) {
+                showCustomConfirm("Hapus Cover?", "Yakin ingin menghapus cover permanen dari database?", async () => {
                     const btn = document.getElementById('btn-delete-cover');
                     btn.innerHTML = `<svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
                     btn.disabled = true;
@@ -347,18 +409,18 @@
                         }
                         
                         document.getElementById('porto-old-file').value = '';
-                        resetPreviewUI();
-                        showToast("Terhapus", "Cover berhasil dihapus.");
+                        resetPreviewUI(); // Ini akan memunculkan input upload file otomatis
+                        showCustomAlert("Terhapus", "Cover berhasil dihapus. Silakan upload cover baru.");
                         fetchPortfolios(); 
                     } catch (e) {
-                        showToast("Error", "Gagal menghapus cover.", true);
+                        showCustomAlert("Error", "Gagal menghapus cover.", true);
                     } finally {
                         btn.innerHTML = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
                         btn.disabled = false;
                     }
-                }
+                });
             } 
-            // Jika hanya membatalkan pilihan file baru (Saat Tambah)
+            // Jika hanya membatalkan file preview baru (Saat Tambah)
             else {
                 resetPreviewUI();
             }
@@ -433,8 +495,8 @@
                 closeNewCatModal();
                 await fetchCategories();
                 selectCategory(val);
-                showToast("Berhasil", "Kategori ditambahkan.");
-            } else showToast("Gagal", "Kategori gagal ditambahkan.", true);
+                showCustomAlert("Berhasil", "Kategori ditambahkan.");
+            } else showCustomAlert("Gagal", "Kategori gagal ditambahkan.", true);
         }
 
         // =====================================
@@ -481,7 +543,7 @@
                                 Edit
                             </button>
                             <button onclick="deletePorto('${item.id}', '${item.portraitImg}')" class="w-full bg-red-500/10 hover:bg-red-500 border border-red-500/30 text-red-400 hover:text-white py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center focus:outline-none">
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                                Hapus
                             </button>
                         </div>
                     </div>`;
@@ -514,7 +576,7 @@
             div.innerHTML = `
                 <input type="text" class="h-username w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-[12px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" placeholder="Username (Cth: @whoost.id)" value="${data.username}" required>
                 <input type="url" class="h-link w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-[12px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" placeholder="URL Profil Lengkap" value="${data.link}" required>
-                <button type="button" onclick="this.parentElement.remove()" class="w-full md:w-10 h-9 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center shrink-0 transition-colors focus:outline-none"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg></button>
+                <button type="button" onclick="this.parentElement.remove()" class="w-full md:w-10 h-9 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center shrink-0 transition-colors focus:outline-none"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg></button>
             `;
             document.getElementById('handles-container').appendChild(div);
         }
@@ -524,7 +586,7 @@
             const name = document.getElementById('porto-name').value;
             const cat = document.getElementById('porto-category').value;
             
-            if(!name || !cat) { showToast("Peringatan", "Nama & Kategori wajib diisi!", true); return; }
+            if(!name || !cat) { showCustomAlert("Peringatan", "Nama & Kategori wajib diisi!", true); return; }
 
             const btn = document.getElementById('btn-save-porto'); const txt = document.getElementById('txt-save-porto');
             btn.disabled = true; txt.innerText = 'Menyimpan...';
@@ -539,11 +601,11 @@
                 }
                 if(!portraitImg) throw new Error("File visual cover harus diupload.");
 
-                // Ambil Handle tanpa Video
+                // Ambil Handle
                 const handles = []; document.querySelectorAll('.handle-row').forEach(n => handles.push({ username: n.querySelector('.h-username').value, link: n.querySelector('.h-link').value }));
 
                 const payload = {
-                    name, category: cat, niche: cat, // Niche disamakan dgn kategori untuk logic fallback
+                    name, category: cat, niche: cat, // Niche disamakan dgn kategori
                     stats: document.getElementById('porto-stats').value, desc: document.getElementById('porto-desc').value,
                     portraitImg, banner: '', handles
                 };
@@ -551,10 +613,10 @@
                 if(id) await supabase.from('portfolios').update(payload).eq('id', id);
                 else await supabase.from('portfolios').insert([payload]);
 
-                showToast("Sukses", "Data portofolio tersimpan.");
+                showCustomAlert("Sukses", "Data portofolio tersimpan.");
                 closeModalPorto();
                 fetchPortfolios();
-            } catch(e) { showToast("Error", e.message, true); } 
+            } catch(e) { showCustomAlert("Error", e.message, true); } 
             finally { btn.disabled = false; txt.innerText = 'Simpan Data'; }
         }
 
@@ -572,8 +634,12 @@
             // Render Image Preview
             const oldFile = data.portraitImg || '';
             document.getElementById('porto-old-file').value = oldFile;
-            document.getElementById('porto-file').removeAttribute('required');
+            
             if (oldFile) {
+                // Sembunyikan input file karena foto lama sudah ada, user harus klik hapus cover dulu
+                document.getElementById('porto-file').removeAttribute('required');
+                document.getElementById('upload-input-container').classList.add('hidden');
+                
                 document.getElementById('preview-porto-img').src = oldFile;
                 document.getElementById('preview-porto-img').classList.remove('hidden');
                 document.getElementById('preview-porto-placeholder').classList.add('hidden');
@@ -584,15 +650,19 @@
         }
 
         window.deletePorto = async function(id, imgUrl) {
-            if(confirm("Yakin ingin menghapus portofolio ini?")) {
+            showCustomConfirm("Hapus Portofolio?", "Yakin ingin menghapus portofolio ini dari publik?", async () => {
                 try {
                     if(imgUrl) await deleteFileFromSupabase(imgUrl, 'portfolios');
                     await supabase.from('portfolios').delete().eq('id', id);
-                    showToast("Terhapus", "Portofolio telah dihapus.");
+                    showCustomAlert("Terhapus", "Portofolio telah dihapus.");
                     fetchPortfolios();
-                } catch(e) { showToast("Error", "Gagal menghapus.", true); }
-            }
+                } catch(e) { showCustomAlert("Error", "Gagal menghapus.", true); }
+            });
         }
     </script>
+    
+    <!-- Panggilan Navbar Admin di area bawah sesuai tema web yang lain -->
+    <script>const ACTIVE_MENU = 'portfolio';</script>
+    <script src="attribute/navbaradmin.js"></script>
 </body>
 </html>
