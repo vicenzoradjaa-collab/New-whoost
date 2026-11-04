@@ -13,6 +13,8 @@ export default async function handler(req, res) {
   try {
     const { accounts } = req.body; 
 
+    // Karena frontend hanya mengirim [targetAccount], 
+    // accounts.length pasti 1 (hanya platform yang dipilih user yang akan di-scan)
     if (!accounts || accounts.length === 0) {
       return res.status(200).json({ videos: [] });
     }
@@ -35,7 +37,7 @@ export default async function handler(req, res) {
         return await response.json();
     };
 
-    // Jalankan pencarian video untuk SEMUA akun secara paralel
+    // Jalankan pencarian video (Kenyataannya hanya run 1x sesuai akun yg dikirim frontend)
     const fetchPromises = accounts.map(async (acc) => {
         try {
             if (acc.platform.toLowerCase() === 'instagram') {
@@ -45,12 +47,19 @@ export default async function handler(req, res) {
                         const postTime = new Date(post.timestamp).getTime();
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
+                            
+                            // [FIX] Menangkap Views & Likes IG
+                            const viewsCount = post.videoViewCount || post.viewCount || post.playCount || 0;
+                            const likesCount = post.likesCount || 0;
+
                             allVideos.push({
                                 id: post.id,
                                 platform: 'Instagram',
                                 url: post.url,
                                 thumbnail: post.displayUrl,
-                                upload_time: `${hoursAgo} Jam yang lalu`
+                                upload_time: `${hoursAgo} Jam yang lalu`,
+                                views: viewsCount,
+                                likes: likesCount
                             });
                         }
                     });
@@ -62,18 +71,24 @@ export default async function handler(req, res) {
                         const postTime = post.createTime * 1000; 
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
+                            
+                            // [FIX] Menangkap Views & Likes TikTok
+                            const viewsCount = post.playCount || post.stat?.playCount || 0;
+                            const likesCount = post.diggCount || post.stat?.diggCount || 0;
+
                             allVideos.push({
                                 id: post.id,
                                 platform: 'TikTok',
                                 url: post.webVideoUrl || post.videoWebUrl || `https://www.tiktok.com/@${acc.username}/video/${post.id}`,
                                 thumbnail: post.covers?.[0] || post.videoMeta?.coverUrl || 'https://placehold.co/400x600/121214/27272a?text=TikTok+Video',
-                                upload_time: `${hoursAgo} Jam yang lalu`
+                                upload_time: `${hoursAgo} Jam yang lalu`,
+                                views: viewsCount,
+                                likes: likesCount
                             });
                         }
                     });
                 }
             } else if (acc.platform.toLowerCase() === 'youtube') {
-                // PENAMBAHAN YOUTUBE: Mencari video terbaru dari tab channel
                 const dataYT = await fetchFromApify('streamers~youtube-scraper', { 
                     startUrls: [{ url: `https://www.youtube.com/@${acc.username}/shorts` }],
                     maxResults: 5 
@@ -85,12 +100,19 @@ export default async function handler(req, res) {
                             const postTime = new Date(postDateStr).getTime();
                             if (now - postTime < TWENTY_FOUR_HOURS) {
                                 const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
+                                
+                                // [FIX] Menangkap Views & Likes YouTube
+                                const viewsCount = post.viewCount || post.views || 0;
+                                const likesCount = post.likeCount || post.likes || 0;
+
                                 allVideos.push({
                                     id: post.id || post.videoId,
                                     platform: 'YouTube',
                                     url: post.url,
                                     thumbnail: post.thumbnailUrl || `https://img.youtube.com/vi/${post.id || post.videoId}/hqdefault.jpg`,
-                                    upload_time: `${hoursAgo} Jam yang lalu`
+                                    upload_time: `${hoursAgo} Jam yang lalu`,
+                                    views: viewsCount,
+                                    likes: likesCount
                                 });
                             }
                         }
