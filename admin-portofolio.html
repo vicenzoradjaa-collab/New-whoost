@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id" class="bg-darkBg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Kelola Portofolio - Admin Whoost</title>
+
+    <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0a0a0c',
+                        cardBg: '#121214',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+        .custom-input {
+            @apply w-full bg-zinc-900 border border-zinc-800 focus:border-blue-500 focus:bg-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all shadow-inner;
+        }
+        .custom-label {
+            @apply block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 ml-1;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
+
+    <!-- LOADING SCREEN -->
+    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="relative flex flex-col items-center">
+            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
+            <img src="asset/logow.webp" alt="Whoost Admin" class="h-10 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            <p class="mt-6 text-zinc-500 text-[11px] font-semibold tracking-widest uppercase animate-pulse">Memuat Modul...</p>
+        </div>
+    </div>
+
+    <!-- HEADER ADMIN -->
+    <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
+        <div class="flex items-center gap-3 sm:gap-4">
+            <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
+            <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Kelola Portofolio</h1>
+        </div>
+        <a href="admin-dashboard.html" class="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-500 rounded-xl text-xs font-semibold transition-all flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span class="hidden sm:inline">Kembali</span>
+        </a>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
+        <div class="max-w-6xl mx-auto space-y-8">
+            
+            <!-- TAB NAVIGATION -->
+            <div class="flex space-x-2 border-b border-zinc-800">
+                <button onclick="switchTab('add')" id="tab-add" class="px-6 py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition-colors">Tambah Portofolio</button>
+                <button onclick="switchTab('list')" id="tab-list" class="px-6 py-3 text-sm font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 transition-colors">Daftar Portofolio</button>
+            </div>
+
+            <!-- SECTION: TAMBAH DATA -->
+            <section id="section-add" class="block">
+                <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] p-5 sm:p-8 shadow-2xl">
+                    <h2 class="text-lg font-bold text-white mb-6 border-b border-zinc-800/50 pb-4">Form Data Portofolio Baru</h2>
+                    
+                    <form id="portfolio-form" class="space-y-6">
+                        <!-- Baris 1: Basic Info -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="custom-label">Nama / Judul</label>
+                                <input type="text" id="p-name" class="custom-input" placeholder="Cth: Campaign Film XYZ" required>
+                            </div>
+                            <div>
+                                <label class="custom-label">Kategori</label>
+                                <select id="p-category" class="custom-input appearance-none" required>
+                                    <option value="" disabled selected>Pilih Kategori</option>
+                                    <option value="UGC">UGC</option>
+                                    <option value="Clipping">Clipping</option>
+                                    <option value="Brand">Brand</option>
+                                    <option value="Film">Film</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="custom-label">Niche</label>
+                                <input type="text" id="p-niche" class="custom-input" placeholder="Cth: Entertainment" required>
+                            </div>
+                            <div>
+                                <label class="custom-label">Total Stats (Highlight)</label>
+                                <input type="text" id="p-stats" class="custom-input" placeholder="Cth: 15M+ Views" required>
+                            </div>
+                        </div>
+
+                        <!-- Baris 2: Images -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="custom-label">URL Gambar Portrait (Thumbnail)</label>
+                                <input type="url" id="p-portrait" class="custom-input" placeholder="https://..." required>
+                            </div>
+                            <div>
+                                <label class="custom-label">URL Gambar Banner (Landscape)</label>
+                                <input type="url" id="p-banner" class="custom-input" placeholder="https://...">
+                            </div>
+                        </div>
+
+                        <!-- Baris 3: Deskripsi -->
+                        <div>
+                            <label class="custom-label">Deskripsi / Detail Singkat</label>
+                            <textarea id="p-desc" rows="3" class="custom-input resize-none" placeholder="Ceritakan kesuksesan portofolio ini..." required></textarea>
+                        </div>
+
+                        <hr class="border-zinc-800/50 my-6">
+
+                        <!-- Baris 4: Dynamic Handles (Social Media) -->
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="custom-label mb-0">Akun Terlibat (Social Handles)</label>
+                                <button type="button" onclick="addHandleRow()" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Tambah Akun
+                                </button>
+                            </div>
+                            <div id="handles-container" class="space-y-3">
+                                <!-- Handle Row Template -->
+                            </div>
+                        </div>
+
+                        <hr class="border-zinc-800/50 my-6">
+
+                        <!-- Baris 5: Dynamic Videos -->
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <label class="custom-label mb-0">Sorotan Video Utama</label>
+                                <button type="button" onclick="addVideoRow()" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Tambah Video
+                                </button>
+                            </div>
+                            <div id="videos-container" class="space-y-3">
+                                <!-- Video Row Template -->
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-6 border-t border-zinc-800 flex justify-end">
+                            <button type="submit" id="btn-submit" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-900/20 flex items-center gap-2 focus:outline-none">
+                                <span id="btn-text">Simpan Portofolio</span>
+                                <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- SECTION: DAFTAR DATA -->
+            <section id="section-list" class="hidden">
+                <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                    <!-- Data diload lewat JS -->
+                    <div class="col-span-full text-center py-20 text-zinc-500 text-sm">
+                        Memuat data portofolio...
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="flex flex-col">
+            <span class="font-bold text-sm" id="toast-title">Sukses</span>
+            <span class="text-[11px] text-green-500/80" id="toast-msg">Data berhasil disimpan.</span>
+        </div>
+    </div>
+
+    <!-- SCRIPT UTAMA -->
+    <script type="module">
+        import { supabase, enforceRoleProtection } from './authentication/auth.js'; 
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cek Auth
+            if (typeof enforceRoleProtection === 'function') await enforceRoleProtection();
+            const { data: { session } } = await supabase.auth.getSession();
+            const { data: profile } = await supabase.from('profiles').select('role').eq('id', session?.user?.id).single();
+            
+            if (!session || profile?.role !== 'admin') {
+                window.location.replace('login.html');
+                return;
+            }
+
+            // Sembunyikan Loading
+            const loader = document.getElementById('pageLoader');
+            if (loader) {
+                loader.classList.add('opacity-0'); 
+                setTimeout(() => { loader.style.display = 'none'; }, 500); 
+            }
+
+            // Load Data Awal
+            addHandleRow(); // Beri 1 baris kosong untuk handle
+            addVideoRow();  // Beri 1 baris kosong untuk video
+            loadPortfolios();
+        });
+
+        // =====================================
+        // LOGIKA TAB & UI
+        // =====================================
+        window.switchTab = function(tab) {
+            document.getElementById('section-add').classList.toggle('hidden', tab !== 'add');
+            document.getElementById('section-list').classList.toggle('hidden', tab !== 'list');
+            
+            document.getElementById('tab-add').className = tab === 'add' 
+                ? 'px-6 py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition-colors' 
+                : 'px-6 py-3 text-sm font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 transition-colors';
+                
+            document.getElementById('tab-list').className = tab === 'list' 
+                ? 'px-6 py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition-colors' 
+                : 'px-6 py-3 text-sm font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 transition-colors';
+
+            if (tab === 'list') loadPortfolios();
+        }
+
+        window.showToast = function(title, msg, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            
+            if (isError) {
+                toast.className = 'fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-[999] bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none';
+            } else {
+                toast.className = 'fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none';
+            }
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+        }
+
+        // =====================================
+        // LOGIKA DYNAMIC INPUTS
+        // =====================================
+        window.addHandleRow = function() {
+            const container = document.getElementById('handles-container');
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 items-center handle-row bg-zinc-900/50 p-2 rounded-xl border border-zinc-800/80';
+            row.innerHTML = `
+                <input type="text" class="h-username flex-1 bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="Username (Cth: @whoost.id)">
+                <input type="url" class="h-link flex-1 bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="URL Profil Lengkap">
+                <button type="button" onclick="this.parentElement.remove()" class="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        window.addVideoRow = function() {
+            const container = document.getElementById('videos-container');
+            const row = document.createElement('div');
+            row.className = 'flex gap-2 items-center video-row bg-zinc-900/50 p-2 rounded-xl border border-zinc-800/80';
+            row.innerHTML = `
+                <input type="url" class="v-url flex-[2] bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="URL Video (TikTok/IG/YT)">
+                <input type="text" class="v-views flex-1 bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="Views (Cth: 2.1M)">
+                <button type="button" onclick="this.parentElement.remove()" class="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            `;
+            container.appendChild(row);
+        }
+
+        // =====================================
+        // LOGIKA SUBMIT DATA
+        // =====================================
+        document.getElementById('portfolio-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('btn-submit');
+            const btnText = document.getElementById('btn-text');
+            const spinner = document.getElementById('btn-spinner');
+
+            // Persiapkan Data
+            const name = document.getElementById('p-name').value;
+            const category = document.getElementById('p-category').value;
+            const niche = document.getElementById('p-niche').value;
+            const stats = document.getElementById('p-stats').value;
+            const portraitImg = document.getElementById('p-portrait').value;
+            const banner = document.getElementById('p-banner').value || portraitImg; // Fallback jika kosong
+            const desc = document.getElementById('p-desc').value;
+
+            // Ekstrak Handles (Abaikan jika kosong)
+            const handles = [];
+            document.querySelectorAll('.handle-row').forEach(row => {
+                const un = row.querySelector('.h-username').value.trim();
+                const link = row.querySelector('.h-link').value.trim();
+                if(un && link) handles.push({ username: un, link: link });
+            });
+
+            // Ekstrak Videos (Abaikan jika kosong)
+            const videos = [];
+            document.querySelectorAll('.video-row').forEach(row => {
+                const url = row.querySelector('.v-url').value.trim();
+                const views = row.querySelector('.v-views').value.trim();
+                if(url && views) videos.push({ url: url, views: views });
+            });
+
+            const payload = {
+                name, category, niche, stats, portraitImg, banner, desc,
+                handles, // JSON
+                videos   // JSON
+            };
+
+            // Animasi Loading
+            btn.disabled = true;
+            btnText.innerText = 'Menyimpan...';
+            spinner.classList.remove('hidden');
+
+            try {
+                const { error } = await supabase.from('portfolios').insert([payload]);
+                if (error) throw error;
+                
+                showToast('Berhasil!', 'Portofolio baru telah ditambahkan.');
+                document.getElementById('portfolio-form').reset();
+                document.getElementById('handles-container').innerHTML = '';
+                document.getElementById('videos-container').innerHTML = '';
+                addHandleRow(); addVideoRow(); // Reset 1 baris
+                
+            } catch (err) {
+                console.error("Gagal simpan:", err);
+                showToast('Gagal Simpan', err.message, true);
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'Simpan Portofolio';
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // =====================================
+        // LOGIKA BACA DATA (LIST) & DELETE
+        // =====================================
+        async function loadPortfolios() {
+            const grid = document.getElementById('portfolio-grid');
+            grid.innerHTML = '<div class="col-span-full text-center py-20"><svg class="w-8 h-8 animate-spin text-zinc-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-xs text-zinc-500 font-bold uppercase tracking-widest">Menarik Data...</span></div>';
+
+            const { data, error } = await supabase.from('portfolios').select('*').order('created_at', { ascending: false });
+
+            if (error || !data || data.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20 text-zinc-500 text-sm">Belum ada portofolio yang ditambahkan.</div>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(item => {
+                // Render List Card
+                html += `
+                <div class="bg-cardBg border border-zinc-800 rounded-[1.25rem] p-3 flex flex-col relative overflow-hidden group">
+                    <div class="w-full aspect-[4/3] bg-zinc-950 rounded-lg mb-3 overflow-hidden border border-zinc-800/50 shrink-0">
+                        <img src="${item.portraitImg}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="text-sm font-bold text-white truncate max-w-[70%]">${item.name}</h4>
+                            <span class="text-[8px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded uppercase font-bold">${item.category}</span>
+                        </div>
+                        <p class="text-[10px] text-zinc-500 truncate mb-3">${item.stats} • ${item.videos ? item.videos.length : 0} Video</p>
+                    </div>
+                    <div class="mt-auto pt-3 border-t border-zinc-800/50 flex gap-2">
+                        <!-- Nanti bisa di-expand buat tombol Edit -->
+                        <button onclick="window.deletePortfolio('${item.id}')" class="w-full bg-red-500/10 hover:bg-red-500 border border-red-500/30 text-red-400 hover:text-white py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 focus:outline-none">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Hapus
+                        </button>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        window.deletePortfolio = async function(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus data portofolio ini? Aksi ini tidak dapat dibatalkan.")) {
+                try {
+                    const { error } = await supabase.from('portfolios').delete().eq('id', id);
+                    if (error) throw error;
+                    
+                    showToast('Terhapus', 'Data portofolio berhasil dihapus.');
+                    loadPortfolios();
+                } catch (err) {
+                    showToast('Gagal Menghapus', err.message, true);
+                }
+            }
+        }
+    </script>
+
+    <script>const ACTIVE_MENU = 'portfolio';</script>
+    <script src="attribute/navbaradmin.js"></script>
+</body>
+</html>
