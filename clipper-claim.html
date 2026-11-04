@@ -713,10 +713,13 @@
                 html = `<p class="text-sm text-zinc-400 p-4 border border-zinc-800 border-dashed rounded-xl text-center">Belum ada akun yang sesuai.</p>`;
             } else {
                 connAccs.forEach(a => {
-                    const isSel = submitState.account?.id === a.id;
+                    // BUG FIX: Array JSON social_media Supabase tidak memiliki 'a.id', gunakan 'a.username'
+                    const isSel = submitState.account?.username === a.username;
                     const fChar = a.username ? a.username.charAt(0).toUpperCase() : 'U';
+                    const safeUser = escapeHTML(a.username).replace(/'/g, "\\'"); // Escape khusus untuk string onClick
+                    
                     html += `
-                    <div onclick="window.selectSubmitAccount('${a.id}')" class="flex items-center gap-4 p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+                    <div onclick="window.selectSubmitAccount('${safeUser}')" class="flex items-center gap-4 p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
                         <div class="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-bold text-white shadow-inner">${fChar}</div>
                         <p class="font-bold text-white text-base">@${escapeHTML(a.username)}</p>
                     </div>`;
@@ -726,8 +729,9 @@
             document.getElementById('btn-next-3').disabled = !submitState.account;
         }
 
-        window.selectSubmitAccount = function(accId) {
-            submitState.account = userVerifiedAccounts.find(a => a.id === accId);
+        window.selectSubmitAccount = function(username) {
+            // BUG FIX: Cari data account berdasarkan username, bukan id
+            submitState.account = userVerifiedAccounts.find(a => a.username === username && a.platform.toLowerCase() === submitState.platform);
             renderStep3();
         };
 
