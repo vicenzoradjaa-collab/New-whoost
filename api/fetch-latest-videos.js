@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { accounts } = req.body; // Berisi array: [{ platform: 'TikTok', username: 'user1' }, ...]
+    const { accounts } = req.body; 
 
     if (!accounts || accounts.length === 0) {
       return res.status(200).json({ videos: [] });
@@ -24,7 +24,6 @@ export default async function handler(req, res) {
     const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
     const now = Date.now();
 
-    // Fungsi bantuan untuk menembak Apify
     const fetchFromApify = async (actorId, runInput) => {
         const url = `https://api.apify.com/v2/acts/${actorId}/run-sync-get-dataset-items?token=${APIFY_TOKEN}`;
         const response = await fetch(url, {
@@ -36,16 +35,14 @@ export default async function handler(req, res) {
         return await response.json();
     };
 
-    // Jalankan pencarian video untuk SEMUA akun secara bersamaan (Paralel agar cepat)
+    // Jalankan pencarian video untuk SEMUA akun secara paralel
     const fetchPromises = accounts.map(async (acc) => {
         try {
             if (acc.platform.toLowerCase() === 'instagram') {
-                // Gunakan scraper profil IG karena dia juga mengembalikan "latestPosts"
                 const dataIG = await fetchFromApify('apify~instagram-profile-scraper', { usernames: [acc.username] });
                 if (dataIG && dataIG.length > 0 && dataIG[0].latestPosts) {
                     dataIG[0].latestPosts.forEach(post => {
                         const postTime = new Date(post.timestamp).getTime();
-                        // FILTER: Jika waktu post kurang dari 24 jam
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             allVideos.push({
@@ -59,11 +56,9 @@ export default async function handler(req, res) {
                     });
                 }
             } else if (acc.platform.toLowerCase() === 'tiktok') {
-                // Gunakan scraper TikTok khusus post (limit 10 post terbaru agar cepat)
                 const dataTT = await fetchFromApify('clockworks~tiktok-scraper', { profiles: [acc.username], resultsPerPage: 10, shouldDownloadVideos: false });
                 if (dataTT && dataTT.length > 0) {
                     dataTT.forEach(post => {
-                        // Waktu TikTok berupa detik, kalikan 1000 jadi milidetik
                         const postTime = post.createTime * 1000; 
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
@@ -77,16 +72,41 @@ export default async function handler(req, res) {
                         }
                     });
                 }
+            } else if (acc.platform.toLowerCase() === 'youtube') {
+                // PENAMBAHAN YOUTUBE: Mencari video terbaru dari tab channel
+                const dataYT = await fetchFromApify('streamers~youtube-scraper', { 
+                    startUrls: [{ url: `https://www.youtube.com/@${acc.username}/shorts` }],
+                    maxResults: 5 
+                });
+                if (dataYT && dataYT.length > 0) {
+                    dataYT.forEach(post => {
+                        const postDateStr = post.date || post.uploadDate || post.publishedAt;
+                        if (postDateStr) {
+                            const postTime = new Date(postDateStr).getTime();
+                            if (now - postTime < TWENTY_FOUR_HOURS) {
+                                const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
+                                allVideos.push({
+                                    id: post.id || post.videoId,
+                                    platform: 'YouTube',
+                                    url: post.url,
+                                    thumbnail: post.thumbnailUrl || `https://img.youtube.com/vi/${post.id || post.videoId}/hqdefault.jpg`,
+                                    upload_time: `${hoursAgo} Jam yang lalu`
+                                });
+                            }
+                        }
+                    });
+                }
             }
         } catch (err) {
             console.error(`Gagal fetch ${acc.platform} - ${acc.username}:`, err);
         }
     });
 
-    // Tunggu semua proses selesai
     await Promise.all(fetchPromises);
 
-    // Kembalikan video yang lolos filter ke frontend
+    // Mengurutkan dari yang paling baru diupload (opsional tapi bagus untuk UX)
+    allVideos.sort((a, b) => parseInt(a.upload_time) - parseInt(b.upload_time));
+
     return res.status(200).json({ videos: allVideos });
 
   } catch (error) {
