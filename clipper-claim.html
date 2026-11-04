@@ -544,35 +544,34 @@
             const grid = document.getElementById('videoGrid');
             const emptyState = document.getElementById('noVideoState');
             
-            // 1. Reset UI ke Loading
             loader.classList.remove('hidden');
             grid.classList.add('hidden');
             emptyState.classList.add('hidden');
-            document.getElementById('videoLink').value = ''; // Reset input link
+            document.getElementById('videoLink').value = ''; 
             document.getElementById('urlError').classList.add('hidden');
 
-            // Cek jika akun belum ada yg diverifikasi
             if (userVerifiedAccounts.length === 0) {
                 loader.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 emptyState.classList.add('flex');
                 document.getElementById('noVideoTitle').innerText = "Belum Ada Akun Terverifikasi";
                 document.getElementById('noVideoDesc').innerText = "Silakan tautkan dan verifikasi akun TikTok/IG Anda di halaman profil untuk bisa submit video.";
-                document.getElementById('linkToProfileBtn').classList.remove('hidden');
+                
+                const btnProfile = document.getElementById('linkToProfileBtn');
+                if (btnProfile) btnProfile.classList.remove('hidden');
                 return;
             }
 
             const cacheKey = `whoost_videos_${sessionUser.id}`;
             const now = new Date().getTime();
             
-            // 2. Cek Redis / SessionStorage Cache (TTL 15 Menit)
+            // Cek Cache (Batas 15 Menit) agar tidak boros kuota API
             if (!forceRefresh) {
                 const cachedData = sessionStorage.getItem(cacheKey);
                 if (cachedData) {
                     try {
                         const parsed = JSON.parse(cachedData);
-                        // Cek apakah belum lebih dari 15 menit (15 * 60 * 1000 ms = 900000)
-                        if ((now - parsed.timestamp) < 900000) {
+                        if ((now - parsed.timestamp) < 900000) { // 900000 ms = 15 menit
                             renderVideoGrid(parsed.videos);
                             return;
                         }
@@ -580,32 +579,29 @@
                 }
             }
 
-            // 3. Panggil API Pihak ke-3 (Backend / Edge Function Simulation)
             try {
-                // TODO [UNTUK DEV BACKEND]:
-                // Ganti simulasi delay & dummy data ini dengan pemanggilan asli ke Edge Function 
-                // yang akan menarik data Latest Posts dari Apify / TokAPI, lalu memfilternya (Waktu Sekarang - Waktu Upload < 24 Jam).
-                // const { data, error } = await supabase.functions.invoke('fetch-latest-videos', {
-                //     body: { accounts: userVerifiedAccounts }
-                // });
-                // const fetchedVideos = data.videos; // Video yg usianya < 24 jam sudah difilter oleh backend
-                
-                await new Promise(res => setTimeout(res, 2000)); // Simulasi Jaringan
-                
-                // MOCK DATA: Anggap backend mengembalikan 3 video dari TikTok/IG milik user yang umurnya di bawah 24 jam.
-                const fetchedVideos = [
-                    { id: "101", platform: "TikTok", url: "https://www.tiktok.com/@user/video/7123456789", thumbnail: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=200", upload_time: "2 Jam yang lalu" },
-                    { id: "102", platform: "Instagram", url: "https://www.instagram.com/reel/CxgJzP1/", thumbnail: "https://images.unsplash.com/photo-1611262588024-d12430b98920?q=80&w=200", upload_time: "5 Jam yang lalu" },
-                    { id: "103", platform: "TikTok", url: "https://www.tiktok.com/@user/video/7987654321", thumbnail: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=200", upload_time: "14 Jam yang lalu" }
-                ];
+                // Panggil Vercel API untuk Auto-Fetch
+                const response = await fetch('/api/fetch-latest-videos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ accounts: userVerifiedAccounts })
+                });
 
-                // 4. Simpan ke Cache
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Gagal menarik video dari server.");
+                }
+
+                const fetchedVideos = data.videos || [];
+
+                // Simpan hasil ke Session Cache
                 sessionStorage.setItem(cacheKey, JSON.stringify({
                     timestamp: now,
                     videos: fetchedVideos
                 }));
 
-                // 5. Render ke Layar
+                // Render ke Layar
                 renderVideoGrid(fetchedVideos);
 
             } catch (err) {
@@ -614,7 +610,7 @@
                 emptyState.classList.remove('hidden');
                 emptyState.classList.add('flex');
                 document.getElementById('noVideoTitle').innerText = "Gagal Mengambil Video";
-                document.getElementById('noVideoDesc').innerText = "Terjadi gangguan saat menarik data dari sosial media. Silakan coba klik refresh lagi.";
+                document.getElementById('noVideoDesc').innerText = "Terjadi gangguan saat menarik data dari sosial media. Silakan coba klik tombol Refresh.";
             }
         };
 
