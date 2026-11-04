@@ -25,172 +25,288 @@
         }
     </script>
     <style>
-        html, body {
-            background-color: #0a0a0c;
-            color: white;
-            font-family: 'Inter', sans-serif;
-            height: 100dvh;
-            margin: 0;
-            overflow: hidden;
-        }
-        
+        html, body { background-color: #0a0a0c; color: white; font-family: 'Inter', sans-serif; height: 100dvh; margin: 0; overflow: hidden; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #18181b; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
 
-        .custom-input {
-            @apply w-full bg-zinc-900 border border-zinc-800 focus:border-blue-500 focus:bg-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all shadow-inner;
+        .input-field { @apply w-full bg-zinc-900 border border-zinc-800 focus:border-blue-500 focus:bg-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-all; }
+        .custom-label { @apply block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 ml-1; }
+        
+        /* Custom File Input */
+        input[type="file"]::file-selector-button {
+            border: 1px solid #3f3f46; background: #27272a; color: #60a5fa; padding: 6px 12px;
+            border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; font-weight: 700; margin-right: 12px;
         }
-        .custom-label {
-            @apply block text-[11px] font-semibold text-zinc-400 uppercase tracking-wider mb-2 ml-1;
-        }
+        input[type="file"]::file-selector-button:hover { background: #3f3f46; border-color: #60a5fa; color: white; }
     </style>
 </head>
 <body class="antialiased selection:bg-blue-500 selection:text-white flex flex-col relative w-full h-full">
-
-    <!-- LOADING SCREEN -->
-    <div id="pageLoader" class="fixed inset-0 z-[9999] bg-darkBg flex flex-col items-center justify-center transition-opacity duration-500">
-        <div class="relative flex flex-col items-center">
-            <div class="absolute inset-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600/20 blur-[40px] rounded-full w-32 h-32 animate-pulse"></div>
-            <img src="asset/logow.webp" alt="Whoost Admin" class="h-10 w-auto object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
-            <p class="mt-6 text-zinc-500 text-[11px] font-semibold tracking-widest uppercase animate-pulse">Memuat Modul...</p>
-        </div>
-    </div>
 
     <!-- HEADER ADMIN -->
     <header class="h-20 sm:h-24 flex items-center justify-between px-4 sm:px-8 border-b border-zinc-800/50 bg-darkBg/90 backdrop-blur-md z-20 flex-shrink-0 w-full">
         <div class="flex items-center gap-3 sm:gap-4">
             <img src="asset/logow.webp" alt="Whoost Logo" class="h-6 sm:h-10 w-auto object-contain">
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
-            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Kelola Portofolio</h1>
+            <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-blue-400">Data Publik</h1>
         </div>
-        <a href="admin-dashboard.html" class="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-500 rounded-xl text-xs font-semibold transition-all flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            <span class="hidden sm:inline">Kembali</span>
-        </a>
+        
+        <!-- Tab Navigasi Atas -->
+        <div class="flex items-center gap-2 bg-cardBg border border-zinc-800 p-1.5 rounded-2xl shadow-lg">
+            <button onclick="switchTab('portfolio')" id="tab-portfolio" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-md transition-all">Portofolio</button>
+            <button onclick="switchTab('network')" id="tab-network" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all">Network</button>
+        </div>
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="flex-1 overflow-y-auto overflow-x-hidden px-4 sm:px-8 py-6 pb-32 z-0 scroll-smooth w-full relative">
-        <div class="max-w-6xl mx-auto space-y-8">
+        <div class="max-w-7xl mx-auto">
             
-            <!-- TAB NAVIGATION -->
-            <div class="flex space-x-2 border-b border-zinc-800">
-                <button onclick="switchTab('add')" id="tab-add" class="px-6 py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition-colors">Tambah Portofolio</button>
-                <button onclick="switchTab('list')" id="tab-list" class="px-6 py-3 text-sm font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 transition-colors">Daftar Portofolio</button>
-            </div>
-
-            <!-- SECTION: TAMBAH DATA -->
-            <section id="section-add" class="block">
-                <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] p-5 sm:p-8 shadow-2xl">
-                    <h2 class="text-lg font-bold text-white mb-6 border-b border-zinc-800/50 pb-4">Form Data Portofolio Baru</h2>
-                    
-                    <form id="portfolio-form" class="space-y-6">
-                        <!-- Baris 1: Basic Info -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div>
-                                <label class="custom-label">Nama / Judul</label>
-                                <input type="text" id="p-name" class="custom-input" placeholder="Cth: Campaign Film XYZ" required>
-                            </div>
-                            <div>
-                                <label class="custom-label">Kategori</label>
-                                <select id="p-category" class="custom-input appearance-none" required>
-                                    <option value="" disabled selected>Pilih Kategori</option>
-                                    <option value="UGC">UGC</option>
-                                    <option value="Clipping">Clipping</option>
-                                    <option value="Brand">Brand</option>
-                                    <option value="Film">Film</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="custom-label">Niche</label>
-                                <input type="text" id="p-niche" class="custom-input" placeholder="Cth: Entertainment" required>
-                            </div>
-                            <div>
-                                <label class="custom-label">Total Stats (Highlight)</label>
-                                <input type="text" id="p-stats" class="custom-input" placeholder="Cth: 15M+ Views" required>
-                            </div>
+            <!-- ================= TAB: PORTOFOLIO ================= -->
+            <div id="section-portfolio" class="block">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold text-white mb-1">Katalog Portofolio</h2>
+                        <p class="text-sm text-zinc-400">Kelola daftar kreator/brand yang tampil di halaman portofolio.</p>
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="relative w-full md:w-64">
+                            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <input type="text" id="search-porto" onkeyup="searchTable('porto')" placeholder="Cari portofolio..." class="input-field pl-9 !rounded-full !py-2.5">
                         </div>
-
-                        <!-- Baris 2: Images -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="custom-label">URL Gambar Portrait (Thumbnail)</label>
-                                <input type="url" id="p-portrait" class="custom-input" placeholder="https://..." required>
-                            </div>
-                            <div>
-                                <label class="custom-label">URL Gambar Banner (Landscape)</label>
-                                <input type="url" id="p-banner" class="custom-input" placeholder="https://...">
-                            </div>
-                        </div>
-
-                        <!-- Baris 3: Deskripsi -->
-                        <div>
-                            <label class="custom-label">Deskripsi / Detail Singkat</label>
-                            <textarea id="p-desc" rows="3" class="custom-input resize-none" placeholder="Ceritakan kesuksesan portofolio ini..." required></textarea>
-                        </div>
-
-                        <hr class="border-zinc-800/50 my-6">
-
-                        <!-- Baris 4: Dynamic Handles (Social Media) -->
-                        <div>
-                            <div class="flex justify-between items-center mb-3">
-                                <label class="custom-label mb-0">Akun Terlibat (Social Handles)</label>
-                                <button type="button" onclick="addHandleRow()" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Tambah Akun
-                                </button>
-                            </div>
-                            <div id="handles-container" class="space-y-3">
-                                <!-- Handle Row Template -->
-                            </div>
-                        </div>
-
-                        <hr class="border-zinc-800/50 my-6">
-
-                        <!-- Baris 5: Dynamic Videos -->
-                        <div>
-                            <div class="flex justify-between items-center mb-3">
-                                <label class="custom-label mb-0">Sorotan Video Utama</label>
-                                <button type="button" onclick="addVideoRow()" class="text-[11px] bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Tambah Video
-                                </button>
-                            </div>
-                            <div id="videos-container" class="space-y-3">
-                                <!-- Video Row Template -->
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="pt-6 border-t border-zinc-800 flex justify-end">
-                            <button type="submit" id="btn-submit" class="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-colors shadow-lg shadow-blue-900/20 flex items-center gap-2 focus:outline-none">
-                                <span id="btn-text">Simpan Portofolio</span>
-                                <svg id="btn-spinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </section>
-
-            <!-- SECTION: DAFTAR DATA -->
-            <section id="section-list" class="hidden">
-                <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                    <!-- Data diload lewat JS -->
-                    <div class="col-span-full text-center py-20 text-zinc-500 text-sm">
-                        Memuat data portofolio...
+                        <button onclick="openModalPorto()" class="px-5 py-2.5 bg-blue-600 text-white hover:bg-blue-500 font-bold rounded-full text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20 shrink-0 focus:outline-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span class="hidden md:inline">Tambah</span>
+                        </button>
                     </div>
                 </div>
-            </section>
+
+                <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                    <div class="overflow-x-auto w-full custom-scrollbar">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="border-b border-zinc-800 bg-zinc-900/50 text-[11px] uppercase text-zinc-400 tracking-wider">
+                                    <th class="px-6 py-4 font-semibold">Visual Cover</th>
+                                    <th class="px-6 py-4 font-semibold">Nama & Detail</th>
+                                    <th class="px-6 py-4 font-semibold">Kategori</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-porto-body" class="divide-y divide-zinc-800 text-sm">
+                                <tr><td colspan="4" class="text-center py-12 text-zinc-500"><svg class="w-6 h-6 animate-spin mx-auto mb-2 text-zinc-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Memuat portofolio...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TAB: NETWORK ================= -->
+            <div id="section-network" class="hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl md:text-2xl font-bold text-white mb-1">Jaringan Whoost</h2>
+                        <p class="text-sm text-zinc-400">Atur profil akun (foto bulat) untuk section network (slider).</p>
+                    </div>
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="relative w-full md:w-64">
+                            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <input type="text" id="search-net" onkeyup="searchTable('net')" placeholder="Cari jaringan..." class="input-field pl-9 !rounded-full !py-2.5">
+                        </div>
+                        <button onclick="openModalNet()" class="px-5 py-2.5 bg-blue-600 text-white hover:bg-blue-500 font-bold rounded-full text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20 shrink-0 focus:outline-none">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span class="hidden md:inline">Tambah</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-cardBg border border-zinc-800 rounded-[1.5rem] overflow-hidden shadow-2xl">
+                    <div class="overflow-x-auto w-full custom-scrollbar">
+                        <table class="w-full text-left border-collapse whitespace-nowrap">
+                            <thead>
+                                <tr class="border-b border-zinc-800 bg-zinc-900/50 text-[11px] uppercase text-zinc-400 tracking-wider">
+                                    <th class="px-6 py-4 font-semibold">Foto Profil</th>
+                                    <th class="px-6 py-4 font-semibold">Username</th>
+                                    <th class="px-6 py-4 font-semibold">Label Stats</th>
+                                    <th class="px-6 py-4 font-semibold text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-network-body" class="divide-y divide-zinc-800 text-sm">
+                                <tr><td colspan="4" class="text-center py-12 text-zinc-500"><svg class="w-6 h-6 animate-spin mx-auto mb-2 text-zinc-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Memuat network...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>
 
+    <!-- ========================================== -->
+    <!-- MODAL FORM PORTOFOLIO -->
+    <!-- ========================================== -->
+    <div id="modal-porto" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-cardBg border border-zinc-700 w-full max-w-4xl max-h-[90vh] rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300" id="content-porto">
+            
+            <div class="flex justify-between items-center px-6 py-5 border-b border-zinc-800 bg-zinc-900/50 shrink-0">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> <span id="text-title-porto">Tambah Portofolio</span></h2>
+                <button onclick="closeModalPorto()" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors focus:outline-none"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </div>
+
+            <div class="overflow-y-auto px-6 py-6 flex-grow custom-scrollbar">
+                <form id="form-porto" class="space-y-8">
+                    <input type="hidden" id="porto-id">
+                    
+                    <!-- Info Utama -->
+                    <div>
+                        <h3 class="text-blue-400 text-[11px] uppercase tracking-wider font-bold mb-4 flex items-center gap-2"><span class="w-4 h-px bg-blue-500/50"></span> Informasi Utama</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="custom-label">Nama Item / Kreator <span class="text-red-500">*</span></label>
+                                <input type="text" id="porto-name" class="input-field" required placeholder="Cth: Sulianto">
+                            </div>
+                            
+                            <!-- Custom Dropdown Kategori -->
+                            <div>
+                                <label class="custom-label">Kategori <span class="text-red-500">*</span></label>
+                                <div class="relative w-full">
+                                    <button type="button" onclick="toggleDropdown('cat-dropdown')" class="input-field flex justify-between items-center w-full focus:outline-none text-left">
+                                        <span id="porto-cat-label" class="text-zinc-400">Pilih Kategori</span>
+                                        <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <input type="hidden" id="porto-category" required>
+                                    <div id="cat-dropdown" class="hidden absolute top-full left-0 w-full mt-2 bg-zinc-900 border border-zinc-700 rounded-xl shadow-xl z-20 overflow-hidden">
+                                        <div id="cat-list" class="max-h-40 overflow-y-auto custom-scrollbar border-b border-zinc-800">
+                                            <!-- List kategori diload JS -->
+                                        </div>
+                                        <button type="button" onclick="openNewCatModal()" class="w-full text-left px-4 py-2.5 text-xs font-bold text-blue-400 hover:bg-zinc-800 transition-colors flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Buat Kategori Baru</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="custom-label">Niche / Topik <span class="text-red-500">*</span></label>
+                                <input type="text" id="porto-niche" class="input-field" required placeholder="Cth: Crypto & Edu">
+                            </div>
+                            <div>
+                                <label class="custom-label">Text Total Views <span class="text-red-500">*</span></label>
+                                <input type="text" id="porto-stats" class="input-field" required placeholder="Cth: UP TO 8.4M VIEWS">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="custom-label">Deskripsi Singkat <span class="text-red-500">*</span></label>
+                                <textarea id="porto-desc" class="input-field h-24 resize-none" required placeholder="Tulis deskripsi portofolio yang menarik..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual -->
+                    <div>
+                        <h3 class="text-blue-400 text-[11px] uppercase tracking-wider font-bold mb-4 flex items-center gap-2"><span class="w-4 h-px bg-blue-500/50"></span> Visual Cover</h3>
+                        <div class="bg-zinc-900/50 p-5 rounded-2xl border border-zinc-800 hover:border-zinc-700 transition-colors">
+                            <label class="block text-sm font-bold text-white mb-1">Foto Portrait (Cover Depan) <span class="text-red-500">*</span></label>
+                            <p class="text-[11px] text-zinc-500 mb-4">Foto utama bentuk memanjang ke bawah (Rasio 3:4).</p>
+                            <input type="file" id="porto-file" accept="image/*" class="w-full text-sm text-zinc-400">
+                            <input type="hidden" id="porto-old-file">
+                            <div id="porto-file-hint" class="mt-3 text-[11px] bg-green-500/10 text-green-400 p-2.5 rounded-lg border border-green-500/20 hidden flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> File cover sudah tersimpan di database. Upload baru untuk mengganti.</div>
+                        </div>
+                    </div>
+
+                    <!-- Handles -->
+                    <div>
+                        <div class="flex justify-between items-end mb-4">
+                            <h3 class="text-blue-400 text-[11px] uppercase tracking-wider font-bold flex items-center gap-2"><span class="w-4 h-px bg-blue-500/50"></span> Daftar Akun Terlibat</h3>
+                            <button type="button" onclick="addHandleRow()" class="text-[11px] font-bold bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Tambah</button>
+                        </div>
+                        <div id="handles-container" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Videos -->
+                    <div>
+                        <div class="flex justify-between items-end mb-4">
+                            <h3 class="text-blue-400 text-[11px] uppercase tracking-wider font-bold flex items-center gap-2"><span class="w-4 h-px bg-blue-500/50"></span> Live Video Utama</h3>
+                            <button type="button" onclick="addVideoRow()" class="text-[11px] font-bold bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Tambah</button>
+                        </div>
+                        <div id="videos-container" class="space-y-3"></div>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="border-t border-zinc-800 p-5 bg-zinc-900/80 flex justify-end gap-3 shrink-0">
+                <button type="button" onclick="closeModalPorto()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
+                <button type="button" id="btn-save-porto" onclick="savePorto()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-colors shadow-lg shadow-blue-900/20 flex items-center gap-2 focus:outline-none"><span id="txt-save-porto">Simpan Data</span></button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL FORM NETWORK AKUN -->
+    <!-- ========================================== -->
+    <div id="modal-net" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div class="bg-cardBg border border-zinc-700 w-full max-w-md max-h-[90vh] rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300" id="content-net">
+            
+            <div class="flex justify-between items-center px-6 py-5 border-b border-zinc-800 bg-zinc-900/50 shrink-0">
+                <h2 class="text-lg font-bold text-white flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg> <span id="title-net">Tambah Network</span></h2>
+                <button onclick="closeModalNet()" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors focus:outline-none"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </div>
+
+            <div class="px-6 py-6 overflow-y-auto flex-grow custom-scrollbar">
+                <form id="form-net" class="space-y-5">
+                    <input type="hidden" id="net-id">
+                    
+                    <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+                        <label class="block text-sm font-bold text-white mb-1">Foto Profil / Logo <span class="text-red-500">*</span></label>
+                        <p class="text-[11px] text-zinc-500 mb-3">Foto akan otomatis dibentuk bulat.</p>
+                        <input type="file" id="net-file" accept="image/*" class="w-full text-sm text-zinc-400">
+                        <input type="hidden" id="net-old-file">
+                        <div id="net-file-hint" class="mt-3 text-[11px] bg-green-500/10 text-green-400 p-2.5 rounded-lg border border-green-500/20 hidden flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> File foto sudah tersimpan.</div>
+                    </div>
+
+                    <div>
+                        <label class="custom-label">Username Akun <span class="text-red-500">*</span></label>
+                        <input type="text" id="net-handle" class="input-field" required placeholder="Cth: Kang Fakta">
+                    </div>
+                    <div>
+                        <label class="custom-label">Label / Total Views <span class="text-red-500">*</span></label>
+                        <input type="text" id="net-label" class="input-field" required placeholder="Cth: Up to 6M Views">
+                    </div>
+                    <div>
+                        <label class="custom-label">Link URL Sosmed <span class="text-red-500">*</span></label>
+                        <input type="url" id="net-link" class="input-field" required placeholder="https://tiktok.com/@akun">
+                    </div>
+                </form>
+            </div>
+
+            <div class="border-t border-zinc-800 p-5 bg-zinc-900/80 flex justify-end gap-3 shrink-0">
+                <button type="button" onclick="closeModalNet()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
+                <button type="button" id="btn-save-net" onclick="saveNet()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-colors shadow-lg shadow-blue-900/20 flex items-center gap-2 focus:outline-none"><span id="txt-save-net">Simpan Data</span></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOM KATEGORI BARU -->
+    <div id="modal-new-cat" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 p-4">
+        <div class="bg-cardBg border border-zinc-700 w-full max-w-sm rounded-[1.5rem] p-6 relative shadow-2xl transform scale-95 transition-transform duration-200" id="content-new-cat">
+            <h3 class="text-lg font-bold text-white mb-2">Buat Kategori Baru</h3>
+            <p class="text-xs text-zinc-400 mb-4">Kategori akan ditambahkan ke dropdown pilihan.</p>
+            <input type="text" id="input-new-cat" class="input-field mb-5" placeholder="Cth: Event">
+            <div class="flex justify-end gap-3">
+                <button onclick="closeNewCatModal()" class="px-4 py-2 rounded-xl text-sm font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">Batal</button>
+                <button onclick="saveNewCategory()" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl transition-colors shadow-lg">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toast" class="fixed bottom-10 right-4 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         <div class="flex flex-col">
             <span class="font-bold text-sm" id="toast-title">Sukses</span>
-            <span class="text-[11px] text-green-500/80" id="toast-msg">Data berhasil disimpan.</span>
+            <span class="text-[11px] text-green-500/80" id="toast-msg">Tindakan berhasil.</span>
         </div>
     </div>
 
@@ -198,216 +314,425 @@
     <script type="module">
         import { supabase, enforceRoleProtection } from './authentication/auth.js'; 
 
+        let dbPorto = [];
+        let dbNet = [];
+        let dbCat = [];
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // Cek Auth
+            // Cek Auth Admin
             if (typeof enforceRoleProtection === 'function') await enforceRoleProtection();
             const { data: { session } } = await supabase.auth.getSession();
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', session?.user?.id).single();
+            if (!session || profile?.role !== 'admin') { window.location.replace('login.html'); return; }
+
+            // Initial load
+            fetchCategories();
+            fetchPortfolios();
+            fetchNetwork();
             
-            if (!session || profile?.role !== 'admin') {
-                window.location.replace('login.html');
-                return;
-            }
-
-            // Sembunyikan Loading
-            const loader = document.getElementById('pageLoader');
-            if (loader) {
-                loader.classList.add('opacity-0'); 
-                setTimeout(() => { loader.style.display = 'none'; }, 500); 
-            }
-
-            // Load Data Awal
-            addHandleRow(); // Beri 1 baris kosong untuk handle
-            addVideoRow();  // Beri 1 baris kosong untuk video
-            loadPortfolios();
+            // Klik diluar dropdown tutup dropdown
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('cat-dropdown');
+                if(!e.target.closest('#cat-dropdown') && !e.target.closest('button[onclick="toggleDropdown(\'cat-dropdown\')"]')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
         });
 
         // =====================================
-        // LOGIKA TAB & UI
+        // UI & HELPERS
         // =====================================
-        window.switchTab = function(tab) {
-            document.getElementById('section-add').classList.toggle('hidden', tab !== 'add');
-            document.getElementById('section-list').classList.toggle('hidden', tab !== 'list');
+        window.switchTab = function(tabName) {
+            document.getElementById('section-portfolio').classList.toggle('hidden', tabName !== 'portfolio');
+            document.getElementById('section-network').classList.toggle('hidden', tabName !== 'network');
             
-            document.getElementById('tab-add').className = tab === 'add' 
-                ? 'px-6 py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition-colors' 
-                : 'px-6 py-3 text-sm font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 transition-colors';
-                
-            document.getElementById('tab-list').className = tab === 'list' 
-                ? 'px-6 py-3 text-sm font-semibold border-b-2 border-blue-500 text-blue-400 transition-colors' 
-                : 'px-6 py-3 text-sm font-semibold border-b-2 border-transparent text-zinc-500 hover:text-zinc-300 transition-colors';
+            const btnP = document.getElementById('tab-portfolio');
+            const btnN = document.getElementById('tab-network');
+            
+            if(tabName === 'portfolio') {
+                btnP.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-md transition-all";
+                btnN.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all";
+            } else {
+                btnN.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white shadow-md transition-all";
+                btnP.className = "px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all";
+            }
+        }
 
-            if (tab === 'list') loadPortfolios();
+        window.searchTable = function(type) {
+            const inputId = type === 'porto' ? 'search-porto' : 'search-net';
+            const tbodyId = type === 'porto' ? 'table-porto-body' : 'table-network-body';
+            const inputVal = document.getElementById(inputId).value.toLowerCase();
+            const rows = document.getElementById(tbodyId).getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                const rowText = rows[i].textContent || rows[i].innerText;
+                rows[i].style.display = rowText.toLowerCase().indexOf(inputVal) > -1 ? "" : "none";
+            }
         }
 
         window.showToast = function(title, msg, isError = false) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-title').innerText = title;
             document.getElementById('toast-msg').innerText = msg;
-            
-            if (isError) {
-                toast.className = 'fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-[999] bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none';
-            } else {
-                toast.className = 'fixed bottom-24 right-4 sm:bottom-10 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none';
-            }
+            toast.className = isError 
+                ? 'fixed bottom-10 right-4 sm:right-10 z-[999] bg-red-500/10 border border-red-500/50 text-red-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none'
+                : 'fixed bottom-10 right-4 sm:right-10 z-[999] bg-green-500/10 border border-green-500/50 text-green-400 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300 pointer-events-none';
             
             toast.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
         // =====================================
-        // LOGIKA DYNAMIC INPUTS
+        // FILE UPLOAD SUPABASE
         // =====================================
-        window.addHandleRow = function() {
-            const container = document.getElementById('handles-container');
-            const row = document.createElement('div');
-            row.className = 'flex gap-2 items-center handle-row bg-zinc-900/50 p-2 rounded-xl border border-zinc-800/80';
-            row.innerHTML = `
-                <input type="text" class="h-username flex-1 bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="Username (Cth: @whoost.id)">
-                <input type="url" class="h-link flex-1 bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="URL Profil Lengkap">
-                <button type="button" onclick="this.parentElement.remove()" class="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
-            `;
-            container.appendChild(row);
+        async function uploadFileToSupabase(file, bucket) {
+            if(!file) return null;
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const { data, error } = await supabase.storage.from(bucket).upload(fileName, file);
+            if (error) throw error;
+            const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+            return publicUrlData.publicUrl;
         }
 
-        window.addVideoRow = function() {
-            const container = document.getElementById('videos-container');
-            const row = document.createElement('div');
-            row.className = 'flex gap-2 items-center video-row bg-zinc-900/50 p-2 rounded-xl border border-zinc-800/80';
-            row.innerHTML = `
-                <input type="url" class="v-url flex-[2] bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="URL Video (TikTok/IG/YT)">
-                <input type="text" class="v-views flex-1 bg-zinc-900 border border-zinc-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none" placeholder="Views (Cth: 2.1M)">
-                <button type="button" onclick="this.parentElement.remove()" class="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                </button>
-            `;
-            container.appendChild(row);
-        }
-
-        // =====================================
-        // LOGIKA SUBMIT DATA
-        // =====================================
-        document.getElementById('portfolio-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = document.getElementById('btn-submit');
-            const btnText = document.getElementById('btn-text');
-            const spinner = document.getElementById('btn-spinner');
-
-            // Persiapkan Data
-            const name = document.getElementById('p-name').value;
-            const category = document.getElementById('p-category').value;
-            const niche = document.getElementById('p-niche').value;
-            const stats = document.getElementById('p-stats').value;
-            const portraitImg = document.getElementById('p-portrait').value;
-            const banner = document.getElementById('p-banner').value || portraitImg; // Fallback jika kosong
-            const desc = document.getElementById('p-desc').value;
-
-            // Ekstrak Handles (Abaikan jika kosong)
-            const handles = [];
-            document.querySelectorAll('.handle-row').forEach(row => {
-                const un = row.querySelector('.h-username').value.trim();
-                const link = row.querySelector('.h-link').value.trim();
-                if(un && link) handles.push({ username: un, link: link });
-            });
-
-            // Ekstrak Videos (Abaikan jika kosong)
-            const videos = [];
-            document.querySelectorAll('.video-row').forEach(row => {
-                const url = row.querySelector('.v-url').value.trim();
-                const views = row.querySelector('.v-views').value.trim();
-                if(url && views) videos.push({ url: url, views: views });
-            });
-
-            const payload = {
-                name, category, niche, stats, portraitImg, banner, desc,
-                handles, // JSON
-                videos   // JSON
-            };
-
-            // Animasi Loading
-            btn.disabled = true;
-            btnText.innerText = 'Menyimpan...';
-            spinner.classList.remove('hidden');
-
+        async function deleteFileFromSupabase(url, bucket) {
+            if(!url || !url.includes('supabase.co')) return;
             try {
-                const { error } = await supabase.from('portfolios').insert([payload]);
-                if (error) throw error;
-                
-                showToast('Berhasil!', 'Portofolio baru telah ditambahkan.');
-                document.getElementById('portfolio-form').reset();
-                document.getElementById('handles-container').innerHTML = '';
-                document.getElementById('videos-container').innerHTML = '';
-                addHandleRow(); addVideoRow(); // Reset 1 baris
-                
-            } catch (err) {
-                console.error("Gagal simpan:", err);
-                showToast('Gagal Simpan', err.message, true);
-            } finally {
-                btn.disabled = false;
-                btnText.innerText = 'Simpan Portofolio';
-                spinner.classList.add('hidden');
+                // Ekstrak nama file dari URL public Supabase
+                const urlParts = url.split('/');
+                const fileName = urlParts[urlParts.length - 1];
+                await supabase.storage.from(bucket).remove([fileName]);
+            } catch(e) { console.warn("Failed deleting old file:", e); }
+        }
+
+        // =====================================
+        // LOGIKA KATEGORI (CUSTOM DROPDOWN)
+        // =====================================
+        async function fetchCategories() {
+            const { data, error } = await supabase.from('categories').select('*').order('name');
+            if(!error && data) {
+                dbCat = data;
+                renderCategoryDropdown();
             }
-        });
+        }
+
+        function renderCategoryDropdown() {
+            const list = document.getElementById('cat-list');
+            list.innerHTML = '';
+            dbCat.forEach(c => {
+                list.innerHTML += `<button type="button" onclick="selectCategory('${c.name}')" class="w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors border-b border-zinc-800/50 last:border-0">${c.name}</button>`;
+            });
+        }
+
+        window.toggleDropdown = function(id) { document.getElementById(id).classList.toggle('hidden'); }
+        
+        window.selectCategory = function(name) {
+            document.getElementById('porto-category').value = name;
+            const label = document.getElementById('porto-cat-label');
+            label.innerText = name; label.classList.remove('text-zinc-400'); label.classList.add('text-white');
+            document.getElementById('cat-dropdown').classList.add('hidden');
+        }
+
+        window.openNewCatModal = function() {
+            document.getElementById('cat-dropdown').classList.add('hidden');
+            const m = document.getElementById('modal-new-cat'); const c = document.getElementById('content-new-cat');
+            m.classList.remove('opacity-0', 'pointer-events-none'); c.classList.remove('scale-95');
+            document.getElementById('input-new-cat').value = '';
+        }
+        
+        window.closeNewCatModal = function() {
+            const m = document.getElementById('modal-new-cat'); const c = document.getElementById('content-new-cat');
+            c.classList.add('scale-95'); m.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        window.saveNewCategory = async function() {
+            const val = document.getElementById('input-new-cat').value.trim();
+            if(!val) return;
+            const { error } = await supabase.from('categories').insert([{ name: val }]);
+            if(!error) {
+                closeNewCatModal();
+                await fetchCategories();
+                selectCategory(val);
+                showToast("Berhasil", "Kategori ditambahkan.");
+            } else showToast("Gagal", "Kategori gagal ditambahkan.", true);
+        }
+
 
         // =====================================
-        // LOGIKA BACA DATA (LIST) & DELETE
+        // LOGIKA PORTOFOLIO (CRUD)
         // =====================================
-        async function loadPortfolios() {
-            const grid = document.getElementById('portfolio-grid');
-            grid.innerHTML = '<div class="col-span-full text-center py-20"><svg class="w-8 h-8 animate-spin text-zinc-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg><span class="text-xs text-zinc-500 font-bold uppercase tracking-widest">Menarik Data...</span></div>';
-
-            const { data, error } = await supabase.from('portfolios').select('*').order('created_at', { ascending: false });
-
+        async function fetchPortfolios() {
+            const { data, error } = await supabase.from('portfolios').select('*').order('name', { ascending: true });
+            const tbody = document.getElementById('table-porto-body');
+            
             if (error || !data || data.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-20 text-zinc-500 text-sm">Belum ada portofolio yang ditambahkan.</div>';
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-zinc-500">Data portofolio kosong.</td></tr>`;
                 return;
             }
-
-            let html = '';
-            data.forEach(item => {
-                // Render List Card
-                html += `
-                <div class="bg-cardBg border border-zinc-800 rounded-[1.25rem] p-3 flex flex-col relative overflow-hidden group">
-                    <div class="w-full aspect-[4/3] bg-zinc-950 rounded-lg mb-3 overflow-hidden border border-zinc-800/50 shrink-0">
-                        <img src="${item.portraitImg}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start mb-1">
-                            <h4 class="text-sm font-bold text-white truncate max-w-[70%]">${item.name}</h4>
-                            <span class="text-[8px] bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded uppercase font-bold">${item.category}</span>
-                        </div>
-                        <p class="text-[10px] text-zinc-500 truncate mb-3">${item.stats} • ${item.videos ? item.videos.length : 0} Video</p>
-                    </div>
-                    <div class="mt-auto pt-3 border-t border-zinc-800/50 flex gap-2">
-                        <!-- Nanti bisa di-expand buat tombol Edit -->
-                        <button onclick="window.deletePortfolio('${item.id}')" class="w-full bg-red-500/10 hover:bg-red-500 border border-red-500/30 text-red-400 hover:text-white py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 focus:outline-none">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> Hapus
-                        </button>
-                    </div>
-                </div>`;
+            
+            dbPorto = data;
+            tbody.innerHTML = '';
+            
+            dbPorto.forEach(item => {
+                const accountsCount = item.handles ? item.handles.length : 0;
+                const vidsCount = item.videos ? item.videos.length : 0;
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-zinc-900/50 transition-colors">
+                        <td class="px-6 py-4 border-b border-zinc-800/50">
+                            <div class="w-12 h-16 rounded-lg overflow-hidden border border-zinc-700 bg-zinc-900 shrink-0">
+                                <img src="${item.portraitImg}" class="w-full h-full object-cover">
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 border-b border-zinc-800/50">
+                            <div class="font-bold text-white text-sm mb-1">${item.name}</div>
+                            <div class="flex gap-2 text-[10px] text-zinc-400 font-medium">
+                                <span class="bg-zinc-800 px-2 py-0.5 rounded-md">${accountsCount} Akun</span>
+                                <span class="bg-zinc-800 px-2 py-0.5 rounded-md">${vidsCount} Video</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 border-b border-zinc-800/50">
+                            <span class="bg-blue-900/30 border border-blue-900/50 text-blue-400 text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md">${item.category}</span>
+                        </td>
+                        <td class="px-6 py-4 border-b border-zinc-800/50 text-right">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="editPorto('${item.id}')" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-blue-600 hover:text-white text-zinc-400 transition-colors flex items-center justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                <button onclick="deletePorto('${item.id}', '${item.portraitImg}')" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-red-500 hover:text-white text-zinc-400 transition-colors flex items-center justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                            </div>
+                        </td>
+                    </tr>`;
             });
-            grid.innerHTML = html;
         }
 
-        window.deletePortfolio = async function(id) {
-            if (confirm("Apakah Anda yakin ingin menghapus data portofolio ini? Aksi ini tidak dapat dibatalkan.")) {
-                try {
-                    const { error } = await supabase.from('portfolios').delete().eq('id', id);
-                    if (error) throw error;
-                    
-                    showToast('Terhapus', 'Data portofolio berhasil dihapus.');
-                    loadPortfolios();
-                } catch (err) {
-                    showToast('Gagal Menghapus', err.message, true);
+        window.openModalPorto = function() {
+            document.getElementById('form-porto').reset();
+            document.getElementById('porto-id').value = '';
+            document.getElementById('text-title-porto').textContent = "Tambah Portofolio";
+            document.getElementById('porto-cat-label').innerText = "Pilih Kategori"; document.getElementById('porto-cat-label').classList.replace('text-white','text-zinc-400');
+            document.getElementById('porto-category').value = '';
+            
+            document.getElementById('porto-file').setAttribute('required', 'true');
+            document.getElementById('porto-old-file').value = '';
+            document.getElementById('porto-file-hint').classList.add('hidden');
+            
+            document.getElementById('handles-container').innerHTML = ''; window.addHandleRow();
+            document.getElementById('videos-container').innerHTML = ''; window.addVideoRow();
+            
+            const m = document.getElementById('modal-porto'); const c = document.getElementById('content-porto');
+            m.classList.remove('opacity-0', 'pointer-events-none'); c.classList.remove('scale-95');
+        }
+
+        window.closeModalPorto = function() {
+            const m = document.getElementById('modal-porto'); const c = document.getElementById('content-porto');
+            c.classList.add('scale-95'); m.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => document.getElementById('form-porto').reset(), 300);
+        }
+
+        window.addHandleRow = function(data = {username:'', link:''}) {
+            const div = document.createElement('div');
+            div.className = 'handle-row flex flex-col md:flex-row gap-2 items-center';
+            div.innerHTML = `
+                <input type="text" class="input-field h-username flex-1" placeholder="Username (Cth: @whoost.id)" value="${data.username}" required>
+                <input type="url" class="input-field h-link flex-1" placeholder="URL Profil" value="${data.link}" required>
+                <button type="button" onclick="this.parentElement.remove()" class="w-full md:w-11 h-11 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg></button>
+            `;
+            document.getElementById('handles-container').appendChild(div);
+        }
+
+        window.addVideoRow = function(data = {views:'', embedUrl:''}) {
+            const div = document.createElement('div');
+            div.className = 'video-row flex flex-col md:flex-row gap-2 items-center';
+            div.innerHTML = `
+                <input type="text" class="input-field v-views w-full md:w-1/3" placeholder="Views (Cth: 1.2M)" value="${data.views}" required>
+                <input type="url" class="input-field v-embed flex-1" placeholder="URL Video (Tiktok/IG)" value="${data.embedUrl || data.url || ''}" required>
+                <button type="button" onclick="this.parentElement.remove()" class="w-full md:w-11 h-11 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center shrink-0 transition-colors"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg></button>
+            `;
+            document.getElementById('videos-container').appendChild(div);
+        }
+
+        window.savePorto = async function() {
+            const id = document.getElementById('porto-id').value;
+            const name = document.getElementById('porto-name').value;
+            const cat = document.getElementById('porto-category').value;
+            if(!name || !cat) { showToast("Peringatan", "Nama dan Kategori wajib diisi!", true); return; }
+
+            const btn = document.getElementById('btn-save-porto'); const txt = document.getElementById('txt-save-porto');
+            btn.disabled = true; txt.innerText = 'Menyimpan...';
+
+            try {
+                let portraitImg = document.getElementById('porto-old-file').value;
+                const file = document.getElementById('porto-file').files[0];
+                if(file) {
+                    const newImg = await uploadFileToSupabase(file, 'portfolios');
+                    if(portraitImg) await deleteFileFromSupabase(portraitImg, 'portfolios');
+                    portraitImg = newImg;
                 }
+                if(!portraitImg) throw new Error("File visual cover harus diupload.");
+
+                const handles = []; document.querySelectorAll('.handle-row').forEach(n => handles.push({ username: n.querySelector('.h-username').value, link: n.querySelector('.h-link').value }));
+                const videos = []; document.querySelectorAll('.video-row').forEach(n => videos.push({ views: n.querySelector('.v-views').value, embedUrl: n.querySelector('.v-embed').value }));
+
+                const payload = {
+                    name, category: cat, niche: document.getElementById('porto-niche').value,
+                    stats: document.getElementById('porto-stats').value, desc: document.getElementById('porto-desc').value,
+                    portraitImg, banner: '', handles, videos
+                };
+
+                if(id) await supabase.from('portfolios').update(payload).eq('id', id);
+                else await supabase.from('portfolios').insert([payload]);
+
+                showToast("Sukses", "Data portofolio tersimpan.");
+                closeModalPorto();
+                fetchPortfolios();
+            } catch(e) {
+                showToast("Error", e.message, true);
+            } finally {
+                btn.disabled = false; txt.innerText = 'Simpan Data';
+            }
+        }
+
+        window.editPorto = function(id) {
+            const data = dbPorto.find(i => i.id === id); if(!data) return;
+            openModalPorto();
+            document.getElementById('text-title-porto').textContent = "Edit Portofolio";
+            
+            document.getElementById('porto-id').value = data.id;
+            document.getElementById('porto-name').value = data.name;
+            selectCategory(data.category);
+            document.getElementById('porto-niche').value = data.niche;
+            document.getElementById('porto-stats').value = data.stats;
+            document.getElementById('porto-desc').value = data.desc;
+            
+            document.getElementById('porto-old-file').value = data.portraitImg || '';
+            document.getElementById('porto-file').removeAttribute('required');
+            document.getElementById('porto-file-hint').classList.remove('hidden');
+
+            document.getElementById('handles-container').innerHTML = ''; if(data.handles) data.handles.forEach(h => addHandleRow(h));
+            document.getElementById('videos-container').innerHTML = ''; if(data.videos) data.videos.forEach(v => addVideoRow(v));
+        }
+
+        window.deletePorto = async function(id, imgUrl) {
+            if(confirm("Yakin ingin menghapus portofolio ini?")) {
+                try {
+                    if(imgUrl) await deleteFileFromSupabase(imgUrl, 'portfolios');
+                    await supabase.from('portfolios').delete().eq('id', id);
+                    showToast("Terhapus", "Portofolio telah dihapus.");
+                    fetchPortfolios();
+                } catch(e) { showToast("Error", "Gagal menghapus.", true); }
+            }
+        }
+
+
+        // =====================================
+        // LOGIKA NETWORK (CRUD)
+        // =====================================
+        async function fetchNetwork() {
+            const { data, error } = await supabase.from('network_items').select('*').order('handle', { ascending: true });
+            const tbody = document.getElementById('table-network-body');
+            
+            if (error || !data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center py-10 text-zinc-500">Data jaringan kosong.</td></tr>`;
+                return;
+            }
+            
+            dbNet = data;
+            tbody.innerHTML = '';
+            
+            dbNet.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-zinc-900/50 transition-colors">
+                        <td class="px-6 py-3 border-b border-zinc-800/50">
+                            <img src="${item.img}" class="w-10 h-10 rounded-full object-cover border border-zinc-700 shadow">
+                        </td>
+                        <td class="px-6 py-3 border-b border-zinc-800/50 font-bold text-white text-sm">${item.handle}</td>
+                        <td class="px-6 py-3 border-b border-zinc-800/50"><span class="bg-zinc-800 px-2.5 py-1 rounded-md text-[11px] text-zinc-300 font-medium">${item.label}</span></td>
+                        <td class="px-6 py-3 border-b border-zinc-800/50 text-right">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="editNet('${item.id}')" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-blue-600 hover:text-white text-zinc-400 transition-colors flex items-center justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                                <button onclick="deleteNet('${item.id}', '${item.img}')" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-red-500 hover:text-white text-zinc-400 transition-colors flex items-center justify-center"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        window.openModalNet = function() {
+            document.getElementById('form-net').reset();
+            document.getElementById('net-id').value = '';
+            document.getElementById('title-net').textContent = "Tambah Network";
+            
+            document.getElementById('net-file').setAttribute('required', 'true');
+            document.getElementById('net-old-file').value = '';
+            document.getElementById('net-file-hint').classList.add('hidden');
+            
+            const m = document.getElementById('modal-net'); const c = document.getElementById('content-net');
+            m.classList.remove('opacity-0', 'pointer-events-none'); c.classList.remove('scale-95');
+        }
+
+        window.closeModalNet = function() {
+            const m = document.getElementById('modal-net'); const c = document.getElementById('content-net');
+            c.classList.add('scale-95'); m.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => document.getElementById('form-net').reset(), 300);
+        }
+
+        window.saveNet = async function() {
+            const id = document.getElementById('net-id').value;
+            const handle = document.getElementById('net-handle').value;
+            const label = document.getElementById('net-label').value;
+            const link = document.getElementById('net-link').value;
+
+            if(!handle || !label || !link) { showToast("Peringatan", "Isi semua form teks!", true); return; }
+
+            const btn = document.getElementById('btn-save-net'); const txt = document.getElementById('txt-save-net');
+            btn.disabled = true; txt.innerText = 'Menyimpan...';
+
+            try {
+                let img = document.getElementById('net-old-file').value;
+                const file = document.getElementById('net-file').files[0];
+                if(file) {
+                    const newImg = await uploadFileToSupabase(file, 'network');
+                    if(img) await deleteFileFromSupabase(img, 'network');
+                    img = newImg;
+                }
+                if(!img) throw new Error("Foto profil harus diupload.");
+
+                const payload = { handle, label, link, img };
+                if(id) await supabase.from('network_items').update(payload).eq('id', id);
+                else await supabase.from('network_items').insert([payload]);
+
+                showToast("Sukses", "Data network tersimpan.");
+                closeModalNet();
+                fetchNetwork();
+            } catch(e) {
+                showToast("Error", e.message, true);
+            } finally {
+                btn.disabled = false; txt.innerText = 'Simpan Data';
+            }
+        }
+
+        window.editNet = function(id) {
+            const data = dbNet.find(i => i.id === id); if(!data) return;
+            openModalNet();
+            document.getElementById('title-net').textContent = "Edit Network";
+            document.getElementById('net-id').value = data.id;
+            document.getElementById('net-handle').value = data.handle;
+            document.getElementById('net-label').value = data.label;
+            document.getElementById('net-link').value = data.link;
+
+            document.getElementById('net-old-file').value = data.img || '';
+            document.getElementById('net-file').removeAttribute('required');
+            document.getElementById('net-file-hint').classList.remove('hidden');
+        }
+
+        window.deleteNet = async function(id, imgUrl) {
+            if(confirm("Yakin ingin menghapus akun ini?")) {
+                try {
+                    if(imgUrl) await deleteFileFromSupabase(imgUrl, 'network');
+                    await supabase.from('network_items').delete().eq('id', id);
+                    showToast("Terhapus", "Akun network telah dihapus.");
+                    fetchNetwork();
+                } catch(e) { showToast("Error", "Gagal menghapus.", true); }
             }
         }
     </script>
-
-    <script>const ACTIVE_MENU = 'portfolio';</script>
-    <script src="attribute/navbaradmin.js"></script>
 </body>
 </html>
