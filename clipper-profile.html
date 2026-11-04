@@ -370,9 +370,9 @@
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media Konten</h4>
                     <div class="h-px bg-zinc-800 w-full"></div>
                 </div>
+                <!-- Dihapus kalimat catatan tentang followers -->
                 <p class="text-[10px] sm:text-xs text-zinc-500 mb-5 leading-relaxed">
-                    Tautkan dan verifikasi akun sosial media pribadi yang akan Anda gunakan untuk memposting konten campaign. Sistem kami membutuhkan ini untuk melacak <i>views</i>. <br>
-                    <span class="text-zinc-400 font-semibold">Catatan: Sistem hanya mencatat jumlah followers awal saat pertama kali akun ditambahkan.</span>
+                    Tautkan dan verifikasi akun sosial media pribadi yang akan Anda gunakan untuk memposting konten campaign. Sistem kami membutuhkan ini untuk melacak <i>views</i>.
                 </p>
 
                 <!-- List Container Terverifikasi -->
@@ -686,7 +686,7 @@
         }
 
         // ==========================================
-        // 4. SISTEM VERIFIKASI BIO CODE & FITUR REFRESH
+        // 4. SISTEM VERIFIKASI BIO CODE
         // ==========================================
         
         window.renderSocmedList = function() {
@@ -699,8 +699,6 @@
                 const safePlat = escapeHTML(soc.platform);
                 const safeUser = escapeHTML(soc.username);
                 const fChar = safeUser.charAt(0).toUpperCase();
-                
-                const fCount = soc.followers ? parseInt(soc.followers).toLocaleString('id-ID') : '0';
                 
                 let iconHtml = ICONS[safePlat] || ICONS['TikTok'];
 
@@ -716,7 +714,7 @@
                         </div>
                         <div class="flex flex-col truncate pr-2 w-full">
                             <span class="text-sm font-bold text-white truncate">@${safeUser}</span>
-                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">${fCount} followers awal</span>
+                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">Akun Terhubung</span>
                             <div class="mt-1.5 flex gap-2">
                                 <span class="text-[9px] border border-zinc-700 text-zinc-400 px-2 py-0.5 rounded-full font-medium tracking-wide">Bio Code</span>
                             </div>
@@ -906,7 +904,7 @@
                     throw new Error(data.message || "Kode verifikasi tidak ditemukan di Bio Anda. Pastikan kode sudah tersimpan di profil dengan benar.");
                 }
 
-                // Push with followers data directly from API
+                // Push with followers data directly from API (tetap disimpan namun disembunyikan di UI)
                 verifiedSocials.push({
                     platform: tempVerification.platform,
                     username: tempVerification.username,
