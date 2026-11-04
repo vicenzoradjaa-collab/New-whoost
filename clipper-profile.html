@@ -371,7 +371,8 @@
                     <div class="h-px bg-zinc-800 w-full"></div>
                 </div>
                 <p class="text-[10px] sm:text-xs text-zinc-500 mb-5 leading-relaxed">
-                    Tautkan dan verifikasi akun sosial media pribadi yang akan Anda gunakan untuk memposting konten campaign. Sistem kami membutuhkan ini untuk melacak <i>views</i>.
+                    Tautkan dan verifikasi akun sosial media pribadi yang akan Anda gunakan untuk memposting konten campaign. Sistem kami membutuhkan ini untuk melacak <i>views</i>. <br>
+                    <span class="text-zinc-400 font-semibold">Catatan: Sistem hanya mencatat jumlah followers awal saat pertama kali akun ditambahkan.</span>
                 </p>
 
                 <!-- List Container Terverifikasi -->
@@ -701,12 +702,6 @@
                 
                 const fCount = soc.followers ? parseInt(soc.followers).toLocaleString('id-ID') : '0';
                 
-                let updateText = 'diperbarui belum pernah';
-                if (soc.updated_at) {
-                    const dt = new Date(soc.updated_at);
-                    updateText = `diperbarui ${dt.toLocaleDateString('id-ID')}`;
-                }
-                
                 let iconHtml = ICONS[safePlat] || ICONS['TikTok'];
 
                 const div = document.createElement('div');
@@ -721,16 +716,13 @@
                         </div>
                         <div class="flex flex-col truncate pr-2 w-full">
                             <span class="text-sm font-bold text-white truncate">@${safeUser}</span>
-                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">${fCount} followers · ${updateText}</span>
+                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">${fCount} followers awal</span>
                             <div class="mt-1.5 flex gap-2">
                                 <span class="text-[9px] border border-zinc-700 text-zinc-400 px-2 py-0.5 rounded-full font-medium tracking-wide">Bio Code</span>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-1 mt-3 sm:mt-0 self-end sm:self-auto shrink-0 border-t border-zinc-800/50 sm:border-0 pt-2 sm:pt-0 w-full sm:w-auto justify-end">
-                        <button type="button" onclick="window.refreshSocmedData(${index}, this)" class="p-2 shrink-0 text-zinc-400 hover:text-white transition-colors focus:outline-none" title="Refresh Data">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        </button>
                         <button type="button" onclick="window.removeVerifiedSocmed(${index})" class="p-2 shrink-0 text-zinc-400 hover:text-red-500 transition-colors focus:outline-none" title="Hapus Akun">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
@@ -738,52 +730,6 @@
                 `;
                 container.appendChild(div);
             });
-        };
-
-        // FUNGSI TARIK DATA BARU (REFRESH FOLLOWERS) VIA API
-        window.refreshSocmedData = async function(index, btn) {
-            const svg = btn.querySelector('svg');
-            if(svg.classList.contains('animate-spin')) return; // Cegah spam klik
-            
-            svg.classList.add('animate-spin');
-            const targetSoc = verifiedSocials[index];
-            
-            try {
-                if (!sessionUser) throw new Error("Sesi tidak valid, mohon muat ulang halaman.");
-
-                // Panggil API dengan kode sandi khusus "REFRESH" agar bio tidak dicek
-                const response = await fetch('/api/verify-bio', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        platform: targetSoc.platform, 
-                        username: targetSoc.username, 
-                        code: 'REFRESH'
-                    })
-                });
-
-                const data = await response.json();
-                if(!response.ok || data.error) {
-                    throw new Error(data.error || "Gagal refresh data dari server.");
-                }
-                
-                // Update state & tanggal di array
-                verifiedSocials[index].followers = data.followers || 0;
-                verifiedSocials[index].updated_at = new Date().toISOString();
-                
-                // Auto-save langsung ke Supabase
-                const { error: updateErr } = await supabase.from('profiles').update({ social_media: verifiedSocials }).eq('id', sessionUser.id);
-                if(updateErr) throw new Error("Gagal menyimpan update data ke database.");
-                
-                // Re-render UI
-                window.renderSocmedList();
-                window.showCustomAlert("Berhasil Refresh", `Data followers @${targetSoc.username} berhasil diperbarui menjadi ${parseInt(data.followers||0).toLocaleString('id-ID')}.`, "success");
-            } catch(e) {
-                console.error(e);
-                window.showCustomAlert("Gagal Refresh", e.message, "error");
-            } finally {
-                svg.classList.remove('animate-spin');
-            }
         };
 
         window.removeVerifiedSocmed = async function(index) {
