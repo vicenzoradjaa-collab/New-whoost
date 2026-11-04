@@ -38,11 +38,9 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Hilangkan panah up/down pada input type number */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
-        /* Trik untuk dropdown agar tidak tertutup elemen bawahnya saat terbuka */
         .dropdown-parent:focus-within { z-index: 50; }
         
         @keyframes popIn {
@@ -53,7 +51,7 @@
 </head>
 <body class="antialiased selection:bg-zinc-300 selection:text-black flex flex-col relative w-full h-full">
 
-    <!-- OVERLAY LOADING GLOBAL UNTUK UPLOAD & SIMPAN -->
+    <!-- OVERLAY LOADING GLOBAL -->
     <div id="actionLoader" class="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <svg class="animate-spin h-10 w-10 text-white mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
         <p id="actionLoaderText" class="text-zinc-300 font-medium text-sm">Memproses...</p>
@@ -68,10 +66,6 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- CUSTOM MODALS (UICOMPONENTS)              -->
-    <!-- ========================================== -->
-    
     <!-- 1. Modal Aksi Avatar (Ganti / Hapus) -->
     <div id="avatarActionModal" class="fixed inset-0 z-[60] flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeAvatarActionModal()"></div>
@@ -94,12 +88,11 @@
         </div>
     </div>
 
-    <!-- 2. Modal Pesan Kustom (Pengganti Alert) Z-INDEX DITINGGIKAN -->
+    <!-- 2. Modal Pesan Kustom -->
     <div id="alertModal" class="fixed inset-0 z-[200] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCustomAlert()"></div>
         <div class="relative bg-[#121214] border border-zinc-800 rounded-[1.5rem] p-8 max-w-sm w-[90%] text-center shadow-2xl scale-95 transition-transform duration-300 flex flex-col" id="alertContent">
             <div id="alertIcon" class="w-16 h-16 bg-white/10 border border-white/20 text-white rounded-full flex items-center justify-center mx-auto mb-5 shrink-0">
-                <!-- SVG Icon dinamis -->
             </div>
             <h3 id="alertTitle" class="text-xl font-bold text-white mb-2">Pesan</h3>
             <p id="alertMessage" class="text-zinc-400 text-sm mb-6 leading-relaxed">Isi pesan ada di sini.</p>
@@ -109,7 +102,7 @@
         </div>
     </div>
 
-    <!-- 3. Modal Konfirmasi (Pengganti Confirm) -->
+    <!-- 3. Modal Konfirmasi Logout -->
     <div id="confirmModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closeCustomConfirm()"></div>
         <div class="relative bg-cardBg border border-zinc-800 rounded-3xl p-8 max-w-sm w-[90%] text-center shadow-2xl scale-95 transition-transform duration-300" id="confirmContent">
@@ -125,26 +118,22 @@
         </div>
     </div>
 
-    <!-- 4. MODAL VERIFIKASI BIO CODE (BLACK & WHITE DESIGN MATCHING IMAGE) -->
+    <!-- 4. MODAL VERIFIKASI BIO CODE -->
     <div id="bioModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
         <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="window.closeBioModal()"></div>
         <div class="relative bg-[#121214] border border-zinc-800 shadow-2xl rounded-[1.5rem] w-full max-w-lg p-5 sm:p-7 transform scale-95 transition-transform flex flex-col max-h-[90vh]" id="bioModalContent">
             
-            <!-- Close Button -->
             <button onclick="window.closeBioModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors focus:outline-none z-50">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <!-- Scrollable Inner Content -->
             <div class="overflow-y-auto custom-scrollbar flex-1 min-h-0 -mx-2 px-2 pb-2">
-                
                 <!-- STEP 1: Input Platform & Username -->
                 <div id="bioStep1" class="flex-col">
                     <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">Add Account</h3>
                     <p class="text-xs text-zinc-400 mb-6 leading-relaxed max-w-[90%]">Pilih platform dan masukkan username kamu untuk mulai verifikasi. Pastikan akun kamu dalam mode publik agar bisa disambungkan!</p>
                     
                     <div class="space-y-4 mb-6">
-                        <!-- Pilihan Platform -->
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 mb-2">Platform</label>
                             <input type="hidden" id="bioPlatform" value="TikTok">
@@ -164,7 +153,6 @@
                             </div>
                         </div>
 
-                        <!-- Username Input -->
                         <div>
                             <label class="block text-xs font-semibold text-zinc-400 mb-2">Username (Tidak perlu pakai "@")</label>
                             <div class="relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden focus-within:border-white transition-colors flex items-center">
@@ -184,7 +172,6 @@
                     <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">Masukan kode verifikasi di bio kamu</h3>
                     <p class="text-xs text-zinc-400 mb-6 leading-relaxed max-w-[95%]">Taruh kode di bawah pada bio <span id="step2PlatName" class="font-bold text-white">TikTok</span>, lalu klik tombol Check Verifikasi.</p>
 
-                    <!-- Selected Account Info -->
                     <div class="flex justify-between items-center bg-zinc-900 border border-zinc-800 rounded-xl p-3.5 mb-5 shadow-sm">
                         <div class="flex items-center gap-3 text-white font-bold text-sm">
                             <span id="step2Icon"></span>
@@ -193,7 +180,6 @@
                         <button onclick="window.resetBioModal()" class="text-xs text-zinc-400 hover:text-white transition-colors focus:outline-none underline underline-offset-2">Change account</button>
                     </div>
                     
-                    <!-- Code Display -->
                     <div class="mb-5">
                         <label class="block text-xs font-semibold text-zinc-400 mb-2">Kode Verifikasi</label>
                         <div class="bg-white rounded-xl p-4 flex justify-between items-center shadow-[0_0_20px_rgba(255,255,255,0.15)]">
@@ -204,7 +190,6 @@
                         </div>
                     </div>
 
-                    <!-- Expiration Timer -->
                     <div class="mb-5">
                         <div class="flex justify-between text-[10px] font-semibold text-zinc-400 mb-1.5">
                             <span>Kode akan expired dalam</span>
@@ -215,7 +200,6 @@
                         </div>
                     </div>
                     
-                    <!-- PANDUAN LANGKAH -->
                     <div class="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 mb-6 text-left space-y-3">
                         <p class="text-[11px] font-bold text-white mb-2 uppercase tracking-wide flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -249,7 +233,6 @@
         </div>
     </div>
 
-    <!-- Background Ornamen -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div class="absolute top-[-20%] right-[-10%] w-[50rem] h-[50rem] bg-zinc-800/10 rounded-full blur-[120px]"></div>
     </div>
@@ -364,7 +347,7 @@
                 </div>
             </div>
 
-            <!-- 4. FORM AKUN SOSIAL MEDIA CLIPPING (TERVERIFIKASI) B&W THEME -->
+            <!-- 4. FORM AKUN SOSIAL MEDIA CLIPPING (TERVERIFIKASI) -->
             <div class="mb-10 relative z-20">
                 <div class="flex items-center gap-4 mb-2">
                     <h4 class="text-xs font-bold tracking-widest text-zinc-500 uppercase shrink-0">Sosial Media Konten</h4>
@@ -379,7 +362,7 @@
                     <!-- Digenerate via JS -->
                 </div>
 
-                <!-- Tombol Tambah Akun Baru (Gaya Referensi) -->
+                <!-- Tombol Tambah Akun Baru -->
                 <button type="button" onclick="window.openBioModal()" class="w-full py-4 bg-zinc-900/40 border border-zinc-800 border-dashed text-center text-sm font-medium text-zinc-400 hover:text-white hover:border-zinc-500 rounded-xl transition-colors flex items-center justify-center gap-1.5 focus:outline-none">
                     Tambahkan akun baru <span class="text-white font-bold text-lg leading-none mb-0.5">+</span>
                 </button>
@@ -437,6 +420,7 @@
         let currentUserId = null;
         let currentAvatarUrl = null;
         let bankCount = 0;
+        let sessionUser = null;
 
         // STATE UNTUK SOSIAL MEDIA TERVERIFIKASI
         let verifiedSocials = []; 
@@ -481,6 +465,7 @@
                     window.location.replace('login.html');
                     return;
                 }
+                sessionUser = session.user;
                 currentUserId = session.user.id;
                 
                 document.getElementById('input-email').value = session.user.email;
@@ -690,15 +675,21 @@
             const container = document.getElementById('socmed-container');
             container.innerHTML = '';
             
-            if (verifiedSocials.length === 0) {
-                // Tampilan dibiarkan kosong untuk menonjolkan tombol tambah akun baru
-                return;
-            }
+            if (verifiedSocials.length === 0) return;
 
             verifiedSocials.forEach((soc, index) => {
                 const safePlat = escapeHTML(soc.platform);
                 const safeUser = escapeHTML(soc.username);
                 const fChar = safeUser.charAt(0).toUpperCase();
+                
+                // Menampilkan follower statis (jika baru di API) atau dari array JSON Database.
+                const fCount = soc.followers ? parseInt(soc.followers).toLocaleString('id-ID') : '0';
+                
+                let updateText = 'diperbarui belum pernah';
+                if (soc.updated_at) {
+                    const dt = new Date(soc.updated_at);
+                    updateText = `diperbarui ${dt.toLocaleDateString('id-ID')}`;
+                }
                 
                 let iconHtml = ICONS[safePlat] || ICONS['TikTok'];
 
@@ -714,7 +705,7 @@
                         </div>
                         <div class="flex flex-col truncate pr-2 w-full">
                             <span class="text-sm font-bold text-white truncate">@${safeUser}</span>
-                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">0 followers · diperbarui belum pernah</span>
+                            <span class="text-[10px] text-zinc-500 font-medium mt-0.5 truncate">${fCount} followers · ${updateText}</span>
                             <div class="mt-1.5 flex gap-2">
                                 <span class="text-[9px] border border-zinc-700 text-zinc-400 px-2 py-0.5 rounded-full font-medium tracking-wide">Bio Code</span>
                             </div>
@@ -741,10 +732,17 @@
             }, 1000);
         };
 
-        window.removeVerifiedSocmed = function(index) {
+        window.removeVerifiedSocmed = async function(index) {
             verifiedSocials.splice(index, 1);
             window.renderSocmedList();
             updateHealthBar();
+            
+            // Auto Save saat menghapus
+            if(sessionUser) {
+                try {
+                    await supabase.from('profiles').update({ social_media: verifiedSocials }).eq('id', sessionUser.id);
+                } catch(e){}
+            }
         };
 
         // Kontrol Modal Bio
@@ -773,7 +771,6 @@
             activeEl.classList.remove('border-zinc-800', 'bg-zinc-900', 'text-white');
             activeEl.classList.add('border-white', 'bg-white', 'text-black');
             
-            // Ubah icon input form sesuai platform
             const iconContainer = document.getElementById('platIconInput');
             iconContainer.innerHTML = ICONS[plat] || ICONS['TikTok'];
         };
@@ -874,9 +871,10 @@
         window.copyBioCode = function() {
             const code = document.getElementById('txtBioCode').innerText;
             navigator.clipboard.writeText(code).then(() => {
-                window.showCustomAlert("Berhasil Disalin", "Kode verifikasi telah disalin ke clipboard.", "success");
-            }).catch(() => {
-                window.showCustomAlert("Gagal Menyalin", "Gagal menyalin kode. Silakan salin manual.", "error");
+                const codeTxt = document.getElementById('txtBioCode');
+                const orig = codeTxt.style.opacity;
+                codeTxt.style.opacity = '0.5';
+                setTimeout(() => codeTxt.style.opacity = orig, 200);
             });
         };
 
@@ -887,8 +885,7 @@
             btn.innerHTML = `<svg class="w-5 h-5 animate-spin text-black" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memverifikasi...`;
 
             try {
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError || !session) throw new Error("Sesi tidak valid, mohon login ulang.");
+                if (!sessionUser) throw new Error("Sesi tidak valid, mohon muat ulang halaman.");
 
                 const response = await fetch('/api/verify-bio', {
                     method: 'POST',
@@ -910,20 +907,25 @@
                     throw new Error(data.message || "Kode verifikasi tidak ditemukan di Bio Anda. Pastikan kode sudah tersimpan di profil dengan benar.");
                 }
 
-                const socialId = data.social_id;
-
+                // Push with followers data directly from API
                 verifiedSocials.push({
                     platform: tempVerification.platform,
                     username: tempVerification.username,
-                    social_id: socialId.toString(),
-                    is_verified: true
+                    social_id: data.social_id.toString(),
+                    followers: data.followers || 0,
+                    is_verified: true,
+                    updated_at: new Date().toISOString()
                 });
+
+                // AUTO-SAVE KE SUPABASE AGAR TIDAK HILANG SAAT DIRELOAD
+                const { error: updateErr } = await supabase.from('profiles').update({ social_media: verifiedSocials }).eq('id', sessionUser.id);
+                if (updateErr) throw new Error("Berhasil verifikasi tapi gagal menyimpan ke database secara permanen.");
 
                 window.renderSocmedList();
                 updateHealthBar();
                 window.closeBioModal();
 
-                window.showCustomAlert("Terverifikasi!", `Akun ${tempVerification.platform} @${tempVerification.username} berhasil ditautkan. Jangan lupa klik "Simpan Perubahan" di bawah layar!`, "success");
+                window.showCustomAlert("Terverifikasi!", `Akun ${tempVerification.platform} @${tempVerification.username} berhasil ditautkan dan otomatis tersimpan.`, "success");
 
             } catch (e) {
                 console.error(e);
@@ -935,7 +937,7 @@
         };
 
         // ==========================================
-        // 5. DYNAMIC BANK LOGIC (DENGAN ANTI-XSS)
+        // 5. DYNAMIC BANK LOGIC
         // ==========================================
         window.addBankRow = function(bankName = 'BCA', accountNumber = '') {
             bankCount++;
@@ -1035,8 +1037,7 @@
             showActionLoader("Menyimpan Profil...");
             
             try {
-                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError || !session) throw new Error("Sesi tidak valid. Silakan muat ulang atau login kembali.");
+                if (!sessionUser) throw new Error("Sesi tidak valid. Silakan muat ulang atau login kembali.");
 
                 const updateData = {
                     full_name: document.getElementById('input-fullname').value,
@@ -1046,7 +1047,7 @@
                     payment_info: getBankData()
                 };
                 
-                const { error } = await supabase.from('profiles').update(updateData).eq('id', session.user.id);
+                const { error } = await supabase.from('profiles').update(updateData).eq('id', sessionUser.id);
                 if(error) throw error;
                 
                 updateHealthBar();
@@ -1116,7 +1117,6 @@
             
             const iconContainer = document.getElementById('alertIcon');
             
-            // Dynamic Styling Based on Status
             if(type === "success") {
                 iconContainer.innerHTML = iconSuccess;
                 iconContainer.className = "w-16 h-16 bg-white/10 border border-white/20 text-white rounded-full flex items-center justify-center mx-auto mb-5 shrink-0";
