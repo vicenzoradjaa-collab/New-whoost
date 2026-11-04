@@ -45,9 +45,17 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         
-        /* Animasi Card Terpilih (Auto-Fetch) */
+        /* Animasi Card Auto-Fetch (Lama) */
         .video-card { transition: all 0.2s ease; cursor: pointer; }
+        .video-card.selected { border-color: #f97316; background-color: rgba(249, 115, 22, 0.05); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(249, 115, 22, 0.2); }
         .video-card.selected .check-icon { opacity: 1; transform: scale(1); }
+
+        /* Skeleton Animation */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .animate-pulse-fast { animation: pulse-fast 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
     <!-- Mencegah Stuck Loader -->
     <script>
@@ -143,9 +151,9 @@
             </section>
 
             <!-- BANNER SUBMIT VIDEO MULTIPLE -->
-            <div class="bg-blue-900/10 border border-blue-900/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 -mt-2">
+            <div class="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 -mt-2">
                 <div class="flex items-start sm:items-center gap-3 sm:gap-4">
-                    <div class="bg-blue-500/20 p-2.5 sm:p-3 rounded-xl text-blue-400 shrink-0 border border-blue-500/20">
+                    <div class="bg-orange-500/20 p-2.5 sm:p-3 rounded-xl text-orange-400 shrink-0 border border-orange-500/20">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     </div>
                     <div>
@@ -153,7 +161,7 @@
                         <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Klik tombol di samping untuk mengirim link video terbaru dari berbagai campaign aktifmu.</p>
                     </div>
                 </div>
-                <button onclick="window.openSubmitModal()" class="w-full sm:w-auto shrink-0 bg-white hover:bg-zinc-200 text-black font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] focus:outline-none active:scale-95">
+                <button onclick="window.openSubmitModal()" class="w-full sm:w-auto shrink-0 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all focus:outline-none active:scale-95 shadow-lg shadow-orange-900/20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Submit Video Baru
                 </button>
@@ -161,7 +169,6 @@
 
             <!-- SECTION 2: LIST KONTEN -->
             <section>
-                <!-- Z-Index 60 ditambahkan agar dropdown tidak tertutup card video -->
                 <div class="flex flex-row items-center justify-between mb-6 gap-2 sm:gap-4 relative z-[60]">
                     <h2 class="text-sm sm:text-lg font-semibold text-white truncate pr-2">Konten Tersedia</h2>
                     
@@ -249,160 +256,156 @@
     </div>
 
     <!-- ========================================================= -->
-    <!-- MODAL PERINGATAN SEBELUM SUBMIT (WARNING)                 -->
+    <!-- NEW WIZARD: MODAL SUBMIT VIDEO (MULTI-STEP)               -->
     <!-- ========================================================= -->
-    <div id="warningSubmitModal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <div class="bg-cardBg border border-zinc-800 shadow-2xl rounded-2xl w-full max-w-sm overflow-hidden transform scale-95 transition-transform flex flex-col" id="warningSubmitContent">
-            <div class="p-6 text-center border-b border-zinc-800/80">
-                <h3 class="text-lg font-bold text-white mb-1">Sebelum Submit,<br>Kamu Harus Perhatikan Ini</h3>
-            </div>
-            <div class="p-6 space-y-5 bg-zinc-900/30">
-                <div class="flex items-start gap-4">
-                    <div class="bg-zinc-800/80 p-2.5 rounded-full text-zinc-300 shrink-0 border border-zinc-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <p class="text-xs text-zinc-300 leading-relaxed pt-1">Video yang baru diupload butuh waktu <b>±60 detik</b> untuk terbaca di sistem sebelum bisa disubmit.</p>
-                </div>
-                <div class="flex items-start gap-4">
-                    <div class="bg-zinc-800/80 p-2.5 rounded-full text-zinc-300 shrink-0 border border-zinc-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <p class="text-xs text-zinc-300 leading-relaxed pt-1">Submit video <b>paling lambat 24 jam</b> setelah upload. Contoh: upload jam 12:00, submit sebelum jam 12:00 keesokan harinya.</p>
-                </div>
-            </div>
-            <div class="p-5 border-t border-zinc-800/80 bg-zinc-900/50 flex flex-col gap-4">
-                
-                <!-- KOTAK PERHATIAN PENTING -->
-                <div class="bg-red-950/30 border border-red-900/50 rounded-xl p-3 flex gap-3 shadow-inner">
-                    <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    <div>
-                        <p class="text-[11px] font-bold text-red-400 mb-1">Perhatian Penting!</p>
-                        <p class="text-[10px] text-zinc-400 leading-relaxed">Pastikan isi kontenmu sesuai dengan brief yang diberikan. Dilarang keras melakukan kecurangan seperti menyuntik fake views / bot. Pelanggaran akan mengakibatkan penolakan klaim dan akun di-banned permanen.</p>
-                    </div>
-                </div>
-
-                <button onclick="window.proceedToMainSubmit()" class="w-full py-3 rounded-xl bg-[#ea580c] text-white text-sm font-bold hover:bg-[#c2410c] transition-colors focus:outline-none">
-                    Selanjutnya
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================================= -->
-    <!-- MODAL MULTI-STEP SUBMIT VIDEO BARU                        -->
-    <!-- ========================================================= -->
-    <div id="multiStepSubmitModal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <div class="bg-cardBg border border-zinc-800 shadow-2xl rounded-2xl w-full max-w-2xl min-h-[500px] flex flex-col relative transform scale-95 transition-transform" id="multiStepSubmitContent">
+    <div id="submitVideoModal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-[#121214] border border-zinc-800 shadow-2xl rounded-[1.5rem] w-full max-w-lg p-6 transform scale-95 transition-transform flex flex-col relative max-h-[90vh]" id="submitVideoContent">
             
             <!-- Close Button -->
-            <button onclick="window.closeSubmitModal()" class="absolute top-4 right-4 z-50 p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-full transition-colors focus:outline-none">
+            <button onclick="window.closeSubmitModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors focus:outline-none z-50">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <!-- Stepper Header -->
-            <div class="p-6 border-b border-zinc-800/50">
-                <div class="flex items-center gap-2 max-w-xs">
-                    <div id="step-ind-1" class="w-8 h-8 rounded-full bg-[#ea580c] text-white flex items-center justify-center text-sm font-bold border-2 border-[#ea580c] transition-colors">1</div>
-                    <div class="flex-1 h-px border-t-2 border-dashed border-zinc-700 step-line-1 transition-colors"></div>
-                    <div id="step-ind-2" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-500 flex items-center justify-center text-sm font-bold border-2 border-zinc-700 transition-colors">2</div>
-                    <div class="flex-1 h-px border-t-2 border-dashed border-zinc-700 step-line-2 transition-colors"></div>
-                    <div id="step-ind-3" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-500 flex items-center justify-center text-sm font-bold border-2 border-zinc-700 transition-colors">3</div>
-                    <div class="flex-1 h-px border-t-2 border-dashed border-zinc-700 step-line-3 transition-colors"></div>
-                    <div id="step-ind-4" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-500 flex items-center justify-center text-sm font-bold border-2 border-zinc-700 transition-colors">4</div>
+            <!-- TOP BREADCRUMB (HIDDEN ON STEP 0) -->
+            <div id="submitBreadcrumb" class="hidden flex items-center justify-center w-full max-w-sm mx-auto mb-6 relative">
+                <div class="absolute inset-0 top-1/2 -translate-y-1/2 flex items-center px-4 z-0">
+                    <div class="h-[2px] w-full bg-zinc-800 border-dashed border-t border-zinc-700"></div>
+                </div>
+                <div class="relative z-10 flex justify-between w-full">
+                    <div id="step-ind-1" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">1</div>
+                    <div id="step-ind-2" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">2</div>
+                    <div id="step-ind-3" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">3</div>
+                    <div id="step-ind-4" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">4</div>
                 </div>
             </div>
 
-            <!-- Formulir Data (Hidden Inputs) -->
-            <form id="submitForm" onsubmit="window.processSubmit(event)" novalidate class="flex-1 flex flex-col">
-                <input type="hidden" id="submitCampaignValue" required>
-                <input type="hidden" id="submitPlatformValue" required>
-                <input type="hidden" id="submitAccountValue" required>
-                <input type="hidden" id="videoLink" required>
+            <!-- SCROLLABLE CONTENT AREA -->
+            <div class="overflow-y-auto custom-scrollbar flex-1 -mx-2 px-2 pb-2">
+                
+                <!-- STEP 0: PERINGATAN AWAL -->
+                <div id="step-0-container" class="flex flex-col py-6 px-2">
+                    <h3 class="text-2xl sm:text-3xl font-bold text-white mb-6 text-center leading-tight">Sebelum Submit,<br>Kamu Harus Perhatikan Ini</h3>
+                    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-inner">
+                        <div class="flex items-start gap-3">
+                            <div class="bg-zinc-800 p-2 rounded-full shrink-0">
+                                <svg class="w-5 h-5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <p class="text-sm text-zinc-300 pt-1">Video yang baru diupload butuh waktu ±60 detik untuk terbaca di sistem sebelum bisa disubmit.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="bg-zinc-800 p-2 rounded-full shrink-0">
+                                <svg class="w-5 h-5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <p class="text-sm text-zinc-300 pt-1">Submit video paling lambat 24 jam setelah upload. Contoh: upload jam 12:00, submit sebelum jam 12:00 keesokan harinya.</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="window.goToStep(1)" class="w-full mt-6 px-4 py-3.5 bg-orange-600 hover:bg-orange-500 text-white text-sm font-bold rounded-xl transition-all shadow-[0_4px_20px_rgba(234,88,12,0.3)] active:scale-95 focus:outline-none">Selanjutnya</button>
+                    <p class="text-xs text-zinc-500 text-center mt-4">Pastikan submit tepat waktu supaya video kamu tidak terlewat.</p>
+                </div>
 
-                <!-- MAIN CONTENT AREA (Scrollable) -->
-                <div class="flex-1 p-6 overflow-y-auto custom-scrollbar" id="stepContentArea">
+                <!-- STEP 1: PILIH CAMPAIGN -->
+                <div id="step-1-container" class="hidden flex-col">
+                    <h3 class="text-2xl font-bold text-white mb-2">Pilih Campaign</h3>
+                    <p class="text-sm text-zinc-400 mb-6">Pilih salah satu campaign yang ingin disubmit</p>
+                    <div id="step-1-list" class="space-y-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                    <div class="flex justify-between mt-8 gap-3">
+                        <button type="button" onclick="window.goToStep(0)" class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
+                        <button type="button" id="btn-next-1" onclick="window.goToStep(2)" disabled class="w-full px-4 py-3 bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl hover:bg-orange-500 transition-colors">Selanjutnya</button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: PILIH PLATFORM SOSMED -->
+                <div id="step-2-container" class="hidden flex-col">
+                    <h3 class="text-2xl font-bold text-white mb-2">Pilih Social Media</h3>
+                    <p class="text-sm text-zinc-400 mb-6">Silahkan pilih salah satu social media dibawah ini</p>
+                    <div id="step-2-list" class="space-y-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                    <div class="flex justify-between mt-8 gap-3">
+                        <button type="button" onclick="window.goToStep(1)" class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
+                        <button type="button" id="btn-next-2" onclick="window.goToStep(3)" disabled class="w-full px-4 py-3 bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl hover:bg-orange-500 transition-colors">Selanjutnya</button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: PILIH AKUN -->
+                <div id="step-3-container" class="hidden flex-col">
+                    <h3 class="text-2xl font-bold text-white mb-2">Pilih akun <span id="lbl-platform-name"></span> kamu</h3>
+                    <p class="text-sm text-zinc-400 mb-6">Pilih salah satu akun dibawah</p>
+                    <div id="step-3-list" class="space-y-3">
+                        <!-- Rendered by JS -->
+                    </div>
+                    <a href="clipper-profile.html" class="mt-4 block w-full py-4 bg-zinc-900/50 border border-zinc-800 border-dashed text-center text-sm font-medium text-zinc-400 hover:text-white rounded-xl transition-colors">Tambahkan akun baru <span class="text-orange-500 font-bold ml-1">+</span></a>
+                    <div class="flex justify-between mt-8 gap-3">
+                        <button type="button" onclick="window.goToStep(2)" class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
+                        <button type="button" id="btn-next-3" onclick="window.goToStep(4)" disabled class="w-full px-4 py-3 bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl hover:bg-orange-500 transition-colors">Selanjutnya</button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: PILIH VIDEO -->
+                <div id="step-4-container" class="hidden flex-col">
+                    <h3 class="text-2xl font-bold text-white mb-6">Pilih video yang ingin disubmit</h3>
                     
-                    <!-- STEP 1: PILIH CAMPAIGN -->
-                    <div id="step1-container" class="step-pane flex flex-col h-full">
-                        <h2 class="text-2xl font-bold text-white mb-2">Pilih Campaign</h2>
-                        <p class="text-sm text-zinc-400 mb-6">Pilih campaign aktif yang ingin kamu kirimkan videonya.</p>
-                        <div id="step1-list" class="space-y-3">
-                            <!-- Diisi JS -->
+                    <div class="bg-[#1a1513] border border-[#3f2010] rounded-xl p-3 flex items-center gap-3 mb-5">
+                        <svg class="w-5 h-5 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-xs text-zinc-300">Video baru upload? Tunggu ±60 detik sebelum muncul & bisa dipilih di sini.</p>
+                    </div>
+
+                    <div id="hashtag-container" class="mb-5">
+                        <p class="text-[11px] text-zinc-400 mb-2">Pastikan hashtag di bawah sudah ditambahkan di caption setiap video.</p>
+                        <div id="hashtag-list" class="flex flex-wrap gap-2">
+                            <!-- Generated by JS, example placeholders -->
+                            <span class="px-3 py-1.5 bg-zinc-800/80 rounded-lg text-[11px] text-zinc-300 font-medium">#campaign</span>
                         </div>
                     </div>
 
-                    <!-- STEP 2: PILIH SOCIAL MEDIA -->
-                    <div id="step2-container" class="step-pane hidden flex-col h-full">
-                        <h2 class="text-2xl font-bold text-white mb-2">Pilih Social Media</h2>
-                        <p class="text-sm text-zinc-400 mb-6">Silahkan pilih salah satu platform dibawah ini.</p>
-                        <div id="step2-list" class="space-y-3">
-                            <!-- Diisi JS -->
+                    <!-- LOADER / SKELETON -->
+                    <div id="videoFetchLoaderNew" class="grid grid-cols-2 md:grid-cols-3 gap-3 hidden">
+                        <div class="aspect-[9/16] bg-zinc-900 rounded-xl animate-pulse-fast border border-zinc-800 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-orange-500/50 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </div>
+                        <div class="aspect-[9/16] bg-zinc-900 rounded-xl animate-pulse-fast border border-zinc-800"></div>
+                        <div class="aspect-[9/16] bg-zinc-900 rounded-xl animate-pulse-fast border border-zinc-800 hidden md:block"></div>
                     </div>
 
-                    <!-- STEP 3: PILIH AKUN -->
-                    <div id="step3-container" class="step-pane hidden flex-col h-full">
-                        <h2 id="step3-title" class="text-2xl font-bold text-white mb-2">Pilih Akun</h2>
-                        <p class="text-sm text-zinc-400 mb-6">Pilih salah satu akun terverifikasi kamu.</p>
-                        <div id="step3-list" class="space-y-3">
-                            <!-- Diisi JS -->
-                        </div>
-                        <a href="clipper-profile.html" class="mt-4 block w-full py-4 rounded-xl border border-zinc-800 border-dashed text-center text-sm text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors">
-                            Tambahkan akun baru <span class="text-[#ea580c] font-bold ml-1">+</span>
-                        </a>
+                    <!-- GRID VIDEO NYATA -->
+                    <div id="videoGridNew" class="grid grid-cols-2 md:grid-cols-3 gap-3 hidden">
+                        <!-- Diisi via JS -->
                     </div>
 
-                    <!-- STEP 4: PILIH VIDEO -->
-                    <div id="step4-container" class="step-pane hidden flex-col h-full">
-                        <h2 class="text-2xl font-bold text-white mb-4">Pilih video yang ingin disubmit</h2>
-                        
-                        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center gap-3 mb-6">
-                            <svg class="w-5 h-5 text-[#ea580c] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <p class="text-xs text-zinc-300">Video baru upload? Tunggu ±60 detik sebelum muncul & bisa dipilih di sini.</p>
-                        </div>
-
-                        <!-- Hashtags (Dummy UI) -->
-                        <div class="mb-6">
-                            <p class="text-sm text-zinc-400 mb-3">Pastikan hashtag di bawah sudah ditambahkan di caption setiap video.</p>
-                            <div class="flex flex-wrap gap-2" id="hashtag-container">
-                                <!-- Diisi JS -->
+                    <!-- ERROR / KOSONG -->
+                    <div id="noVideoStateNew" class="hidden flex-col bg-[#2a1010] border border-red-900/50 rounded-xl p-4 mt-2">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <div>
+                                <p class="text-xs text-red-400 font-medium leading-relaxed">Belum ada video yang kedetect dari akun ini. Kalau kamu baru upload, tunggu ±60 detik lalu Coba Lagi. Pastikan juga hashtag wajib campaign sudah ada di caption.</p>
+                                <button type="button" onclick="window.fetchVideos(true)" class="mt-3 bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold py-2 px-5 rounded-lg transition-colors focus:outline-none">Coba Lagi</button>
                             </div>
                         </div>
-
-                        <!-- Area Loader Auto-Fetch -->
-                        <div id="videoFetchLoader" class="flex flex-col items-center justify-center py-12">
-                            <svg class="w-10 h-10 animate-spin text-[#ea580c] mb-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            <span class="text-xs font-semibold text-zinc-400 uppercase tracking-widest">Menarik Data Sosmed...</span>
-                        </div>
-
-                        <!-- Error State Kosong / API Gagal -->
-                        <div id="noVideoState" class="hidden flex-col items-start p-4 bg-red-950/20 border border-red-900/50 rounded-xl mb-6">
-                            <div class="flex gap-3">
-                                <svg class="w-5 h-5 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                <div>
-                                    <p class="text-sm text-red-400 mb-3 leading-relaxed" id="noVideoDesc">Belum ada video yang kedetect dari akun ini. Kalau kamu baru upload, tunggu ±60 detik lalu Coba Lagi.</p>
-                                    <button type="button" onclick="window.fetchVideos(true)" class="bg-[#ea580c] hover:bg-[#c2410c] text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">Coba Lagi</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Video Grid -->
-                        <div id="videoGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4 hidden mb-4">
-                            <!-- Digenerate JS -->
-                        </div>
-                        
-                        <p id="urlError" class="hidden text-red-500 text-xs mt-2 font-medium">Silakan pilih salah satu video terlebih dahulu.</p>
                     </div>
 
-                </div>
+                    <p id="urlError" class="hidden text-red-500 text-xs mt-3 font-medium flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Silakan pilih salah satu video di atas terlebih dahulu.
+                    </p>
 
-                <!-- Footer Navigation -->
-                <div class="p-5 border-t border-zinc-800/80 bg-zinc-900/30 flex justify-end gap-3 shrink-0">
-                    <button type="button" id="btnPrevStep" onclick="window.prevStep()" class="hidden px-6 py-2.5 rounded-xl border border-zinc-700 text-white text-sm font-bold hover:bg-zinc-800 transition-colors focus:outline-none">Kembali</button>
-                    <button type="button" id="btnNextStep" onclick="window.nextStep()" class="px-6 py-2.5 rounded-xl bg-[#ea580c] text-white text-sm font-bold hover:bg-[#c2410c] transition-colors focus:outline-none shadow-lg shadow-[#ea580c]/20">Selanjutnya</button>
-                    <button type="submit" id="btnSubmitVideo" class="hidden px-7 py-2.5 rounded-xl bg-[#ea580c] text-white text-sm font-bold hover:bg-[#c2410c] transition-colors focus:outline-none shadow-lg shadow-[#ea580c]/20">Submit</button>
+                    <div class="flex justify-between mt-8 gap-3">
+                        <button type="button" onclick="window.goToStep(3)" class="w-1/3 px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
+                        <button type="button" id="btnSubmitVideo" onclick="window.processSubmit(event)" disabled class="w-2/3 px-4 py-3 bg-[#9c3905] hover:bg-[#b94406] disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-white text-sm font-bold rounded-xl transition-colors">
+                            Selanjutnya
+                        </button>
+                    </div>
                 </div>
-            </form>
+            </div>
+
+            <!-- FOOTER WARNING -->
+            <div class="mt-6 pt-5 border-t border-zinc-800/80 shrink-0">
+                <p class="text-[10px] sm:text-xs text-zinc-400 leading-relaxed text-center font-medium">
+                    <b class="text-red-500">Perhatian Penting!</b><br>
+                    Pastikan isi kontenmu sesuai dengan brief yang diberikan. Dilarang keras melakukan kecurangan seperti menyuntik fake views / bot. Pelanggaran akan mengakibatkan penolakan klaim dan akun di-banned permanen.
+                </p>
+            </div>
         </div>
     </div>
 
@@ -445,7 +448,6 @@
         let realWithdrawable = 0;
         let isSensorActive = false;
 
-        // Fungsi Keamanan Anti-XSS
         function escapeHTML(str) {
             if (!str) return '';
             return str.toString()
@@ -518,307 +520,212 @@
 
 
         // ==========================================
-        // FITUR BARU: MODAL SUBMIT VIDEO (MULTI-STEP)
+        // FITUR BARU: MODAL SUBMIT WIZARD 4 STEP
         // ==========================================
-        let currentStep = 1;
-        let selectedCampaignData = null;
-        let selectedPlatformData = null;
-        let selectedAccountData = null;
+        let submitState = {
+            step: 0,
+            campaign: null,
+            platform: null,
+            account: null,
+            videoUrl: null
+        };
+
+        const PLATFORM_MAP = [
+            { id: 'instagram', name: 'Instagram', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>' },
+            { id: 'tiktok', name: 'Tiktok', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>' },
+            { id: 'youtube', name: 'Youtube', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' },
+            { id: 'threads', name: 'Threads', icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>' }
+        ];
 
         window.openSubmitModal = function() {
-            // Tampilkan Modal Peringatan Pertama
-            const m = document.getElementById('warningSubmitModal');
-            const c = document.getElementById('warningSubmitContent');
+            submitState = { step: 0, campaign: null, platform: null, account: null, videoUrl: null };
+            
+            const m = document.getElementById('submitVideoModal');
+            const c = document.getElementById('submitVideoContent');
             m.classList.remove('hidden'); m.classList.add('flex');
+            
+            window.goToStep(0);
+
             setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
         };
 
-        window.proceedToMainSubmit = function() {
-            // Tutup warning
-            document.getElementById('warningSubmitModal').classList.add('opacity-0');
-            setTimeout(() => {
-                document.getElementById('warningSubmitModal').classList.add('hidden');
-                document.getElementById('warningSubmitModal').classList.remove('flex');
-                
-                // Reset State
-                currentStep = 1;
-                selectedCampaignData = null;
-                selectedPlatformData = null;
-                selectedAccountData = null;
-                document.getElementById('submitCampaignValue').value = '';
-                document.getElementById('submitPlatformValue').value = '';
-                document.getElementById('submitAccountValue').value = '';
-                document.getElementById('videoLink').value = '';
-                
-                updateStepperUI();
-                renderStep1();
-
-                // Buka modal utama
-                const m = document.getElementById('multiStepSubmitModal');
-                const c = document.getElementById('multiStepSubmitContent');
-                m.classList.remove('hidden'); m.classList.add('flex');
-                setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
-            }, 200);
-        };
-
         window.closeSubmitModal = function() {
-            const m = document.getElementById('multiStepSubmitModal');
-            const c = document.getElementById('multiStepSubmitContent');
+            const m = document.getElementById('submitVideoModal');
+            const c = document.getElementById('submitVideoContent');
             m.classList.add('opacity-0'); c.classList.add('scale-95');
+            setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+        };
+
+        window.goToStep = function(stepIndex) {
+            submitState.step = stepIndex;
             
-            // Tutup warning juga untuk jaga-jaga
-            document.getElementById('warningSubmitModal').classList.add('opacity-0');
-            setTimeout(() => { 
-                m.classList.add('hidden'); m.classList.remove('flex'); 
-                document.getElementById('warningSubmitModal').classList.add('hidden');
-            }, 300);
-        };
-
-        // Navigasi Stepper
-        window.nextStep = function() {
-            if (currentStep === 1 && !selectedCampaignData) return showAlert('Pilih campaign terlebih dahulu.', 'error');
-            if (currentStep === 2 && !selectedPlatformData) return showAlert('Pilih platform social media terlebih dahulu.', 'error');
-            if (currentStep === 3 && !selectedAccountData) return showAlert('Pilih salah satu akun terlebih dahulu.', 'error');
-
-            if (currentStep < 4) {
-                currentStep++;
-                updateStepperUI();
-            }
-        };
-
-        window.prevStep = function() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateStepperUI();
-            }
-        };
-
-        function updateStepperUI() {
-            // Update Bullets
-            for(let i = 1; i <= 4; i++) {
-                const ind = document.getElementById(`step-ind-${i}`);
-                if(i <= currentStep) {
-                    ind.className = 'w-8 h-8 rounded-full bg-[#ea580c] text-white flex items-center justify-center text-sm font-bold border-2 border-[#ea580c] transition-colors';
-                } else {
-                    ind.className = 'w-8 h-8 rounded-full bg-zinc-900 text-zinc-500 flex items-center justify-center text-sm font-bold border-2 border-zinc-700 transition-colors';
-                }
-                
-                // Lines
-                if(i < 4) {
-                    const line = document.querySelector(`.step-line-${i}`);
-                    if(i < currentStep) line.classList.replace('border-zinc-700', 'border-[#ea580c]');
-                    else line.classList.replace('border-[#ea580c]', 'border-zinc-700');
+            for(let i=0; i<=4; i++) {
+                const c = document.getElementById(`step-${i}-container`);
+                if(c) {
+                    if (i === stepIndex) { c.classList.remove('hidden'); c.classList.add('flex'); } 
+                    else { c.classList.add('hidden'); c.classList.remove('flex'); }
                 }
             }
 
-            // Show/Hide Panes
-            document.querySelectorAll('.step-pane').forEach(el => el.classList.add('hidden', 'flex-col'));
-            document.getElementById(`step-${currentStep}-container`).classList.remove('hidden');
-            document.getElementById(`step-${currentStep}-container`).classList.add('flex');
-
-            // Button Logics
-            const btnPrev = document.getElementById('btnPrevStep');
-            const btnNext = document.getElementById('btnNextStep');
-            const btnSub = document.getElementById('btnSubmitVideo');
-
-            if(currentStep === 1) { btnPrev.classList.add('hidden'); } else { btnPrev.classList.remove('hidden'); }
-            
-            if(currentStep === 4) {
-                btnNext.classList.add('hidden');
-                btnSub.classList.remove('hidden');
-                // Trigger fetch when reaching step 4
-                window.fetchVideos(false);
-                renderHashtags();
+            const bc = document.getElementById('submitBreadcrumb');
+            if (stepIndex === 0) {
+                bc.classList.add('hidden');
             } else {
-                btnNext.classList.remove('hidden');
-                btnSub.classList.add('hidden');
+                bc.classList.remove('hidden');
+                for(let i=1; i<=4; i++) {
+                    const ind = document.getElementById(`step-ind-${i}`);
+                    if (i === stepIndex) {
+                        ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-orange-600 text-white border-2 border-cardBg ring-4 ring-orange-600/30 transition-all";
+                    } else if (i < stepIndex) {
+                        ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-[#3b1706] text-orange-500 border-2 border-[#5c2409] transition-all";
+                    } else {
+                        ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-900 text-zinc-500 border-2 border-zinc-800 transition-all";
+                    }
+                }
             }
 
-            // Render content before showing
-            if(currentStep === 2) renderStep2();
-            if(currentStep === 3) renderStep3();
-        }
+            if (stepIndex === 1) renderStep1();
+            if (stepIndex === 2) renderStep2();
+            if (stepIndex === 3) renderStep3();
+            if (stepIndex === 4) renderStep4Init();
+        };
 
-        // --- STEP 1: CAMPAIGN ---
+        // Render Step 1
         function renderStep1() {
-            const container = document.getElementById('step1-list');
+            const list = document.getElementById('step-1-list');
             if (joinedActiveCampaigns.length === 0) {
-                container.innerHTML = '<div class="p-4 text-sm text-zinc-500 text-center border border-zinc-800 rounded-xl">Belum ada campaign aktif</div>';
+                list.innerHTML = '<p class="text-sm text-zinc-500 text-center py-4 border border-zinc-800 border-dashed rounded-xl">Belum ada campaign aktif.</p>';
                 return;
             }
-            
             let html = '';
-            joinedActiveCampaigns.forEach(camp => {
-                const isActive = selectedCampaignData === camp.id ? 'border-[#ea580c] bg-zinc-800/50' : 'border-zinc-800 hover:border-zinc-600 bg-zinc-900/30';
+            joinedActiveCampaigns.forEach(c => {
+                const isSel = submitState.campaign?.id === c.id;
                 html += `
-                    <div onclick="window.selectCampaignForSubmit('${camp.id}')" class="p-4 rounded-xl border ${isActive} cursor-pointer transition-colors flex items-center justify-between">
-                        <div>
-                            <h4 class="text-white font-bold text-sm">${escapeHTML(camp.title)}</h4>
-                            <p class="text-xs text-zinc-500 mt-1">Sisa Budget: Rp ${camp.budget_remaining.toLocaleString('id-ID')}</p>
-                        </div>
-                        <div class="w-5 h-5 rounded-full border-2 ${selectedCampaignData === camp.id ? 'border-[#ea580c] bg-[#ea580c]' : 'border-zinc-600'} flex items-center justify-center">
-                            ${selectedCampaignData === camp.id ? '<svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : ''}
-                        </div>
-                    </div>
-                `;
+                <div onclick="window.selectSubmitCampaign('${c.id}')" class="p-4 rounded-xl border ${isSel ? 'border-orange-500 bg-orange-500/10' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+                    <p class="font-bold text-white text-sm">${escapeHTML(c.title)}</p>
+                </div>`;
             });
-            container.innerHTML = html;
+            list.innerHTML = html;
+            document.getElementById('btn-next-1').disabled = !submitState.campaign;
         }
 
-        window.selectCampaignForSubmit = function(id) {
-            selectedCampaignData = id;
-            document.getElementById('submitCampaignValue').value = id;
-            // Reset state bawahnya
-            selectedPlatformData = null; 
-            selectedAccountData = null;
-            renderStep1(); // Rerender for active state
-        }
+        window.selectSubmitCampaign = function(id) {
+            submitState.campaign = joinedActiveCampaigns.find(c => c.id === id);
+            submitState.platform = null; 
+            submitState.account = null;
+            renderStep1();
+        };
 
-        // --- STEP 2: PLATFORM ---
+        // Render Step 2
         function renderStep2() {
-            const container = document.getElementById('step2-list');
-            const camp = joinedActiveCampaigns.find(c => c.id === selectedCampaignData);
-            const allowed = camp && camp.platforms ? camp.platforms : ['instagram', 'tiktok', 'youtube'];
-
-            const platforms = [
-                { id: 'instagram', name: 'Instagram', icon: '<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/>' },
-                { id: 'tiktok', name: 'Tiktok', icon: '<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>' },
-                { id: 'youtube', name: 'Youtube', icon: '<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>' }
-            ];
-
+            const camp = submitState.campaign;
+            const list = document.getElementById('step-2-list');
             let html = '';
-            platforms.forEach(p => {
-                const isAllowed = allowed.includes(p.id);
-                const isActive = selectedPlatformData === p.id;
+            
+            PLATFORM_MAP.forEach(p => {
+                let isAllowed = false;
+                if (camp.platforms && camp.platforms.length > 0) {
+                    isAllowed = camp.platforms.includes(p.id);
+                } else {
+                    isAllowed = p.id !== 'threads'; // default allow
+                }
                 
-                // Count connected accounts for this platform
-                const count = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === p.id).length;
-
+                let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === p.id);
+                
                 if (isAllowed) {
-                    const borderClass = isActive ? 'border-[#ea580c] bg-zinc-800/50' : 'border-zinc-800 hover:border-zinc-600 bg-zinc-900/30';
+                    const isSel = submitState.platform === p.id;
                     html += `
-                        <div onclick="window.selectPlatformForSubmit('${p.id}')" class="p-4 rounded-xl border ${borderClass} cursor-pointer transition-colors flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-300">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">${p.icon}</svg>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="text-white font-bold">${p.name}</h4>
-                                <p class="text-xs text-zinc-500 mt-0.5">${count} Akun terhubung</p>
+                    <div onclick="window.selectSubmitPlatform('${p.id}')" class="flex items-center justify-between p-4 rounded-xl border ${isSel ? 'border-orange-500 bg-orange-500/10' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-zinc-800 p-2.5 rounded-xl text-white">${p.icon}</div>
+                            <div>
+                                <p class="font-bold text-white text-base">${p.name}</p>
+                                <p class="text-[11px] text-zinc-400 mt-0.5">${connAccs.length} Akun terhubung</p>
                             </div>
                         </div>
-                    `;
+                    </div>`;
                 } else {
                     html += `
-                        <div class="p-4 rounded-xl border border-zinc-800/50 bg-zinc-900/10 opacity-50 flex items-center gap-4 cursor-not-allowed">
-                            <div class="w-10 h-10 rounded-full bg-zinc-800/50 flex items-center justify-center text-zinc-500">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">${p.icon}</svg>
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-900 bg-zinc-900/40 opacity-60 cursor-not-allowed">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-zinc-800/50 p-2.5 rounded-xl text-zinc-600">${p.icon}</div>
+                            <div>
+                                <p class="font-bold text-zinc-500 text-base">${p.name}</p>
+                                <p class="text-[11px] text-zinc-600 mt-0.5">Tidak tersedia untuk campaign ini</p>
                             </div>
-                            <div class="flex-1">
-                                <h4 class="text-zinc-400 font-bold">${p.name}</h4>
-                                <p class="text-xs text-zinc-600 mt-0.5">Tidak tersedia untuk campaign ini</p>
-                            </div>
-                            <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
-                    `;
+                        <svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>`;
                 }
             });
-            
-            // Tambahan info lock static untuk UI referensi (opsional)
-            html += `
-                <div class="p-4 rounded-xl border border-zinc-800/50 bg-zinc-900/10 opacity-50 flex items-center gap-4 cursor-not-allowed">
-                    <div class="w-10 h-10 rounded-full bg-zinc-800/50 flex items-center justify-center text-zinc-500 text-lg font-bold">@</div>
-                    <div class="flex-1">
-                        <h4 class="text-zinc-400 font-bold">Threads</h4>
-                        <p class="text-xs text-zinc-600 mt-0.5">Tidak tersedia untuk campaign ini</p>
-                    </div>
-                    <svg class="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-            `;
-
-            container.innerHTML = html;
+            list.innerHTML = html;
+            document.getElementById('btn-next-2').disabled = !submitState.platform;
         }
 
-        window.selectPlatformForSubmit = function(id) {
-            selectedPlatformData = id;
-            document.getElementById('submitPlatformValue').value = id;
-            selectedAccountData = null; // Reset akun
+        window.selectSubmitPlatform = function(platId) {
+            submitState.platform = platId;
+            submitState.account = null;
             renderStep2();
-        }
+        };
 
-        // --- STEP 3: AKUN ---
+        // Render Step 3
         function renderStep3() {
-            const container = document.getElementById('step3-list');
-            const titleEl = document.getElementById('step3-title');
+            const plat = submitState.platform;
+            document.getElementById('lbl-platform-name').innerText = plat.charAt(0).toUpperCase() + plat.slice(1);
+            const list = document.getElementById('step-3-list');
+            let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === plat);
             
-            const platName = selectedPlatformData.charAt(0).toUpperCase() + selectedPlatformData.slice(1);
-            titleEl.innerText = `Pilih akun ${platName} kamu`;
-
-            const accounts = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === selectedPlatformData);
-
-            if (accounts.length === 0) {
-                container.innerHTML = `<div class="p-4 text-sm text-zinc-500 text-center border border-zinc-800 rounded-xl">Belum ada akun ${platName} terverifikasi.</div>`;
-                return;
+            let html = '';
+            if (connAccs.length === 0) {
+                html = `<p class="text-sm text-zinc-400 p-4 border border-zinc-800 border-dashed rounded-xl text-center">Belum ada akun yang sesuai.</p>`;
+            } else {
+                connAccs.forEach(a => {
+                    const isSel = submitState.account?.id === a.id;
+                    const fChar = a.username ? a.username.charAt(0).toUpperCase() : 'U';
+                    html += `
+                    <div onclick="window.selectSubmitAccount('${a.id}')" class="flex items-center gap-4 p-4 rounded-xl border ${isSel ? 'border-orange-500 bg-orange-500/10' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+                        <div class="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-bold text-white shadow-inner">${fChar}</div>
+                        <p class="font-bold text-white text-base">@${escapeHTML(a.username)}</p>
+                    </div>`;
+                });
             }
-
-            let html = '';
-            accounts.forEach(acc => {
-                const isActive = selectedAccountData === acc.username;
-                const borderClass = isActive ? 'border-[#ea580c] bg-zinc-800/50' : 'border-zinc-800 hover:border-zinc-600 bg-zinc-900/30';
-                const initial = acc.username ? acc.username.charAt(0).toUpperCase() : '?';
-                
-                html += `
-                    <div onclick="window.selectAccountForSubmit('${acc.username}')" class="p-4 rounded-xl border ${borderClass} cursor-pointer transition-colors flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-zinc-500 text-white flex items-center justify-center font-bold text-xs shrink-0">${initial}</div>
-                        <h4 class="text-white font-medium">@${acc.username}</h4>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
+            list.innerHTML = html;
+            document.getElementById('btn-next-3').disabled = !submitState.account;
         }
 
-        window.selectAccountForSubmit = function(username) {
-            selectedAccountData = username;
-            document.getElementById('submitAccountValue').value = username;
+        window.selectSubmitAccount = function(accId) {
+            submitState.account = userVerifiedAccounts.find(a => a.id === accId);
             renderStep3();
-        }
+        };
 
-        // --- STEP 4: FETCH VIDEO API ---
-        function renderHashtags() {
-            // Dummy Hashtags sesuai desain (Ide: bisa diambil dari database jika ada 'camp.hashtags')
-            const container = document.getElementById('hashtag-container');
-            const tags = ['#awalmulahamka', '#buyahamka', '#kontenfchamka'];
-            let html = '';
-            tags.forEach(t => {
-                html += `<div class="px-4 py-2 bg-zinc-800/80 rounded-lg text-sm font-medium text-white">${t}</div>`;
-            });
-            container.innerHTML = html;
+        // Render Step 4 Initialize
+        function renderStep4Init() {
+            // Render mock hashtag or campaign title
+            const hashList = document.getElementById('hashtag-list');
+            const safeTitle = escapeHTML(submitState.campaign.title).replace(/[^a-zA-Z0-9]/g, '');
+            hashList.innerHTML = `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">#whoost</span><span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">#${safeTitle.toLowerCase()}</span>`;
+            
+            window.fetchVideos(false);
         }
 
         window.fetchVideos = async function(forceRefresh = false) {
-            const loader = document.getElementById('videoFetchLoader');
-            const grid = document.getElementById('videoGrid');
-            const emptyState = document.getElementById('noVideoState');
+            const loader = document.getElementById('videoFetchLoaderNew');
+            const grid = document.getElementById('videoGridNew');
+            const emptyState = document.getElementById('noVideoStateNew');
             
             loader.classList.remove('hidden');
             grid.classList.add('hidden');
             emptyState.classList.add('hidden');
-            document.getElementById('videoLink').value = ''; 
+            submitState.videoUrl = null; 
             document.getElementById('urlError').classList.add('hidden');
+            document.getElementById('btnSubmitVideo').disabled = true;
 
-            const specificAccount = userVerifiedAccounts.find(a => a.username === selectedAccountData && a.platform.toLowerCase() === selectedPlatformData);
-            
-            if (!specificAccount) {
-                loader.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.classList.add('flex');
-                document.getElementById('noVideoDesc').innerText = "Akun tidak valid atau belum terverifikasi.";
-                return;
-            }
+            const targetAccount = submitState.account;
+            if (!targetAccount) return;
 
-            const cacheKey = `whoost_vids_${selectedAccountData}_${selectedPlatformData}`;
+            const cacheKey = `whoost_videos_${sessionUser.id}_${targetAccount.platform}_${targetAccount.username}`;
             const now = new Date().getTime();
             
-            // Cache check
             if (!forceRefresh) {
                 const cachedData = sessionStorage.getItem(cacheKey);
                 if (cachedData) {
@@ -833,11 +740,10 @@
             }
 
             try {
-                // Panggil Vercel API, Kirim HANYA 1 Akun yang dipilih
                 const response = await fetch('/api/fetch-latest-videos', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ accounts: [specificAccount] })
+                    body: JSON.stringify({ accounts: [targetAccount] })
                 });
 
                 const data = await response.json();
@@ -845,77 +751,51 @@
 
                 const fetchedVideos = data.videos || [];
                 sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, videos: fetchedVideos }));
-
                 renderVideoGrid(fetchedVideos);
 
             } catch (err) {
-                console.error("Fetch API Error:", err);
+                console.error("Gagal menarik data video:", err);
                 loader.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 emptyState.classList.add('flex');
-                document.getElementById('noVideoDesc').innerText = "Belum ada video yang kedetect dari akun ini. Kalau kamu baru upload, tunggu ±60 detik lalu Coba Lagi.";
             }
         };
 
         function renderVideoGrid(videosArray) {
-            const loader = document.getElementById('videoFetchLoader');
-            const grid = document.getElementById('videoGrid');
-            const emptyState = document.getElementById('noVideoState');
+            const loader = document.getElementById('videoFetchLoaderNew');
+            const grid = document.getElementById('videoGridNew');
+            const emptyState = document.getElementById('noVideoStateNew');
 
             loader.classList.add('hidden');
 
             if (!videosArray || videosArray.length === 0) {
                 emptyState.classList.remove('hidden');
                 emptyState.classList.add('flex');
-                document.getElementById('noVideoDesc').innerText = "Belum ada video yang kedetect dari akun ini. Kalau kamu baru upload, tunggu ±60 detik lalu Coba Lagi.";
                 return;
             }
 
             grid.innerHTML = '';
-            videosArray.forEach(vid => {
+            videosArray.forEach((vid, idx) => {
+                const isSel = submitState.videoUrl === vid.url;
                 
-                // Logic Deteksi 24 Jam
-                const uploadTime = new Date(vid.upload_time).getTime();
-                const now = new Date().getTime();
-                const isExpired = (now - uploadTime) > (24 * 60 * 60 * 1000); // lebih dari 24 jam
-                
-                // Dummy/Default Stats (menyesuaikan UI baru yang ada play/love/comment)
-                const playCount = vid.views || (Math.floor(Math.random() * 500) + 50);
-                const likeCount = vid.likes || (Math.floor(playCount * 0.1));
-                const commentCount = vid.comments || (Math.floor(likeCount * 0.1));
-                
-                const titleText = vid.title || "Video Tanpa Judul";
-                
-                let cardClass = isExpired ? 'opacity-60 cursor-not-allowed grayscale-[30%]' : 'cursor-pointer hover:border-zinc-500 group';
-                let overlay24h = isExpired ? `
-                    <div class="absolute top-1/2 -translate-y-1/2 left-0 w-full bg-red-600/90 text-white text-[10px] py-1.5 flex items-center justify-center gap-1.5 z-20 font-medium">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Sudah lewat 24 jam
-                    </div>
-                ` : '';
-
-                // Click handler hanya untuk yang belum expired
-                const onclickEvent = isExpired ? '' : `onclick="window.selectVideoForSubmit(this, '${escapeHTML(vid.url)}')"`;
-
                 grid.innerHTML += `
-                    <div ${onclickEvent} class="video-card flex flex-col bg-zinc-900/50 border-2 border-transparent rounded-xl overflow-hidden relative transition-all ${cardClass}">
-                        <div class="relative aspect-[9/16] w-full bg-zinc-800 overflow-hidden">
+                    <div onclick="window.selectVideo('${escapeHTML(vid.url)}')" class="video-card relative flex flex-col gap-2 cursor-pointer group ${isSel ? 'selected' : ''}" data-url="${escapeHTML(vid.url)}">
+                        <div class="relative aspect-[9/16] rounded-xl border-[2.5px] ${isSel ? 'border-orange-500' : 'border-zinc-800'} overflow-hidden transition-colors bg-zinc-900 card-border-target">
                             <img src="${escapeHTML(vid.thumbnail)}" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
-                            ${overlay24h}
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
                             
-                            <!-- Checkmark Indicator -->
-                            <div class="check-icon absolute top-2 right-2 bg-[#ea580c] text-white p-1 rounded-full opacity-0 transform scale-50 transition-all shadow-md z-30">
+                            <div class="check-icon-target absolute top-2 right-2 bg-orange-500 text-white p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                        </div>
-                        <div class="p-3">
-                            <p class="text-[11px] text-zinc-300 line-clamp-2 mb-2 leading-tight">${escapeHTML(titleText)}</p>
-                            <div class="flex items-center gap-3 text-[10px] text-zinc-500 font-medium">
-                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>${playCount}</span>
-                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>${likeCount}</span>
-                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18z"/></svg>${commentCount}</span>
+
+                            <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-zinc-300 font-medium">
+                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> -</span>
+                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> -</span>
                             </div>
+                        </div>
+                        <div class="px-0.5">
+                            <p class="text-[11px] font-bold text-white line-clamp-2 leading-snug">${escapeHTML(vid.title || 'Video Upload Baru')}</p>
+                            <p class="text-[9px] text-zinc-500 mt-1">${escapeHTML(vid.upload_time)}</p>
                         </div>
                     </div>
                 `;
@@ -924,23 +804,38 @@
             grid.classList.remove('hidden');
         }
 
-        window.selectVideoForSubmit = function(cardElement, url) {
-            document.querySelectorAll('.video-card').forEach(el => {
-                el.classList.remove('border-[#ea580c]', 'selected');
-                el.classList.add('border-transparent');
-            });
-            cardElement.classList.remove('border-transparent');
-            cardElement.classList.add('border-[#ea580c]', 'selected');
-            document.getElementById('videoLink').value = url;
+        window.selectVideo = function(url) {
+            submitState.videoUrl = url;
             document.getElementById('urlError').classList.add('hidden');
+            
+            // Visual Update Tanpa re-render penuh
+            document.querySelectorAll('.video-card').forEach(card => {
+                const border = card.querySelector('.card-border-target');
+                const icon = card.querySelector('.check-icon-target');
+                
+                if (card.getAttribute('data-url') === url) {
+                    card.classList.add('selected');
+                    border.classList.replace('border-zinc-800', 'border-orange-500');
+                    icon.classList.remove('opacity-0', 'scale-50');
+                    icon.classList.add('opacity-100', 'scale-100');
+                } else {
+                    card.classList.remove('selected');
+                    border.classList.replace('border-orange-500', 'border-zinc-800');
+                    icon.classList.remove('opacity-100', 'scale-100');
+                    icon.classList.add('opacity-0', 'scale-50');
+                }
+            });
+
+            const btnSub = document.getElementById('btnSubmitVideo');
+            btnSub.disabled = false;
+            btnSub.classList.replace('bg-[#9c3905]', 'bg-orange-600');
+            btnSub.classList.replace('hover:bg-[#b94406]', 'hover:bg-orange-500');
         };
 
-        // --- SUBMIT PROCESS ---
         window.processSubmit = async function(e) {
             e.preventDefault();
-            const campaignId = document.getElementById('submitCampaignValue').value;
-            const inputEl = document.getElementById('videoLink');
-            const urlVal = inputEl.value.trim();
+            const campaignId = submitState.campaign?.id;
+            const urlVal = submitState.videoUrl;
             const errorMsg = document.getElementById('urlError');
             const submitBtn = document.getElementById('btnSubmitVideo');
             
@@ -952,41 +847,32 @@
             errorMsg.classList.add('hidden');
             const originalBtn = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+            submitBtn.innerHTML = `<svg class="w-5 h-5 animate-spin mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
             try {
                 const sanitizedUrl = escapeHTML(urlVal);
 
-                // Cek Duplikat di Database Supabase
-                const { data: existingSubs, error: dbError } = await supabase
-                    .from('submissions')
-                    .select('id')
-                    .eq('video_link', sanitizedUrl)
-                    .single();
-                    
+                const { data: existingSubs } = await supabase.from('submissions').select('id').eq('video_link', sanitizedUrl).single();
                 if (existingSubs) throw new Error("Video ini sudah pernah diajukan sebelumnya.");
 
-                // Insert Data Baru
-                const { error: insertError } = await supabase
-                    .from('submissions')
-                    .insert([{
-                        campaign_id: campaignId,
-                        user_id: sessionUser.id,
-                        video_link: sanitizedUrl,
-                        status: 'PENDING',
-                        views_claimed: 0,
-                        views_paid: 0,
-                        earned: 0
-                    }]);
+                const { error: insertError } = await supabase.from('submissions').insert([{
+                    campaign_id: campaignId,
+                    user_id: sessionUser.id,
+                    video_link: sanitizedUrl,
+                    status: 'PENDING',
+                    views_claimed: 0,
+                    views_paid: 0,
+                    earned: 0
+                }]);
 
                 if(insertError) throw insertError;
 
                 window.closeSubmitModal();
-                setTimeout(() => showAlert(`Berhasil mengirim 1 video. Status saat ini PENDING menunggu Review Admin.`, "success"), 300);
+                setTimeout(() => {
+                    showAlert(`Berhasil mengirim 1 video. Status saat ini PENDING menunggu Review Admin.`, "success");
+                }, 300);
                 
-                // Refresh Dashboard
                 await Promise.all([ loadUserStats(), loadSubmissions() ]);
-
             } catch(err) {
                 showAlert("Gagal mengirim video: " + err.message, "error");
             } finally {
@@ -995,6 +881,18 @@
             }
         };
 
+
+        // ===============================================
+        // FUNGSI UMUM & INIT
+        // ===============================================
+        async function fetchUserAccounts() {
+            try {
+                const { data: profile } = await supabase.from('profiles').select('social_media').eq('id', sessionUser.id).single();
+                if (profile && profile.social_media && Array.isArray(profile.social_media)) {
+                    userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
+                }
+            } catch(e) {}
+        }
 
         // ==========================================
         // FUNGSI VIDEO PLAYER MODAL
@@ -1116,145 +1014,88 @@
             }, 300);
         };
 
-        // Perhitungan jumlah grid untuk 3:4 layout card (Mirip client-konten)
         function getCols() {
             const w = window.innerWidth;
-            if (w >= 1280) return 6; // xl
-            if (w >= 1024) return 5; // lg
-            if (w >= 768)  return 4; // md
-            if (w >= 640)  return 3; // sm
-            return 2;                // mobile
+            if (w >= 1280) return 6; 
+            if (w >= 1024) return 5; 
+            if (w >= 768)  return 4; 
+            if (w >= 640)  return 3; 
+            return 2;                
         }
 
-        // Pagination & Filter States
         let currentFilter = { status: 'all', campaign_id: 'all', sort: 'newest' };
         let currentLimit = getCols() * 2;
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // Proteksi Role Keamanan
                 await enforceRoleProtection();
 
                 const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                if (sessionError || !session) {
-                    window.location.replace('login.html');
-                    return;
-                }
+                if (sessionError || !session) { window.location.replace('login.html'); return; }
                 sessionUser = session.user;
 
-                // Fetch Nama Profil User dari Supabase
                 try {
-                    const { data: profile } = await supabase.from('profiles').select('full_name, social_media').eq('id', sessionUser.id).single();
+                    const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', sessionUser.id).single();
                     if (profile && profile.full_name) {
                         sessionFullName = profile.full_name;
                     } else if (sessionUser.user_metadata?.full_name) {
                         sessionFullName = sessionUser.user_metadata.full_name;
                     }
+                } catch(e) {}
 
-                    if (profile && profile.social_media && Array.isArray(profile.social_media)) {
-                        userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
-                    }
-                } catch(e) { console.log("Gagal memuat profil"); }
-
-                // Load data paralel dengan error handling aman
                 await Promise.all([
+                    fetchUserAccounts(),
                     loadActiveCampaigns(),
                     loadUserStats(),
                     loadSubmissions()
                 ]);
 
-            } catch(e) {
-                console.error("Kesalahan inisialisasi:", e);
-            }
+            } catch(e) {}
         });
 
-        // ==========================================
-        // 0. FETCH ACTIVE CAMPAIGNS (UNTUK MODAL SUBMIT)
-        // ==========================================
         async function loadActiveCampaigns() {
             try {
                 const { data, error } = await supabase
                     .from('user_campaigns')
-                    .select(`
-                        campaigns ( id, title, status, budget_remaining, platforms )
-                    `)
+                    .select(`campaigns ( id, title, status, budget_remaining, platforms )`)
                     .eq('user_id', sessionUser.id);
 
                 if (!error && data) {
-                    // Menyaring hanya campaign yang tidak 'CLOSED' dan menghindari duplikasi
                     const uniqueCampsMap = new Map();
                     data.forEach(item => {
                         const camp = item.campaigns;
-                        if (camp && camp.status !== 'CLOSED') {
-                            uniqueCampsMap.set(camp.id, camp);
-                        }
+                        if (camp && camp.status !== 'CLOSED') { uniqueCampsMap.set(camp.id, camp); }
                     });
                     joinedActiveCampaigns = Array.from(uniqueCampsMap.values());
                 }
-            } catch (e) { console.error("Gagal load joined campaigns", e); }
+            } catch (e) {}
         }
 
-        // ==========================================
-        // 1. AUTO SYNC STATS (Pendapatan & Penghitungan Status)
-        // ==========================================
         async function loadUserStats() {
             try {
-                const { data: allSubs } = await supabase
-                    .from('submissions')
-                    .select('status, earned, views_paid, views_claimed')
-                    .eq('user_id', sessionUser.id);
-
-                let calcEarnings = 0;
-                let calcViews = 0;
-                let calcVideos = 0;
-                let p = 0, a = 0, r = 0;
+                const { data: allSubs } = await supabase.from('submissions').select('status, earned, views_paid, views_claimed').eq('user_id', sessionUser.id);
+                let calcEarnings = 0; let calcViews = 0; let calcVideos = 0; let p = 0, a = 0, r = 0;
 
                 if (allSubs) {
                     calcVideos = allSubs.length; 
                     allSubs.forEach(sub => {
                         calcEarnings += (sub.earned || 0);
-
-                        if (sub.status === 'PENDING') {
-                            p++;
-                            calcViews += (sub.views_paid || 0);
-                        } else if (sub.status === 'APPROVED') {
-                            a++;
-                            calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0);
-                        } else if (sub.status === 'REJECTED') {
-                            r++;
-                            calcViews += (sub.views_paid || 0);
-                        }
+                        if (sub.status === 'PENDING') { p++; calcViews += (sub.views_paid || 0); } 
+                        else if (sub.status === 'APPROVED') { a++; calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0); } 
+                        else if (sub.status === 'REJECTED') { r++; calcViews += (sub.views_paid || 0); }
                     });
                 }
 
-                const { data: withdrawals } = await supabase
-                    .from('withdrawals')
-                    .select('amount, status')
-                    .eq('user_id', sessionUser.id);
-                
+                const { data: withdrawals } = await supabase.from('withdrawals').select('amount, status').eq('user_id', sessionUser.id);
                 let totalWithdrawn = 0;
-                if (withdrawals) {
-                    withdrawals.forEach(w => {
-                        if (w.status !== 'REJECTED' && w.status !== 'FAILED') {
-                            totalWithdrawn += (w.amount || 0);
-                        }
-                    });
-                }
+                if (withdrawals) { withdrawals.forEach(w => { if (w.status !== 'REJECTED' && w.status !== 'FAILED') { totalWithdrawn += (w.amount || 0); } }); }
 
                 let calcWithdrawable = calcEarnings - totalWithdrawn;
                 if (calcWithdrawable < 0) calcWithdrawable = 0;
 
-                const { error: upsertError } = await supabase.from('clipper_stats').upsert({
-                    user_id: sessionUser.id,
-                    total_earnings: calcEarnings,
-                    withdrawable: calcWithdrawable,
-                    total_views: calcViews,
-                    total_videos: calcVideos
+                await supabase.from('clipper_stats').upsert({
+                    user_id: sessionUser.id, total_earnings: calcEarnings, withdrawable: calcWithdrawable, total_views: calcViews, total_videos: calcVideos
                 }, { onConflict: 'user_id' });
-
-                if (upsertError) {
-                    console.error("Gagal sinkronisasi data ke clipper_stats:", upsertError.message);
-                }
 
                 realEarnings = calcEarnings;
                 realWithdrawable = calcWithdrawable;
@@ -1263,39 +1104,19 @@
                 document.getElementById('disetujui-detail').innerText = a;
                 document.getElementById('ditolak-detail').innerText = r;
 
-            } catch(e) {
-                console.error("Gagal perhitungan:", e);
-                try {
-                    const { data: stats } = await supabase.from('clipper_stats').select('*').eq('user_id', sessionUser.id).single();
-                    if (stats) {
-                        realEarnings = stats.total_earnings || 0;
-                        realWithdrawable = stats.withdrawable || 0;
-                    }
-                } catch(err) {}
-            }
+            } catch(e) {}
             
             window.toggleSensor(true); 
         }
 
-        // ==========================================
-        // 2. LOAD DATA SUBMISSIONS & CAMPAIGNS
-        // ==========================================
         async function loadSubmissions() {
             try {
                 const { data, error } = await supabase
                     .from('submissions')
-                    .select(`
-                        id, user_id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at,
-                        campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video, is_private )
-                    `)
+                    .select(`id, user_id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at, campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video, is_private )`)
                     .eq('user_id', sessionUser.id);
 
-                if (error) {
-                    console.error("Supabase error:", error);
-                    document.getElementById('cards-container').innerHTML = '<p class="text-red-500 text-sm col-span-full">Gagal terhubung ke database. Harap hubungi admin.</p>';
-                    return;
-                }
-
+                if (error) return;
                 submissionsData = data || [];
                 
                 const campSet = new Set();
@@ -1309,18 +1130,11 @@
                     }
                 });
                 document.getElementById('campaign-options').innerHTML = campOptionsHTML;
-
                 applyFilters();
 
-            } catch(err) {
-                console.error("JS Error in loadSubmissions:", err);
-                document.getElementById('cards-container').innerHTML = '<p class="text-red-500/80 text-sm col-span-full">Gagal memuat data.</p>';
-            }
+            } catch(err) { }
         }
 
-        // ==========================================
-        // 3. LOGIKA RENDER & SMART THUMBNAIL 3:4
-        // ==========================================
         function getVideoMeta(url) {
             url = url || '';
             let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
@@ -1360,7 +1174,6 @@
             let realStatus = sub.status || 'PENDING';
             let isPerVideo = camp.payment_type === 'video';
             
-            // Boolean State Logics
             let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
             let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
             let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
@@ -1371,20 +1184,13 @@
             let actionArea = '';
             let badgeHTML = '';
             let cardOpacityClass = 'opacity-100';
-
             const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
-            
-            // Logika Placeholder Otomatis 
             const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
             let placeholder = maxPrevViews > 0 ? `views sebelumnya : ${maxPrevViews.toLocaleString('id-ID')}` : 'masukkan views yang akan di claim';
 
             if (isBrandReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
-                actionArea = `
-                    <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight">
-                        <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                        Menunggu ACC Brand
-                    </button>`;
+                actionArea = `<button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight"><svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menunggu ACC Brand</button>`;
             } 
             else if (isBrandRejected) {
                 cardOpacityClass = 'opacity-70 border-red-900/30';
@@ -1397,23 +1203,16 @@
             }
             else if (isClaimReview) {
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
-                
-                let inputHTML = `
-                    <div class="flex mb-1.5">
-                        <input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-zinc-500 cursor-not-allowed text-center truncate">
-                    </div>`;
-                
+                let inputHTML = `<div class="flex mb-1.5"><input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-zinc-500 cursor-not-allowed text-center truncate"></div>`;
                 actionArea = `
                     ${inputHTML}
                     <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
-                        <span>Reviewing Claim...</span>
-                        <span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
+                        <span>Reviewing Claim...</span><span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
                     </button>`;
             } 
             else if (isClaimRejected) {
                 cardOpacityClass = 'opacity-80 border-red-900/50';
                 badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
-                
                 actionArea = `
                     <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
                         <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
@@ -1429,73 +1228,47 @@
                     warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed.</p>`;
                 } else if (isClaimApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
-                    if (isPerVideo) {
-                        warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views.</p>`;
-                    }
+                    if (isPerVideo) warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views.</p>`;
                 } else if (isBrandApproved) {
                     badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
                 }
 
-                let inputHTML = `
-                    <div class="flex mb-1.5">
-                        <input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-white placeholder-zinc-500 outline-none transition-colors text-center truncate">
-                    </div>`;
-
+                let inputHTML = `<div class="flex mb-1.5"><input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-white placeholder-zinc-500 outline-none transition-colors text-center truncate"></div>`;
                 let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
                 
                 let claimBtnClass = isPrivate 
                     ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
                     : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center focus:outline-none transition-colors active:scale-[0.98]";
 
-                actionArea = `
-                    ${warningText}
-                    ${inputHTML}
-                    <button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">
-                        ${btnText}
-                    </button>`;
+                actionArea = `${warningText}${inputHTML}<button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">${btnText}</button>`;
             }
 
-            // Logika Styling Card VIP / Whale
             let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
-            if (isPrivate) {
-                cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
-            } else {
-                cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
-            }
+            if (isPrivate) cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+            else cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
 
-            // Badge PRIVATE dihilangkan sesuai permintaan, cukup mengandalkan styling border/background khusus isPrivate
             let topLeftBadges = `
                 <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 items-start z-20 pointer-events-none">
-                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
-                        ${meta.platHTML}
-                    </div>
-                </div>
-            `;
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">${meta.platHTML}</div>
+                </div>`;
 
             return `
             <div class="${cardBaseClass}">
-                <!-- IMAGE PREVIEW (ASPECT 3:4) & MODAL TRIGGER -->
                 <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
-                    ${badgeHTML}
-                    ${topLeftBadges}
-                    
+                    ${badgeHTML}${topLeftBadges}
                     <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
-                    
-                    <!-- TOMBOL PLAY OVERLAY -->
                     <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                         </div>
                     </div>
-                    
                     <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10 pointer-events-none">
                         <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${safeTitle}">${safeTitle}</h4>
                         <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="By ${safeSessionName}">${dateStr} • By ${safeSessionName}</p>
                     </div>
                 </div>
                 
-                <!-- CONTENT BELOW IMAGE -->
                 <div class="flex-1 flex flex-col justify-between mt-2 sm:mt-3">
                     <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
                         <div>
@@ -1521,43 +1294,28 @@
             const loadMoreContainer = document.getElementById('load-more-container');
             
             grid.innerHTML = '';
-
             let filtered = submissionsData.filter(sub => {
                 let realStatus = sub.status || 'PENDING';
-                
                 const campId = sub.campaigns ? sub.campaigns.id : null;
                 const matchCamp = currentFilter.campaign_id === 'all' || campId === currentFilter.campaign_id;
                 const matchStatus = currentFilter.status === 'all' || realStatus === currentFilter.status;
-                
                 return matchCamp && matchStatus;
             });
 
-            if (currentFilter.sort === 'oldest') {
-                filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
-            } else { 
-                filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
-            }
+            if (currentFilter.sort === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+            else filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
 
             if (filtered.length === 0) {
-                alertBox.classList.remove('hidden');
-                loadMoreContainer.classList.add('hidden');
-                return;
-            } else {
-                alertBox.classList.add('hidden');
-            }
+                alertBox.classList.remove('hidden'); loadMoreContainer.classList.add('hidden'); return;
+            } else { alertBox.classList.add('hidden'); }
 
             let html = '';
             const toRender = filtered.slice(0, currentLimit);
-            toRender.forEach((sub, i) => {
-                html += generateCard(sub, i);
-            });
+            toRender.forEach((sub, i) => { html += generateCard(sub, i); });
             grid.innerHTML = html;
 
-            if (filtered.length > currentLimit) {
-                loadMoreContainer.classList.remove('hidden');
-            } else {
-                loadMoreContainer.classList.add('hidden');
-            }
+            if (filtered.length > currentLimit) loadMoreContainer.classList.remove('hidden');
+            else loadMoreContainer.classList.add('hidden');
 
             window.loadThumbnails(toRender);
         }
@@ -1566,37 +1324,25 @@
             for (let sub of items) {
                 const imgEl = document.getElementById(`thumb-${sub.id}`);
                 if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
-                
-                const url = sub.video_link;
-                if (!url) continue;
+                const url = sub.video_link; if (!url) continue;
 
-                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
-                    imgEl.setAttribute('data-loaded', 'true');
-                    continue;
-                }
+                if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) { imgEl.setAttribute('data-loaded', 'true'); continue; }
 
                 try {
                     const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
                     const json = await res.json();
                     
                     if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
-                        imgEl.src = json.data.image.url;
-                        imgEl.setAttribute('data-loaded', 'true');
+                        imgEl.src = json.data.image.url; imgEl.setAttribute('data-loaded', 'true');
                     } else if (url.includes('tiktok.com')) {
                         const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
                         const tkJson = await tkRes.json();
-                        if (tkJson.data && tkJson.data.cover) {
-                            imgEl.src = tkJson.data.cover;
-                            imgEl.setAttribute('data-loaded', 'true');
-                        }
+                        if (tkJson.data && tkJson.data.cover) { imgEl.src = tkJson.data.cover; imgEl.setAttribute('data-loaded', 'true'); }
                     }
                 } catch(e) { }
             }
         };
 
-        // ==========================================
-        // 4. LOGIKA KLAIM MATEMATIS & SUPABASE
-        // ==========================================
         window.claimViews = function(subId) {
             const inputEl = document.getElementById(`input-${subId}`);
             const btnEl = document.getElementById(`btn-claim-${subId}`);
@@ -1608,8 +1354,6 @@
 
             const camp = sub.campaigns;
             const isPerVideo = camp.payment_type === 'video';
-            
-            // Wajib masukkan jumlah views
             const newClaimStr = inputEl.value.trim();
             if (!newClaimStr) return showAlert("Masukkan jumlah views yang valid.", "error");
             
@@ -1631,29 +1375,22 @@
                     const maxClaim = camp.max_claim || 250000;
 
                     let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
-                    
                     let rate = cpm;
-                    if (effectiveViews < minViews) {
-                        rate = cpm * 0.25; 
-                    }
+                    if (effectiveViews < minViews) { rate = cpm * 0.25; }
 
                     let totalExpectedEarnings = Math.floor((effectiveViews / 1000) * rate);
                     let previouslyEarned = sub.earned || 0;
                     estPayout = totalExpectedEarnings - previouslyEarned;
 
                     if (estPayout < 0) estPayout = 0;
-                    if (estPayout > camp.budget_remaining) {
-                        estPayout = camp.budget_remaining;
-                    }
+                    if (estPayout > camp.budget_remaining) { estPayout = camp.budget_remaining; }
                 } else if (camp.payment_type === 'video') {
                     if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
                         estPayout = 0;
                     } else {
                         let previouslyEarned = sub.earned || 0;
                         let totalExpectedEarnings = camp.price_per_video || 0;
-                        
                         estPayout = totalExpectedEarnings - previouslyEarned;
-                        
                         if (estPayout < 0) estPayout = 0;
                         if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
                     }
@@ -1672,47 +1409,29 @@
             }
             
             window.showConfirm(confirmMsg, async () => {
-                // Nonaktifkan tombol sementara
                 const originalBtnHtml = btnEl.innerHTML;
-                inputEl.disabled = true;
-                btnEl.disabled = true;
+                inputEl.disabled = true; btnEl.disabled = true;
                 btnEl.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
                 btnEl.classList.add('cursor-not-allowed', 'opacity-80');
 
                 try {
                     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-                    if (sessionError || !session || session.user.id !== sub.user_id) {
-                        showAlert('Sesi tidak valid, mohon muat ulang halaman.', 'error');
-                        return;
-                    }
+                    if (sessionError || !session || session.user.id !== sub.user_id) return showAlert('Sesi tidak valid, mohon muat ulang halaman.', 'error');
 
-                    const { error } = await supabase
-                        .from('submissions')
-                        .update({
-                            views_claimed: newClaimViews,
-                            est_payout: estPayout,
-                            status: 'PENDING',
-                            reject_reason: null
-                        })
-                        .eq('id', subId);
-
+                    const { error } = await supabase.from('submissions').update({
+                        views_claimed: newClaimViews, est_payout: estPayout, status: 'PENDING', reject_reason: null
+                    }).eq('id', subId);
                     if (error) throw error;
 
                     showAlert("Berhasil mengajukan klaim. Menunggu proses review dari Admin.", "success");
                     await loadSubmissions(); 
                 } catch (error) {
                     showAlert("Gagal melakukan klaim: " + error.message, "error");
-                    inputEl.disabled = false;
-                    btnEl.disabled = false;
-                    btnEl.innerHTML = originalBtnHtml;
-                    btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
+                    inputEl.disabled = false; btnEl.disabled = false; btnEl.innerHTML = originalBtnHtml; btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
                 }
             });
         };
 
-        // ==========================================
-        // 5. GLOBAL UI BINDINGS
-        // ==========================================
         window.toggleSelect = function(id) {
             document.querySelectorAll('.custom-select-options').forEach(el => { if(el.id !== id) el.classList.add('hidden'); });
             document.getElementById(id).classList.toggle('hidden');
@@ -1722,8 +1441,7 @@
             currentFilter.campaign_id = id;
             document.getElementById('campaign-selected-text').innerText = title;
             document.getElementById('campaign-options').classList.add('hidden');
-            currentLimit = getCols() * 2; 
-            applyFilters();
+            currentLimit = getCols() * 2; applyFilters();
         };
 
         window.toggleFilter = function() {
@@ -1747,14 +1465,10 @@
             });
             document.getElementById('filter-dropdown').classList.add('hidden');
             document.getElementById('filter-dropdown').classList.remove('flex');
-            currentLimit = getCols() * 2;
-            applyFilters();
+            currentLimit = getCols() * 2; applyFilters();
         };
 
-        window.loadMore = function() {
-            currentLimit += getCols() * 2;
-            applyFilters();
-        };
+        window.loadMore = function() { currentLimit += getCols() * 2; applyFilters(); };
 
         window.toggleSensor = function(silent = false) {
             if(!silent) isSensorActive = !isSensorActive;
@@ -1763,24 +1477,19 @@
             const iconElement = document.getElementById('eye-icon');
 
             if (isSensorActive) {
-                totalElement.innerText = 'Rp ••••••';
-                saldoElement.innerText = 'Rp ••••';
+                totalElement.innerText = 'Rp ••••••'; saldoElement.innerText = 'Rp ••••';
                 iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
             } else {
-                totalElement.innerText = 'Rp ' + realEarnings.toLocaleString('id-ID');
-                saldoElement.innerText = 'Rp ' + realWithdrawable.toLocaleString('id-ID');
+                totalElement.innerText = 'Rp ' + realEarnings.toLocaleString('id-ID'); saldoElement.innerText = 'Rp ' + realWithdrawable.toLocaleString('id-ID');
                 iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
             }
         };
 
-        // Click outside untuk menutup dropdown
         document.addEventListener('click', (e) => {
             const selContainer = document.querySelector('.custom-select-container');
             const filtContainer = document.getElementById('filter-container');
             
-            if (selContainer && !selContainer.contains(e.target)) {
-                document.querySelectorAll('.custom-select-options').forEach(el => el.classList.add('hidden'));
-            }
+            if (selContainer && !selContainer.contains(e.target)) document.querySelectorAll('.custom-select-options').forEach(el => el.classList.add('hidden'));
             if (filtContainer && !filtContainer.contains(e.target)) {
                 const fd = document.getElementById('filter-dropdown');
                 if(fd) { fd.classList.add('hidden'); fd.classList.remove('flex'); }
