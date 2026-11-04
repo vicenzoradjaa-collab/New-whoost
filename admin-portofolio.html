@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Kelola Data Publik - Admin Whoost</title>
+    <title>Kelola Portofolio - Admin Whoost</title>
 
     <link rel="icon" type="image/x-icon" href="icon/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,7 +42,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #18181b; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
 
-        /* Styling Input File bawaan browser agar menyatu dengan tema */
         input[type="file"]::file-selector-button {
             border: 1px solid #3f3f46; background: #27272a; color: #60a5fa; padding: 6px 12px;
             border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 0.75rem; font-weight: 700; margin-right: 12px;
@@ -76,29 +75,26 @@
             </a>
             <div class="h-5 sm:h-6 w-px bg-zinc-800 hidden sm:block"></div>
             <div>
-                <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-white leading-tight">Data Publik</h1>
-                <p class="text-[10px] sm:text-xs text-zinc-500 hidden sm:block mt-0.5">Kelola Portofolio & Jaringan Whoost</p>
+                <h1 class="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight text-white leading-tight">Kelola Portofolio</h1>
+                <p class="text-[10px] sm:text-xs text-zinc-500 hidden sm:block mt-0.5">Database kreator & brand halaman publik</p>
             </div>
         </div>
         
-        <!-- Tab Toggle (Gaya Switcher) -->
-        <div class="flex items-center gap-1 bg-cardBg border border-zinc-800 p-1.5 rounded-2xl shadow-lg">
-            <button onclick="switchTab('portfolio')" id="tab-portfolio" class="px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold bg-blue-600 text-white shadow-md transition-all focus:outline-none">Portofolio</button>
-            <button onclick="switchTab('network')" id="tab-network" class="px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all focus:outline-none">Network</button>
-        </div>
+        <a href="admin-dashboard.html" class="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-500 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 text-zinc-300 hover:text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span class="hidden sm:inline">Kembali</span>
+        </a>
     </header>
 
     <!-- MAIN CONTENT AREA -->
     <main class="flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-32 scroll-smooth w-full relative z-0 custom-scrollbar">
-        
-        <!-- ================= SECTION: PORTOFOLIO ================= -->
-        <div id="section-portfolio" class="block max-w-7xl mx-auto space-y-6">
+        <div class="block max-w-7xl mx-auto space-y-6">
             
             <!-- Toolbar Portofolio -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-cardBg border border-zinc-800/80 p-4 rounded-[1.5rem]">
                 <div class="relative w-full sm:w-80">
                     <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" id="search-porto" onkeyup="searchGrid('porto')" placeholder="Cari portofolio..." class="w-full bg-zinc-900/50 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors">
+                    <input type="text" id="search-porto" onkeyup="searchGrid()" placeholder="Cari portofolio..." class="w-full bg-zinc-900/50 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors">
                 </div>
                 <button onclick="openModalPorto()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-xl hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 focus:outline-none">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
@@ -106,33 +102,11 @@
                 </button>
             </div>
 
-            <!-- Grid Portofolio (Gaya Halaman Depan) -->
+            <!-- Grid Portofolio -->
             <div id="portfolio-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5">
                 <div class="col-span-full text-center py-12 text-zinc-500 text-[13px]">Memuat data portofolio...</div>
             </div>
         </div>
-
-        <!-- ================= SECTION: NETWORK ================= -->
-        <div id="section-network" class="hidden max-w-7xl mx-auto space-y-6">
-            
-            <!-- Toolbar Network -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-cardBg border border-zinc-800/80 p-4 rounded-[1.5rem]">
-                <div class="relative w-full sm:w-80">
-                    <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" id="search-net" onkeyup="searchGrid('net')" placeholder="Cari akun network..." class="w-full bg-zinc-900/50 border border-zinc-700 rounded-xl pl-10 pr-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors">
-                </div>
-                <button onclick="openModalNet()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 text-white text-[13px] font-semibold rounded-xl hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 focus:outline-none">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
-                    Tambah Akun
-                </button>
-            </div>
-
-            <!-- Grid Network -->
-            <div id="network-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5">
-                <div class="col-span-full text-center py-12 text-zinc-500 text-[13px]">Memuat data network...</div>
-            </div>
-        </div>
-
     </main>
 
     <!-- ========================================== -->
@@ -142,7 +116,6 @@
         
         <div class="bg-cardBg border border-zinc-700 w-full max-w-5xl h-[85vh] rounded-[2rem] flex flex-col md:flex-row relative shadow-2xl transform scale-95 transition-transform duration-300 overflow-hidden" id="content-porto">
             
-            <!-- Tombol Close (Absolute Kanan Atas) -->
             <button onclick="closeModalPorto()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 backdrop-blur border border-zinc-700 hover:bg-zinc-700 rounded-full flex items-center justify-center transition-colors text-zinc-300 hover:text-white focus:outline-none shadow-lg">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
@@ -153,6 +126,12 @@
                 
                 <div class="w-full aspect-[3/4] bg-zinc-900 rounded-xl relative overflow-hidden border border-zinc-800 mb-4 flex items-center justify-center group shrink-0">
                     <img id="preview-porto-img" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                    
+                    <!-- Tombol Hapus Cover Melayang -->
+                    <button type="button" id="btn-delete-cover" onclick="deleteCurrentCover()" class="absolute top-3 right-3 bg-red-600 hover:bg-red-500 text-white p-2.5 rounded-xl shadow-lg hidden z-10 transition-colors focus:outline-none" title="Hapus Cover">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+
                     <div id="preview-porto-placeholder" class="text-center">
                         <svg class="w-8 h-8 mx-auto text-zinc-700 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span class="text-zinc-500 text-[11px] font-medium uppercase tracking-widest">Preview 3:4</span>
@@ -169,7 +148,6 @@
             <!-- KANAN: Form Pengisian -->
             <div class="w-full md:w-[60%] flex flex-col h-full relative">
                 
-                <!-- Modal Header Kanan -->
                 <div class="px-6 py-5 border-b border-zinc-800 bg-zinc-900/50 shrink-0">
                     <h2 class="text-lg font-bold text-white flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg> 
@@ -177,7 +155,6 @@
                     </h2>
                 </div>
 
-                <!-- Scrollable Form -->
                 <div class="overflow-y-auto p-6 flex-1 custom-scrollbar">
                     <form id="form-porto" class="space-y-7">
                         <input type="hidden" id="porto-id">
@@ -191,7 +168,6 @@
                                     <input type="text" id="porto-name" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none transition-colors" required placeholder="Cth: Aldi Taher">
                                 </div>
                                 
-                                <!-- Custom Dropdown Kategori -->
                                 <div class="relative">
                                     <label class="custom-label">Kategori <span class="text-red-500">*</span></label>
                                     <button type="button" onclick="toggleCatDropdown()" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] flex justify-between items-center focus:border-blue-500 outline-none transition-colors">
@@ -210,11 +186,7 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label class="custom-label">Niche / Topik <span class="text-red-500">*</span></label>
-                                    <input type="text" id="porto-niche" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none transition-colors" required placeholder="Cth: Comedy & Music">
-                                </div>
-                                <div>
+                                <div class="md:col-span-2">
                                     <label class="custom-label">Total Views <span class="text-red-500">*</span></label>
                                     <input type="text" id="porto-stats" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none transition-colors" required placeholder="Cth: Up to 8.4M Views">
                                 </div>
@@ -251,51 +223,6 @@
     </div>
 
 
-    <!-- ========================================== -->
-    <!-- MODAL FORM NETWORK AKUN -->
-    <!-- ========================================== -->
-    <div id="modal-net" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
-        <div class="bg-cardBg border border-zinc-700 w-full max-w-md max-h-[90vh] rounded-[1.5rem] flex flex-col relative shadow-2xl transform scale-95 transition-transform duration-300" id="content-net">
-            
-            <div class="flex justify-between items-center px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 shrink-0 rounded-t-[1.5rem]">
-                <h2 class="text-lg font-bold text-white flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg> <span id="title-net">Tambah Network</span></h2>
-                <button onclick="closeModalNet()" class="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors focus:outline-none"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-            </div>
-
-            <div class="px-6 py-6 overflow-y-auto flex-1 custom-scrollbar">
-                <form id="form-net" class="space-y-5">
-                    <input type="hidden" id="net-id">
-                    
-                    <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
-                        <label class="block text-sm font-bold text-white mb-1">Foto Profil / Logo <span class="text-red-500">*</span></label>
-                        <p class="text-[11px] text-zinc-500 mb-3">Foto akan dibentuk bulat otomatis.</p>
-                        <input type="file" id="net-file" accept="image/*" class="w-full text-xs text-zinc-400">
-                        <input type="hidden" id="net-old-file">
-                        <div id="net-file-hint" class="mt-3 text-[11px] bg-green-500/10 text-green-400 p-2.5 rounded-lg border border-green-500/20 hidden flex items-center gap-2"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> File foto sudah tersimpan.</div>
-                    </div>
-
-                    <div>
-                        <label class="custom-label">Username Akun <span class="text-red-500">*</span></label>
-                        <input type="text" id="net-handle" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" required placeholder="Cth: Kang Fakta">
-                    </div>
-                    <div>
-                        <label class="custom-label">Label / Total Views <span class="text-red-500">*</span></label>
-                        <input type="text" id="net-label" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" required placeholder="Cth: Up to 6M Views">
-                    </div>
-                    <div>
-                        <label class="custom-label">Link URL Sosmed <span class="text-red-500">*</span></label>
-                        <input type="url" id="net-link" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-[13px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" required placeholder="https://tiktok.com/@akun">
-                    </div>
-                </form>
-            </div>
-
-            <div class="border-t border-zinc-800 p-5 bg-zinc-900/90 rounded-b-[1.5rem] flex justify-end gap-3 shrink-0">
-                <button type="button" onclick="closeModalNet()" class="px-5 py-2.5 rounded-xl text-[13px] font-semibold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors focus:outline-none">Batal</button>
-                <button type="button" id="btn-save-net" onclick="saveNet()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-[13px] rounded-xl transition-colors shadow-lg shadow-blue-900/20 flex items-center gap-2 focus:outline-none"><span id="txt-save-net">Simpan Data</span></button>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL CUSTOM KATEGORI BARU -->
     <div id="modal-new-cat" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200 p-4">
         <div class="bg-cardBg border border-zinc-700 w-full max-w-sm rounded-[1.5rem] p-6 relative shadow-2xl transform scale-95 transition-transform duration-200" id="content-new-cat">
@@ -323,27 +250,22 @@
         import { supabase, enforceRoleProtection } from './authentication/auth.js'; 
 
         let dbPorto = [];
-        let dbNet = [];
         let dbCat = [];
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Cek Proteksi
             if (typeof enforceRoleProtection === 'function') await enforceRoleProtection();
             const { data: { session } } = await supabase.auth.getSession();
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', session?.user?.id).single();
             if (!session || profile?.role !== 'admin') { window.location.replace('login.html'); return; }
 
-            // Initial Load Data
             await fetchCategories();
             await fetchPortfolios();
-            await fetchNetwork();
             
             setTimeout(() => {
                 const loader = document.getElementById('pageLoader');
                 if (loader) { loader.classList.add('opacity-0'); setTimeout(() => loader.style.display = 'none', 500); }
             }, 500);
 
-            // Logika Klik di luar dropdown kategori
             document.addEventListener('click', (e) => {
                 const dropdown = document.getElementById('cat-dropdown');
                 if(dropdown && !dropdown.classList.contains('hidden')) {
@@ -357,28 +279,9 @@
         // =====================================
         // UI & HELPERS
         // =====================================
-        window.switchTab = function(tabName) {
-            document.getElementById('section-portfolio').classList.toggle('hidden', tabName !== 'portfolio');
-            document.getElementById('section-network').classList.toggle('hidden', tabName !== 'network');
-            
-            const btnP = document.getElementById('tab-portfolio');
-            const btnN = document.getElementById('tab-network');
-            
-            if(tabName === 'portfolio') {
-                btnP.className = "px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold bg-blue-600 text-white shadow-md transition-all focus:outline-none";
-                btnN.className = "px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all focus:outline-none";
-            } else {
-                btnN.className = "px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold bg-blue-600 text-white shadow-md transition-all focus:outline-none";
-                btnP.className = "px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all focus:outline-none";
-            }
-        }
-
-        window.searchGrid = function(type) {
-            const inputId = type === 'porto' ? 'search-porto' : 'search-net';
-            const gridId = type === 'porto' ? 'portfolio-grid' : 'network-grid';
-            const inputVal = document.getElementById(inputId).value.toLowerCase();
-            const items = document.querySelectorAll(`#${gridId} .search-item`);
-            
+        window.searchGrid = function() {
+            const inputVal = document.getElementById('search-porto').value.toLowerCase();
+            const items = document.querySelectorAll('#portfolio-grid .search-item');
             items.forEach(item => {
                 const text = item.innerText.toLowerCase();
                 item.style.display = text.includes(inputVal) ? "" : "none";
@@ -398,19 +301,66 @@
         }
 
         // =====================================
-        // FILE UPLOAD SUPABASE & PREVIEW
+        // LOGIKA GAMBAR (PREVIEW, UPLOAD, HAPUS)
         // =====================================
         window.previewImage = function(input) {
             const preview = document.getElementById('preview-porto-img');
             const placeholder = document.getElementById('preview-porto-placeholder');
+            const btnDelete = document.getElementById('btn-delete-cover');
+            
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                     preview.classList.remove('hidden');
                     placeholder.classList.add('hidden');
+                    btnDelete.classList.remove('hidden');
                 }
                 reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        window.resetPreviewUI = function() {
+            document.getElementById('porto-file').value = '';
+            document.getElementById('porto-file').setAttribute('required', 'true');
+            document.getElementById('preview-porto-img').src = '';
+            document.getElementById('preview-porto-img').classList.add('hidden');
+            document.getElementById('preview-porto-placeholder').classList.remove('hidden');
+            document.getElementById('btn-delete-cover').classList.add('hidden');
+        }
+
+        window.deleteCurrentCover = async function() {
+            const id = document.getElementById('porto-id').value;
+            const oldFileUrl = document.getElementById('porto-old-file').value;
+
+            // Jika cover sudah di-save di DB sebelumnya (Mode Edit)
+            if (oldFileUrl) {
+                if(confirm("Yakin ingin menghapus cover permanen dari database?")) {
+                    const btn = document.getElementById('btn-delete-cover');
+                    btn.innerHTML = `<svg class="w-4 h-4 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+                    btn.disabled = true;
+
+                    try {
+                        await deleteFileFromSupabase(oldFileUrl, 'portfolios');
+                        if (id) {
+                            await supabase.from('portfolios').update({ portraitImg: '' }).eq('id', id);
+                        }
+                        
+                        document.getElementById('porto-old-file').value = '';
+                        resetPreviewUI();
+                        showToast("Terhapus", "Cover berhasil dihapus.");
+                        fetchPortfolios(); 
+                    } catch (e) {
+                        showToast("Error", "Gagal menghapus cover.", true);
+                    } finally {
+                        btn.innerHTML = `<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>`;
+                        btn.disabled = false;
+                    }
+                }
+            } 
+            // Jika hanya membatalkan pilihan file baru (Saat Tambah)
+            else {
+                resetPreviewUI();
             }
         }
 
@@ -503,7 +453,7 @@
             grid.innerHTML = '';
             
             dbPorto.forEach(item => {
-                const safeNiche = item.niche || item.category;
+                const safeCategory = item.category;
                 
                 grid.innerHTML += `
                     <div class="search-item bg-cardBg border border-zinc-800/80 hover:border-zinc-500 rounded-[1.25rem] p-3 flex flex-col group relative transition-colors shadow-lg">
@@ -513,7 +463,7 @@
                             
                             <!-- Badge Kategori Pojok Kanan Atas -->
                             <div class="absolute top-2 right-2 z-10">
-                                <span class="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 text-[9px] font-bold text-zinc-300 uppercase tracking-widest px-2 py-1 rounded shadow-md">${safeNiche}</span>
+                                <span class="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 text-[9px] font-bold text-zinc-300 uppercase tracking-widest px-2 py-1 rounded shadow-md">${safeCategory}</span>
                             </div>
                         </div>
                         
@@ -531,7 +481,7 @@
                                 Edit
                             </button>
                             <button onclick="deletePorto('${item.id}', '${item.portraitImg}')" class="w-full bg-red-500/10 hover:bg-red-500 border border-red-500/30 text-red-400 hover:text-white py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center focus:outline-none">
-                                Hapus
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
                             </button>
                         </div>
                     </div>`;
@@ -545,13 +495,7 @@
             document.getElementById('porto-cat-label').innerText = "Pilih Kategori"; document.getElementById('porto-cat-label').classList.replace('text-white','text-zinc-500');
             document.getElementById('porto-category').value = '';
             
-            // Image Preview Reset
-            document.getElementById('porto-file').setAttribute('required', 'true');
-            document.getElementById('porto-old-file').value = '';
-            document.getElementById('preview-porto-img').classList.add('hidden');
-            document.getElementById('preview-porto-img').src = '';
-            document.getElementById('preview-porto-placeholder').classList.remove('hidden');
-            
+            resetPreviewUI();
             document.getElementById('handles-container').innerHTML = ''; window.addHandleRow();
             
             const m = document.getElementById('modal-porto'); const c = document.getElementById('content-porto');
@@ -570,7 +514,7 @@
             div.innerHTML = `
                 <input type="text" class="h-username w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-[12px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" placeholder="Username (Cth: @whoost.id)" value="${data.username}" required>
                 <input type="url" class="h-link w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-[12px] text-white placeholder-zinc-500 focus:border-blue-500 outline-none" placeholder="URL Profil Lengkap" value="${data.link}" required>
-                <button type="button" onclick="this.parentElement.remove()" class="w-full md:w-10 h-9 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center shrink-0 transition-colors focus:outline-none"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7"/></svg></button>
+                <button type="button" onclick="this.parentElement.remove()" class="w-full md:w-10 h-9 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center shrink-0 transition-colors focus:outline-none"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg></button>
             `;
             document.getElementById('handles-container').appendChild(div);
         }
@@ -599,7 +543,7 @@
                 const handles = []; document.querySelectorAll('.handle-row').forEach(n => handles.push({ username: n.querySelector('.h-username').value, link: n.querySelector('.h-link').value }));
 
                 const payload = {
-                    name, category: cat, niche: document.getElementById('porto-niche').value,
+                    name, category: cat, niche: cat, // Niche disamakan dgn kategori untuk logic fallback
                     stats: document.getElementById('porto-stats').value, desc: document.getElementById('porto-desc').value,
                     portraitImg, banner: '', handles
                 };
@@ -622,7 +566,6 @@
             document.getElementById('porto-id').value = data.id;
             document.getElementById('porto-name').value = data.name;
             selectCategory(data.category);
-            document.getElementById('porto-niche').value = data.niche;
             document.getElementById('porto-stats').value = data.stats;
             document.getElementById('porto-desc').value = data.desc;
             
@@ -634,6 +577,7 @@
                 document.getElementById('preview-porto-img').src = oldFile;
                 document.getElementById('preview-porto-img').classList.remove('hidden');
                 document.getElementById('preview-porto-placeholder').classList.add('hidden');
+                document.getElementById('btn-delete-cover').classList.remove('hidden');
             }
 
             document.getElementById('handles-container').innerHTML = ''; if(data.handles) data.handles.forEach(h => addHandleRow(h));
@@ -646,114 +590,6 @@
                     await supabase.from('portfolios').delete().eq('id', id);
                     showToast("Terhapus", "Portofolio telah dihapus.");
                     fetchPortfolios();
-                } catch(e) { showToast("Error", "Gagal menghapus.", true); }
-            }
-        }
-
-        // =====================================
-        // LOGIKA NETWORK (CRUD) - GRID VIEW
-        // =====================================
-        async function fetchNetwork() {
-            const { data, error } = await supabase.from('network_items').select('*').order('handle', { ascending: true });
-            const grid = document.getElementById('network-grid');
-            
-            if (error || !data || data.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-10 text-zinc-500 text-[13px]">Data jaringan kosong.</div>`;
-                return;
-            }
-            
-            dbNet = data; grid.innerHTML = '';
-            
-            dbNet.forEach(item => {
-                grid.innerHTML += `
-                    <div class="search-item bg-cardBg border border-zinc-800 hover:border-zinc-500 rounded-2xl p-4 flex flex-col items-center text-center transition-colors shadow-lg">
-                        <img src="${item.img}" class="w-16 h-16 rounded-full object-cover mb-3 border-2 border-zinc-700 shadow-md">
-                        
-                        <h4 class="text-[13px] font-bold text-white mb-1 truncate w-full">${item.handle}</h4>
-                        <span class="text-[10px] text-zinc-400 font-medium bg-zinc-900/80 px-2 py-0.5 rounded mb-4 truncate w-full">${item.label}</span>
-                        
-                        <div class="w-full grid grid-cols-2 gap-2 mt-auto border-t border-zinc-800/50 pt-3">
-                            <button onclick="editNet('${item.id}')" class="bg-zinc-800 hover:bg-blue-600 text-zinc-300 hover:text-white py-1.5 rounded text-xs font-bold transition-colors focus:outline-none">
-                                Edit
-                            </button>
-                            <button onclick="deleteNet('${item.id}', '${item.img}')" class="bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/30 py-1.5 rounded text-xs font-bold transition-colors focus:outline-none">
-                                Hapus
-                            </button>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        window.openModalNet = function() {
-            document.getElementById('form-net').reset();
-            document.getElementById('net-id').value = '';
-            document.getElementById('title-net').textContent = "Tambah Network";
-            document.getElementById('net-file').setAttribute('required', 'true');
-            document.getElementById('net-old-file').value = '';
-            document.getElementById('net-file-hint').classList.add('hidden');
-            
-            const m = document.getElementById('modal-net'); const c = document.getElementById('content-net');
-            m.classList.remove('opacity-0', 'pointer-events-none'); c.classList.remove('scale-95');
-        }
-
-        window.closeModalNet = function() {
-            const m = document.getElementById('modal-net'); const c = document.getElementById('content-net');
-            c.classList.add('scale-95'); m.classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => document.getElementById('form-net').reset(), 300);
-        }
-
-        window.saveNet = async function() {
-            const id = document.getElementById('net-id').value;
-            const handle = document.getElementById('net-handle').value;
-            const label = document.getElementById('net-label').value;
-            const link = document.getElementById('net-link').value;
-
-            if(!handle || !label || !link) { showToast("Peringatan", "Isi semua form teks!", true); return; }
-
-            const btn = document.getElementById('btn-save-net'); const txt = document.getElementById('txt-save-net');
-            btn.disabled = true; txt.innerText = 'Menyimpan...';
-
-            try {
-                let img = document.getElementById('net-old-file').value;
-                const file = document.getElementById('net-file').files[0];
-                if(file) {
-                    const newImg = await uploadFileToSupabase(file, 'network');
-                    if(img) await deleteFileFromSupabase(img, 'network');
-                    img = newImg;
-                }
-                if(!img) throw new Error("Foto profil harus diupload.");
-
-                const payload = { handle, label, link, img };
-                if(id) await supabase.from('network_items').update(payload).eq('id', id);
-                else await supabase.from('network_items').insert([payload]);
-
-                showToast("Sukses", "Data network tersimpan.");
-                closeModalNet(); fetchNetwork();
-            } catch(e) { showToast("Error", e.message, true); } 
-            finally { btn.disabled = false; txt.innerText = 'Simpan Data'; }
-        }
-
-        window.editNet = function(id) {
-            const data = dbNet.find(i => i.id === id); if(!data) return;
-            openModalNet();
-            document.getElementById('title-net').textContent = "Edit Network";
-            document.getElementById('net-id').value = data.id;
-            document.getElementById('net-handle').value = data.handle;
-            document.getElementById('net-label').value = data.label;
-            document.getElementById('net-link').value = data.link;
-
-            document.getElementById('net-old-file').value = data.img || '';
-            document.getElementById('net-file').removeAttribute('required');
-            document.getElementById('net-file-hint').classList.remove('hidden');
-        }
-
-        window.deleteNet = async function(id, imgUrl) {
-            if(confirm("Yakin ingin menghapus akun ini?")) {
-                try {
-                    if(imgUrl) await deleteFileFromSupabase(imgUrl, 'network');
-                    await supabase.from('network_items').delete().eq('id', id);
-                    showToast("Terhapus", "Akun network telah dihapus.");
-                    fetchNetwork();
                 } catch(e) { showToast("Error", "Gagal menghapus.", true); }
             }
         }
