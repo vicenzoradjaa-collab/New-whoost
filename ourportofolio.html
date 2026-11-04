@@ -149,7 +149,7 @@
                 
                 <!-- Badge Kategori di Pojok Kiri Atas Gambar -->
                 <div class="absolute top-5 left-5 z-20">
-                    <span id="modal-niche" class="inline-block px-3 py-1 bg-black/60 backdrop-blur-md border border-zinc-700/80 text-zinc-200 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-md">
+                    <span id="modal-category-badge" class="inline-block px-3 py-1 bg-black/60 backdrop-blur-md border border-zinc-700/80 text-zinc-200 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-md">
                         Kategori
                     </span>
                 </div>
@@ -232,7 +232,7 @@
         // 1. PENGAMBILAN DATA DARI SUPABASE
         async function fetchInitialData() {
             try {
-                // Fetch Portfolios saja
+                // Fetch Portfolios
                 const { data: portData, error: portErr } = await supabase
                     .from('portfolios')
                     .select('*')
@@ -298,7 +298,7 @@
                         <span class="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">Menyiapkan Gambar...</span>
                     </div>`;
                 
-                // Preload Gambar Utama (Portrait)
+                // Preload Gambar Utama
                 const imageUrls = filteredData.map(i => i.portraitImg).filter(Boolean);
                 await Promise.all(imageUrls.map(url => new Promise(res => {
                     const img = new Image(); img.onload = res; img.onerror = res; img.src = url;
@@ -324,7 +324,9 @@
 
             dataToRender.forEach((item, index) => {
                 const delay = (index % 10) * 50;
-                const safeCategory = item.category;
+                
+                // Menggunakan category untuk label (Bukan niche)
+                const safeCategory = item.category || 'Portfolio';
 
                 gridContainer.innerHTML += `
                     <div onclick="window.openModal('${item.id}', this)" class="bg-cardBg border border-zinc-800/80 hover:border-zinc-500 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col transition-all duration-300 shadow-xl group hover:-translate-y-1 cursor-pointer animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
@@ -335,7 +337,7 @@
                             
                             <!-- Badge Pojok Kanan Atas -->
                             <div class="absolute top-3 right-3 z-10">
-                                <span class="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 text-[9px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-widest px-2 py-1 rounded-md shadow-md">${safeNiche}</span>
+                                <span class="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 text-[9px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-widest px-2 py-1 rounded-md shadow-md">${safeCategory}</span>
                             </div>
                         </div>
                         
@@ -385,9 +387,12 @@
             
             if (cardElement) cardSpinner.remove();
 
-            // Isi Data Teks Kanan
+            // Isi Data Teks Kanan & Kiri
             document.getElementById('modal-title').textContent = data.name;
-            document.getElementById('modal-niche').textContent = data.category;
+            
+            // Menggunakan category, bukan niche
+            document.getElementById('modal-category-badge').textContent = data.category || 'Portfolio'; 
+            
             document.getElementById('modal-desc').textContent = data.desc;
             document.getElementById('modal-stats').textContent = data.stats;
 
