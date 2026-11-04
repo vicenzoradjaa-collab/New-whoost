@@ -30,9 +30,10 @@ export default async function handler(req, res) {
         actorId = 'clockworks~tiktok-profile-scraper'; 
         runInput = { profiles: [username] };
     } else if (platform.toLowerCase() === 'youtube') {
-        actorId = 'streamers~youtube-scraper'; 
-        // [FIX] Hapus /about karena YouTube UI terbaru sudah menggabungkan description ke halaman utama
-        runInput = { startUrls: [{ url: `https://www.youtube.com/@${username}` }], maxResults: 1 };
+        // [FIX] Menggunakan actor khusus Channel Scraper agar mengambil profil/bio channel,
+        // BUKAN mengambil data video. Hapus juga maxResults: 1 karena tidak diperlukan untuk profil.
+        actorId = 'streamers~youtube-channel-scraper'; 
+        runInput = { startUrls: [{ url: `https://www.youtube.com/@${username}` }] };
     } else {
         throw new Error('Platform tidak didukung.');
     }
@@ -60,15 +61,15 @@ export default async function handler(req, res) {
     
     let socialId = profileData.id || profileData.pk || profileData.userId || profileData.channelId || profileData?.userInfo?.user?.id || username;
 
-    // --- [FIX] MENARIK JUMLAH FOLLOWERS SESUAI STRUKTUR APIFY BARU ---
+    // --- MENARIK JUMLAH FOLLOWERS SESUAI STRUKTUR APIFY BARU ---
     let followersCount = 0;
     if (platform.toLowerCase() === 'tiktok') {
-        // Di tiktok apify, followers disebut "fans"
         followersCount = profileData.followerCount || profileData?.authorMeta?.fans || profileData?.userInfo?.stats?.followerCount || profileData?.stats?.followerCount || 0;
     } else if (platform.toLowerCase() === 'instagram') {
         followersCount = profileData.followersCount || profileData.edge_followed_by?.count || 0;
     } else if (platform.toLowerCase() === 'youtube') {
-        followersCount = profileData.subscriberCount || profileData.subscribersCount || 0;
+        // [FIX] Tambahkan field channelSubscriberCount untuk format dari actor channel scraper
+        followersCount = profileData.subscriberCount || profileData.channelSubscriberCount || profileData.subscribersCount || 0;
     }
 
     // --- MODE REFRESH STATS (Tombol Refresh di Web) ---
