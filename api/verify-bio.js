@@ -31,7 +31,8 @@ export default async function handler(req, res) {
         runInput = { profiles: [username] };
     } else if (platform.toLowerCase() === 'youtube') {
         actorId = 'streamers~youtube-scraper'; 
-        runInput = { startUrls: [{ url: `https://www.youtube.com/@${username}/about` }], maxResults: 1 };
+        // [FIX] Hapus /about karena YouTube UI terbaru sudah menggabungkan description ke halaman utama
+        runInput = { startUrls: [{ url: `https://www.youtube.com/@${username}` }], maxResults: 1 };
     } else {
         throw new Error('Platform tidak didukung.');
     }
@@ -59,29 +60,41 @@ export default async function handler(req, res) {
     
     let socialId = profileData.id || profileData.pk || profileData.userId || profileData.channelId || profileData?.userInfo?.user?.id || username;
 
-    // --- MENARIK JUMLAH FOLLOWERS ---
+    // --- [FIX] MENARIK JUMLAH FOLLOWERS SESUAI STRUKTUR APIFY BARU ---
     let followersCount = 0;
     if (platform.toLowerCase() === 'tiktok') {
-        followersCount = profileData.followerCount || profileData?.userInfo?.stats?.followerCount || profileData?.stats?.followerCount || 0;
+        // Di tiktok apify, followers disebut "fans"
+        followersCount = profileData.followerCount || profileData?.authorMeta?.fans || profileData?.userInfo?.stats?.followerCount || profileData?.stats?.followerCount || 0;
     } else if (platform.toLowerCase() === 'instagram') {
         followersCount = profileData.followersCount || profileData.edge_followed_by?.count || 0;
     } else if (platform.toLowerCase() === 'youtube') {
-        followersCount = profileData.subscriberCount || 0;
+        followersCount = profileData.subscriberCount || profileData.subscribersCount || 0;
     }
 
-    const rawJsonString = JSON.stringify(profileData);
+    // --- MODE REFRESH STATS (Tombol Refresh di Web) ---
+    // Jika frontend mengirimkan kode "REFRESH", kita bypass pengecekan Bio
+    if (code === 'REFRESH') {
+        return res.status(200).json({ 
+            verified: true, 
+            social_id: socialId, 
+            followers: followersCount,
+            message: 'Refresh Berhasil' 
+        });
+    }
 
+    // --- MODE VERIFIKASI BIO ---
+    const rawJsonString = JSON.stringify(profileData);
     if (rawJsonString.includes(code.toString())) {
         return res.status(200).json({ 
             verified: true, 
             social_id: socialId, 
-            followers: followersCount, // Dikirim ke Web
+            followers: followersCount, 
             message: 'Verifikasi Berhasil' 
         });
     } else {
         return res.status(200).json({ 
             verified: false, 
-            message: 'Kode 6-digit belum terdeteksi. Sistem butuh waktu ±1 menit untuk sinkronisasi setelah Anda update Bio. Silakan tunggu sebentar lalu Coba Lagi.' 
+            message: 'Kode 6-digit tidak terdeteksi di Profil/Bio Anda. Silakan periksa kembali dan coba lagi.' 
         });
     }
 
