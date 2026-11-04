@@ -13,8 +13,6 @@ export default async function handler(req, res) {
   try {
     const { accounts } = req.body; 
 
-    // Karena frontend hanya mengirim [targetAccount], 
-    // accounts.length pasti 1 (hanya platform yang dipilih user yang akan di-scan)
     if (!accounts || accounts.length === 0) {
       return res.status(200).json({ videos: [] });
     }
@@ -37,7 +35,17 @@ export default async function handler(req, res) {
         return await response.json();
     };
 
-    // Jalankan pencarian video (Kenyataannya hanya run 1x sesuai akun yg dikirim frontend)
+    // [FIX] Helper agar angka dengan koma/titik/teks (misal: "1,200 views") dari apify otomatis bersih jadi murni angka
+    const parseCount = (val) => {
+        if (typeof val === 'number') return val;
+        if (typeof val === 'string') {
+            const cleaned = val.replace(/[^0-9]/g, ''); // Hapus semua selain angka
+            return parseInt(cleaned, 10) || 0;
+        }
+        return 0;
+    };
+
+    // Jalankan pencarian video
     const fetchPromises = accounts.map(async (acc) => {
         try {
             if (acc.platform.toLowerCase() === 'instagram') {
@@ -48,9 +56,9 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            // [FIX] Menangkap Views & Likes IG
-                            const viewsCount = post.videoViewCount || post.viewCount || post.playCount || 0;
-                            const likesCount = post.likesCount || 0;
+                            // [FIX] Mengambil data videoPlayCount & videoViewCount
+                            const viewsCount = parseCount(post.videoViewCount || post.videoPlayCount || post.viewCount || post.playCount);
+                            const likesCount = parseCount(post.likesCount || post.likeCount);
 
                             allVideos.push({
                                 id: post.id,
@@ -72,9 +80,9 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            // [FIX] Menangkap Views & Likes TikTok
-                            const viewsCount = post.playCount || post.stat?.playCount || 0;
-                            const likesCount = post.diggCount || post.stat?.diggCount || 0;
+                            // [FIX] Di tiktok kadang berada di objek 'stats' (pakai s)
+                            const viewsCount = parseCount(post.stats?.playCount || post.stat?.playCount || post.playCount);
+                            const likesCount = parseCount(post.stats?.diggCount || post.stat?.diggCount || post.diggCount);
 
                             allVideos.push({
                                 id: post.id,
@@ -101,9 +109,9 @@ export default async function handler(req, res) {
                             if (now - postTime < TWENTY_FOUR_HOURS) {
                                 const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                                 
-                                // [FIX] Menangkap Views & Likes YouTube
-                                const viewsCount = post.viewCount || post.views || 0;
-                                const likesCount = post.likeCount || post.likes || 0;
+                                // [FIX] Menangkap views youtube dengan amab
+                                const viewsCount = parseCount(post.viewCount || post.views || post.statistics?.viewCount);
+                                const likesCount = parseCount(post.likeCount || post.likes || post.statistics?.likeCount);
 
                                 allVideos.push({
                                     id: post.id || post.videoId,
@@ -126,7 +134,7 @@ export default async function handler(req, res) {
 
     await Promise.all(fetchPromises);
 
-    // Mengurutkan dari yang paling baru diupload (opsional tapi bagus untuk UX)
+    // Mengurutkan dari yang paling baru diupload
     allVideos.sort((a, b) => parseInt(a.upload_time) - parseInt(b.upload_time));
 
     return res.status(200).json({ videos: allVideos });
