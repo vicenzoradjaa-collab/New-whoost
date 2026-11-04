@@ -23,7 +23,6 @@ export default async function handler(req, res) {
     let actorId = '';
     let runInput = {};
 
-    // PENENTUAN SCRAPER SESUAI PLATFORM
     if (platform.toLowerCase() === 'instagram') {
         actorId = 'apify~instagram-profile-scraper'; 
         runInput = { usernames: [username] };
@@ -46,24 +45,11 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-        const errorDetail = await response.text();
-        console.error("Apify Error Response:", errorDetail);
         throw new Error(`Gagal menghubungi server scraper (Apify). Status: ${response.status}.`);
     }
 
     let data = await response.json();
-    
-    // Normalisasi bentuk data (Jaga-jaga jika Apify mereturn { data: [] } atau { items: [] })
-    let items = [];
-    if (Array.isArray(data)) {
-        items = data;
-    } else if (data && Array.isArray(data.items)) {
-        items = data.items;
-    } else if (data && Array.isArray(data.data)) {
-        items = data.data;
-    } else {
-        items = [data]; // Force array
-    }
+    let items = Array.isArray(data) ? data : (data?.items || data?.data || [data]);
     
     if (!items || items.length === 0 || !items[0] || Object.keys(items[0]).length === 0) {
         throw new Error('Profil tidak ditemukan. Pastikan username benar dan akun Anda bersifat publik.');
@@ -71,18 +57,25 @@ export default async function handler(req, res) {
 
     const profileData = items[0];
     
-    // Tarik Social ID secara dinamis dari berbagai kemungkinan nama variable
     let socialId = profileData.id || profileData.pk || profileData.userId || profileData.channelId || profileData?.userInfo?.user?.id || username;
 
-    // TEKNIK SUPER AMAN: Ubah seluruh object JSON dari Apify menjadi String text.
-    // Ini memastikan kode 6-digit tetap ketemu walau apify merubah-rubah letak data bio (signature/description/dll).
+    // --- MENARIK JUMLAH FOLLOWERS ---
+    let followersCount = 0;
+    if (platform.toLowerCase() === 'tiktok') {
+        followersCount = profileData.followerCount || profileData?.userInfo?.stats?.followerCount || profileData?.stats?.followerCount || 0;
+    } else if (platform.toLowerCase() === 'instagram') {
+        followersCount = profileData.followersCount || profileData.edge_followed_by?.count || 0;
+    } else if (platform.toLowerCase() === 'youtube') {
+        followersCount = profileData.subscriberCount || 0;
+    }
+
     const rawJsonString = JSON.stringify(profileData);
 
-    // Cek apakah 6 digit kode ada di dalam text profil tersebut
     if (rawJsonString.includes(code.toString())) {
         return res.status(200).json({ 
             verified: true, 
             social_id: socialId, 
+            followers: followersCount, // Dikirim ke Web
             message: 'Verifikasi Berhasil' 
         });
     } else {
