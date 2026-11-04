@@ -81,7 +81,7 @@
                 Skala Viral <br class="md:hidden"> <span class="text-white">Tanpa Batas.</span>
             </h1>
             <p class="text-zinc-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-                Menjelajahi rekam jejak digital kreator, brand, hingga project film yang sukses menembus FYP. Mulai dari hasil distribusi massal jaringan Whoost, hingga kampanye luar yang dieksekusi langsung oleh tim internal kami.
+                Menjelajahi rekam jejak digital kreator, brand, hingga project film yang sukses menembus FYP. Mulai dari hasil distribusi massal jaringan Whoost, hingga kampanye eksklusif yang dieksekusi langsung oleh tim internal kami.
             </p>
         </div>
 
@@ -89,26 +89,58 @@
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-10 z-40 relative max-w-4xl mx-auto w-full" data-aos="fade-up" data-aos-delay="100">
             
             <!-- Search Bar -->
-            <div class="relative w-full md:w-[450px]">
+            <div class="relative w-full md:flex-1 md:max-w-[400px]">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </div>
-                <input id="input-search" type="text" placeholder="Cari nama atau username..." class="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-500 focus:bg-zinc-900 rounded-full py-3 pl-12 pr-6 text-sm text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
+                <input id="input-search" type="text" placeholder="Cari nama atau username..." class="w-full bg-zinc-900/80 border border-zinc-800 focus:border-zinc-500 focus:bg-zinc-900 rounded-full py-3 pl-12 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition-all shadow-inner">
             </div>
 
-            <!-- Filter Dropdown -->
-            <div class="relative inline-block text-left filter-dropdown w-full md:w-auto" id="dropdown-category">
-                <button onclick="window.toggleDropdown('filter-dropdown-content')" class="w-full md:w-auto whitespace-nowrap flex items-center justify-between gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-6 py-3 rounded-full text-sm font-semibold transition-colors focus:outline-none">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                        <span id="current-filter-text">Semua Kategori</span>
+            <!-- Wrapper Filter & Sort (Kanan) -->
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                
+                <!-- Filter Dropdown -->
+                <div class="relative inline-block text-left filter-dropdown w-1/2 md:w-auto" id="dropdown-category">
+                    <button onclick="window.toggleDropdown('filter-dropdown-content')" class="w-full md:w-auto whitespace-nowrap flex items-center justify-between gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-4 md:px-5 py-3 rounded-full text-xs md:text-sm font-semibold transition-colors focus:outline-none">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                            <span id="current-filter-text" class="truncate max-w-[80px] md:max-w-[120px]">Semua Kategori</span>
+                        </div>
+                        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="filter-dropdown-content" class="dropdown-menu custom-scroll hidden absolute left-0 md:right-0 md:left-auto mt-2 w-[180px] md:w-56 max-h-60 overflow-y-auto rounded-xl shadow-xl bg-zinc-900 border border-zinc-700 ring-1 ring-black ring-opacity-5 z-50">
+                        <!-- Diisi JS -->
                     </div>
-                    <svg class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </button>
-                <div id="filter-dropdown-content" class="dropdown-menu custom-scroll hidden absolute right-0 md:left-0 mt-2 w-full md:w-56 max-h-60 overflow-y-auto rounded-xl shadow-xl bg-zinc-900 border border-zinc-700 ring-1 ring-black ring-opacity-5 z-50">
-                    <!-- Diisi JS -->
+                </div>
+
+                <!-- Sort Dropdown -->
+                <div class="relative inline-block text-left filter-dropdown w-1/2 md:w-auto" id="dropdown-sort">
+                    <button onclick="window.toggleDropdown('sort-dropdown-content')" class="w-full md:w-auto whitespace-nowrap flex items-center justify-between gap-2 bg-zinc-900/80 border border-zinc-800 hover:bg-zinc-800 px-4 md:px-5 py-3 rounded-full text-xs md:text-sm font-semibold transition-colors focus:outline-none">
+                        <div class="flex items-center gap-2 overflow-hidden">
+                            <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path></svg>
+                            <span id="current-sort-text" class="truncate max-w-[80px] md:max-w-[120px]">A-Z (Default)</span>
+                        </div>
+                        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="sort-dropdown-content" class="dropdown-menu custom-scroll hidden absolute right-0 mt-2 w-[180px] md:w-48 overflow-y-auto rounded-xl shadow-xl bg-zinc-900 border border-zinc-700 ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="py-1">
+                            <!-- Menu Sort (Render Manual) -->
+                            <button onclick="window.applySort('name_asc', 'A-Z (Default)')" class="w-full text-left px-4 py-2.5 text-[13px] text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex justify-between items-center focus:outline-none">
+                                A-Z (Default) <svg id="check-name_asc" class="w-4 h-4 text-zinc-400 sort-check" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                            <button onclick="window.applySort('views_desc', 'Views Tertinggi')" class="w-full text-left px-4 py-2.5 text-[13px] text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex justify-between items-center focus:outline-none">
+                                Views Tertinggi <svg id="check-views_desc" class="w-4 h-4 text-zinc-400 opacity-0 sort-check" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                            <button onclick="window.applySort('views_asc', 'Views Terendah')" class="w-full text-left px-4 py-2.5 text-[13px] text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex justify-between items-center focus:outline-none">
+                                Views Terendah <svg id="check-views_asc" class="w-4 h-4 text-zinc-400 opacity-0 sort-check" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                            <button onclick="window.applySort('name_desc', 'Z-A')" class="w-full text-left px-4 py-2.5 text-[13px] text-zinc-300 hover:bg-zinc-800 hover:text-white transition-colors flex justify-between items-center focus:outline-none">
+                                Z-A <svg id="check-name_desc" class="w-4 h-4 text-zinc-400 opacity-0 sort-check" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -168,7 +200,7 @@
 
                 <!-- TENTANG KREATOR / CAMPAIGN -->
                 <div class="mb-8 flex-grow">
-                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-3">Profile / Deskripsi Singkat</p>
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-3">Profile Singkat</p>
                     <p id="modal-desc" class="text-zinc-300 text-[13px] md:text-sm leading-relaxed whitespace-pre-line"></p>
                 </div>
 
@@ -176,7 +208,7 @@
                 <div class="pt-5 border-t border-zinc-800/60 grid grid-cols-2 gap-4 shrink-0 mt-auto">
                     <div>
                         <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1.5">Total Views</p>
-                        <p id="modal-stats" class="text-xl md:text-2xl font-black text-white"></p>
+                        <p id="modal-stats" class="text-lg md:text-xl font-black text-white"></p>
                     </div>
                     <div>
                         <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-1.5">Sosial Media</p>
@@ -201,12 +233,15 @@
 
         let dbPortfolio = []; 
         let currentFilter = 'All';
+        let currentSort = 'name_asc'; // State Sorting
         let searchQuery = '';
         let displayCounter = 0; 
         
         const gridContainer = document.getElementById('portfolio-grid');
         const filterDropdownContent = document.getElementById('filter-dropdown-content');
+        const sortDropdownContent = document.getElementById('sort-dropdown-content');
         const currentFilterText = document.getElementById('current-filter-text');
+        const currentSortText = document.getElementById('current-sort-text');
 
         // Initialize AOS
         document.addEventListener('DOMContentLoaded', () => {
@@ -214,26 +249,28 @@
             fetchInitialData();
         });
 
-        // Toggle Filter Dropdown
+        // Toggle Filter Dropdown (Otomatis menutup dropdown lain)
         window.toggleDropdown = function(id) {
+            document.querySelectorAll('.dropdown-menu').forEach(el => {
+                if(el.id !== id) el.classList.add('hidden');
+            });
             const el = document.getElementById(id);
             el.classList.toggle('hidden');
         };
         
+        // Klik di luar dropdown
         window.addEventListener('click', function(e) {
             if (!e.target.closest('.filter-dropdown')) {
-                filterDropdownContent.classList.add('hidden');
+                document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.add('hidden'));
             }
         });
 
         // 1. PENGAMBILAN DATA DARI SUPABASE
         async function fetchInitialData() {
             try {
-                // Fetch Portfolios
                 const { data: portData, error: portErr } = await supabase
                     .from('portfolios')
-                    .select('*')
-                    .order('name', { ascending: true });
+                    .select('*');
                 
                 if (portErr) throw portErr;
                 dbPortfolio = portData || [];
@@ -247,13 +284,13 @@
             }
         }
 
-        // 2. RENDER FILTER KATEGORI
+        // 2. RENDER FILTER KATEGORI & SORTING
         function renderFilters() {
             const uniqueCategories = [...new Set(dbPortfolio.map(item => item.category))];
             const allCats = ['All', ...uniqueCategories];
 
             filterDropdownContent.innerHTML = `<div class="py-1">` + allCats.map(c => `
-                <button onclick="window.applyFilter('${c}')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2.5 text-sm w-full text-left font-medium transition-colors flex justify-between items-center focus:outline-none">
+                <button onclick="window.applyFilter('${c}')" class="text-zinc-300 hover:bg-zinc-800 hover:text-white block px-4 py-2.5 text-[13px] w-full text-left font-medium transition-colors flex justify-between items-center focus:outline-none">
                     ${c === 'All' ? 'Semua Kategori' : c}
                     <svg class="w-4 h-4 text-zinc-400 ${currentFilter === c ? 'opacity-100' : 'opacity-0'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 </button>
@@ -268,6 +305,38 @@
             updateDisplay();
         }
 
+        window.applySort = function(sortValue, sortLabel) {
+            currentSort = sortValue;
+            currentSortText.textContent = sortLabel;
+            
+            // Atur Visibilitas Checkmark di Dropdown Sort
+            document.querySelectorAll('.sort-check').forEach(el => el.classList.add('opacity-0'));
+            document.getElementById(`check-${sortValue}`).classList.remove('opacity-0');
+            
+            sortDropdownContent.classList.add('hidden');
+            updateDisplay();
+        }
+
+        // FUNGSI PINTAR UNTUK MENGUBAH TEKS VIEWS MENJADI ANGKA "Up to 8.4M Views" -> 8400000
+        function parseViewsToNumber(str) {
+            if (!str) return 0;
+            // Ganti koma dengan titik untuk parsing desimal, ubah ke uppercase
+            const normalized = str.replace(',', '.').toUpperCase();
+            // Cari angka (termasuk desimal) dan huruf multiplier (K/M/B)
+            const match = normalized.match(/([\d\.]+)\s*([KMB]?)/);
+            if (!match) return 0;
+            
+            let num = parseFloat(match[1]);
+            if (isNaN(num)) return 0;
+
+            let multiplier = match[2];
+            if (multiplier === 'K') num *= 1000;
+            else if (multiplier === 'M') num *= 1000000;
+            else if (multiplier === 'B') num *= 1000000000;
+            
+            return num;
+        }
+
         // 3. SEARCH & UPDATE DISPLAY GRID
         document.getElementById('input-search').addEventListener('input', (e) => { 
             searchQuery = e.target.value.toLowerCase(); 
@@ -278,12 +347,25 @@
             displayCounter++;
             const currentCounter = displayCounter;
 
-            const filteredData = dbPortfolio.filter(item => {
+            // 1. Lakukan Filtering
+            let filteredData = dbPortfolio.filter(item => {
                 const matchCategory = currentFilter === 'All' || item.category === currentFilter;
                 const matchSearch = item.name.toLowerCase().includes(searchQuery) || 
                                     (item.handles && item.handles.some(h => h.username.toLowerCase().includes(searchQuery)));
                 return matchCategory && matchSearch;
             });
+
+            // 2. Lakukan Sorting berdasarkan currentSort
+            if (currentSort === 'views_desc') {
+                filteredData.sort((a, b) => parseViewsToNumber(b.stats) - parseViewsToNumber(a.stats));
+            } else if (currentSort === 'views_asc') {
+                filteredData.sort((a, b) => parseViewsToNumber(a.stats) - parseViewsToNumber(b.stats));
+            } else if (currentSort === 'name_desc') {
+                filteredData.sort((a, b) => b.name.localeCompare(a.name));
+            } else {
+                // Default: name_asc (A-Z)
+                filteredData.sort((a, b) => a.name.localeCompare(b.name));
+            }
 
             if (filteredData.length > 0) {
                 gridContainer.innerHTML = `
@@ -321,6 +403,7 @@
 
             dataToRender.forEach((item, index) => {
                 const delay = (index % 10) * 50;
+                
                 const safeCategory = item.category || 'Portfolio';
 
                 gridContainer.innerHTML += `
@@ -356,7 +439,7 @@
         }
 
 
-        // 4. FUNGSI MODAL DETAIL (Split Layout)
+        // 4. FUNGSI MODAL DETAIL
         const modal = document.getElementById('detail-modal');
         const modalContent = document.getElementById('modal-content');
         const posterImg = document.getElementById('modal-poster');
@@ -365,13 +448,13 @@
             const data = dbPortfolio.find(i => i.id === id);
             if (!data) return;
 
-            // Efek Loading di Card saat di-klik
+            // Efek Loading di Card
             const cardSpinner = document.createElement('div');
             cardSpinner.className = "absolute inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm rounded-[1.25rem] transition-all";
             cardSpinner.innerHTML = `<svg class="w-8 h-8 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
             if (cardElement) { cardElement.style.position = 'relative'; cardElement.appendChild(cardSpinner); }
 
-            // Set & Preload Poster Image
+            // Preload Poster
             posterImg.src = '';
             await new Promise(res => {
                 const img = new Image();
@@ -382,17 +465,16 @@
             
             if (cardElement) cardSpinner.remove();
 
-            // Isi Data Teks
+            // Isi Data Modal
             document.getElementById('modal-title').textContent = data.name;
             document.getElementById('modal-category-badge').textContent = data.category || 'Portfolio'; 
             document.getElementById('modal-desc').textContent = data.desc;
             document.getElementById('modal-stats').textContent = data.stats;
 
-            // Logika untuk Badge Social Media Handles (Di Kanan Bawah, 2 Kolom)
+            // Badge Social Media Handles
             const handlesContainer = document.getElementById('modal-handles-container');
             handlesContainer.innerHTML = '';
             
-            // Cek jika handles kosong
             if(!data.handles || !Array.isArray(data.handles) || data.handles.length === 0) {
                 handlesContainer.innerHTML = '<span class="text-[11px] text-zinc-500 italic px-2 py-1.5 bg-zinc-900/50 border border-zinc-800 rounded-md col-span-full">Belum ada akun terkait</span>';
             } else {
@@ -411,20 +493,18 @@
                     }
                     
                     handlesContainer.innerHTML += `
-                        <a href="${handle.link}" target="_blank" class="bg-zinc-800 border border-zinc-700 hover:bg-zinc-600 text-zinc-300 hover:text-white px-2 py-1.5 rounded-md text-[10px] font-medium flex items-center gap-1.5 transition-colors shadow-sm focus:outline-none min-w-0">
+                        <a href="${handle.link}" target="_blank" class="bg-zinc-800 border border-zinc-700 hover:bg-zinc-600 text-zinc-300 hover:text-white px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-colors shadow-sm focus:outline-none min-w-0">
                             <span class="shrink-0">${iconHTML}</span>
                             <span class="truncate">${handle.username || 'Link'}</span>
                         </a>
                     `;
                 });
                 
-                // Jika hasil filtering ternyata kosong
                 if(handlesContainer.innerHTML === '') {
                     handlesContainer.innerHTML = '<span class="text-[11px] text-zinc-500 italic px-2 py-1.5 bg-zinc-900/50 border border-zinc-800 rounded-md col-span-full">Belum ada akun terkait.</span>';
                 }
             }
 
-            // Tampilkan Modal
             modal.classList.remove('invisible');
             modal.classList.add('opacity-100');
             modalContent.classList.remove('scale-95');
