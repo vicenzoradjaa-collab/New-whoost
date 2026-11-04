@@ -35,11 +35,12 @@ export default async function handler(req, res) {
         return await response.json();
     };
 
-    // [FIX] Helper agar angka dengan koma/titik/teks (misal: "1,200 views") dari apify otomatis bersih jadi murni angka
+    // [FIX] Fungsi pembersih angka yang lebih kebal error
     const parseCount = (val) => {
+        if (val === null || val === undefined) return 0;
         if (typeof val === 'number') return val;
         if (typeof val === 'string') {
-            const cleaned = val.replace(/[^0-9]/g, ''); // Hapus semua selain angka
+            const cleaned = val.replace(/[^0-9]/g, ''); 
             return parseInt(cleaned, 10) || 0;
         }
         return 0;
@@ -56,9 +57,19 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            // [FIX] Mengambil data videoPlayCount & videoViewCount
-                            const viewsCount = parseCount(post.videoViewCount || post.videoPlayCount || post.viewCount || post.playCount);
-                            const likesCount = parseCount(post.likesCount || post.likeCount);
+                            // [FIX] Gunakan Math.max untuk memastikan field mana pun yang terisi angka (bukan 0) akan terambil
+                            const viewsCount = Math.max(
+                                parseCount(post.videoPlayCount),
+                                parseCount(post.videoViewCount),
+                                parseCount(post.playCount),
+                                parseCount(post.viewCount),
+                                parseCount(post.viewsCount)
+                            );
+                            const likesCount = Math.max(
+                                parseCount(post.likesCount),
+                                parseCount(post.likeCount),
+                                parseCount(post.likes)
+                            );
 
                             allVideos.push({
                                 id: post.id,
@@ -80,9 +91,16 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            // [FIX] Di tiktok kadang berada di objek 'stats' (pakai s)
-                            const viewsCount = parseCount(post.stats?.playCount || post.stat?.playCount || post.playCount);
-                            const likesCount = parseCount(post.stats?.diggCount || post.stat?.diggCount || post.diggCount);
+                            const viewsCount = Math.max(
+                                parseCount(post.playCount),
+                                parseCount(post.stats?.playCount),
+                                parseCount(post.stat?.playCount)
+                            );
+                            const likesCount = Math.max(
+                                parseCount(post.diggCount),
+                                parseCount(post.stats?.diggCount),
+                                parseCount(post.stat?.diggCount)
+                            );
 
                             allVideos.push({
                                 id: post.id,
@@ -109,9 +127,16 @@ export default async function handler(req, res) {
                             if (now - postTime < TWENTY_FOUR_HOURS) {
                                 const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                                 
-                                // [FIX] Menangkap views youtube dengan amab
-                                const viewsCount = parseCount(post.viewCount || post.views || post.statistics?.viewCount);
-                                const likesCount = parseCount(post.likeCount || post.likes || post.statistics?.likeCount);
+                                const viewsCount = Math.max(
+                                    parseCount(post.viewCount),
+                                    parseCount(post.views),
+                                    parseCount(post.statistics?.viewCount)
+                                );
+                                const likesCount = Math.max(
+                                    parseCount(post.likeCount),
+                                    parseCount(post.likes),
+                                    parseCount(post.statistics?.likeCount)
+                                );
 
                                 allVideos.push({
                                     id: post.id || post.videoId,
