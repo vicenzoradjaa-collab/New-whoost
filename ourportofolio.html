@@ -50,15 +50,6 @@
         .custom-scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
-        /* Utilities */
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .cursor-grab { cursor: grab; }
-        .cursor-grabbing { cursor: grabbing !important; }
-
-        /* Custom Video Player Style */
-        video::-webkit-media-controls-panel { background-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent); }
-
         /* Animasi Card */
         @keyframes fadeInUpLocal {
             from { opacity: 0; transform: translateY(20px); }
@@ -119,7 +110,7 @@
         </div>
 
         <!-- Portfolio Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 mb-20 min-h-[40vh] relative z-10" id="portfolio-grid">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 mb-10 min-h-[40vh] relative z-10" id="portfolio-grid">
             <!-- Loading Awal -->
             <div class="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
                 <svg class="w-10 h-10 animate-spin text-zinc-500 mb-4" fill="none" viewBox="0 0 24 24">
@@ -130,19 +121,6 @@
             </div>
         </div>
 
-        <!-- Network Section -->
-        <div class="border-t border-zinc-800/80 pt-16 mt-auto" data-aos="fade-in">
-            <div class="text-center mb-8">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Part of <span class="text-zinc-300 border-b-2 border-zinc-700">Whoost</span> Network</h2>
-                <p class="text-xs md:text-sm text-zinc-500 max-w-lg mx-auto">Beberapa akun clipper dan kreator pilihan yang terhubung dalam ekosistem distribusi kami.</p>
-            </div>
-            
-            <div class="relative w-full overflow-hidden" id="network-wrapper" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
-                <div class="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar cursor-grab py-4 px-8" id="network-track">
-                    <!-- Network diisi JS -->
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Footer -->
@@ -154,75 +132,50 @@
     <div id="detail-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/90 backdrop-blur-sm opacity-0 invisible transition-all duration-300">
         <div class="absolute inset-0 cursor-pointer" onclick="window.closeModal()"></div> 
         
-        <div id="modal-content" class="bg-cardBg border border-zinc-700 w-full max-w-4xl max-h-[90vh] rounded-3xl overflow-hidden relative shadow-2xl flex flex-col z-10 transform scale-95 transition-transform duration-400 my-auto">
+        <div id="modal-content" class="bg-cardBg border border-zinc-700 w-full max-w-4xl max-h-[90vh] rounded-[2rem] overflow-hidden relative shadow-2xl flex flex-col md:flex-row z-10 transform scale-95 transition-transform duration-400 my-auto">
             
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-5 md:px-8 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-md shrink-0">
-                <div>
-                    <h3 id="modal-title" class="text-xl md:text-2xl font-bold text-white leading-none mb-1.5">Nama Item</h3>
-                    <span id="modal-niche" class="text-[10px] md:text-xs text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-md font-semibold tracking-wide border border-zinc-700">Kategori/Niche</span>
-                </div>
-                <button onclick="window.closeModal()" class="w-10 h-10 bg-zinc-800 hover:bg-zinc-700 rounded-full flex items-center justify-center transition-colors text-zinc-300 focus:outline-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
+            <!-- Tombol Close -->
+            <button onclick="window.closeModal()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 backdrop-blur border border-zinc-700 hover:bg-zinc-700 rounded-full flex items-center justify-center transition-colors text-zinc-300 hover:text-white focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- KIRI: Poster -->
+            <div class="w-full md:w-[45%] lg:w-[40%] aspect-[4/5] md:aspect-auto md:h-full bg-zinc-950 relative shrink-0">
+                <img id="modal-poster" src="" class="absolute inset-0 w-full h-full object-cover">
+                <!-- Gradasi halus untuk transisi layout mobile -->
+                <div class="absolute inset-0 bg-gradient-to-t from-cardBg via-transparent to-transparent md:hidden"></div>
             </div>
 
-            <!-- Modal Body (Scrollable) -->
-            <div class="overflow-y-auto custom-scroll p-5 md:p-8 flex-grow">
-                <!-- Banner -->
-                <div class="w-full aspect-[21/9] md:aspect-[24/9] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative mb-6 group" id="banner-container">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none z-10"></div>
-                    <div class="absolute top-4 left-4 z-20">
-                        <div class="bg-zinc-900/60 backdrop-blur-md border border-zinc-700 text-white px-3 py-1.5 rounded-xl text-xs md:text-sm font-bold shadow-lg flex items-center gap-1.5">
-                            <svg class="w-4 h-4 text-zinc-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                            <span id="modal-stats">10M Views</span>
+            <!-- KANAN: Keterangan -->
+            <div class="w-full md:w-[55%] lg:w-[60%] p-6 md:p-8 lg:p-10 flex flex-col overflow-y-auto custom-scroll relative z-20 -mt-6 md:mt-0">
+                
+                <div class="mb-5">
+                    <span id="modal-niche" class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-700 text-zinc-300 text-[10px] font-bold uppercase tracking-wider rounded-md mb-3">Kategori</span>
+                    <h3 id="modal-title" class="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-2 tracking-tight">Nama Item</h3>
+                </div>
+
+                <div class="py-5 border-y border-zinc-800/60 mb-5 grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1.5">Total Views</p>
+                        <p id="modal-stats" class="text-xl md:text-2xl font-black text-white">0 Views</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1.5">Distribusi Platform</p>
+                        <div id="modal-platforms" class="flex items-center gap-2 mt-1">
+                            <!-- Diisi SVG Icon B&W via JS -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Akun Handles & Desc -->
-                <div class="flex flex-wrap items-center gap-2 justify-center mb-6" id="modal-handles-container"></div>
-                <p id="modal-desc" class="text-zinc-400 text-sm md:text-base leading-relaxed mb-8 text-center max-w-2xl mx-auto">Deskripsi portofolio</p>
-
-                <!-- Grid Video -->
-                <div class="border-t border-zinc-800/60 pt-8">
-                    <h4 class="text-sm md:text-base font-bold text-white mb-5 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-zinc-500" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> 
-                        Sorotan Video <span class="text-zinc-600 font-normal text-xs md:text-sm">(Klik untuk Putar)</span>
-                    </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4" id="modal-video-grid">
-                        <!-- Video Konten diisi JavaScript -->
-                    </div>
+                <div class="flex-grow">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2.5">Tentang Campaign / Kreator</p>
+                    <p id="modal-desc" class="text-zinc-300 text-sm leading-relaxed">Deskripsi portofolio...</p>
                 </div>
+
             </div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL VIDEO PLAYER FULLSCREEN BERSIH       -->
-    <!-- ========================================== -->
-    <div id="video-modal" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/95 backdrop-blur-xl opacity-0 invisible transition-all duration-300">
-        <button onclick="window.closeVideoModal()" class="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-zinc-800/80 hover:bg-zinc-700 rounded-full flex items-center justify-center transition-colors text-white z-50 shadow-2xl backdrop-blur border border-zinc-600 focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        
-        <div id="video-modal-content" class="w-full h-full md:max-w-[420px] md:h-[90vh] bg-black md:rounded-3xl overflow-hidden relative shadow-2xl flex justify-center items-center border border-zinc-800 transform scale-95 transition-transform duration-300">
-            <!-- Loading Video -->
-            <div id="video-loading" class="absolute inset-0 flex flex-col items-center justify-center bg-black z-20 transition-opacity duration-300">
-                <svg class="w-10 h-10 animate-spin text-zinc-500 mb-4" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span class="text-xs font-bold tracking-widest uppercase text-zinc-500">Menyiapkan Video...</span>
-            </div>
-            
-            <video id="raw-video-player" class="w-full h-full object-contain hidden z-10 bg-black outline-none" controls autoplay playsinline preload="auto"></video>
-            
-            <div id="iframe-wrapper" class="w-full h-full relative z-10 overflow-hidden bg-black hidden">
-                <iframe id="video-iframe" class="absolute top-0 left-0 w-full h-[115%] md:h-[120%]" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        </div>
-    </div>
 
     <!-- ========================================== -->
     <!-- JAVASCRIPT & SUPABASE LOGIC                -->
@@ -232,13 +185,11 @@
         import { supabase } from './authentication/auth.js';
 
         let dbPortfolio = []; 
-        let dbNetwork = [];
         let currentFilter = 'All';
         let searchQuery = '';
         let displayCounter = 0; 
         
         const gridContainer = document.getElementById('portfolio-grid');
-        const networkTrack = document.getElementById('network-track');
         const filterDropdownContent = document.getElementById('filter-dropdown-content');
         const currentFilterText = document.getElementById('current-filter-text');
 
@@ -263,7 +214,7 @@
         // 1. PENGAMBILAN DATA DARI SUPABASE
         async function fetchInitialData() {
             try {
-                // Fetch Portfolios
+                // Fetch Portfolios saja (Network dihapus)
                 const { data: portData, error: portErr } = await supabase
                     .from('portfolios')
                     .select('*')
@@ -275,22 +226,6 @@
                 renderFilters();
                 updateDisplay();
 
-                // Fetch Network Items
-                const { data: netData, error: netErr } = await supabase
-                    .from('network_items')
-                    .select('*')
-                    .order('handle', { ascending: true });
-
-                if (netErr) throw netErr;
-                dbNetwork = netData || [];
-                
-                // Preload Network Images
-                const netImages = dbNetwork.map(i => i.img).filter(Boolean);
-                await Promise.all(netImages.map(url => new Promise(res => {
-                    const img = new Image(); img.onload = res; img.onerror = res; img.src = url;
-                })));
-                
-                renderNetwork();
             } catch (error) {
                 console.error("Error fetching data:", error);
                 gridContainer.innerHTML = `<div class="col-span-full text-center py-10 text-red-500 font-medium">Gagal memuat data dari database. Pastikan koneksi internet stabil.</div>`;
@@ -370,28 +305,29 @@
             }
 
             dataToRender.forEach((item, index) => {
-                let handlesHTML = '';
-                if(item.handles && Array.isArray(item.handles) && item.handles.length > 0) {
-                    const displayHandles = item.handles.slice(0, 2);
-                    handlesHTML = displayHandles.map(h => `<span class="bg-zinc-800/80 border border-zinc-700 text-[10px] px-2 py-0.5 rounded-md text-zinc-300 truncate max-w-[90px] font-medium">${h.username}</span>`).join('');
-                    if (item.handles.length > 2) handlesHTML += `<span class="bg-zinc-800/80 border border-zinc-700 text-[10px] px-2 py-0.5 rounded-md text-white font-bold">+${item.handles.length - 2}</span>`;
-                }
-
                 const delay = (index % 10) * 50;
+                const safeNiche = item.niche || item.category;
 
                 gridContainer.innerHTML += `
                     <div onclick="window.openModal('${item.id}', this)" class="bg-cardBg border border-zinc-800/80 hover:border-zinc-500 rounded-[1.25rem] md:rounded-[1.5rem] p-3 md:p-4 flex flex-col transition-all duration-300 shadow-xl group hover:-translate-y-1 cursor-pointer animate-fade-in-up-local" style="animation-delay: ${delay}ms;">
+                        
                         <div class="w-full relative aspect-[3/4] rounded-lg md:rounded-xl overflow-hidden bg-zinc-950 mb-3 border border-zinc-800/50 shrink-0">
                             <img src="${item.portraitImg}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                             
-                            <div class="absolute bottom-3 left-3 right-3 flex flex-col z-10">
-                                <span class="text-[9px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-widest mb-1 drop-shadow-md bg-black/40 self-start px-2 py-0.5 rounded-sm backdrop-blur-sm">${item.niche}</span>
+                            <!-- Badge Pojok Kanan Atas -->
+                            <div class="absolute top-3 right-3 z-10">
+                                <span class="bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 text-[9px] md:text-[10px] font-bold text-zinc-300 uppercase tracking-widest px-2 py-1 rounded-md shadow-md">${safeNiche}</span>
                             </div>
                         </div>
                         
-                        <h3 class="font-bold text-sm md:text-base text-white group-hover:text-zinc-300 leading-tight mb-2 truncate transition-colors">${item.name}</h3>
-                        <div class="flex flex-wrap gap-1.5 mb-3">${handlesHTML}</div>
+                        <h3 class="font-bold text-sm md:text-base text-white group-hover:text-zinc-300 leading-tight mb-1.5 truncate transition-colors">${item.name}</h3>
+                        
+                        <!-- Total Views Tepat di bawah nama -->
+                        <div class="text-[11px] md:text-xs text-zinc-400 font-medium mb-3 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            ${item.stats}
+                        </div>
                         
                         <div class="mt-auto pt-3 border-t border-zinc-800/50 flex justify-between items-center">
                             <span class="text-[10px] md:text-xs text-zinc-500 font-semibold">Lihat Detail</span>
@@ -404,147 +340,11 @@
             });
         }
 
-        // 4. RENDER NETWORK MARQUEE
-        function renderNetwork() {
-            let html = '';
-            if (dbNetwork.length === 0) {
-                networkTrack.innerHTML = '<div class="w-full text-center text-zinc-600 text-sm py-10">Data network belum tersedia.</div>';
-                return;
-            }
-            // Gandakan array agar slider infinit (Seamless Loop Simulation)
-            const arr = [...dbNetwork, ...dbNetwork, ...dbNetwork, ...dbNetwork];
-            
-            arr.forEach(net => {
-                html += `
-                    <div class="group relative w-36 md:w-44 bg-cardBg rounded-[1.2rem] border border-zinc-800 p-4 flex flex-col items-center justify-between flex-shrink-0 hover:border-zinc-500 transition-all duration-300 shadow-lg hover:-translate-y-1">
-                        <div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-3 border-[3px] border-zinc-900 group-hover:border-zinc-500 transition-all duration-300 shadow-inner">
-                            <img src="${net.img}" class="w-full h-full object-cover" loading="lazy" alt="${net.handle}">
-                        </div>
-                        <div class="text-center w-full mb-4">
-                            <h4 class="text-sm md:text-base font-bold text-white truncate w-full px-1">${net.handle}</h4>
-                            <p class="text-[10px] text-zinc-400 mt-0.5 truncate w-full px-1">${net.label}</p>
-                        </div>
-                        <a href="${net.link}" target="_blank" class="w-full py-2 bg-zinc-800 hover:bg-white text-zinc-300 hover:text-black text-[11px] font-bold rounded-lg transition-colors text-center border border-zinc-700 hover:border-white focus:outline-none">
-                            Kunjungi
-                        </a>
-                    </div>
-                `;
-            });
-            networkTrack.innerHTML = html;
-        }
 
-        // Logika Auto-Scroll & Drag Marquee
-        let netInterval;
-        function startNetScroll() {
-            clearInterval(netInterval);
-            netInterval = setInterval(() => {
-                if (networkTrack.scrollWidth > networkTrack.clientWidth) {
-                    networkTrack.scrollLeft += 1;
-                    if (networkTrack.scrollLeft >= networkTrack.scrollWidth / 2) {
-                        networkTrack.scrollLeft = 0; // Reset seamless
-                    }
-                }
-            }, 30);
-        }
-        startNetScroll();
-
-        let isDown = false, startX, scrollLeftPos;
-        networkTrack.addEventListener('mousedown', (e) => {
-            isDown = true; networkTrack.classList.add('cursor-grabbing');
-            clearInterval(netInterval); startX = e.pageX - networkTrack.offsetLeft; scrollLeftPos = networkTrack.scrollLeft;
-        });
-        networkTrack.addEventListener('mouseleave', () => { isDown = false; networkTrack.classList.remove('cursor-grabbing'); startNetScroll(); });
-        networkTrack.addEventListener('mouseup', () => { isDown = false; networkTrack.classList.remove('cursor-grabbing'); startNetScroll(); });
-        networkTrack.addEventListener('mousemove', (e) => {
-            if (!isDown) return;
-            e.preventDefault(); const x = e.pageX - networkTrack.offsetLeft; const walk = (x - startX) * 1.5; networkTrack.scrollLeft = scrollLeftPos - walk;
-        });
-        networkTrack.addEventListener('touchstart', () => { clearInterval(netInterval); });
-        networkTrack.addEventListener('touchend', () => { startNetScroll(); });
-
-
-        // 5. FUNGSI MODAL DETAIL & SISTEM VIDEO PINTAR
+        // 4. FUNGSI MODAL DETAIL (Split Layout, No Video)
         const modal = document.getElementById('detail-modal');
         const modalContent = document.getElementById('modal-content');
-        const bannerContainer = document.getElementById('banner-container');
-
-        // Logic API Extractor (Verbatim dipertahankan, adaptasi style)
-        async function fetchVideoData(url) {
-            let result = { isRaw: false, cover: '', playUrl: url };
-            
-            // TIKTOK LOGIC
-            if (url.includes('tiktok.com')) {
-                try {
-                    const apiRes = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
-                    const data = await apiRes.json();
-                    if (data && data.code === 0 && data.data) {
-                        result.cover = data.data.cover; 
-                        result.playUrl = data.data.play; 
-                        result.isRaw = true;
-                    } else {
-                        const match = url.match(/video\/(\d+)/); 
-                        if (match) result.playUrl = `https://www.tiktok.com/embed/v2/${match[1]}`;
-                    }
-                } catch(e) { 
-                    const match = url.match(/video\/(\d+)/); 
-                    if (match) result.playUrl = `https://www.tiktok.com/embed/v2/${match[1]}`; 
-                }
-            } 
-            // INSTAGRAM LOGIC (RapidAPI Premium)
-            else if (url.includes('instagram.com')) {
-                try {
-                    const match = url.match(/(?:p|reel|tv)\/([a-zA-Z0-9_-]+)/i);
-                    if (!match) throw new Error("Shortcode IG tidak ditemukan");
-                    
-                    const shortcode = match[1];
-                    const rapidUrl = `https://social-media-video-downloader.p.rapidapi.com/instagram/v3/media/post/details?renderableFormats=720p%2Chighres&shortcode=${shortcode}`;
-                    
-                    const options = {
-                        method: 'GET',
-                        headers: {
-                            'x-rapidapi-key': 'a2237bc099msh354f8ef85f14eeap1fcc68jsne2a7acc66ebf',
-                            'x-rapidapi-host': 'social-media-video-downloader.p.rapidapi.com',
-                            'Content-Type': 'application/json'
-                        }
-                    };
-
-                    const response = await fetch(rapidUrl, options);
-                    const apiData = await response.json();
-                    
-                    let vidUrl = apiData?.data?.video_url || apiData?.items?.[0]?.video_versions?.[0]?.url;
-                    let imgUrl = apiData?.data?.thumbnail_url || apiData?.data?.display_url || apiData?.items?.[0]?.image_versions2?.candidates?.[0]?.url;
-
-                    const findUrls = (obj) => {
-                        if (typeof obj === 'string') {
-                            if (!vidUrl && obj.startsWith('http') && (obj.includes('.mp4') || obj.includes('video'))) vidUrl = obj;
-                            if (!imgUrl && obj.startsWith('http') && (obj.includes('.jpg') || obj.includes('.webp'))) imgUrl = obj;
-                        } else if (Array.isArray(obj)) {
-                            for (let item of obj) findUrls(item);
-                        } else if (typeof obj === 'object' && obj !== null) {
-                            if (!vidUrl && obj.video_url) vidUrl = obj.video_url;
-                            if (!imgUrl && (obj.thumbnail_url || obj.display_url)) imgUrl = obj.thumbnail_url || obj.display_url;
-                            for (let key in obj) findUrls(obj[key]);
-                        }
-                    };
-                    
-                    if (!vidUrl) findUrls(apiData);
-
-                    if (vidUrl) {
-                        result.playUrl = vidUrl;
-                        result.cover = imgUrl || ''; 
-                        result.isRaw = true; 
-                    } else {
-                        throw new Error("Video raw gagal diekstrak");
-                    }
-                } catch(e) {
-                    console.error("IG Custom API Error:", e);
-                    const urlObj = new URL(url); 
-                    result.playUrl = `${urlObj.origin}${urlObj.pathname}embed/`;
-                    result.isRaw = false; 
-                }
-            }
-            return result;
-        }
+        const posterImg = document.getElementById('modal-poster');
 
         window.openModal = async function(id, cardElement) {
             const data = dbPortfolio.find(i => i.id === id);
@@ -556,119 +356,54 @@
             cardSpinner.innerHTML = `<svg class="w-8 h-8 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
             if (cardElement) { cardElement.style.position = 'relative'; cardElement.appendChild(cardSpinner); }
 
-            // Load Banner
-            let mainBanner = data.banner || (data.handles && data.handles.length > 0 ? data.handles[0].banner : data.portraitImg);
+            // Preload Image Kiri (Poster)
             await new Promise(res => {
                 const img = new Image();
-                img.onload = () => {
-                    const oldImg = bannerContainer.querySelector('img'); if (oldImg) oldImg.remove();
-                    img.className = "w-full h-full object-cover z-0 absolute inset-0";
-                    bannerContainer.appendChild(img);
-                    res();
-                };
-                img.onerror = res; 
-                img.src = mainBanner;
+                img.onload = () => { posterImg.src = data.portraitImg; res(); };
+                img.onerror = () => { posterImg.src = ''; res(); }; 
+                img.src = data.portraitImg;
             });
             
             if (cardElement) cardSpinner.remove();
 
-            // Isi Data Teks
+            // Isi Data Kanan (Detail)
             document.getElementById('modal-title').textContent = data.name;
-            document.getElementById('modal-niche').textContent = data.niche;
+            document.getElementById('modal-niche').textContent = data.niche || data.category;
             document.getElementById('modal-stats').textContent = data.stats;
             document.getElementById('modal-desc').textContent = data.desc;
 
-            // Render Handles / Social Media Links
-            const handlesContainer = document.getElementById('modal-handles-container');
-            handlesContainer.innerHTML = '';
+            // Analisa Platform dari Link / Handles (Untuk memunculkan icon B&W)
+            let platforms = new Set();
             if(data.handles && Array.isArray(data.handles)) {
-                data.handles.forEach(handle => {
-                    const linkStr = handle.link.toLowerCase(); 
-                    // SVG Default (Link)
-                    let iconHTML = `<svg class="w-4 h-4 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>`;
-                    
-                    // SVG IG / TikTok (Dari explore.html)
-                    if (linkStr.includes('instagram.com')) {
-                        iconHTML = `<svg class="w-4 h-4 text-pink-500" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
-                    } else if (linkStr.includes('tiktok.com')) {
-                        iconHTML = `<svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
-                    }
-
-                    handlesContainer.innerHTML += `
-                        <a href="${handle.link}" target="_blank" class="bg-zinc-800/80 border border-zinc-700 hover:border-zinc-400 hover:text-white px-3 py-1.5 rounded-lg text-xs text-zinc-300 font-medium flex items-center gap-2 transition-all transform hover:-translate-y-0.5 shadow-sm">
-                            ${iconHTML} ${handle.username}
-                        </a>
-                    `;
+                data.handles.forEach(h => {
+                    const link = (h.link || '').toLowerCase();
+                    if(link.includes('tiktok.com')) platforms.add('tiktok');
+                    else if(link.includes('instagram.com')) platforms.add('instagram');
+                    else if(link.includes('youtube.com') || link.includes('youtu.be')) platforms.add('youtube');
                 });
             }
 
-            // Render Video Grid
-            const videoGrid = document.getElementById('modal-video-grid'); 
-            videoGrid.innerHTML = ''; 
-            
-            if(data.videos && Array.isArray(data.videos) && data.videos.length > 0) {
-                for (let i = 0; i < data.videos.length; i++) {
-                    const vid = data.videos[i];
+            const platformContainer = document.getElementById('modal-platforms');
+            platformContainer.innerHTML = '';
+            if (platforms.size === 0) {
+                platformContainer.innerHTML = '<span class="text-xs text-zinc-500 font-medium">-</span>';
+            } else {
+                platforms.forEach(p => {
+                    let svg = '';
+                    if (p === 'tiktok') {
+                        svg = `<svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+                    } else if (p === 'instagram') {
+                        svg = `<svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+                    } else if (p === 'youtube') {
+                        svg = `<svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+                    }
                     
-                    if (vid.cachedHtml) {
-                        videoGrid.innerHTML += vid.cachedHtml;
-                    } else {
-                        const uid = 'vid_' + i + '_' + data.id;
-                        videoGrid.innerHTML += `
-                            <div id="${uid}" class="relative w-full aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 group shadow-lg">
-                                <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-10">
-                                    <svg class="w-6 h-6 animate-spin text-zinc-500 mb-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    <span class="text-[9px] text-zinc-500 font-bold tracking-widest uppercase">Memuat...</span>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-
-                // Async fetch real video data
-                (async () => {
-                    for (let i = 0; i < data.videos.length; i++) {
-                        const vid = data.videos[i];
-                        if (vid.cachedHtml) continue; 
-
-                        const videoLink = vid.embedUrl || vid.url; 
-                        const views = vid.views || "-"; 
-                        const uid = 'vid_' + i + '_' + data.id;
-
-                        try {
-                            const vData = await fetchVideoData(videoLink);
-                            const el = document.getElementById(uid); 
-                            if(!el) continue; 
-                            
-                            const playUrlSafe = encodeURIComponent(vData.playUrl);
-                            
-                            let visualHtml = vData.cover 
-                                ? `<img src="${vData.cover}" class="w-full h-full object-cover z-0 transition-transform duration-500 group-hover:scale-105" loading="lazy">` 
-                                : `<iframe src="${vData.playUrl}" class="absolute inset-0 w-[110%] h-[110%] -top-[5%] -left-[5%] pointer-events-none scale-105" frameborder="0" loading="lazy"></iframe>`;
-
-                            const finalHtml = `
-                                <div class="relative w-full aspect-[9/16] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 group shadow-lg cursor-pointer hover:border-zinc-500 transition-colors" onclick="window.openVideoModal('${playUrlSafe}', ${vData.isRaw})">
-                                    ${visualHtml}
-                                    <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all z-10 pointer-events-none"></div>
-                                    <div class="w-10 h-10 bg-black/60 backdrop-blur rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all z-20 text-white shadow-xl border border-white/20">
-                                        <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                    </div>
-                                    <div class="absolute bottom-2 left-2 bg-black/80 backdrop-blur px-2 py-1.5 rounded-md text-[10px] font-bold text-white border border-zinc-700/80 z-20 shadow-md flex items-center gap-1.5">
-                                        <svg class="w-3 h-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                        ${views}
-                                    </div>
-                                </div>
-                            `;
-                            
-                            el.outerHTML = finalHtml;
-                            vid.cachedHtml = finalHtml; 
-                        } catch(e) {
-                            console.error("Error fetching video data", e);
-                        }
-                        
-                        await new Promise(resolve => setTimeout(resolve, 400));
-                    }
-                })();
+                    platformContainer.innerHTML += `
+                        <div class="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center shadow-inner">
+                            ${svg}
+                        </div>
+                    `;
+                });
             }
 
             // Tampilkan Modal
@@ -686,44 +421,6 @@
                 document.body.style.overflow = 'auto'; 
             }, 300); 
         };
-
-        // 6. VIDEO PLAYER FULLSCREEN BERSIH
-        const videoModal = document.getElementById('video-modal');
-        const videoModalContent = document.getElementById('video-modal-content');
-        const rawVideoPlayer = document.getElementById('raw-video-player');
-        const iframeWrapper = document.getElementById('iframe-wrapper');
-        const iframe = document.getElementById('video-iframe');
-        const loadingScreen = document.getElementById('video-loading');
-
-        window.openVideoModal = function(encodedUrl, isRaw) {
-            const playUrl = decodeURIComponent(encodedUrl);
-            loadingScreen.style.display = 'flex'; loadingScreen.style.opacity = '1';
-            
-            if (isRaw) {
-                iframeWrapper.classList.add('hidden'); iframe.src = '';
-                rawVideoPlayer.classList.remove('hidden'); rawVideoPlayer.src = playUrl;
-                rawVideoPlayer.onloadeddata = () => { loadingScreen.style.opacity = '0'; setTimeout(() => { loadingScreen.style.display = 'none'; }, 300); rawVideoPlayer.play(); };
-            } else {
-                rawVideoPlayer.classList.add('hidden'); rawVideoPlayer.pause(); rawVideoPlayer.src = '';
-                iframeWrapper.classList.remove('hidden'); const finalUrl = playUrl + (playUrl.includes('?') ? '&' : '?') + 'autoplay=1&mute=0';
-                iframe.onload = function() { loadingScreen.style.opacity = '0'; setTimeout(() => { loadingScreen.style.display = 'none'; }, 300); };
-                iframe.src = finalUrl; 
-            }
-            
-            videoModal.classList.remove('invisible'); 
-            videoModal.classList.add('opacity-100');
-            videoModalContent.classList.remove('scale-95');
-        }
-
-        window.closeVideoModal = function() {
-            videoModal.classList.remove('opacity-100'); 
-            videoModalContent.classList.add('scale-95');
-            setTimeout(() => { 
-                videoModal.classList.add('invisible'); 
-                rawVideoPlayer.pause(); rawVideoPlayer.src = ''; iframe.src = ''; 
-                loadingScreen.style.display = 'flex'; loadingScreen.style.opacity = '1';
-            }, 300);
-        }
 
     </script>
 </body>
