@@ -29,9 +29,30 @@
         }
     </script>
     
-    <!-- Link file CSS Eksternal -->
-    <link rel="stylesheet" href="style.css">
-
+    <!-- Jika CSS sudah dipisah, Anda bisa menghapus tag style ini. Jika belum, biarkan saja -->
+    <style>
+        html, body {
+            background-color: #0a0a0c;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            height: 100dvh;
+            margin: 0;
+            overflow: hidden;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        
+        /* Animasi Card Terpilih (Auto-Fetch) */
+        .video-card { transition: all 0.2s ease; cursor: pointer; }
+        .video-card.selected { border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.1); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .video-card.selected .check-icon { opacity: 1; transform: scale(1); }
+    </style>
+    
     <!-- Mencegah Stuck Loader -->
     <script>
         window.addEventListener('load', () => {
@@ -111,7 +132,7 @@
                         </div>
                         <div class="border-r border-zinc-800 pl-2">
                             <p class="text-[9px] sm:text-xs text-zinc-500 font-bold uppercase mb-1">Disetujui</p>
-                            <p id="disetujui-detail" class="text-xs sm:text-lg font-bold text-white">
+                            <p id="disetujui-detail" class="text-xs sm:text-lg font-bold text-blue-400">
                                 <span class="inline-block w-8 sm:w-12 h-4 sm:h-6 bg-zinc-800/80 rounded animate-pulse"></span>
                             </p>
                         </div>
@@ -125,10 +146,10 @@
                 </div>
             </section>
 
-            <!-- BANNER SUBMIT VIDEO MULTIPLE (B&W THEME) -->
-            <div class="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 -mt-2">
+            <!-- SECTION BARU: BANNER SUBMIT VIDEO MULTIPLE -->
+            <div class="bg-blue-900/10 border border-blue-900/40 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 -mt-2">
                 <div class="flex items-start sm:items-center gap-3 sm:gap-4">
-                    <div class="bg-zinc-800 p-2.5 sm:p-3 rounded-xl text-white shrink-0 border border-zinc-700">
+                    <div class="bg-blue-500/20 p-2.5 sm:p-3 rounded-xl text-blue-400 shrink-0 border border-blue-500/20">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     </div>
                     <div>
@@ -136,7 +157,7 @@
                         <p class="text-[11px] sm:text-xs text-zinc-400 leading-relaxed">Klik tombol di samping untuk mengirim link video terbaru dari berbagai campaign aktifmu.</p>
                     </div>
                 </div>
-                <button onclick="window.openSubmitModal()" class="w-full sm:w-auto shrink-0 bg-white hover:bg-zinc-200 text-black font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)] focus:outline-none active:scale-95">
+                <button onclick="window.openSubmitModal()" class="w-full sm:w-auto shrink-0 bg-white hover:bg-zinc-200 text-black font-bold text-xs sm:text-sm px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] focus:outline-none active:scale-95">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Submit Video Baru
                 </button>
@@ -150,7 +171,7 @@
                     <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
                         <!-- Filter Campaign -->
                         <div class="relative custom-select-container">
-                            <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white cursor-pointer flex justify-between items-center transition-colors min-w-[120px] sm:min-w-[140px]" onclick="window.toggleSelect('campaign-options')">
+                            <div class="bg-zinc-900 border border-zinc-700 hover:border-zinc-500 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs text-white cursor-pointer flex justify-between items-center transition-colors min-w-[120px] sm:min-w-[140px]" onclick="window.toggleSubmitCampaignSelect()">
                                 <span id="campaign-selected-text" class="truncate max-w-[90px] sm:max-w-[120px]">Semua Campaign</span>
                                 <svg class="w-3 h-3 text-zinc-400 ml-1.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </div>
@@ -175,7 +196,7 @@
                                     <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-1 px-2">Status Klaim</p>
                                     <button onclick="window.applyFilter('status', 'all')" class="filter-btn status-all w-full text-left px-3 py-1.5 text-xs text-white bg-zinc-800 rounded-lg transition-colors">Semua Status</button>
                                     <button onclick="window.applyFilter('status', 'PENDING')" class="filter-btn status-PENDING w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-amber-400">Reviewing (Pending)</button>
-                                    <button onclick="window.applyFilter('status', 'APPROVED')" class="filter-btn status-APPROVED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-white">Disetujui</button>
+                                    <button onclick="window.applyFilter('status', 'APPROVED')" class="filter-btn status-APPROVED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-blue-400">Disetujui</button>
                                     <button onclick="window.applyFilter('status', 'REJECTED')" class="filter-btn status-REJECTED w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-lg transition-colors text-red-400">Ditolak</button>
                                 </div>
                             </div>
@@ -183,8 +204,8 @@
                     </div>
                 </div>
 
-                <!-- Grid Video Cards Dinamis -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5" id="cards-container">
+                <!-- [PERUBAHAN]: Grid Video Cards Dinamis - Dibuat maksimal 4 kolom saja -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 w-full" id="cards-container">
                     <p class="text-zinc-500 text-sm col-span-full">Memuat data...</p>
                 </div>
 
@@ -218,7 +239,7 @@
     <!-- CUSTOM CONFIRM MODAL -->
     <div id="customConfirmModal" class="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-sm p-6 text-center transform scale-95 transition-transform flex flex-col items-center" id="customConfirmContent">
-            <div class="w-16 h-16 bg-white/10 text-white border border-white/20 rounded-full flex items-center justify-center mb-4">
+            <div class="w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full flex items-center justify-center mb-4">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Konfirmasi Klaim</h3>
@@ -230,186 +251,139 @@
         </div>
     </div>
 
-    <!-- ========================================================= -->
-    <!-- NEW WIZARD: MODAL SUBMIT VIDEO (BLACK & WHITE)            -->
-    <!-- ========================================================= -->
-    <div id="submitVideoModal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
-        <!-- Container Flex-Col max-h-[90vh] untuk mengunci header & footer agar yang scroll hanya konten list -->
-        <div class="bg-[#121214] border border-zinc-800 shadow-2xl rounded-[1.5rem] w-full max-w-lg p-5 sm:p-6 transform scale-95 transition-transform flex flex-col relative max-h-[90vh] overflow-hidden" id="submitVideoContent">
+    <!-- SUBMIT VIDEO MODAL (WIZARD AUTO-FETCH UI) -->
+    <div id="submitVideoModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-[1.5rem] w-full max-w-lg transform scale-95 transition-transform flex flex-col relative overflow-hidden h-[90vh] md:h-[650px]" id="submitVideoContent">
             
-            <!-- Close Button -->
-            <button onclick="window.closeSubmitModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors focus:outline-none z-50">
+            <button onclick="window.closeSubmitModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors z-50 focus:outline-none">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <!-- TOP BREADCRUMB (HIDDEN ON STEP 0) - DIPERBAIKI MARGIN NYA AGAR TIDAK MENIMPA TOMBOL X -->
-            <div id="submitBreadcrumb" class="shrink-0 hidden flex items-center justify-center w-full max-w-sm mx-auto mt-10 sm:mt-2 mb-5 sm:mb-6 relative">
-                <div class="absolute inset-0 top-1/2 -translate-y-1/2 flex items-center px-4 z-0">
-                    <div class="h-[2px] w-full bg-zinc-800 border-dashed border-t border-zinc-700"></div>
-                </div>
-                <div class="relative z-10 flex justify-between w-full">
-                    <div id="step-ind-1" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">1</div>
-                    <div id="step-ind-2" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">2</div>
-                    <div id="step-ind-3" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">3</div>
-                    <div id="step-ind-4" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all">4</div>
+            <!-- Breadcrumb Steps (Ditambahkan ke atas) -->
+            <div id="submitBreadcrumb" class="hidden absolute top-6 left-0 right-0 flex justify-center z-40 px-12 pointer-events-none">
+                <div class="flex items-center gap-1.5">
+                    <div id="step-ind-1" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white text-black border-2 border-zinc-900 ring-4 ring-white/20 transition-all">1</div>
+                    <div class="w-6 h-0.5 bg-zinc-800 rounded"></div>
+                    <div id="step-ind-2" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-900 text-zinc-500 border-2 border-zinc-800 transition-all">2</div>
+                    <div class="w-6 h-0.5 bg-zinc-800 rounded"></div>
+                    <div id="step-ind-3" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-900 text-zinc-500 border-2 border-zinc-800 transition-all">3</div>
+                    <div class="w-6 h-0.5 bg-zinc-800 rounded"></div>
+                    <div id="step-ind-4" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-900 text-zinc-500 border-2 border-zinc-800 transition-all">4</div>
                 </div>
             </div>
 
-            <!-- WRAPPER STEP - Flex-1 memakan ruang sisa -->
-            <div class="flex-1 min-h-0 flex flex-col overflow-hidden w-full">
+            <div class="flex-1 overflow-y-auto px-6 pt-20 pb-24 custom-scrollbar relative">
                 
-                <!-- STEP 0: PERINGATAN AWAL -->
-                <div id="step-0-container" class="flex-col flex-1 min-h-0 flex">
-                    <!-- Area Scrollable -->
-                    <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-2 flex flex-col justify-center">
-                        <h3 class="text-2xl sm:text-3xl font-bold text-white mb-6 text-center leading-tight mt-10 sm:mt-2">Sebelum Submit,<br>Kamu Harus Perhatikan Ini</h3>
-                        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 space-y-4 shadow-inner">
-                            <div class="flex items-start gap-3">
-                                <div class="bg-zinc-800 p-2 rounded-full shrink-0">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                </div>
-                                <p class="text-sm text-zinc-300 pt-1">Video yang baru diupload butuh waktu ±60 detik untuk terbaca di sistem sebelum bisa disubmit.</p>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <div class="bg-zinc-800 p-2 rounded-full shrink-0">
-                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                </div>
-                                <p class="text-sm text-zinc-300 pt-1">Submit video paling lambat 24 jam setelah upload. Contoh: upload jam 12:00, submit sebelum jam 12:00 keesokan harinya.</p>
-                            </div>
-                        </div>
+                <!-- STEP 0: PENGANTAR -->
+                <div id="step-0-container" class="flex-col h-full items-center justify-center text-center animate-fade-in-up-local">
+                    <div class="w-20 h-20 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 flex items-center justify-center mb-6 shadow-inner mx-auto">
+                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                     </div>
-                    <!-- Area Tombol Fixed -->
-                    <div class="shrink-0 mt-4 pt-2">
-                        <button type="button" onclick="window.goToStep(1)" class="w-full px-4 py-3.5 bg-white hover:bg-zinc-200 text-black text-sm font-bold rounded-xl transition-all shadow-[0_4px_20px_rgba(255,255,255,0.1)] active:scale-95 focus:outline-none">Selanjutnya</button>
-                        <p class="text-[11px] text-zinc-500 text-center mt-3">Pastikan submit tepat waktu supaya video kamu tidak terlewat.</p>
-                    </div>
+                    <h3 class="text-2xl font-extrabold text-white mb-3">Auto Fetch Content</h3>
+                    <p class="text-sm text-zinc-400 leading-relaxed max-w-sm mx-auto mb-8">
+                        Sistem kami dapat menarik video yang baru saja Anda upload secara otomatis tanpa repot copy-paste link. Mari kita mulai proses submit.
+                    </p>
+                    <button type="button" onclick="window.goToStep(1)" class="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:bg-zinc-200 transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)] focus:outline-none">
+                        Mulai Submit
+                    </button>
                 </div>
 
                 <!-- STEP 1: PILIH CAMPAIGN -->
-                <div id="step-1-container" class="hidden flex-col flex-1 min-h-0">
-                    <div class="shrink-0 mb-4">
-                        <h3 class="text-2xl font-bold text-white mb-1">Pilih Campaign</h3>
-                        <p class="text-sm text-zinc-400">Pilih salah satu campaign yang ingin disubmit</p>
-                    </div>
-                    <!-- Area Scrollable -->
-                    <div id="step-1-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 pb-2">
-                        <!-- Rendered by JS -->
-                    </div>
-                    <!-- Area Tombol Fixed -->
-                    <div class="shrink-0 flex justify-between mt-4 gap-3 pt-2">
-                        <button type="button" onclick="window.goToStep(0)" class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
-                        <button type="button" id="btn-next-1" onclick="window.goToStep(2)" disabled class="w-full px-4 py-3 bg-white disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-black text-sm font-bold rounded-xl hover:bg-zinc-200 transition-colors">Selanjutnya</button>
+                <div id="step-1-container" class="hidden flex-col min-h-full animate-fade-in-up-local">
+                    <h3 class="text-xl font-bold text-white mb-2">Pilih Campaign</h3>
+                    <p class="text-xs text-zinc-400 mb-6">Pilih salah satu campaign aktif yang kamu ikuti untuk mengirim video.</p>
+                    
+                    <div id="step-1-list" class="space-y-3 flex-1 mb-6">
+                        <!-- List Campaign -->
                     </div>
                 </div>
 
-                <!-- STEP 2: PILIH PLATFORM SOSMED -->
-                <div id="step-2-container" class="hidden flex-col flex-1 min-h-0">
-                    <div class="shrink-0 mb-4">
-                        <h3 class="text-2xl font-bold text-white mb-1">Pilih Social Media</h3>
-                        <p class="text-sm text-zinc-400">Silahkan pilih salah satu social media dibawah ini</p>
-                    </div>
-                    <!-- Area Scrollable -->
-                    <div id="step-2-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 pb-2">
-                        <!-- Rendered by JS -->
-                    </div>
-                    <!-- Area Tombol Fixed -->
-                    <div class="shrink-0 flex justify-between mt-4 gap-3 pt-2">
-                        <button type="button" onclick="window.goToStep(1)" class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
-                        <button type="button" id="btn-next-2" onclick="window.goToStep(3)" disabled class="w-full px-4 py-3 bg-white disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-black text-sm font-bold rounded-xl hover:bg-zinc-200 transition-colors">Selanjutnya</button>
+                <!-- STEP 2: PILIH PLATFORM -->
+                <div id="step-2-container" class="hidden flex-col min-h-full animate-fade-in-up-local">
+                    <h3 class="text-xl font-bold text-white mb-2">Pilih Platform</h3>
+                    <p class="text-xs text-zinc-400 mb-6">Di platform mana video ini baru saja diunggah?</p>
+                    
+                    <div id="step-2-list" class="space-y-3 flex-1 mb-6">
+                        <!-- List Platform -->
                     </div>
                 </div>
 
                 <!-- STEP 3: PILIH AKUN -->
-                <div id="step-3-container" class="hidden flex-col flex-1 min-h-0">
-                    <div class="shrink-0 mb-4">
-                        <h3 class="text-2xl font-bold text-white mb-1">Pilih akun <span id="lbl-platform-name"></span> kamu</h3>
-                        <p class="text-sm text-zinc-400">Pilih salah satu akun dibawah</p>
-                    </div>
-                    <!-- Area Scrollable -->
-                    <div id="step-3-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-2 pb-2">
-                        <!-- Rendered by JS -->
-                    </div>
-                    <div class="shrink-0 mt-3 pr-2">
-                        <a href="clipper-profile.html" class="block w-full py-3.5 bg-zinc-900/50 border border-zinc-800 border-dashed text-center text-sm font-medium text-zinc-400 hover:text-white rounded-xl transition-colors">Tambahkan akun baru <span class="text-white font-bold ml-1">+</span></a>
-                    </div>
-                    <!-- Area Tombol Fixed -->
-                    <div class="shrink-0 flex justify-between mt-4 gap-3 pt-2">
-                        <button type="button" onclick="window.goToStep(2)" class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
-                        <button type="button" id="btn-next-3" onclick="window.goToStep(4)" disabled class="w-full px-4 py-3 bg-white disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-black text-sm font-bold rounded-xl hover:bg-zinc-200 transition-colors">Selanjutnya</button>
+                <div id="step-3-container" class="hidden flex-col min-h-full animate-fade-in-up-local">
+                    <h3 class="text-xl font-bold text-white mb-2">Pilih Akun <span id="lbl-platform-name"></span></h3>
+                    <p class="text-xs text-zinc-400 mb-6">Pilih akun yang kamu gunakan untuk memposting video ini.</p>
+                    
+                    <div id="step-3-list" class="space-y-3 flex-1 mb-6">
+                        <!-- List Akun yg terhubung -->
                     </div>
                 </div>
 
-                <!-- STEP 4: PILIH VIDEO -->
-                <div id="step-4-container" class="hidden flex-col flex-1 min-h-0">
-                    <div class="shrink-0 mb-4">
-                        <div class="flex justify-between items-center mb-3 sm:mb-4">
-                            <h3 class="text-xl sm:text-2xl font-bold text-white">Pilih Video</h3>
-                            <button type="button" onclick="window.fetchVideos(true)" class="btn-refresh-video flex items-center gap-1.5 text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-1.5 rounded-lg transition-colors border border-zinc-700 focus:outline-none">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                Refresh
-                            </button>
-                        </div>
-                        
-                        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center gap-3 mb-3 shadow-inner">
-                            <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <p class="text-[10px] sm:text-xs text-zinc-300 leading-snug">Video baru upload? Tunggu ±60 detik sebelum muncul & bisa dipilih di sini.</p>
-                        </div>
-
-                        <div id="hashtag-container" class="mb-2">
-                            <p class="text-[11px] text-zinc-400 mb-2">Pastikan hashtag di bawah sudah ditambahkan di caption setiap video.</p>
-                            <div id="hashtag-list" class="flex flex-wrap gap-2">
-                                <!-- Generated by JS -->
-                            </div>
-                        </div>
+                <!-- STEP 4: PILIH VIDEO & SUBMIT -->
+                <div id="step-4-container" class="hidden flex-col min-h-full animate-fade-in-up-local">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xl font-bold text-white">Pilih Video</h3>
+                        <button type="button" onclick="window.fetchVideos(true)" class="btn-refresh-video text-xs font-medium px-3 py-1.5 bg-zinc-800 border border-zinc-700 hover:bg-zinc-700 rounded-lg text-white flex items-center gap-1.5 focus:outline-none transition-all">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="bg-blue-500/10 border border-blue-500/20 p-3 rounded-xl mb-4 flex gap-3">
+                        <svg class="w-4 h-4 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p class="text-[10px] sm:text-[11px] text-blue-200/80 leading-relaxed">Video baru upload? Tunggu ±60 detik sebelum muncul & bisa dipilih di sini.</p>
                     </div>
 
-                    <!-- Area Scrollable Grid -->
-                    <div class="flex-1 overflow-y-auto custom-scrollbar pr-2 pb-2 relative">
-                        <!-- LOADER / SKELETON (GRID 3) -->
-                        <div id="videoFetchLoaderNew" class="grid grid-cols-3 gap-2 sm:gap-3 hidden">
-                            <div class="aspect-[9/16] bg-zinc-900 rounded-xl animate-pulse-fast border border-zinc-800 flex items-center justify-center">
-                                <svg class="w-8 h-8 text-white/50 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            </div>
-                            <div class="aspect-[9/16] bg-zinc-900 rounded-xl animate-pulse-fast border border-zinc-800"></div>
-                            <div class="aspect-[9/16] bg-zinc-900 rounded-xl animate-pulse-fast border border-zinc-800"></div>
-                        </div>
-
-                        <!-- GRID VIDEO NYATA (GRID 3) -->
-                        <div id="videoGridNew" class="grid grid-cols-3 gap-2 sm:gap-3 hidden">
-                            <!-- Diisi via JS -->
-                        </div>
-
-                        <!-- ERROR / KOSONG -->
-                        <div id="noVideoStateNew" class="hidden flex-col bg-zinc-900/50 border border-zinc-800 border-dashed rounded-xl p-4 mt-2 text-center items-center justify-center min-h-[200px]">
-                            <svg class="w-8 h-8 text-zinc-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            <p class="text-[11px] sm:text-xs text-zinc-400 font-medium leading-relaxed max-w-[250px]">Belum ada video yang kedetect dari akun ini. Kalau baru upload, tunggu ±60 detik lalu Coba Lagi.</p>
-                            <button type="button" onclick="window.fetchVideos(true)" class="btn-refresh-video mt-4 bg-white hover:bg-zinc-200 text-black text-xs font-bold py-2 px-5 rounded-lg transition-colors focus:outline-none">Coba Lagi</button>
-                        </div>
+                    <div class="mb-4">
+                        <p class="text-[10px] text-zinc-500 mb-2 font-medium">Pastikan hashtag di bawah sudah ditambahkan di caption setiap video.</p>
+                        <div id="hashtag-list" class="flex flex-wrap gap-1.5"></div>
                     </div>
 
-                    <!-- Area Tombol Fixed -->
-                    <div class="shrink-0 mt-3 pt-2">
-                        <p id="urlError" class="hidden text-red-500 text-[11px] sm:text-xs mb-3 font-medium flex items-center gap-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Silakan pilih salah satu video di atas terlebih dahulu.
-                        </p>
-                        <div class="flex justify-between gap-3">
-                            <button type="button" onclick="window.goToStep(3)" class="w-1/3 px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-white text-sm font-bold hover:bg-zinc-800 transition-colors">Kembali</button>
-                            <button type="button" id="btnSubmitVideo" onclick="window.processSubmit(event)" disabled class="w-2/3 px-4 py-3 bg-white hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed text-black text-sm font-bold rounded-xl transition-colors">
-                                Selanjutnya
-                            </button>
-                        </div>
+                    <div id="videoFetchLoaderNew" class="flex-1 flex flex-col items-center justify-center py-10">
+                        <svg class="w-8 h-8 animate-spin text-zinc-600 mb-3" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span class="text-[10px] font-bold text-zinc-500 tracking-widest uppercase">Menarik Data Terbaru...</span>
                     </div>
+
+                    <div id="videoGridNew" class="grid grid-cols-2 gap-3 mb-6 hidden"></div>
+
+                    <div id="noVideoStateNew" class="hidden flex-1 flex-col items-center justify-center p-6 border border-zinc-800 border-dashed rounded-xl text-center mb-6">
+                        <svg class="w-10 h-10 text-zinc-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        <h4 class="text-sm font-bold text-white mb-1">Belum Ada Video Baru</h4>
+                        <p class="text-[11px] text-zinc-500 max-w-[200px] mb-4">Sistem hanya menampilkan video terbaru (< 24 jam) yang sesuai hashtag campaign ini.</p>
+                        <button type="button" onclick="window.fetchVideos(true)" class="btn-refresh-video text-xs font-bold text-black bg-white px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors focus:outline-none">Coba Lagi</button>
+                    </div>
+
+                    <!-- Tempat error form -->
+                    <p id="urlError" class="hidden text-red-500 text-xs mt-3 mb-3 font-medium flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Silakan pilih minimal satu video di atas terlebih dahulu.
+                    </p>
                 </div>
-
             </div>
 
-            <!-- FOOTER WARNING (SELALU MUNCUL DI BAWAH) -->
-            <div class="mt-4 pt-4 border-t border-zinc-800/80 shrink-0">
-                <p class="text-[10px] sm:text-[11px] text-zinc-400 leading-relaxed text-center font-medium">
-                    <b class="text-white">Perhatian Penting!</b><br>
-                    Pastikan isi kontenmu sesuai dengan brief yang diberikan. Dilarang keras melakukan kecurangan seperti menyuntik fake views / bot. Pelanggaran akan mengakibatkan penolakan klaim dan akun di-banned permanen.
-                </p>
+            <!-- Absolute Navigation Buttons for Steps -->
+            <div class="absolute bottom-0 left-0 w-full p-6 border-t border-zinc-800/80 bg-cardBg/95 backdrop-blur-md flex items-center gap-3 rounded-b-[1.5rem]">
+                
+                <div id="step-1-container-btn" class="hidden w-full flex gap-3">
+                    <button type="button" onclick="window.closeSubmitModal()" class="w-1/3 py-3.5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm transition-colors focus:outline-none">Batal</button>
+                    <button type="button" id="btn-next-1" disabled onclick="window.goToStep(2)" class="w-2/3 py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.2)] focus:outline-none">Lanjut</button>
+                </div>
+
+                <div id="step-2-container-btn" class="hidden w-full flex gap-3">
+                    <button type="button" onclick="window.goToStep(1)" class="w-1/3 py-3.5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm transition-colors focus:outline-none">Kembali</button>
+                    <button type="button" id="btn-next-2" disabled onclick="window.goToStep(3)" class="w-2/3 py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.2)] focus:outline-none">Lanjut</button>
+                </div>
+
+                <div id="step-3-container-btn" class="hidden w-full flex gap-3">
+                    <button type="button" onclick="window.goToStep(2)" class="w-1/3 py-3.5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm transition-colors focus:outline-none">Kembali</button>
+                    <button type="button" id="btn-next-3" disabled onclick="window.goToStep(4)" class="w-2/3 py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.2)] focus:outline-none">Lanjut Pilih Video</button>
+                </div>
+
+                <div id="step-4-container-btn" class="hidden w-full flex gap-3">
+                    <button type="button" onclick="window.goToStep(3)" class="w-1/3 py-3.5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm transition-colors focus:outline-none">Kembali</button>
+                    <button type="button" id="btnSubmitVideo" onclick="window.processSubmit(event)" disabled class="w-2/3 py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 focus:outline-none active:scale-95">
+                        Kirim Konten
+                    </button>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -435,12 +409,58 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAL DETAIL KLAIM (RINCIAN PERHITUNGAN)   -->
+    <!-- ========================================== -->
+    <div id="detailClaimModal" class="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
+        <div class="absolute inset-0" onclick="window.closeDetailModal()"></div>
+        <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-2xl w-full max-w-md p-6 relative z-10 transform scale-95 transition-transform flex flex-col" id="detailClaimContent">
+            
+            <div class="flex justify-between items-start mb-4 border-b border-zinc-800 pb-4">
+                <div class="pr-4">
+                    <div id="detail-badge-status" class="mb-2"></div>
+                    <h3 id="detail-title" class="text-lg font-bold text-white leading-tight">Judul Campaign</h3>
+                    <p id="detail-brand" class="text-[11px] text-zinc-400 mt-1">Brand Name</p>
+                </div>
+                <button onclick="window.closeDetailModal()" class="p-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white rounded-full transition-colors focus:outline-none shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Box Penolakan (Hidden by default) -->
+            <div id="detail-reject-box" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <p class="text-[10px] font-bold text-red-500 uppercase mb-0.5">Alasan Penolakan:</p>
+                <p id="detail-reject-reason" class="text-xs text-red-400 leading-relaxed"></p>
+            </div>
+
+            <!-- Box Peringatan Budget Habis (Hidden by default) -->
+            <div id="detail-closed-box" class="hidden mb-4 p-3 bg-zinc-800 border border-zinc-700 rounded-xl">
+                <p class="text-xs text-zinc-300 flex items-center gap-1.5 font-medium"><svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Campaign Ditutup / Budget Habis.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-zinc-900/50 border border-zinc-800 p-3.5 rounded-xl">
+                    <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider mb-2 border-b border-zinc-800 pb-2">Rincian Kalkulasi</p>
+                    <div id="detail-calc-box" class="space-y-2">
+                        <!-- Diisi JS -->
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900/80 border border-zinc-700 p-4 rounded-xl flex justify-between items-center">
+                    <span class="text-xs font-bold text-zinc-400 uppercase">Telah Cair (Earned)</span>
+                    <span id="detail-earned" class="text-lg font-black text-emerald-400">Rp 0</span>
+                </div>
+            </div>
+
+            <button onclick="window.closeDetailModal()" class="w-full mt-6 py-3 bg-white text-black font-bold text-sm rounded-xl hover:bg-zinc-200 transition-colors focus:outline-none">Tutup Detail</button>
+        </div>
+    </div>
+
     <!-- BOTTOM NAVBAR -->
     <script>const ACTIVE_MENU = 'klaim_views';</script>
     <script src="attribute/navbarclipper.js"></script>
 
-    <!-- Link file JS Eksternal -->
+    <!-- SCRIPT UTAMA (Terpisah) -->
     <script type="module" src="clipper-claim.js"></script>
-    
 </body>
 </html>
