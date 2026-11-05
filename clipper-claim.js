@@ -124,11 +124,12 @@ window.closeSubmitModal = function() {
         submitState.videoUrls = []; 
         document.querySelectorAll('.video-card').forEach(el => el.classList.remove('selected'));
         document.getElementById('urlError').classList.add('hidden');
-        
+
+        // Reset Tombol
         const submitBtn = document.getElementById('btnSubmitVideo');
         if(submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+            submitBtn.innerHTML = `Kirim Konten`;
         }
     }, 300);
 };
@@ -506,9 +507,9 @@ window.selectVideo = function(url) {
 
     // Update Teks Tombol Submit agar user tahu berapa video yang mereka pilih
     if (submitState.videoUrls.length > 0) {
-        submitBtn.innerHTML = `Kirim ${submitState.videoUrls.length} Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        submitBtn.innerHTML = `Kirim ${submitState.videoUrls.length} Konten`;
     } else {
-        submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        submitBtn.innerHTML = `Kirim Konten`;
     }
 };
 
