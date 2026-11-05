@@ -141,12 +141,13 @@ window.openSubmitModal = function() {
         container.innerHTML = html;
     }
 
-    window.fetchVideos(false);
-
+    // Tampilkan modal dulu, baru fetch (agar UI tidak ngeblank)
     const m = document.getElementById('submitVideoModal');
     const c = document.getElementById('submitVideoContent');
     m.classList.remove('hidden'); m.classList.add('flex');
     setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+    
+    window.fetchVideos(false);
 };
 
 window.closeSubmitModal = function() {
@@ -217,13 +218,15 @@ async function fetchUserAccounts() {
 window.fetchVideos = async function(forceRefresh = false) {
     if (forceRefresh && window.refreshCooldown > 0) return;
 
-    const loader = document.getElementById('videoFetchLoaderNew');
-    const grid = document.getElementById('videoGridNew');
-    const emptyState = document.getElementById('noVideoStateNew');
+    // [PERBAIKAN]: ID Disamakan dengan HTML
+    const loader = document.getElementById('videoFetchLoader');
+    const grid = document.getElementById('videoGrid');
+    const emptyState = document.getElementById('noVideoState');
     
     loader.classList.remove('hidden');
     grid.classList.add('hidden');
     emptyState.classList.add('hidden');
+    
     submitState.videoUrls = []; 
     document.getElementById('urlError').classList.add('hidden');
     document.getElementById('btnSubmitVideo').disabled = true;
@@ -234,6 +237,7 @@ window.fetchVideos = async function(forceRefresh = false) {
         emptyState.classList.add('flex');
         document.getElementById('noVideoTitle').innerText = "Belum Ada Akun Terverifikasi";
         document.getElementById('noVideoDesc').innerText = "Silakan tautkan dan verifikasi akun TikTok/IG Anda di halaman profil untuk bisa submit video.";
+        document.getElementById('linkToProfileBtn').classList.remove('hidden');
         return;
     }
 
@@ -278,10 +282,11 @@ window.fetchVideos = async function(forceRefresh = false) {
         }
     }
 
+    // --- PROSES FILTERING DINAMIS ---
     let finalVideos = [...rawVideos];
 
     if (finalVideos.length > 0) {
-        // FILTER HASHTAG
+        // 1. FILTER HASHTAG
         const selectedCampId = document.getElementById('submitCampaignValue').value;
         if (selectedCampId) {
             const selectedCamp = joinedActiveCampaigns.find(c => c.id === selectedCampId);
@@ -290,26 +295,31 @@ window.fetchVideos = async function(forceRefresh = false) {
                 if (requiredHashtags.length > 0) {
                     finalVideos = finalVideos.filter(vid => {
                         const caption = (vid.caption || '').toLowerCase();
+                        // Harus mengandung setidaknya salah satu hashtag wajib
                         return requiredHashtags.some(tag => caption.includes(tag.toLowerCase()));
                     });
                 }
             }
         }
 
-        // FILTER DUPLIKAT DI DATABASE
+        // 2. FILTER DUPLIKAT (Cek URL ke Database Supabase Submissions)
         if (finalVideos.length > 0) {
             const urlsToCheck = finalVideos.map(v => escapeHTML(v.url));
             try {
-                const { data: existingSubs } = await supabase
+                const { data: existingSubs, error: dbErr } = await supabase
                     .from('submissions')
                     .select('video_link')
                     .in('video_link', urlsToCheck);
                 
+                if (dbErr) throw dbErr;
+
                 if (existingSubs && existingSubs.length > 0) {
                     const existingUrls = existingSubs.map(s => s.video_link);
                     finalVideos = finalVideos.filter(vid => !existingUrls.includes(escapeHTML(vid.url)));
                 }
-            } catch (err) { }
+            } catch (err) {
+                console.error("Gagal filter duplikat dari database:", err);
+            }
         }
     }
 
@@ -317,15 +327,18 @@ window.fetchVideos = async function(forceRefresh = false) {
 };
 
 function renderVideoGrid(videosArray) {
-    const loader = document.getElementById('videoFetchLoaderNew');
-    const grid = document.getElementById('videoGridNew');
-    const emptyState = document.getElementById('noVideoStateNew');
+    // [PERBAIKAN]: ID Disamakan dengan HTML
+    const loader = document.getElementById('videoFetchLoader');
+    const grid = document.getElementById('videoGrid');
+    const emptyState = document.getElementById('noVideoState');
 
     loader.classList.add('hidden');
 
     if (!videosArray || videosArray.length === 0) {
         emptyState.classList.remove('hidden');
         emptyState.classList.add('flex');
+        document.getElementById('noVideoTitle').innerText = "Belum Ada Video Baru";
+        document.getElementById('noVideoDesc').innerText = "Tidak ada video < 24 jam yang sesuai hashtag / belum disubmit.";
         return;
     }
 
@@ -337,7 +350,7 @@ function renderVideoGrid(videosArray) {
         return n.toString();
     };
 
-    videosArray.forEach((vid) => {
+    videosArray.forEach((vid, idx) => {
         const isSel = submitState.videoUrls.includes(vid.url);
         const views = vid.views || vid.viewCount || vid.playCount || 0;
         const likes = vid.likes || vid.likeCount || vid.diggCount || 0;
@@ -364,7 +377,7 @@ function renderVideoGrid(videosArray) {
                     <div class="check-icon-target absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                    
+
                     <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-zinc-300 font-medium z-10">
                         <span class="flex items-center gap-1"><svg class="w-3 h-3 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> ${formatShort(views)}</span>
                         <span class="flex items-center gap-1"><svg class="w-3 h-3 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> ${formatShort(likes)}</span>
@@ -404,6 +417,7 @@ window.selectVideo = function(url) {
     document.getElementById('urlError').classList.add('hidden');
     submitBtn.disabled = submitState.videoUrls.length === 0;
 
+    // [PERBAIKAN] Teks Tombol Submit
     if (submitState.videoUrls.length > 0) {
         submitBtn.innerHTML = `Kirim ${submitState.videoUrls.length} Konten`;
     } else {
@@ -521,7 +535,9 @@ window.openVideoModal = async function(url) {
             if (ytMatch && ytMatch[1]) {
                 iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
                 iframe.classList.remove('hidden');
-            } else { throw new Error("No YouTube match"); }
+            } else {
+                throw new Error("No YouTube match");
+            }
         } else if (url.includes('tiktok.com')) {
             let cleanTkUrl = url.split('?')[0];
             const res = await fetch(`https://www.tikwm.com/api/?url=${cleanTkUrl}`);
@@ -529,7 +545,9 @@ window.openVideoModal = async function(url) {
             if (json.data && json.data.play) {
                 nativeVideo.src = json.data.play;
                 nativeVideo.classList.remove('hidden');
-            } else { throw new Error("TikTok API Error"); }
+            } else {
+                throw new Error("TikTok API Error");
+            }
         } else if (url.includes('instagram.com')) {
             let cleanIgUrl = url.split('?')[0];
             const encodedUrl = encodeURIComponent(cleanIgUrl);
@@ -546,17 +564,25 @@ window.openVideoModal = async function(url) {
                 try {
                     const res = await fetch(api);
                     const json = await res.json();
-                    if (json.data && Array.isArray(json.data) && json.data.length > 0) igVideoUrl = json.data[0].url || json.data[0];
-                    else if (json.data && json.data.url) igVideoUrl = json.data.url;
-                    else if (json.url) igVideoUrl = json.url;
-                    else if (json.result && Array.isArray(json.result) && json.result.length > 0) igVideoUrl = json.result[0].url || json.result[0];
+                    
+                    if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+                        igVideoUrl = json.data[0].url || json.data[0];
+                    } else if (json.data && json.data.url) {
+                        igVideoUrl = json.data.url;
+                    } else if (json.url) {
+                        igVideoUrl = json.url;
+                    } else if (json.result && Array.isArray(json.result) && json.result.length > 0) {
+                        igVideoUrl = json.result[0].url || json.result[0];
+                    }
                 } catch(e) { }
             }
 
             if (igVideoUrl) {
                 nativeVideo.src = igVideoUrl;
                 nativeVideo.classList.remove('hidden');
-            } else { throw new Error("Semua API IG gagal mendapatkan direktori file MP4"); }
+            } else {
+                throw new Error("Semua API IG gagal mendapatkan direktori file MP4");
+            }
         } else {
             iframe.src = url;
             iframe.classList.remove('hidden');
@@ -564,12 +590,18 @@ window.openVideoModal = async function(url) {
     } catch (e) {
         if (url.includes('tiktok.com')) {
             let tkMatch = url.match(/video\/(\d+)/);
-            if (tkMatch && tkMatch[1]) iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
-            else iframe.src = url;
+            if (tkMatch && tkMatch[1]) {
+                iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
+            } else {
+                iframe.src = url;
+            }
         } else if (url.includes('instagram.com')) {
             let igMatch = url.match(/(?:p|reel)\/([a-zA-Z0-9_-]+)/);
-            if (igMatch && igMatch[1]) iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
-            else iframe.src = url;
+            if (igMatch && igMatch[1]) {
+                iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
+            } else {
+                iframe.src = url;
+            }
         } else {
             iframe.src = url;
         }
@@ -588,16 +620,13 @@ window.closeVideoModal = function() {
     setTimeout(() => { 
         m.classList.add('hidden'); 
         m.classList.remove('flex'); 
+        
         iframe.src = ''; 
         nativeVideo.pause();
         nativeVideo.removeAttribute('src');
         nativeVideo.load();
     }, 300);
 };
-
-// ===============================================
-// INISIALISASI & LOAD DATA (MENAMPILKAN CARD)
-// ===============================================
 
 function getCols() {
     const w = window.innerWidth;
@@ -685,21 +714,13 @@ async function loadUserStats() {
         realEarnings = calcEarnings;
         realWithdrawable = calcWithdrawable;
 
-        // UI Updates if elements exist
-        const ePending = document.getElementById('pending-detail');
-        const eApprove = document.getElementById('disetujui-detail');
-        const eReject = document.getElementById('ditolak-detail');
-
-        if(ePending) ePending.innerText = p;
-        if(eApprove) eApprove.innerText = a;
-        if(eReject) eReject.innerText = r;
+        document.getElementById('pending-detail').innerText = p;
+        document.getElementById('disetujui-detail').innerText = a;
+        document.getElementById('ditolak-detail').innerText = r;
 
     } catch(e) {}
     
-    // Panggil setelah semua kalkulasi selesai
-    if (typeof window.toggleSensor === 'function') {
-        window.toggleSensor(true); 
-    }
+    window.toggleSensor(true); 
 }
 
 async function loadSubmissions() {
@@ -722,10 +743,7 @@ async function loadSubmissions() {
                 campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${safeTitle}</div>`;
             }
         });
-
-        const campOptEl = document.getElementById('campaign-options');
-        if(campOptEl) campOptEl.innerHTML = campOptionsHTML;
-
+        document.getElementById('campaign-options').innerHTML = campOptionsHTML;
         applyFilters();
 
     } catch(err) { }
@@ -844,7 +862,6 @@ function generateCard(sub, index) {
             </div>
         </div>`;
 
-    // Tombol Lihat Detail (Aksi Pindah Ke Modal)
     const actionBtnHTML = `<button onclick="window.openDetailModal('${sub.id}')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-lg text-[10px] sm:text-[11px] transition-colors focus:outline-none shadow-sm active:scale-95">Lihat Detail</button>`;
 
     return `
@@ -1060,12 +1077,12 @@ window.applyFilter = function(type, value) {
     document.getElementById('filter-dropdown').classList.add('hidden');
     document.getElementById('filter-dropdown').classList.remove('flex');
     
-    currentLimit = 20;
+    currentLimit = 20; // Reset ke 20
     applyFilters();
 };
 
 window.loadMore = function() { 
-    currentLimit += 20; 
+    currentLimit += 20; // Nambah 20 item
     applyFilters(); 
 };
 
