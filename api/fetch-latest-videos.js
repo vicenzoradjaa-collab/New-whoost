@@ -53,7 +53,6 @@ export default async function handler(req, res) {
         return 0;
     };
 
-    // [FITUR BARU] Fungsi agresif untuk membaca setiap kemungkinan field dari Apify
     const extractMaxCount = (post, fieldList) => {
         let max = 0;
         for (const field of fieldList) {
@@ -72,7 +71,6 @@ export default async function handler(req, res) {
         return max;
     };
 
-    // Semua kamus list nama field untuk Views dan Likes dari berbagai scraper Apify
     const viewFields = [
         'videoViewCount', 'videoPlayCount', 'playCount', 'viewCount', 'viewsCount', 'views', 
         'stats.playCount', 'stat.playCount', 'videoMeta.playCount', 'statistics.viewCount', 
@@ -87,8 +85,6 @@ export default async function handler(req, res) {
     const fetchPromises = accounts.map(async (acc) => {
         try {
             if (acc.platform.toLowerCase() === 'instagram') {
-                // instagram-profile-scraper TIDAK mengembalikan views di latestPosts (hanya likes),
-                // jadi pakai instagram-reel-scraper (videoViewCount/videoPlayCount) sebagai sumber utama.
                 let igPosts = [];
                 try {
                     const dataReels = await fetchFromApify('apify~instagram-reel-scraper', {
@@ -101,7 +97,6 @@ export default async function handler(req, res) {
                     console.error(`Reel scraper gagal untuk ${acc.username}, fallback ke profile scraper:`, e.message);
                 }
 
-                // Fallback: profile scraper (views akan 0, tapi video tetap bisa dipilih)
                 if (igPosts.length === 0) {
                     const dataIG = await fetchFromApify('apify~instagram-profile-scraper', { usernames: [acc.username] });
                     if (dataIG && dataIG.length > 0 && dataIG[0].latestPosts) igPosts = dataIG[0].latestPosts;
@@ -112,16 +107,18 @@ export default async function handler(req, res) {
                         const postTime = new Date(post.timestamp).getTime();
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
-                            
-                            // Views asli IG = videoViewCount; videoPlayCount (replay dihitung) hanya cadangan
                             const viewsCount = parseCount(post.videoViewCount) || extractMaxCount(post, viewFields);
                             const likesCount = extractMaxCount(post, likeFields);
+                            
+                            // Ambil teks caption
+                            const captionText = post.caption || post.text || '';
 
                             allVideos.push({
                                 id: post.id,
                                 platform: 'Instagram',
                                 url: post.url,
                                 thumbnail: post.displayUrl || post.videoUrl || 'https://placehold.co/400x600/121214/27272a?text=Instagram+Video',
+                                caption: captionText, // [BARU]
                                 upload_time: `${hoursAgo} Jam yang lalu`,
                                 views: viewsCount,
                                 likes: likesCount
@@ -136,15 +133,18 @@ export default async function handler(req, res) {
                         const postTime = post.createTime * 1000; 
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
-                            
                             const viewsCount = extractMaxCount(post, viewFields);
                             const likesCount = extractMaxCount(post, likeFields);
+                            
+                            // Ambil teks caption
+                            const captionText = post.text || post.desc || '';
 
                             allVideos.push({
                                 id: post.id,
                                 platform: 'TikTok',
                                 url: post.webVideoUrl || post.videoWebUrl || `https://www.tiktok.com/@${acc.username}/video/${post.id}`,
                                 thumbnail: post.covers?.[0] || post.videoMeta?.coverUrl || 'https://placehold.co/400x600/121214/27272a?text=TikTok+Video',
+                                caption: captionText, // [BARU]
                                 upload_time: `${hoursAgo} Jam yang lalu`,
                                 views: viewsCount,
                                 likes: likesCount
@@ -164,15 +164,18 @@ export default async function handler(req, res) {
                             const postTime = new Date(postDateStr).getTime();
                             if (now - postTime < TWENTY_FOUR_HOURS) {
                                 const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
-                                
                                 const viewsCount = extractMaxCount(post, viewFields);
                                 const likesCount = extractMaxCount(post, likeFields);
+                                
+                                // Ambil teks caption
+                                const captionText = post.title || post.description || '';
 
                                 allVideos.push({
                                     id: post.id || post.videoId,
                                     platform: 'YouTube',
                                     url: post.url,
                                     thumbnail: post.thumbnailUrl || `https://img.youtube.com/vi/${post.id || post.videoId}/hqdefault.jpg`,
+                                    caption: captionText, // [BARU]
                                     upload_time: `${hoursAgo} Jam yang lalu`,
                                     views: viewsCount,
                                     likes: likesCount
@@ -188,8 +191,6 @@ export default async function handler(req, res) {
     });
 
     await Promise.all(fetchPromises);
-
-    // Mengurutkan dari yang paling baru diupload
     allVideos.sort((a, b) => parseInt(a.upload_time) - parseInt(b.upload_time));
 
     return res.status(200).json({ videos: allVideos });
