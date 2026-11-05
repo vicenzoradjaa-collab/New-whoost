@@ -230,6 +230,7 @@ window.fetchVideos = async function(forceRefresh = false) {
     submitState.videoUrls = []; 
     document.getElementById('urlError').classList.add('hidden');
     document.getElementById('btnSubmitVideo').disabled = true;
+    document.getElementById('btnSubmitVideo').innerHTML = `Kirim Konten`;
 
     if (userVerifiedAccounts.length === 0) {
         loader.classList.add('hidden');
@@ -245,13 +246,15 @@ window.fetchVideos = async function(forceRefresh = false) {
     const now = new Date().getTime();
     let rawVideos = [];
     
+    let cacheHit = false;
     if (!forceRefresh) {
         const cachedData = sessionStorage.getItem(cacheKey);
         if (cachedData) {
             try {
                 const parsed = JSON.parse(cachedData);
-                if ((now - parsed.timestamp) < 900000) { 
+                if ((now - parsed.timestamp) < 900000 && Array.isArray(parsed.videos)) { 
                     rawVideos = parsed.videos;
+                    cacheHit = true; // hasil kosong yang valid juga dianggap cache (hemat kuota Apify)
                 }
             } catch(e) {}
         }
@@ -259,7 +262,7 @@ window.fetchVideos = async function(forceRefresh = false) {
         startRefreshCooldown();
     }
 
-    if (rawVideos.length === 0) {
+    if (!cacheHit) {
         try {
             const response = await fetch('/api/fetch-latest-videos', {
                 method: 'POST',
@@ -278,6 +281,9 @@ window.fetchVideos = async function(forceRefresh = false) {
             loader.classList.add('hidden');
             emptyState.classList.remove('hidden');
             emptyState.classList.add('flex');
+            document.getElementById('noVideoTitle').innerText = "Gagal Menarik Video";
+            document.getElementById('noVideoDesc').innerText = err.message || "Terjadi kesalahan saat menarik video. Coba lagi sebentar.";
+            document.getElementById('linkToProfileBtn').classList.add('hidden');
             return; 
         }
     }
@@ -290,6 +296,10 @@ window.fetchVideos = async function(forceRefresh = false) {
         const selectedCampId = document.getElementById('submitCampaignValue').value;
         if (selectedCampId) {
             const selectedCamp = joinedActiveCampaigns.find(c => c.id === selectedCampId);
+            // Filter platform yang diizinkan campaign (konsisten dengan validasi di processSubmit)
+            if (selectedCamp && Array.isArray(selectedCamp.platforms) && selectedCamp.platforms.length > 0) {
+                finalVideos = finalVideos.filter(vid => selectedCamp.platforms.includes((vid.platform || '').toLowerCase()));
+            }
             if (selectedCamp && selectedCamp.hashtags) {
                 const requiredHashtags = selectedCamp.hashtags.split(' ').filter(h => h.trim() !== '');
                 if (requiredHashtags.length > 0) {
@@ -339,6 +349,7 @@ function renderVideoGrid(videosArray) {
         emptyState.classList.add('flex');
         document.getElementById('noVideoTitle').innerText = "Belum Ada Video Baru";
         document.getElementById('noVideoDesc').innerText = "Tidak ada video < 24 jam yang sesuai hashtag / belum disubmit.";
+        document.getElementById('linkToProfileBtn').classList.add('hidden');
         return;
     }
 
@@ -494,6 +505,7 @@ window.processSubmit = async function(e) {
         const { error: insertError } = await supabase.from('submissions').insert(insertPayload);
         if(insertError) throw insertError;
 
+        submitState.videoUrls = [];
         window.closeSubmitModal();
         setTimeout(() => {
             showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini PENDING menunggu Review Admin.`, "success");
@@ -503,8 +515,10 @@ window.processSubmit = async function(e) {
     } catch(err) {
         showAlert("Gagal mengirim video: " + err.message, "error");
     } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtn;
+        // Sesuaikan dengan state terkini (setelah sukses, pilihan sudah dikosongkan)
+        const n = submitState.videoUrls.length;
+        submitBtn.disabled = n === 0;
+        submitBtn.innerHTML = n > 0 ? `Kirim ${n} Konten` : `Kirim Konten`;
     }
 };
 
