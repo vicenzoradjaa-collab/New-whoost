@@ -88,7 +88,7 @@ let submitState = {
     campaign: null,
     platform: null,
     account: null,
-    videoUrl: null
+    videoUrls: [] // [BERUBAH]: Array untuk multi-select
 };
 
 window.refreshCooldown = 0;
@@ -101,7 +101,7 @@ const PLATFORM_MAP = [
 ];
 
 window.openSubmitModal = function() {
-    submitState = { step: 0, campaign: null, platform: null, account: null, videoUrl: null };
+    submitState = { step: 0, campaign: null, platform: null, account: null, videoUrls: [] };
     
     const m = document.getElementById('submitVideoModal');
     const c = document.getElementById('submitVideoContent');
@@ -117,7 +117,20 @@ window.closeSubmitModal = function() {
     const m = document.getElementById('submitVideoModal');
     const c = document.getElementById('submitVideoContent');
     m.classList.add('opacity-0'); c.classList.add('scale-95');
-    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+    setTimeout(() => { 
+        m.classList.add('hidden'); 
+        m.classList.remove('flex'); 
+        
+        submitState.videoUrls = []; 
+        document.querySelectorAll('.video-card').forEach(el => el.classList.remove('selected'));
+        document.getElementById('urlError').classList.add('hidden');
+        
+        const submitBtn = document.getElementById('btnSubmitVideo');
+        if(submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+        }
+    }, 300);
 };
 
 window.goToStep = function(stepIndex) {
@@ -324,7 +337,7 @@ window.fetchVideos = async function(forceRefresh = false) {
     loader.classList.remove('hidden');
     grid.classList.add('hidden');
     emptyState.classList.add('hidden');
-    submitState.videoUrl = null; 
+    submitState.videoUrls = []; // Mengosongkan pilihan multi-select
     document.getElementById('urlError').classList.add('hidden');
     document.getElementById('btnSubmitVideo').disabled = true;
 
@@ -332,7 +345,7 @@ window.fetchVideos = async function(forceRefresh = false) {
     if (!targetAccount) return;
 
     // Cache Key
-    const cacheKey = `whoost_videos_v2_${sessionUser.id}_${targetAccount.platform}_${targetAccount.username}`;
+    const cacheKey = `whoost_raw_videos_v3_${sessionUser.id}_${targetAccount.platform}_${targetAccount.username}`;
     const now = new Date().getTime();
     let rawVideos = [];
     
@@ -369,7 +382,7 @@ window.fetchVideos = async function(forceRefresh = false) {
             loader.classList.add('hidden');
             emptyState.classList.remove('hidden');
             emptyState.classList.add('flex');
-            return;
+            return; 
         }
     }
 
@@ -377,21 +390,19 @@ window.fetchVideos = async function(forceRefresh = false) {
     let finalVideos = [...rawVideos];
 
     if (finalVideos.length > 0) {
-        // 1. FILTER HASHTAG (Berdasarkan Campaign yang dipilih)
+        // 1. FILTER HASHTAG
         if (submitState.campaign && submitState.campaign.hashtags) {
             const requiredHashtags = submitState.campaign.hashtags.split(' ').filter(h => h.trim() !== '');
             if (requiredHashtags.length > 0) {
                 finalVideos = finalVideos.filter(vid => {
                     const caption = (vid.caption || '').toLowerCase();
-                    // Harus mengandung setidaknya salah satu hashtag wajib
                     return requiredHashtags.some(tag => caption.includes(tag.toLowerCase()));
                 });
             }
         }
 
-        // 2. FILTER DUPLIKAT (Cek URL ke Database Supabase Submissions)
+        // 2. FILTER DUPLIKAT (Cek URL ke Database Submissions)
         if (finalVideos.length > 0) {
-            // Pastikan kita mencocokkan format data mentah URL dan Escaped URL untuk keamanan
             const urlsToCheck = finalVideos.map(v => escapeHTML(v.url));
             try {
                 const { data: existingSubs, error: dbErr } = await supabase
@@ -403,7 +414,6 @@ window.fetchVideos = async function(forceRefresh = false) {
 
                 if (existingSubs && existingSubs.length > 0) {
                     const existingUrls = existingSubs.map(s => s.video_link);
-                    // Filter: Hanya simpan video yang URL (setelah di-escape) BELUM ADA di database
                     finalVideos = finalVideos.filter(vid => !existingUrls.includes(escapeHTML(vid.url)));
                 }
             } catch (err) {
@@ -429,7 +439,6 @@ function renderVideoGrid(videosArray) {
     }
 
     grid.innerHTML = '';
-    
     const formatShort = (num) => {
         const n = parseInt(num) || 0;
         if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -438,7 +447,7 @@ function renderVideoGrid(videosArray) {
     };
 
     videosArray.forEach((vid, idx) => {
-        const isSel = submitState.videoUrl === vid.url;
+        const isSel = submitState.videoUrls.includes(vid.url); // Ubah logika single menjadi array
         const views = vid.views || vid.viewCount || vid.playCount || 0;
         const likes = vid.likes || vid.likeCount || vid.diggCount || 0;
         
@@ -464,39 +473,79 @@ function renderVideoGrid(videosArray) {
     grid.classList.remove('hidden');
 }
 
+// LOGIKA MULTI-SELECT (TOGGLE)
 window.selectVideo = function(url) {
-    submitState.videoUrl = url;
-    document.getElementById('urlError').classList.add('hidden');
-    
-    document.querySelectorAll('.video-card').forEach(card => {
-        const border = card.querySelector('.card-border-target');
-        const icon = card.querySelector('.check-icon-target');
-        
-        if (card.getAttribute('data-url') === escapeHTML(url)) {
-            card.classList.add('selected');
-            border.classList.replace('border-zinc-800', 'border-white');
-            icon.classList.remove('opacity-0', 'scale-50');
-            icon.classList.add('opacity-100', 'scale-100');
-        } else {
-            card.classList.remove('selected');
-            border.classList.replace('border-white', 'border-zinc-800');
-            icon.classList.remove('opacity-100', 'scale-100');
-            icon.classList.add('opacity-0', 'scale-50');
-        }
-    });
+    const cardElement = document.querySelector(`.video-card[data-url="${url}"]`);
+    if (!cardElement) return;
 
-    const btnSub = document.getElementById('btnSubmitVideo');
-    btnSub.disabled = false;
+    const border = cardElement.querySelector('.card-border-target');
+    const icon = cardElement.querySelector('.check-icon-target');
+    const submitBtn = document.getElementById('btnSubmitVideo');
+
+    // Cek apakah video sudah ada di dalam array pilihan
+    const index = submitState.videoUrls.indexOf(url);
+
+    if (index > -1) {
+        // JIKA SUDAH ADA -> BATALKAN PILIHAN (Deselect)
+        submitState.videoUrls.splice(index, 1);
+        cardElement.classList.remove('selected');
+        border.classList.replace('border-white', 'border-zinc-800');
+        icon.classList.remove('opacity-100', 'scale-100');
+        icon.classList.add('opacity-0', 'scale-50');
+    } else {
+        // JIKA BELUM ADA -> TAMBAHKAN KE PILIHAN (Select)
+        submitState.videoUrls.push(url);
+        cardElement.classList.add('selected');
+        border.classList.replace('border-zinc-800', 'border-white');
+        icon.classList.remove('opacity-0', 'scale-50');
+        icon.classList.add('opacity-100', 'scale-100');
+    }
+
+    document.getElementById('urlError').classList.add('hidden');
+    submitBtn.disabled = submitState.videoUrls.length === 0;
+
+    // Update Teks Tombol Submit agar user tahu berapa video yang mereka pilih
+    if (submitState.videoUrls.length > 0) {
+        submitBtn.innerHTML = `Kirim ${submitState.videoUrls.length} Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+    } else {
+        submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+    }
 };
 
 window.processSubmit = async function(e) {
     e.preventDefault();
     const campaignId = submitState.campaign?.id;
-    const urlVal = submitState.videoUrl;
     const errorMsg = document.getElementById('urlError');
     const submitBtn = document.getElementById('btnSubmitVideo');
     
-    if(!campaignId || !urlVal) {
+    if(!campaignId) {
+        showAlert("Silakan pilih campaign terlebih dahulu.", "error");
+        return;
+    }
+
+    if (submitState.videoUrls.length === 0) {
+        errorMsg.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Silakan pilih minimal satu video di atas terlebih dahulu.`;
+        errorMsg.classList.remove('hidden');
+        return;
+    }
+
+    // Validasi Platform untuk SELURUH video yang dipilih
+    const selectedCamp = joinedActiveCampaigns.find(c => c.id === campaignId);
+    const campPlatforms = selectedCamp ? selectedCamp.platforms : [];
+
+    let isPlatformValid = true;
+    if (campPlatforms && campPlatforms.length > 0) {
+        for (let url of submitState.videoUrls) {
+            let videoPlat = url.includes('tiktok') ? 'tiktok' : (url.includes('instagram') ? 'instagram' : 'youtube');
+            if (!campPlatforms.includes(videoPlat)) {
+                isPlatformValid = false;
+                break;
+            }
+        }
+    }
+
+    if (!isPlatformValid) {
+        errorMsg.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Ada video yang platform-nya tidak diizinkan di Campaign ini.`;
         errorMsg.classList.remove('hidden');
         return;
     }
@@ -507,26 +556,37 @@ window.processSubmit = async function(e) {
     submitBtn.innerHTML = `<svg class="w-5 h-5 animate-spin mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
 
     try {
-        const sanitizedUrl = escapeHTML(urlVal);
+        const sanitizedUrls = submitState.videoUrls.map(url => escapeHTML(url));
 
-        const { data: existingSubs } = await supabase.from('submissions').select('id').eq('video_link', sanitizedUrl).single();
-        if (existingSubs) throw new Error("Video ini sudah pernah diajukan sebelumnya.");
+        // Validasi Duplikat Lapis Terakhir: Cek semua link sekaligus di Database
+        const { data: existingSubs, error: dbErr } = await supabase
+            .from('submissions')
+            .select('video_link')
+            .in('video_link', sanitizedUrls);
+            
+        if (dbErr) throw dbErr;
 
-        const { error: insertError } = await supabase.from('submissions').insert([{
+        if (existingSubs && existingSubs.length > 0) {
+            throw new Error("Satu atau beberapa video ini sudah pernah diajukan sebelumnya.");
+        }
+
+        // Siapkan Array Object untuk BATCH INSERT ke Supabase
+        const insertPayload = sanitizedUrls.map(url => ({
             campaign_id: campaignId,
             user_id: sessionUser.id,
-            video_link: sanitizedUrl,
+            video_link: url,
             status: 'PENDING',
             views_claimed: 0,
             views_paid: 0,
             earned: 0
-        }]);
+        }));
 
+        const { error: insertError } = await supabase.from('submissions').insert(insertPayload);
         if(insertError) throw insertError;
 
         window.closeSubmitModal();
         setTimeout(() => {
-            showAlert(`Berhasil mengirim 1 video. Status saat ini PENDING menunggu Review Admin.`, "success");
+            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini PENDING menunggu Review Admin.`, "success");
         }, 300);
         
         await Promise.all([ loadUserStats(), loadSubmissions() ]);
@@ -709,6 +769,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
 });
 
+// [PERBAIKAN] Menambahkan kolom hashtags pada select query untuk kebutuhan Filter Hashtag
 async function loadActiveCampaigns() {
     try {
         const { data, error } = await supabase
