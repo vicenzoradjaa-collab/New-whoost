@@ -35,13 +35,28 @@ export default async function handler(req, res) {
         return await response.json();
     };
 
-    // [FIX] Fungsi pembersih angka yang lebih kebal error
+    // [SUPER FIX] Fungsi pembersih angka yang tahan banting (Bisa baca 1.5K, 2M, dll)
     const parseCount = (val) => {
         if (val === null || val === undefined) return 0;
-        if (typeof val === 'number') return val;
+        
+        // Jika sudah berbentuk angka (proteksi dari NaN)
+        if (typeof val === 'number') {
+            return isNaN(val) ? 0 : val; 
+        }
+        
+        // Jika berbentuk string teks dari scraper (misal: "1.5K", "2M", "1,500")
         if (typeof val === 'string') {
-            const cleaned = val.replace(/[^0-9]/g, ''); 
-            return parseInt(cleaned, 10) || 0;
+            let multiplier = 1;
+            let cleanStr = val.toUpperCase().trim();
+            
+            if (cleanStr.endsWith('K')) multiplier = 1000;
+            else if (cleanStr.endsWith('M')) multiplier = 1000000;
+            
+            const cleaned = cleanStr.replace(/[^0-9.]/g, ''); 
+            const parsed = parseFloat(cleaned);
+            
+            if (isNaN(parsed)) return 0;
+            return Math.floor(parsed * multiplier);
         }
         return 0;
     };
@@ -57,25 +72,27 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            // [FIX] Gunakan Math.max untuk memastikan field mana pun yang terisi angka (bukan 0) akan terambil
+                            // Tambahkan fallback angka 0 di akhir Math.max agar tidak menghasilkan NaN
                             const viewsCount = Math.max(
                                 parseCount(post.videoPlayCount),
                                 parseCount(post.videoViewCount),
                                 parseCount(post.playCount),
                                 parseCount(post.viewCount),
-                                parseCount(post.viewsCount)
+                                parseCount(post.viewsCount),
+                                0
                             );
                             const likesCount = Math.max(
                                 parseCount(post.likesCount),
                                 parseCount(post.likeCount),
-                                parseCount(post.likes)
+                                parseCount(post.likes),
+                                0
                             );
 
                             allVideos.push({
                                 id: post.id,
                                 platform: 'Instagram',
                                 url: post.url,
-                                thumbnail: post.displayUrl,
+                                thumbnail: post.displayUrl || post.videoUrl || 'https://placehold.co/400x600/121214/27272a?text=Instagram+Video',
                                 upload_time: `${hoursAgo} Jam yang lalu`,
                                 views: viewsCount,
                                 likes: likesCount
@@ -94,12 +111,14 @@ export default async function handler(req, res) {
                             const viewsCount = Math.max(
                                 parseCount(post.playCount),
                                 parseCount(post.stats?.playCount),
-                                parseCount(post.stat?.playCount)
+                                parseCount(post.stat?.playCount),
+                                0
                             );
                             const likesCount = Math.max(
                                 parseCount(post.diggCount),
                                 parseCount(post.stats?.diggCount),
-                                parseCount(post.stat?.diggCount)
+                                parseCount(post.stat?.diggCount),
+                                0
                             );
 
                             allVideos.push({
@@ -130,12 +149,14 @@ export default async function handler(req, res) {
                                 const viewsCount = Math.max(
                                     parseCount(post.viewCount),
                                     parseCount(post.views),
-                                    parseCount(post.statistics?.viewCount)
+                                    parseCount(post.statistics?.viewCount),
+                                    0
                                 );
                                 const likesCount = Math.max(
                                     parseCount(post.likeCount),
                                     parseCount(post.likes),
-                                    parseCount(post.statistics?.likeCount)
+                                    parseCount(post.statistics?.likeCount),
+                                    0
                                 );
 
                                 allVideos.push({
