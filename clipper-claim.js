@@ -55,61 +55,72 @@ window.closeAlert = function() {
     setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
 };
 
-let confirmCallback = null;
-window.showConfirm = function(msg, callback) {
-    const m = document.getElementById('customConfirmModal');
-    const c = document.getElementById('customConfirmContent');
-    document.getElementById('confirmMessage').innerText = msg;
-    confirmCallback = callback;
-
-    m.classList.remove('hidden'); m.classList.add('flex');
-    setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
-};
-
-window.closeConfirm = function() {
-    const m = document.getElementById('customConfirmModal');
-    const c = document.getElementById('customConfirmContent');
-    m.classList.add('opacity-0'); c.classList.add('scale-95');
-    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
-    confirmCallback = null; 
-};
-
-document.getElementById('confirmYesBtn').addEventListener('click', () => {
-    const cb = confirmCallback;
-    window.closeConfirm();
-    if (cb) cb();
-});
-
 // ==========================================
-// NEW WIZARD: MODAL SUBMIT 4 STEP
+// FITUR MODAL MULTIPLE SUBMIT VIDEO
 // ==========================================
-let submitState = {
-    step: 0,
-    campaign: null,
-    platform: null,
-    account: null,
-    videoUrls: [] // [BERUBAH]: Array untuk multi-select
-};
-
+let submitState = { step: 0, campaign: null, platform: null, account: null, videoUrls: [] };
 window.refreshCooldown = 0;
 let cooldownInterval = null;
 
-const PLATFORM_MAP = [
-    { id: 'instagram', name: 'Instagram', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>' },
-    { id: 'tiktok', name: 'Tiktok', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>' },
-    { id: 'youtube', name: 'Youtube', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' }
-];
+window.toggleSubmitCampaignSelect = function() {
+    const dropdown = document.getElementById('submit-campaign-options');
+    dropdown.classList.toggle('hidden');
+};
+
+window.selectSubmitCampaign = function(id, title) {
+    document.getElementById('submitCampaignValue').value = id;
+    
+    const textEl = document.getElementById('submit-campaign-selected-text');
+    textEl.innerText = title;
+    textEl.classList.remove('text-zinc-400');
+    textEl.classList.add('text-white');
+    
+    document.getElementById('submit-campaign-options').classList.add('hidden');
+
+    const camp = joinedActiveCampaigns.find(c => c.id === id);
+    let infoText = "Campaign ini menerima video dari: ";
+    if (camp && camp.platforms && camp.platforms.length > 0) {
+        const platNames = [];
+        if(camp.platforms.includes('tiktok')) platNames.push('TikTok');
+        if(camp.platforms.includes('instagram')) platNames.push('Instagram Reels');
+        if(camp.platforms.includes('youtube')) platNames.push('YouTube Shorts');
+        infoText += platNames.join(', ');
+    } else {
+        infoText += "TikTok, Instagram Reels, dan YouTube Shorts";
+    }
+    infoText += ". Pastikan video bersifat publik.";
+    document.getElementById('submitPlatformInfoText').innerText = infoText;
+
+    window.fetchVideos(false);
+};
 
 window.openSubmitModal = function() {
-    submitState = { step: 0, campaign: null, platform: null, account: null, videoUrls: [] };
+    const container = document.getElementById('submit-campaign-options');
+    const textEl = document.getElementById('submit-campaign-selected-text');
+    const infoText = document.getElementById('submitPlatformInfoText');
     
+    document.getElementById('submitCampaignValue').value = '';
+    textEl.innerText = 'Pilih campaign kamu...';
+    textEl.classList.add('text-zinc-400');
+    textEl.classList.remove('text-white');
+    infoText.innerText = "Pilih campaign terlebih dahulu untuk melihat platform yang diizinkan.";
+
+    if (joinedActiveCampaigns.length === 0) {
+        container.innerHTML = '<div class="px-4 py-3 text-sm text-zinc-500 text-center">Belum ada campaign aktif</div>';
+    } else {
+        let html = '';
+        joinedActiveCampaigns.forEach(camp => {
+            const safeTitle = escapeHTML(camp.title);
+            html += `<div onclick="window.selectSubmitCampaign('${camp.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="px-4 py-3 hover:bg-zinc-700 cursor-pointer text-sm text-white truncate border-b border-zinc-700/50 last:border-0">${safeTitle}</div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    window.fetchVideos(false);
+
     const m = document.getElementById('submitVideoModal');
     const c = document.getElementById('submitVideoContent');
     m.classList.remove('hidden'); m.classList.add('flex');
-    
-    window.goToStep(0);
-    updateRefreshButtons(); 
-
     setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
 };
 
@@ -124,173 +135,14 @@ window.closeSubmitModal = function() {
         submitState.videoUrls = []; 
         document.querySelectorAll('.video-card').forEach(el => el.classList.remove('selected'));
         document.getElementById('urlError').classList.add('hidden');
-
-        // Reset Tombol
+        
         const submitBtn = document.getElementById('btnSubmitVideo');
         if(submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `Kirim Konten`;
+            submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
         }
     }, 300);
 };
-
-window.goToStep = function(stepIndex) {
-    submitState.step = stepIndex;
-    
-    for(let i=0; i<=4; i++) {
-        const c = document.getElementById(`step-${i}-container`);
-        if(c) {
-            if (i === stepIndex) { c.classList.remove('hidden'); c.classList.add('flex'); } 
-            else { c.classList.add('hidden'); c.classList.remove('flex'); }
-        }
-    }
-
-    const bc = document.getElementById('submitBreadcrumb');
-    if (stepIndex === 0) {
-        bc.classList.add('hidden');
-    } else {
-        bc.classList.remove('hidden');
-        for(let i=1; i<=4; i++) {
-            const ind = document.getElementById(`step-ind-${i}`);
-            if (i === stepIndex) {
-                ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white text-black border-2 border-zinc-900 ring-4 ring-white/20 transition-all";
-            } else if (i < stepIndex) {
-                ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-200 text-black border-2 border-zinc-900 transition-all";
-            } else {
-                ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-900 text-zinc-500 border-2 border-zinc-800 transition-all";
-            }
-        }
-    }
-
-    if (stepIndex === 1) renderStep1();
-    if (stepIndex === 2) renderStep2();
-    if (stepIndex === 3) renderStep3();
-    if (stepIndex === 4) renderStep4Init();
-};
-
-function renderStep1() {
-    const list = document.getElementById('step-1-list');
-    if (joinedActiveCampaigns.length === 0) {
-        list.innerHTML = '<p class="text-sm text-zinc-500 text-center py-4 border border-zinc-800 border-dashed rounded-xl">Belum ada campaign aktif.</p>';
-        return;
-    }
-    let html = '';
-    joinedActiveCampaigns.forEach(c => {
-        const isSel = submitState.campaign?.id === c.id;
-        html += `
-        <div onclick="window.selectSubmitCampaign('${c.id}')" class="p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
-            <p class="font-bold text-white text-sm">${escapeHTML(c.title)}</p>
-        </div>`;
-    });
-    list.innerHTML = html;
-    document.getElementById('btn-next-1').disabled = !submitState.campaign;
-}
-
-window.selectSubmitCampaign = function(id) {
-    submitState.campaign = joinedActiveCampaigns.find(c => c.id === id);
-    submitState.platform = null; 
-    submitState.account = null;
-    renderStep1();
-};
-
-function renderStep2() {
-    const camp = submitState.campaign;
-    const list = document.getElementById('step-2-list');
-    let html = '';
-    
-    PLATFORM_MAP.forEach(p => {
-        let isAllowed = false;
-        if (camp.platforms && camp.platforms.length > 0) {
-            isAllowed = camp.platforms.includes(p.id);
-        } else {
-            isAllowed = true; 
-        }
-        
-        let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === p.id);
-        
-        if (isAllowed) {
-            const isSel = submitState.platform === p.id;
-            html += `
-            <div onclick="window.selectSubmitPlatform('${p.id}')" class="flex items-center justify-between p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="bg-zinc-800 p-2.5 rounded-xl text-white">${p.icon}</div>
-                    <div>
-                        <p class="font-bold text-white text-base">${p.name}</p>
-                        <p class="text-[11px] text-zinc-400 mt-0.5">${connAccs.length} Akun terhubung</p>
-                    </div>
-                </div>
-            </div>`;
-        } else {
-            html += `
-            <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-900 bg-zinc-900/40 opacity-60 cursor-not-allowed">
-                <div class="flex items-center gap-4">
-                    <div class="bg-zinc-800/50 p-2.5 rounded-xl text-zinc-600">${p.icon}</div>
-                    <div>
-                        <p class="font-bold text-zinc-500 text-base">${p.name}</p>
-                        <p class="text-[11px] text-zinc-600 mt-0.5">Tidak tersedia untuk campaign ini</p>
-                    </div>
-                </div>
-                <svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            </div>`;
-        }
-    });
-    list.innerHTML = html;
-    document.getElementById('btn-next-2').disabled = !submitState.platform;
-}
-
-window.selectSubmitPlatform = function(platId) {
-    submitState.platform = platId;
-    submitState.account = null;
-    renderStep2();
-};
-
-function renderStep3() {
-    const plat = submitState.platform;
-    document.getElementById('lbl-platform-name').innerText = plat.charAt(0).toUpperCase() + plat.slice(1);
-    const list = document.getElementById('step-3-list');
-    let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === plat);
-    
-    let html = '';
-    if (connAccs.length === 0) {
-        html = `<p class="text-sm text-zinc-400 p-4 border border-zinc-800 border-dashed rounded-xl text-center">Belum ada akun yang sesuai.</p>`;
-    } else {
-        connAccs.forEach(a => {
-            const isSel = submitState.account?.username === a.username;
-            const fChar = a.username ? a.username.charAt(0).toUpperCase() : 'U';
-            const safeUser = escapeHTML(a.username).replace(/'/g, "\\'"); 
-            
-            html += `
-            <div onclick="window.selectSubmitAccount('${safeUser}')" class="flex items-center gap-4 p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
-                <div class="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-bold text-white shadow-inner">${fChar}</div>
-                <p class="font-bold text-white text-base">@${escapeHTML(a.username)}</p>
-            </div>`;
-        });
-    }
-    list.innerHTML = html;
-    document.getElementById('btn-next-3').disabled = !submitState.account;
-}
-
-window.selectSubmitAccount = function(username) {
-    submitState.account = userVerifiedAccounts.find(a => a.username === username && a.platform.toLowerCase() === submitState.platform);
-    renderStep3();
-};
-
-function renderStep4Init() {
-    const hashList = document.getElementById('hashtag-list');
-    const requiredHashtags = submitState.campaign.hashtags ? submitState.campaign.hashtags.split(' ').filter(h => h.trim() !== '') : [];
-    
-    let html = '';
-    if (requiredHashtags.length > 0) {
-        requiredHashtags.forEach(tag => {
-            html += `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">${escapeHTML(tag)}</span>`;
-        });
-    } else {
-        html = `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-500 font-medium">Bebas / Tanpa hashtag wajib</span>`;
-    }
-    hashList.innerHTML = html;
-    
-    window.fetchVideos(false);
-}
 
 function startRefreshCooldown() {
     window.refreshCooldown = 60;
@@ -325,9 +177,18 @@ function updateRefreshButtons() {
     });
 }
 
-// ==========================================
-// NEW AUTO FETCH & FILTER (HASHTAG & DB)
-// ==========================================
+// ===============================================
+// AUTO-FETCH VIDEO (HASHTAG & ANTI-DUPLIKAT)
+// ===============================================
+async function fetchUserAccounts() {
+    try {
+        const { data: profile } = await supabase.from('profiles').select('social_media').eq('id', sessionUser.id).single();
+        if (profile && profile.social_media && Array.isArray(profile.social_media)) {
+            userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
+        }
+    } catch(e) {}
+}
+
 window.fetchVideos = async function(forceRefresh = false) {
     if (forceRefresh && window.refreshCooldown > 0) return;
 
@@ -338,15 +199,20 @@ window.fetchVideos = async function(forceRefresh = false) {
     loader.classList.remove('hidden');
     grid.classList.add('hidden');
     emptyState.classList.add('hidden');
-    submitState.videoUrls = []; // Mengosongkan pilihan multi-select
+    submitState.videoUrls = []; 
     document.getElementById('urlError').classList.add('hidden');
     document.getElementById('btnSubmitVideo').disabled = true;
 
-    const targetAccount = submitState.account;
-    if (!targetAccount) return;
+    if (userVerifiedAccounts.length === 0) {
+        loader.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        document.getElementById('noVideoTitle').innerText = "Belum Ada Akun Terverifikasi";
+        document.getElementById('noVideoDesc').innerText = "Silakan tautkan akun sosial media Anda di Profil untuk submit video.";
+        return;
+    }
 
-    // Cache Key
-    const cacheKey = `whoost_raw_videos_v3_${sessionUser.id}_${targetAccount.platform}_${targetAccount.username}`;
+    const cacheKey = `whoost_raw_videos_v3_${sessionUser.id}`;
     const now = new Date().getTime();
     let rawVideos = [];
     
@@ -369,7 +235,7 @@ window.fetchVideos = async function(forceRefresh = false) {
             const response = await fetch('/api/fetch-latest-videos', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ accounts: [targetAccount] })
+                body: JSON.stringify({ accounts: userVerifiedAccounts })
             });
 
             const data = await response.json();
@@ -387,7 +253,7 @@ window.fetchVideos = async function(forceRefresh = false) {
         }
     }
 
-    // --- PROSES FILTERING DINAMIS (TIDAK MASUK CACHE AGAR FLEKSIBEL) ---
+    // --- PROSES FILTERING DINAMIS ---
     let finalVideos = [...rawVideos];
 
     if (finalVideos.length > 0) {
@@ -402,17 +268,15 @@ window.fetchVideos = async function(forceRefresh = false) {
             }
         }
 
-        // 2. FILTER DUPLIKAT (Cek URL ke Database Submissions)
+        // 2. FILTER DUPLIKAT DI DATABASE
         if (finalVideos.length > 0) {
             const urlsToCheck = finalVideos.map(v => escapeHTML(v.url));
             try {
-                const { data: existingSubs, error: dbErr } = await supabase
+                const { data: existingSubs } = await supabase
                     .from('submissions')
                     .select('video_link')
                     .in('video_link', urlsToCheck);
                 
-                if (dbErr) throw dbErr;
-
                 if (existingSubs && existingSubs.length > 0) {
                     const existingUrls = existingSubs.map(s => s.video_link);
                     finalVideos = finalVideos.filter(vid => !existingUrls.includes(escapeHTML(vid.url)));
@@ -448,9 +312,18 @@ function renderVideoGrid(videosArray) {
     };
 
     videosArray.forEach((vid, idx) => {
-        const isSel = submitState.videoUrls.includes(vid.url); // Ubah logika single menjadi array
+        const isSel = submitState.videoUrls.includes(vid.url);
         const views = vid.views || vid.viewCount || vid.playCount || 0;
         const likes = vid.likes || vid.likeCount || vid.diggCount || 0;
+        
+        let iconHtml = '';
+        if(vid.platform === 'TikTok') {
+            iconHtml = `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+        } else if (vid.platform === 'Instagram') {
+            iconHtml = `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+        } else {
+            iconHtml = `<svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+        }
         
         grid.innerHTML += `
             <div onclick="window.selectVideo('${escapeHTML(vid.url)}')" class="video-card relative cursor-pointer group ${isSel ? 'selected' : ''}" data-url="${escapeHTML(vid.url)}">
@@ -458,6 +331,11 @@ function renderVideoGrid(videosArray) {
                     <img src="${escapeHTML(vid.thumbnail)}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
                     
+                    <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/20 p-1.5 rounded-lg flex items-center shadow-sm">
+                        ${iconHtml}
+                    </div>
+                    
+                    <!-- Checkmark Indicator -->
                     <div class="check-icon-target absolute top-2 right-2 bg-white text-black p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
@@ -474,7 +352,6 @@ function renderVideoGrid(videosArray) {
     grid.classList.remove('hidden');
 }
 
-// LOGIKA MULTI-SELECT (TOGGLE)
 window.selectVideo = function(url) {
     const cardElement = document.querySelector(`.video-card[data-url="${url}"]`);
     if (!cardElement) return;
@@ -483,18 +360,15 @@ window.selectVideo = function(url) {
     const icon = cardElement.querySelector('.check-icon-target');
     const submitBtn = document.getElementById('btnSubmitVideo');
 
-    // Cek apakah video sudah ada di dalam array pilihan
     const index = submitState.videoUrls.indexOf(url);
 
     if (index > -1) {
-        // JIKA SUDAH ADA -> BATALKAN PILIHAN (Deselect)
         submitState.videoUrls.splice(index, 1);
         cardElement.classList.remove('selected');
         border.classList.replace('border-white', 'border-zinc-800');
         icon.classList.remove('opacity-100', 'scale-100');
         icon.classList.add('opacity-0', 'scale-50');
     } else {
-        // JIKA BELUM ADA -> TAMBAHKAN KE PILIHAN (Select)
         submitState.videoUrls.push(url);
         cardElement.classList.add('selected');
         border.classList.replace('border-zinc-800', 'border-white');
@@ -505,7 +379,6 @@ window.selectVideo = function(url) {
     document.getElementById('urlError').classList.add('hidden');
     submitBtn.disabled = submitState.videoUrls.length === 0;
 
-    // Update Teks Tombol Submit agar user tahu berapa video yang mereka pilih
     if (submitState.videoUrls.length > 0) {
         submitBtn.innerHTML = `Kirim ${submitState.videoUrls.length} Konten`;
     } else {
@@ -530,7 +403,6 @@ window.processSubmit = async function(e) {
         return;
     }
 
-    // Validasi Platform untuk SELURUH video yang dipilih
     const selectedCamp = joinedActiveCampaigns.find(c => c.id === campaignId);
     const campPlatforms = selectedCamp ? selectedCamp.platforms : [];
 
@@ -559,7 +431,6 @@ window.processSubmit = async function(e) {
     try {
         const sanitizedUrls = submitState.videoUrls.map(url => escapeHTML(url));
 
-        // Validasi Duplikat Lapis Terakhir: Cek semua link sekaligus di Database
         const { data: existingSubs, error: dbErr } = await supabase
             .from('submissions')
             .select('video_link')
@@ -571,7 +442,6 @@ window.processSubmit = async function(e) {
             throw new Error("Satu atau beberapa video ini sudah pernah diajukan sebelumnya.");
         }
 
-        // Siapkan Array Object untuk BATCH INSERT ke Supabase
         const insertPayload = sanitizedUrls.map(url => ({
             campaign_id: campaignId,
             user_id: sessionUser.id,
@@ -587,7 +457,7 @@ window.processSubmit = async function(e) {
 
         window.closeSubmitModal();
         setTimeout(() => {
-            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini PENDING menunggu Review Admin.`, "success");
+            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini PENDING menunggu Review Brand.`, "success");
         }, 300);
         
         await Promise.all([ loadUserStats(), loadSubmissions() ]);
@@ -598,18 +468,6 @@ window.processSubmit = async function(e) {
         submitBtn.innerHTML = originalBtn;
     }
 };
-
-// ===============================================
-// FUNGSI UMUM & INIT
-// ===============================================
-async function fetchUserAccounts() {
-    try {
-        const { data: profile } = await supabase.from('profiles').select('social_media').eq('id', sessionUser.id).single();
-        if (profile && profile.social_media && Array.isArray(profile.social_media)) {
-            userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
-        }
-    } catch(e) {}
-}
 
 // ==========================================
 // FUNGSI VIDEO PLAYER MODAL
@@ -667,7 +525,6 @@ window.openVideoModal = async function(url) {
                 try {
                     const res = await fetch(api);
                     const json = await res.json();
-                    
                     if (json.data && Array.isArray(json.data) && json.data.length > 0) {
                         igVideoUrl = json.data[0].url || json.data[0];
                     } else if (json.data && json.data.url) {
@@ -723,7 +580,6 @@ window.closeVideoModal = function() {
     setTimeout(() => { 
         m.classList.add('hidden'); 
         m.classList.remove('flex'); 
-        
         iframe.src = ''; 
         nativeVideo.pause();
         nativeVideo.removeAttribute('src');
@@ -770,7 +626,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch(e) {}
 });
 
-// [PERBAIKAN] Menambahkan kolom hashtags pada select query untuk kebutuhan Filter Hashtag
 async function loadActiveCampaigns() {
     try {
         const { data, error } = await supabase
@@ -872,6 +727,10 @@ function getVideoMeta(url) {
     return { platHTML, thumbUrl };
 }
 
+// ==========================================
+// [PERUBAHAN UTAMA] 
+// LOGIKA TAMPILAN CARD & ESTIMASI PENDAPATAN
+// ==========================================
 function generateCard(sub, index) {
     const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0, is_private: false };
     const isPrivate = camp.is_private === true;
@@ -884,27 +743,60 @@ function generateCard(sub, index) {
     const safeSessionName = escapeHTML(sessionFullName);
     const safeUrl = encodeURI(sub.video_link || '');
 
-    const viewsClaimed = sub.views_claimed || 0;
-    const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
+    // Current Views diambil langsung dari database (Telah diperbarui oleh Cron/Admin)
+    const currentViews = sub.views_claimed || 0;
+    const uiViews = currentViews > 0 ? currentViews.toLocaleString('id-ID') : '0';
+    
+    // Uang yang sudah masuk ke dompet Clipper
     const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
     let earnedColor = sub.earned > 0 ? (isPrivate ? 'text-yellow-400' : 'text-emerald-400') : 'text-zinc-500';
     
     let realStatus = sub.status || 'PENDING';
     let isPerVideo = camp.payment_type === 'video';
     
-    let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
-    let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
-    let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
-    let isClaimReview   = (realStatus === 'PENDING' && viewsClaimed > 0);
-    let isClaimRejected = (realStatus === 'REJECTED' && viewsClaimed > 0);
-    let isClaimApproved = (realStatus === 'APPROVED' && viewsClaimed > 0);
+    // --- MENGHITUNG ESTIMASI PENDAPATAN TERBARU ---
+    let estimatedNewMoney = 0;
+    const cpm = camp.reward_per_1k || 0;
+    const minViews = camp.min_views || 10000;
+    const maxClaim = camp.max_claim || 250000;
+    const budgetRemaining = camp.budget_remaining || 0;
+    const isCampClosed = camp.status === 'CLOSED' || budgetRemaining <= 0;
+
+    // Hitung Estimasi Pembayaran secara On The Fly
+    if (!isCampClosed) {
+        if (isPerVideo) {
+            // Jika per video, dan belum dibayar
+            if ((sub.earned || 0) > 0) {
+                estimatedNewMoney = 0; 
+            } else {
+                estimatedNewMoney = camp.price_per_video || 0;
+                if (estimatedNewMoney > budgetRemaining) estimatedNewMoney = budgetRemaining;
+            }
+        } else {
+            // Jika per views
+            let effectiveViews = currentViews > maxClaim ? maxClaim : currentViews;
+            let rate = cpm;
+            if (effectiveViews < minViews) {
+                rate = cpm * 0.25; // Potongan Early CPM 75%
+            }
+            let totalExpected = Math.floor((effectiveViews / 1000) * rate);
+            estimatedNewMoney = totalExpected - (sub.earned || 0);
+
+            if (estimatedNewMoney < 0) estimatedNewMoney = 0;
+            if (estimatedNewMoney > budgetRemaining) estimatedNewMoney = budgetRemaining;
+        }
+    }
+    
+    // Boolean Status Flow
+    let isBrandReview   = (realStatus === 'PENDING' && currentViews === 0);
+    let isBrandRejected = (realStatus === 'REJECTED' && currentViews === 0);
+    let isClaimReview   = (realStatus === 'PENDING' && currentViews > 0);
+    let isClaimApproved = (realStatus === 'APPROVED');
+    let isClaimRejected = (realStatus === 'REJECTED' && currentViews > 0);
 
     let actionArea = '';
     let badgeHTML = '';
     let cardOpacityClass = 'opacity-100';
-    const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
-    const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
-    let placeholder = maxPrevViews > 0 ? `views sebelumnya : ${maxPrevViews.toLocaleString('id-ID')}` : 'masukkan views yang akan di claim';
 
     if (isBrandReview) {
         badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
@@ -920,12 +812,13 @@ function generateCard(sub, index) {
             <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
     }
     else if (isClaimReview) {
+        // [BARU] Menunggu ACC Admin dengan Estimasi Cuan Dinamis
         badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
-        let inputHTML = `<div class="flex mb-1.5"><input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-zinc-500 cursor-not-allowed text-center truncate"></div>`;
+        
         actionArea = `
-            ${inputHTML}
             <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
-                <span>Reviewing Claim...</span><span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
+                <span>Diproses Admin...</span>
+                <span class="text-[8px] font-medium text-amber-500/70">Estimasi Masuk: Rp ${estimatedNewMoney.toLocaleString('id-ID')}</span>
             </button>`;
     } 
     else if (isClaimRejected) {
@@ -937,28 +830,15 @@ function generateCard(sub, index) {
             </div>
             <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
     }
-    else {
-        const paidViews = sub.views_paid || 0;
-        let warningText = '';
-        
+    else if (isClaimApproved) {
+        // [BARU] Selesai Cair
         if(isCampClosed) {
             badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Closed</div>`;
-            warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed.</p>`;
-        } else if (isClaimApproved) {
+            actionArea = `<button disabled class="w-full bg-zinc-800 border border-zinc-700 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Budget Telah Habis</button>`;
+        } else {
             badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
-            if (isPerVideo) warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views.</p>`;
-        } else if (isBrandApproved) {
-            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
+            actionArea = `<button disabled class="w-full bg-blue-900/20 border border-blue-500/30 text-blue-400 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Pembayaran Selesai</button>`;
         }
-
-        let inputHTML = `<div class="flex mb-1.5"><input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-white placeholder-zinc-500 outline-none transition-colors text-center truncate"></div>`;
-        let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
-        
-        let claimBtnClass = isPrivate 
-            ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
-            : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center focus:outline-none transition-colors active:scale-[0.98]";
-
-        actionArea = `${warningText}${inputHTML}<button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">${btnText}</button>`;
     }
 
     let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
@@ -990,7 +870,7 @@ function generateCard(sub, index) {
         <div class="flex-1 flex flex-col justify-between mt-2 sm:mt-3">
             <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
                 <div>
-                    <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
+                    <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Views Valid</p>
                     <p class="text-[10px] sm:text-xs font-bold text-white">${uiViews}</p>
                 </div>
                 <div class="text-right">
@@ -1059,95 +939,6 @@ window.loadThumbnails = async function(items) {
             }
         } catch(e) { }
     }
-};
-
-window.claimViews = function(subId) {
-    const inputEl = document.getElementById(`input-${subId}`);
-    const btnEl = document.getElementById(`btn-claim-${subId}`);
-    
-    if(!inputEl || !btnEl) return;
-
-    const sub = submissionsData.find(s => s.id === subId);
-    if (!sub) return showAlert("Data tidak ditemukan.", "error");
-
-    const camp = sub.campaigns;
-    const isPerVideo = camp.payment_type === 'video';
-    const newClaimStr = inputEl.value.trim();
-    if (!newClaimStr) return showAlert("Masukkan jumlah views yang valid.", "error");
-    
-    const newClaimViews = parseInt(newClaimStr);
-    if (isNaN(newClaimViews) || newClaimViews <= 0) return showAlert("Jumlah views harus lebih dari 0.", "error");
-
-    const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
-    if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED' && maxPrevViews > 0) {
-        return showAlert(`Views baru harus lebih besar dari views yang sudah disetujui sebelumnya (${maxPrevViews.toLocaleString('id-ID')}).`, "error");
-    }
-
-    let estPayout = 0;
-    const isClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
-
-    if (!isClosed) {
-        if (camp.payment_type === 'views') {
-            const cpm = camp.reward_per_1k || 0;
-            const minViews = camp.min_views || 10000;
-            const maxClaim = camp.max_claim || 250000;
-
-            let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
-            let rate = cpm;
-            if (effectiveViews < minViews) { rate = cpm * 0.25; }
-
-            let totalExpectedEarnings = Math.floor((effectiveViews / 1000) * rate);
-            let previouslyEarned = sub.earned || 0;
-            estPayout = totalExpectedEarnings - previouslyEarned;
-
-            if (estPayout < 0) estPayout = 0;
-            if (estPayout > camp.budget_remaining) { estPayout = camp.budget_remaining; }
-        } else if (camp.payment_type === 'video') {
-            if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
-                estPayout = 0;
-            } else {
-                let previouslyEarned = sub.earned || 0;
-                let totalExpectedEarnings = camp.price_per_video || 0;
-                estPayout = totalExpectedEarnings - previouslyEarned;
-                if (estPayout < 0) estPayout = 0;
-                if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
-            }
-        }
-    }
-
-    let confirmMsg = "";
-    if (isPerVideo) {
-        if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
-            confirmMsg = `Update views untuk konten video Anda menjadi ${newClaimViews.toLocaleString('id-ID')}.\n(Pembayaran video sudah dicairkan di awal)\n\nApakah Anda yakin ingin melanjutkan?`;
-        } else {
-            confirmMsg = `Pengajuan pencairan untuk konten video Anda dengan ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
-        }
-    } else {
-        confirmMsg = `Request klaim/update sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
-    }
-    
-    window.showConfirm(confirmMsg, async () => {
-        const originalBtnHtml = btnEl.innerHTML;
-        inputEl.disabled = true; btnEl.disabled = true;
-        btnEl.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
-        btnEl.classList.add('cursor-not-allowed', 'opacity-80');
-
-        try {
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-            if (sessionError || !session || session.user.id !== sub.user_id) return showAlert('Sesi tidak valid, mohon muat ulang halaman.', 'error');
-
-            const { error } = await supabase.from('submissions').update({
-                views_claimed: newClaimViews, est_payout: estPayout, status: 'PENDING', reject_reason: null
-            }).eq('id', subId);
-            if (error) throw error;
-
-            showAlert("Berhasil mengajukan klaim. Menunggu proses review dari Admin.", "success");
-            await loadSubmissions(); 
-        } catch (error) {
-            showAlert("Gagal melakukan klaim: " + error.message, "error");
-            inputEl.disabled = false; btnEl.disabled = false; btnEl.innerHTML = originalBtnHtml; btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
-        }
-    });
 };
 
 window.toggleSelect = function(id) {
