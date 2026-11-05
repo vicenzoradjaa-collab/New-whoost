@@ -1,0 +1,1107 @@
+import { supabase, enforceRoleProtection } from './authentication/auth.js';
+
+let sessionUser = null;
+let sessionFullName = 'Pengguna'; 
+let submissionsData = [];
+let joinedActiveCampaigns = []; 
+let userVerifiedAccounts = []; 
+
+let realEarnings = 0;
+let realWithdrawable = 0;
+let isSensorActive = false;
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// ==========================================
+// SISTEM CUSTOM MODAL POP-UP
+// ==========================================
+window.showAlert = function(msg, type = 'info') {
+    const m = document.getElementById('customAlertModal');
+    const c = document.getElementById('customAlertContent');
+    const icon = document.getElementById('alertIcon');
+    const title = document.getElementById('alertTitle');
+    document.getElementById('alertMessage').innerText = msg;
+
+    if (type === 'success') {
+        icon.className = 'w-16 h-16 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full flex items-center justify-center mb-4';
+        icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        title.innerText = 'Berhasil';
+    } else if (type === 'error') {
+        icon.className = 'w-16 h-16 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full flex items-center justify-center mb-4';
+        icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+        title.innerText = 'Gagal';
+    } else {
+        icon.className = 'w-16 h-16 bg-white/10 text-white border border-white/20 rounded-full flex items-center justify-center mb-4';
+        icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        title.innerText = 'Informasi';
+    }
+
+    m.classList.remove('hidden'); m.classList.add('flex');
+    setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+};
+
+window.closeAlert = function() {
+    const m = document.getElementById('customAlertModal');
+    const c = document.getElementById('customAlertContent');
+    m.classList.add('opacity-0'); c.classList.add('scale-95');
+    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+};
+
+let confirmCallback = null;
+window.showConfirm = function(msg, callback) {
+    const m = document.getElementById('customConfirmModal');
+    const c = document.getElementById('customConfirmContent');
+    document.getElementById('confirmMessage').innerText = msg;
+    confirmCallback = callback;
+
+    m.classList.remove('hidden'); m.classList.add('flex');
+    setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+};
+
+window.closeConfirm = function() {
+    const m = document.getElementById('customConfirmModal');
+    const c = document.getElementById('customConfirmContent');
+    m.classList.add('opacity-0'); c.classList.add('scale-95');
+    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+    confirmCallback = null; 
+};
+
+document.getElementById('confirmYesBtn').addEventListener('click', () => {
+    const cb = confirmCallback;
+    window.closeConfirm();
+    if (cb) cb();
+});
+
+// ==========================================
+// NEW WIZARD: MODAL SUBMIT 4 STEP
+// ==========================================
+let submitState = {
+    step: 0,
+    campaign: null,
+    platform: null,
+    account: null,
+    videoUrl: null
+};
+
+window.refreshCooldown = 0;
+let cooldownInterval = null;
+
+const PLATFORM_MAP = [
+    { id: 'instagram', name: 'Instagram', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>' },
+    { id: 'tiktok', name: 'Tiktok', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>' },
+    { id: 'youtube', name: 'Youtube', icon: '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' }
+];
+
+window.openSubmitModal = function() {
+    submitState = { step: 0, campaign: null, platform: null, account: null, videoUrl: null };
+    
+    const m = document.getElementById('submitVideoModal');
+    const c = document.getElementById('submitVideoContent');
+    m.classList.remove('hidden'); m.classList.add('flex');
+    
+    window.goToStep(0);
+    updateRefreshButtons(); // pastikan tombol refresh normal
+
+    setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+};
+
+window.closeSubmitModal = function() {
+    const m = document.getElementById('submitVideoModal');
+    const c = document.getElementById('submitVideoContent');
+    m.classList.add('opacity-0'); c.classList.add('scale-95');
+    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+};
+
+window.goToStep = function(stepIndex) {
+    submitState.step = stepIndex;
+    
+    for(let i=0; i<=4; i++) {
+        const c = document.getElementById(`step-${i}-container`);
+        if(c) {
+            if (i === stepIndex) { c.classList.remove('hidden'); c.classList.add('flex'); } 
+            else { c.classList.add('hidden'); c.classList.remove('flex'); }
+        }
+    }
+
+    const bc = document.getElementById('submitBreadcrumb');
+    if (stepIndex === 0) {
+        bc.classList.add('hidden');
+    } else {
+        bc.classList.remove('hidden');
+        for(let i=1; i<=4; i++) {
+            const ind = document.getElementById(`step-ind-${i}`);
+            if (i === stepIndex) {
+                ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-white text-black border-2 border-zinc-900 ring-4 ring-white/20 transition-all";
+            } else if (i < stepIndex) {
+                ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-200 text-black border-2 border-zinc-900 transition-all";
+            } else {
+                ind.className = "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-zinc-900 text-zinc-500 border-2 border-zinc-800 transition-all";
+            }
+        }
+    }
+
+    if (stepIndex === 1) renderStep1();
+    if (stepIndex === 2) renderStep2();
+    if (stepIndex === 3) renderStep3();
+    if (stepIndex === 4) renderStep4Init();
+};
+
+// Render Step 1
+function renderStep1() {
+    const list = document.getElementById('step-1-list');
+    if (joinedActiveCampaigns.length === 0) {
+        list.innerHTML = '<p class="text-sm text-zinc-500 text-center py-4 border border-zinc-800 border-dashed rounded-xl">Belum ada campaign aktif.</p>';
+        return;
+    }
+    let html = '';
+    joinedActiveCampaigns.forEach(c => {
+        const isSel = submitState.campaign?.id === c.id;
+        html += `
+        <div onclick="window.selectSubmitCampaign('${c.id}')" class="p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+            <p class="font-bold text-white text-sm">${escapeHTML(c.title)}</p>
+        </div>`;
+    });
+    list.innerHTML = html;
+    document.getElementById('btn-next-1').disabled = !submitState.campaign;
+}
+
+window.selectSubmitCampaign = function(id) {
+    submitState.campaign = joinedActiveCampaigns.find(c => c.id === id);
+    submitState.platform = null; 
+    submitState.account = null;
+    renderStep1();
+};
+
+// Render Step 2
+function renderStep2() {
+    const camp = submitState.campaign;
+    const list = document.getElementById('step-2-list');
+    let html = '';
+    
+    PLATFORM_MAP.forEach(p => {
+        let isAllowed = false;
+        if (camp.platforms && camp.platforms.length > 0) {
+            isAllowed = camp.platforms.includes(p.id);
+        } else {
+            isAllowed = true; // default allow
+        }
+        
+        let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === p.id);
+        
+        if (isAllowed) {
+            const isSel = submitState.platform === p.id;
+            html += `
+            <div onclick="window.selectSubmitPlatform('${p.id}')" class="flex items-center justify-between p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="bg-zinc-800 p-2.5 rounded-xl text-white">${p.icon}</div>
+                    <div>
+                        <p class="font-bold text-white text-base">${p.name}</p>
+                        <p class="text-[11px] text-zinc-400 mt-0.5">${connAccs.length} Akun terhubung</p>
+                    </div>
+                </div>
+            </div>`;
+        } else {
+            html += `
+            <div class="flex items-center justify-between p-4 rounded-xl border border-zinc-900 bg-zinc-900/40 opacity-60 cursor-not-allowed">
+                <div class="flex items-center gap-4">
+                    <div class="bg-zinc-800/50 p-2.5 rounded-xl text-zinc-600">${p.icon}</div>
+                    <div>
+                        <p class="font-bold text-zinc-500 text-base">${p.name}</p>
+                        <p class="text-[11px] text-zinc-600 mt-0.5">Tidak tersedia untuk campaign ini</p>
+                    </div>
+                </div>
+                <svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>`;
+        }
+    });
+    list.innerHTML = html;
+    document.getElementById('btn-next-2').disabled = !submitState.platform;
+}
+
+window.selectSubmitPlatform = function(platId) {
+    submitState.platform = platId;
+    submitState.account = null;
+    renderStep2();
+};
+
+// Render Step 3
+function renderStep3() {
+    const plat = submitState.platform;
+    document.getElementById('lbl-platform-name').innerText = plat.charAt(0).toUpperCase() + plat.slice(1);
+    const list = document.getElementById('step-3-list');
+    let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === plat);
+    
+    let html = '';
+    if (connAccs.length === 0) {
+        html = `<p class="text-sm text-zinc-400 p-4 border border-zinc-800 border-dashed rounded-xl text-center">Belum ada akun yang sesuai.</p>`;
+    } else {
+        connAccs.forEach(a => {
+            const isSel = submitState.account?.username === a.username;
+            const fChar = a.username ? a.username.charAt(0).toUpperCase() : 'U';
+            const safeUser = escapeHTML(a.username).replace(/'/g, "\\'"); 
+            
+            html += `
+            <div onclick="window.selectSubmitAccount('${safeUser}')" class="flex items-center gap-4 p-4 rounded-xl border ${isSel ? 'border-white bg-white/5' : 'border-zinc-800 bg-zinc-900'} hover:border-zinc-500 cursor-pointer transition-colors">
+                <div class="w-10 h-10 rounded-full bg-zinc-700 flex items-center justify-center text-sm font-bold text-white shadow-inner">${fChar}</div>
+                <p class="font-bold text-white text-base">@${escapeHTML(a.username)}</p>
+            </div>`;
+        });
+    }
+    list.innerHTML = html;
+    document.getElementById('btn-next-3').disabled = !submitState.account;
+}
+
+window.selectSubmitAccount = function(username) {
+    submitState.account = userVerifiedAccounts.find(a => a.username === username && a.platform.toLowerCase() === submitState.platform);
+    renderStep3();
+};
+
+// Render Step 4 Initialize
+function renderStep4Init() {
+    const hashList = document.getElementById('hashtag-list');
+    const safeTitle = escapeHTML(submitState.campaign.title).replace(/[^a-zA-Z0-9]/g, '');
+    hashList.innerHTML = `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">#whoost</span><span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">#${safeTitle.toLowerCase()}</span>`;
+    
+    window.fetchVideos(false);
+}
+
+// Logic Cooldown Refresh
+function startRefreshCooldown() {
+    window.refreshCooldown = 60;
+    updateRefreshButtons();
+    
+    if (cooldownInterval) clearInterval(cooldownInterval);
+    cooldownInterval = setInterval(() => {
+        window.refreshCooldown--;
+        updateRefreshButtons();
+        if (window.refreshCooldown <= 0) {
+            clearInterval(cooldownInterval);
+        }
+    }, 1000);
+}
+
+function updateRefreshButtons() {
+    const btns = document.querySelectorAll('.btn-refresh-video');
+    btns.forEach(btn => {
+        if (window.refreshCooldown > 0) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Tunggu ${window.refreshCooldown}s`;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = false;
+            // Beda isi teks tergantung posisi tombol (di header = icon + text, di empty state = pure text)
+            if (btn.classList.contains('bg-white')) {
+                btn.innerHTML = `Coba Lagi`; 
+            } else {
+                btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh`;
+            }
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    });
+}
+
+window.fetchVideos = async function(forceRefresh = false) {
+    if (forceRefresh && window.refreshCooldown > 0) return; // double proteksi
+
+    const loader = document.getElementById('videoFetchLoaderNew');
+    const grid = document.getElementById('videoGridNew');
+    const emptyState = document.getElementById('noVideoStateNew');
+    
+    loader.classList.remove('hidden');
+    grid.classList.add('hidden');
+    emptyState.classList.add('hidden');
+    submitState.videoUrl = null; 
+    document.getElementById('urlError').classList.add('hidden');
+    document.getElementById('btnSubmitVideo').disabled = true;
+
+    const targetAccount = submitState.account;
+    if (!targetAccount) return;
+
+    // [FIX] Mengubah Cache Key dengan tambahan "v2" untuk memaksa browser mengambil pembaruan dari backend
+    const cacheKey = `whoost_videos_v2_${sessionUser.id}_${targetAccount.platform}_${targetAccount.username}`;
+    const now = new Date().getTime();
+    
+    if (!forceRefresh) {
+        const cachedData = sessionStorage.getItem(cacheKey);
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                if ((now - parsed.timestamp) < 900000) { 
+                    renderVideoGrid(parsed.videos);
+                    return;
+                }
+            } catch(e) {}
+        }
+    } else {
+        startRefreshCooldown();
+    }
+
+    try {
+        const response = await fetch('/api/fetch-latest-videos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accounts: [targetAccount] })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Gagal menarik video.");
+
+        const fetchedVideos = data.videos || [];
+        sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, videos: fetchedVideos }));
+        renderVideoGrid(fetchedVideos);
+
+    } catch (err) {
+        console.error("Gagal menarik data video:", err);
+        loader.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+    }
+};
+
+function renderVideoGrid(videosArray) {
+    const loader = document.getElementById('videoFetchLoaderNew');
+    const grid = document.getElementById('videoGridNew');
+    const emptyState = document.getElementById('noVideoStateNew');
+
+    loader.classList.add('hidden');
+
+    if (!videosArray || videosArray.length === 0) {
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
+        return;
+    }
+
+    grid.innerHTML = '';
+    
+    // Helper untuk merapikan angka besar (contoh: 1500 -> 1.5K, 2000000 -> 2M)
+    const formatShort = (num) => {
+        const n = parseInt(num) || 0;
+        if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+        return n.toString();
+    };
+
+    videosArray.forEach((vid, idx) => {
+        const isSel = submitState.videoUrl === vid.url;
+        
+        // Ambil data view dan like yang ter-fetch dari API (menangani variasi field name)
+        const views = vid.views || vid.viewCount || vid.playCount || 0;
+        const likes = vid.likes || vid.likeCount || vid.diggCount || 0;
+        
+        grid.innerHTML += `
+            <div onclick="window.selectVideo('${escapeHTML(vid.url)}')" class="video-card relative cursor-pointer group ${isSel ? 'selected' : ''}" data-url="${escapeHTML(vid.url)}">
+                <div class="relative aspect-[9/16] rounded-xl border-[2.5px] ${isSel ? 'border-white' : 'border-zinc-800'} overflow-hidden transition-colors bg-zinc-900 card-border-target">
+                    <img src="${escapeHTML(vid.thumbnail)}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
+                    
+                    <div class="check-icon-target absolute top-2 right-2 bg-white text-black p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+
+                    <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-zinc-300 font-medium z-10">
+                        <span class="flex items-center gap-1"><svg class="w-3 h-3 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> ${formatShort(views)}</span>
+                        <span class="flex items-center gap-1"><svg class="w-3 h-3 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> ${formatShort(likes)}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    grid.classList.remove('hidden');
+}
+
+window.selectVideo = function(url) {
+    submitState.videoUrl = url;
+    document.getElementById('urlError').classList.add('hidden');
+    
+    document.querySelectorAll('.video-card').forEach(card => {
+        const border = card.querySelector('.card-border-target');
+        const icon = card.querySelector('.check-icon-target');
+        
+        if (card.getAttribute('data-url') === url) {
+            card.classList.add('selected');
+            border.classList.replace('border-zinc-800', 'border-white');
+            icon.classList.remove('opacity-0', 'scale-50');
+            icon.classList.add('opacity-100', 'scale-100');
+        } else {
+            card.classList.remove('selected');
+            border.classList.replace('border-white', 'border-zinc-800');
+            icon.classList.remove('opacity-100', 'scale-100');
+            icon.classList.add('opacity-0', 'scale-50');
+        }
+    });
+
+    const btnSub = document.getElementById('btnSubmitVideo');
+    btnSub.disabled = false;
+};
+
+window.processSubmit = async function(e) {
+    e.preventDefault();
+    const campaignId = submitState.campaign?.id;
+    const urlVal = submitState.videoUrl;
+    const errorMsg = document.getElementById('urlError');
+    const submitBtn = document.getElementById('btnSubmitVideo');
+    
+    if(!campaignId || !urlVal) {
+        errorMsg.classList.remove('hidden');
+        return;
+    }
+
+    errorMsg.classList.add('hidden');
+    const originalBtn = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = `<svg class="w-5 h-5 animate-spin mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+    try {
+        const sanitizedUrl = escapeHTML(urlVal);
+
+        const { data: existingSubs } = await supabase.from('submissions').select('id').eq('video_link', sanitizedUrl).single();
+        if (existingSubs) throw new Error("Video ini sudah pernah diajukan sebelumnya.");
+
+        const { error: insertError } = await supabase.from('submissions').insert([{
+            campaign_id: campaignId,
+            user_id: sessionUser.id,
+            video_link: sanitizedUrl,
+            status: 'PENDING',
+            views_claimed: 0,
+            views_paid: 0,
+            earned: 0
+        }]);
+
+        if(insertError) throw insertError;
+
+        window.closeSubmitModal();
+        setTimeout(() => {
+            showAlert(`Berhasil mengirim 1 video. Status saat ini PENDING menunggu Review Admin.`, "success");
+        }, 300);
+        
+        await Promise.all([ loadUserStats(), loadSubmissions() ]);
+    } catch(err) {
+        showAlert("Gagal mengirim video: " + err.message, "error");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtn;
+    }
+};
+
+// ===============================================
+// FUNGSI UMUM & INIT
+// ===============================================
+async function fetchUserAccounts() {
+    try {
+        const { data: profile } = await supabase.from('profiles').select('social_media').eq('id', sessionUser.id).single();
+        if (profile && profile.social_media && Array.isArray(profile.social_media)) {
+            userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
+        }
+    } catch(e) {}
+}
+
+// ==========================================
+// FUNGSI VIDEO PLAYER MODAL
+// ==========================================
+window.openVideoModal = async function(url) {
+    const m = document.getElementById('videoModal');
+    const iframe = document.getElementById('videoIframe');
+    const nativeVideo = document.getElementById('videoNative');
+    const directLink = document.getElementById('videoDirectLink');
+    const loader = document.getElementById('videoLoader');
+    
+    loader.style.display = 'flex'; 
+    iframe.src = '';
+    nativeVideo.src = '';
+    iframe.classList.add('hidden');
+    nativeVideo.classList.add('hidden');
+    directLink.href = url;
+
+    m.classList.remove('hidden'); 
+    m.classList.add('flex');
+    setTimeout(() => { m.classList.remove('opacity-0'); }, 10);
+
+    try {
+        if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+            let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+            if (ytMatch && ytMatch[1]) {
+                iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+                iframe.classList.remove('hidden');
+            } else {
+                throw new Error("No YouTube match");
+            }
+        } else if (url.includes('tiktok.com')) {
+            let cleanTkUrl = url.split('?')[0];
+            const res = await fetch(`https://www.tikwm.com/api/?url=${cleanTkUrl}`);
+            const json = await res.json();
+            if (json.data && json.data.play) {
+                nativeVideo.src = json.data.play;
+                nativeVideo.classList.remove('hidden');
+            } else {
+                throw new Error("TikTok API Error");
+            }
+        } else if (url.includes('instagram.com')) {
+            let cleanIgUrl = url.split('?')[0];
+            const encodedUrl = encodeURIComponent(cleanIgUrl);
+            let igVideoUrl = null;
+
+            const igApis = [
+                `https://api.siputzx.my.id/api/d/igdl?url=${encodedUrl}`,
+                `https://api.ryzendesu.vip/api/downloader/igdl?url=${encodedUrl}`,
+                `https://api.agatz.xyz/api/instagram?url=${encodedUrl}`
+            ];
+
+            for (let api of igApis) {
+                if (igVideoUrl) break; 
+                try {
+                    const res = await fetch(api);
+                    const json = await res.json();
+                    
+                    if (json.data && Array.isArray(json.data) && json.data.length > 0) {
+                        igVideoUrl = json.data[0].url || json.data[0];
+                    } else if (json.data && json.data.url) {
+                        igVideoUrl = json.data.url;
+                    } else if (json.url) {
+                        igVideoUrl = json.url;
+                    } else if (json.result && Array.isArray(json.result) && json.result.length > 0) {
+                        igVideoUrl = json.result[0].url || json.result[0];
+                    }
+                } catch(e) { }
+            }
+
+            if (igVideoUrl) {
+                nativeVideo.src = igVideoUrl;
+                nativeVideo.classList.remove('hidden');
+            } else {
+                throw new Error("Semua API IG gagal mendapatkan direktori file MP4");
+            }
+        } else {
+            iframe.src = url;
+            iframe.classList.remove('hidden');
+        }
+    } catch (e) {
+        if (url.includes('tiktok.com')) {
+            let tkMatch = url.match(/video\/(\d+)/);
+            if (tkMatch && tkMatch[1]) {
+                iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
+            } else {
+                iframe.src = url;
+            }
+        } else if (url.includes('instagram.com')) {
+            let igMatch = url.match(/(?:p|reel)\/([a-zA-Z0-9_-]+)/);
+            if (igMatch && igMatch[1]) {
+                iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
+            } else {
+                iframe.src = url;
+            }
+        } else {
+            iframe.src = url;
+        }
+        iframe.classList.remove('hidden');
+    }
+
+    setTimeout(() => { loader.style.display = 'none'; }, 6000);
+};
+
+window.closeVideoModal = function() {
+    const m = document.getElementById('videoModal');
+    const iframe = document.getElementById('videoIframe');
+    const nativeVideo = document.getElementById('videoNative');
+    
+    m.classList.add('opacity-0'); 
+    setTimeout(() => { 
+        m.classList.add('hidden'); 
+        m.classList.remove('flex'); 
+        
+        iframe.src = ''; 
+        nativeVideo.pause();
+        nativeVideo.removeAttribute('src');
+        nativeVideo.load();
+    }, 300);
+};
+
+function getCols() {
+    const w = window.innerWidth;
+    if (w >= 1280) return 6; 
+    if (w >= 1024) return 5; 
+    if (w >= 768)  return 4; 
+    if (w >= 640)  return 3; 
+    return 2;                
+}
+
+let currentFilter = { status: 'all', campaign_id: 'all', sort: 'newest' };
+let currentLimit = getCols() * 2;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await enforceRoleProtection();
+
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !session) { window.location.replace('login.html'); return; }
+        sessionUser = session.user;
+
+        try {
+            const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', sessionUser.id).single();
+            if (profile && profile.full_name) {
+                sessionFullName = profile.full_name;
+            } else if (sessionUser.user_metadata?.full_name) {
+                sessionFullName = sessionUser.user_metadata.full_name;
+            }
+        } catch(e) {}
+
+        await Promise.all([
+            fetchUserAccounts(),
+            loadActiveCampaigns(),
+            loadUserStats(),
+            loadSubmissions()
+        ]);
+
+    } catch(e) {}
+});
+
+async function loadActiveCampaigns() {
+    try {
+        const { data, error } = await supabase
+            .from('user_campaigns')
+            .select(`campaigns ( id, title, status, budget_remaining, platforms )`)
+            .eq('user_id', sessionUser.id);
+
+        if (!error && data) {
+            const uniqueCampsMap = new Map();
+            data.forEach(item => {
+                const camp = item.campaigns;
+                if (camp && camp.status !== 'CLOSED') { uniqueCampsMap.set(camp.id, camp); }
+            });
+            joinedActiveCampaigns = Array.from(uniqueCampsMap.values());
+        }
+    } catch (e) {}
+}
+
+async function loadUserStats() {
+    try {
+        const { data: allSubs } = await supabase.from('submissions').select('status, earned, views_paid, views_claimed').eq('user_id', sessionUser.id);
+        let calcEarnings = 0; let calcViews = 0; let calcVideos = 0; let p = 0, a = 0, r = 0;
+
+        if (allSubs) {
+            calcVideos = allSubs.length; 
+            allSubs.forEach(sub => {
+                calcEarnings += (sub.earned || 0);
+                if (sub.status === 'PENDING') { p++; calcViews += (sub.views_paid || 0); } 
+                else if (sub.status === 'APPROVED') { a++; calcViews += Math.max(sub.views_claimed || 0, sub.views_paid || 0); } 
+                else if (sub.status === 'REJECTED') { r++; calcViews += (sub.views_paid || 0); }
+            });
+        }
+
+        const { data: withdrawals } = await supabase.from('withdrawals').select('amount, status').eq('user_id', sessionUser.id);
+        let totalWithdrawn = 0;
+        if (withdrawals) { withdrawals.forEach(w => { if (w.status !== 'REJECTED' && w.status !== 'FAILED') { totalWithdrawn += (w.amount || 0); } }); }
+
+        let calcWithdrawable = calcEarnings - totalWithdrawn;
+        if (calcWithdrawable < 0) calcWithdrawable = 0;
+
+        await supabase.from('clipper_stats').upsert({
+            user_id: sessionUser.id, total_earnings: calcEarnings, withdrawable: calcWithdrawable, total_views: calcViews, total_videos: calcVideos
+        }, { onConflict: 'user_id' });
+
+        realEarnings = calcEarnings;
+        realWithdrawable = calcWithdrawable;
+
+        document.getElementById('pending-detail').innerText = p;
+        document.getElementById('disetujui-detail').innerText = a;
+        document.getElementById('ditolak-detail').innerText = r;
+
+    } catch(e) {}
+    
+    window.toggleSensor(true); 
+}
+
+async function loadSubmissions() {
+    try {
+        const { data, error } = await supabase
+            .from('submissions')
+            .select(`id, user_id, video_link, views_claimed, views_paid, earned, est_payout, status, reject_reason, created_at, campaigns ( id, title, brand_name, budget_remaining, reward_per_1k, min_views, max_claim, payment_type, status, platforms, niche, type, banner_url, price_per_video, is_private )`)
+            .eq('user_id', sessionUser.id);
+
+        if (error) return;
+        submissionsData = data || [];
+        
+        const campSet = new Set();
+        let campOptionsHTML = `<div onclick="window.selectCampaign('all', 'Semua Campaign')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white">Semua Campaign</div>`;
+        
+        submissionsData.forEach(sub => {
+            if(sub.campaigns && !campSet.has(sub.campaigns.id)) {
+                campSet.add(sub.campaigns.id);
+                const safeTitle = escapeHTML(sub.campaigns.title || 'Tanpa Judul');
+                campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${safeTitle}</div>`;
+            }
+        });
+        document.getElementById('campaign-options').innerHTML = campOptionsHTML;
+        applyFilters();
+
+    } catch(err) { }
+}
+
+function getVideoMeta(url) {
+    url = url || '';
+    let platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
+    let thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Video...';
+    
+    if (url.includes('tiktok.com')) {
+        platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>`;
+        thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+TikTok...';
+    } else if (url.includes('instagram.com')) {
+        platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.88z"/></svg>`;
+        thumbUrl = 'https://placehold.co/400x600/121214/27272a?text=Memuat+Reels...';
+    } else if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) {
+        platHTML = `<svg class="w-3 h-3 sm:w-4 sm:h-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+        let ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))((\w|-){11})/);
+        if (ytMatch && ytMatch[1]) thumbUrl = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
+    }
+    return { platHTML, thumbUrl };
+}
+
+function generateCard(sub, index) {
+    const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0, is_private: false };
+    const isPrivate = camp.is_private === true;
+    
+    const meta = getVideoMeta(sub.video_link);
+    const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+    
+    const safeTitle = escapeHTML(camp.title);
+    const safeRejectReason = escapeHTML(sub.reject_reason);
+    const safeSessionName = escapeHTML(sessionFullName);
+    const safeUrl = encodeURI(sub.video_link || '');
+
+    const viewsClaimed = sub.views_claimed || 0;
+    const uiViews = viewsClaimed > 0 ? viewsClaimed.toLocaleString('id-ID') : '-';
+    const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
+    let earnedColor = sub.earned > 0 ? (isPrivate ? 'text-yellow-400' : 'text-emerald-400') : 'text-zinc-500';
+    
+    let realStatus = sub.status || 'PENDING';
+    let isPerVideo = camp.payment_type === 'video';
+    
+    let isBrandReview   = (realStatus === 'PENDING' && viewsClaimed === 0);
+    let isBrandRejected = (realStatus === 'REJECTED' && viewsClaimed === 0);
+    let isBrandApproved = (realStatus === 'APPROVED' && viewsClaimed === 0);
+    let isClaimReview   = (realStatus === 'PENDING' && viewsClaimed > 0);
+    let isClaimRejected = (realStatus === 'REJECTED' && viewsClaimed > 0);
+    let isClaimApproved = (realStatus === 'APPROVED' && viewsClaimed > 0);
+
+    let actionArea = '';
+    let badgeHTML = '';
+    let cardOpacityClass = 'opacity-100';
+    const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
+    const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+    let placeholder = maxPrevViews > 0 ? `views sebelumnya : ${maxPrevViews.toLocaleString('id-ID')}` : 'masukkan views yang akan di claim';
+
+    if (isBrandReview) {
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
+        actionArea = `<button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight"><svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menunggu ACC Brand</button>`;
+    } 
+    else if (isBrandRejected) {
+        cardOpacityClass = 'opacity-70 border-red-900/30';
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Ditolak Brand</div>`;
+        actionArea = `
+            <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
+                <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Brand:</b> ${safeRejectReason || 'Video tidak sesuai kriteria/brief.'}</p>
+            </div>
+            <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
+    }
+    else if (isClaimReview) {
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
+        let inputHTML = `<div class="flex mb-1.5"><input type="text" value="${viewsClaimed.toLocaleString('id-ID')} Views" disabled class="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-zinc-500 cursor-not-allowed text-center truncate"></div>`;
+        actionArea = `
+            ${inputHTML}
+            <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
+                <span>Reviewing Claim...</span><span class="text-[8px] font-medium text-amber-500/70">Est: Rp ${(sub.est_payout||0).toLocaleString('id-ID')}</span>
+            </button>`;
+    } 
+    else if (isClaimRejected) {
+        cardOpacityClass = 'opacity-80 border-red-900/50';
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
+        actionArea = `
+            <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
+                <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
+            </div>
+            <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
+    }
+    else {
+        const paidViews = sub.views_paid || 0;
+        let warningText = '';
+        
+        if(isCampClosed) {
+            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Closed</div>`;
+            warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Budget habis/Closed.</p>`;
+        } else if (isClaimApproved) {
+            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
+            if (isPerVideo) warningText = `<p class="text-[8px] text-zinc-500 mb-1 leading-tight text-center">Telah Cair. Update views.</p>`;
+        } else if (isBrandApproved) {
+            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-green-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> ACC Brand</div>`;
+        }
+
+        let inputHTML = `<div class="flex mb-1.5"><input type="number" id="input-${sub.id}" placeholder="${placeholder}" class="w-full bg-zinc-900 border border-zinc-700 focus:border-white rounded-lg px-2 py-1.5 text-[9px] sm:text-[10px] font-medium text-white placeholder-zinc-500 outline-none transition-colors text-center truncate"></div>`;
+        let btnText = isPerVideo ? (paidViews > 0 ? 'Update Views Video' : 'Klaim Video') : (paidViews > 0 ? 'Klaim Update Views' : 'Klaim Views');
+        
+        let claimBtnClass = isPrivate 
+            ? "w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:from-yellow-500 hover:to-yellow-400 flex items-center justify-center focus:outline-none transition-all shadow-lg shadow-yellow-900/20 active:scale-[0.98]"
+            : "w-full bg-white text-black font-bold text-[10px] sm:text-[11px] py-2 rounded-lg hover:bg-zinc-200 flex items-center justify-center focus:outline-none transition-colors active:scale-[0.98]";
+
+        actionArea = `${warningText}${inputHTML}<button id="btn-claim-${sub.id}" onclick="window.claimViews('${sub.id}')" class="${claimBtnClass}">${btnText}</button>`;
+    }
+
+    let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
+    if (isPrivate) cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+    else cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
+
+    let topLeftBadges = `
+        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 items-start z-20 pointer-events-none">
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">${meta.platHTML}</div>
+        </div>`;
+
+    return `
+    <div class="${cardBaseClass}">
+        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
+            ${badgeHTML}${topLeftBadges}
+            <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
+            <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/40 group-hover:bg-white/30 transition-colors">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+            </div>
+            <div class="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3 overflow-hidden z-10 pointer-events-none">
+                <h4 class="text-[11px] sm:text-sm font-bold text-white truncate" title="${safeTitle}">${safeTitle}</h4>
+                <p class="text-[8px] sm:text-[9px] text-zinc-400 mt-0.5 truncate w-full" title="By ${safeSessionName}">${dateStr} • By ${safeSessionName}</p>
+            </div>
+        </div>
+        
+        <div class="flex-1 flex flex-col justify-between mt-2 sm:mt-3">
+            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
+                <div>
+                    <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Klaim</p>
+                    <p class="text-[10px] sm:text-xs font-bold text-white">${uiViews}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
+                    <p class="text-[10px] sm:text-xs font-bold ${earnedColor}">${uiEarned}</p>
+                </div>
+            </div>
+            
+            <div class="mt-auto space-y-1.5 sm:space-y-2">
+                ${actionArea}
+            </div>
+        </div>
+    </div>`;
+}
+
+function applyFilters() {
+    const grid = document.getElementById('cards-container');
+    const alertBox = document.getElementById('no-data-alert');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    
+    grid.innerHTML = '';
+    let filtered = submissionsData.filter(sub => {
+        let realStatus = sub.status || 'PENDING';
+        const campId = sub.campaigns ? sub.campaigns.id : null;
+        const matchCamp = currentFilter.campaign_id === 'all' || campId === currentFilter.campaign_id;
+        const matchStatus = currentFilter.status === 'all' || realStatus === currentFilter.status;
+        return matchCamp && matchStatus;
+    });
+
+    if (currentFilter.sort === 'oldest') filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+    else filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+
+    if (filtered.length === 0) {
+        alertBox.classList.remove('hidden'); loadMoreContainer.classList.add('hidden'); return;
+    } else { alertBox.classList.add('hidden'); }
+
+    let html = '';
+    const toRender = filtered.slice(0, currentLimit);
+    toRender.forEach((sub, i) => { html += generateCard(sub, i); });
+    grid.innerHTML = html;
+
+    if (filtered.length > currentLimit) loadMoreContainer.classList.remove('hidden');
+    else loadMoreContainer.classList.add('hidden');
+
+    window.loadThumbnails(toRender);
+}
+
+window.loadThumbnails = async function(items) {
+    for (let sub of items) {
+        const imgEl = document.getElementById(`thumb-${sub.id}`);
+        if (!imgEl || imgEl.getAttribute('data-loaded') === 'true') continue;
+        const url = sub.video_link; if (!url) continue;
+
+        if (url.match(/(?:youtu\.be\/|youtube\.com\/)/)) { imgEl.setAttribute('data-loaded', 'true'); continue; }
+
+        try {
+            const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}`);
+            const json = await res.json();
+            
+            if (json.status === 'success' && json.data && json.data.image && json.data.image.url) {
+                imgEl.src = json.data.image.url; imgEl.setAttribute('data-loaded', 'true');
+            } else if (url.includes('tiktok.com')) {
+                const tkRes = await fetch(`https://www.tikwm.com/api/?url=${url}`);
+                const tkJson = await tkRes.json();
+                if (tkJson.data && tkJson.data.cover) { imgEl.src = tkJson.data.cover; imgEl.setAttribute('data-loaded', 'true'); }
+            }
+        } catch(e) { }
+    }
+};
+
+window.claimViews = function(subId) {
+    const inputEl = document.getElementById(`input-${subId}`);
+    const btnEl = document.getElementById(`btn-claim-${subId}`);
+    
+    if(!inputEl || !btnEl) return;
+
+    const sub = submissionsData.find(s => s.id === subId);
+    if (!sub) return showAlert("Data tidak ditemukan.", "error");
+
+    const camp = sub.campaigns;
+    const isPerVideo = camp.payment_type === 'video';
+    const newClaimStr = inputEl.value.trim();
+    if (!newClaimStr) return showAlert("Masukkan jumlah views yang valid.", "error");
+    
+    const newClaimViews = parseInt(newClaimStr);
+    if (isNaN(newClaimViews) || newClaimViews <= 0) return showAlert("Jumlah views harus lebih dari 0.", "error");
+
+    const maxPrevViews = Math.max(sub.views_paid || 0, sub.views_claimed || 0);
+    if (newClaimViews <= maxPrevViews && sub.status === 'APPROVED' && maxPrevViews > 0) {
+        return showAlert(`Views baru harus lebih besar dari views yang sudah disetujui sebelumnya (${maxPrevViews.toLocaleString('id-ID')}).`, "error");
+    }
+
+    let estPayout = 0;
+    const isClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
+
+    if (!isClosed) {
+        if (camp.payment_type === 'views') {
+            const cpm = camp.reward_per_1k || 0;
+            const minViews = camp.min_views || 10000;
+            const maxClaim = camp.max_claim || 250000;
+
+            let effectiveViews = newClaimViews > maxClaim ? maxClaim : newClaimViews;
+            let rate = cpm;
+            if (effectiveViews < minViews) { rate = cpm * 0.25; }
+
+            let totalExpectedEarnings = Math.floor((effectiveViews / 1000) * rate);
+            let previouslyEarned = sub.earned || 0;
+            estPayout = totalExpectedEarnings - previouslyEarned;
+
+            if (estPayout < 0) estPayout = 0;
+            if (estPayout > camp.budget_remaining) { estPayout = camp.budget_remaining; }
+        } else if (camp.payment_type === 'video') {
+            if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
+                estPayout = 0;
+            } else {
+                let previouslyEarned = sub.earned || 0;
+                let totalExpectedEarnings = camp.price_per_video || 0;
+                estPayout = totalExpectedEarnings - previouslyEarned;
+                if (estPayout < 0) estPayout = 0;
+                if (estPayout > camp.budget_remaining) estPayout = camp.budget_remaining;
+            }
+        }
+    }
+
+    let confirmMsg = "";
+    if (isPerVideo) {
+        if ((sub.earned && sub.earned > 0) || (sub.views_paid && sub.views_paid > 0)) {
+            confirmMsg = `Update views untuk konten video Anda menjadi ${newClaimViews.toLocaleString('id-ID')}.\n(Pembayaran video sudah dicairkan di awal)\n\nApakah Anda yakin ingin melanjutkan?`;
+        } else {
+            confirmMsg = `Pengajuan pencairan untuk konten video Anda dengan ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+        }
+    } else {
+        confirmMsg = `Request klaim/update sebesar ${newClaimViews.toLocaleString('id-ID')} views.\nEstimasi Tambahan Bayaran: Rp ${estPayout.toLocaleString('id-ID')}\n\nApakah Anda yakin ingin melanjutkan?`;
+    }
+    
+    window.showConfirm(confirmMsg, async () => {
+        const originalBtnHtml = btnEl.innerHTML;
+        inputEl.disabled = true; btnEl.disabled = true;
+        btnEl.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+        btnEl.classList.add('cursor-not-allowed', 'opacity-80');
+
+        try {
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session || session.user.id !== sub.user_id) return showAlert('Sesi tidak valid, mohon muat ulang halaman.', 'error');
+
+            const { error } = await supabase.from('submissions').update({
+                views_claimed: newClaimViews, est_payout: estPayout, status: 'PENDING', reject_reason: null
+            }).eq('id', subId);
+            if (error) throw error;
+
+            showAlert("Berhasil mengajukan klaim. Menunggu proses review dari Admin.", "success");
+            await loadSubmissions(); 
+        } catch (error) {
+            showAlert("Gagal melakukan klaim: " + error.message, "error");
+            inputEl.disabled = false; btnEl.disabled = false; btnEl.innerHTML = originalBtnHtml; btnEl.classList.remove('cursor-not-allowed', 'opacity-80');
+        }
+    });
+};
+
+window.toggleSelect = function(id) {
+    document.querySelectorAll('.custom-select-options').forEach(el => { if(el.id !== id) el.classList.add('hidden'); });
+    document.getElementById(id).classList.toggle('hidden');
+};
+
+window.selectCampaign = function(id, title) {
+    currentFilter.campaign_id = id;
+    document.getElementById('campaign-selected-text').innerText = title;
+    document.getElementById('campaign-options').classList.add('hidden');
+    currentLimit = getCols() * 2; applyFilters();
+};
+
+window.toggleFilter = function() {
+    document.getElementById('filter-dropdown').classList.toggle('hidden');
+    document.getElementById('filter-dropdown').classList.toggle('flex');
+};
+
+window.applyFilter = function(type, value) {
+    currentFilter[type] = value;
+    document.querySelectorAll(`.filter-btn[class*="${type}-"]`).forEach(btn => {
+        if (btn.classList.contains(`${type}-${value}`)) {
+            btn.classList.add('bg-zinc-800', 'text-white');
+            btn.classList.remove('text-zinc-400', 'hover:bg-zinc-800/50', 'text-amber-400', 'text-blue-400', 'text-red-400');
+        } else {
+            btn.classList.remove('bg-zinc-800', 'text-white');
+            btn.classList.add('text-zinc-400', 'hover:bg-zinc-800/50');
+            if(btn.classList.contains('status-PENDING')) btn.classList.add('text-amber-400');
+            if(btn.classList.contains('status-APPROVED')) btn.classList.add('text-white');
+            if(btn.classList.contains('status-REJECTED')) btn.classList.add('text-red-400');
+        }
+    });
+    document.getElementById('filter-dropdown').classList.add('hidden');
+    document.getElementById('filter-dropdown').classList.remove('flex');
+    currentLimit = getCols() * 2; applyFilters();
+};
+
+window.loadMore = function() { currentLimit += getCols() * 2; applyFilters(); };
+
+window.toggleSensor = function(silent = false) {
+    if(!silent) isSensorActive = !isSensorActive;
+    const totalElement = document.getElementById('total-pendapatan');
+    const saldoElement = document.getElementById('saldo-detail');
+    const iconElement = document.getElementById('eye-icon');
+
+    if (isSensorActive) {
+        totalElement.innerText = 'Rp ••••••'; saldoElement.innerText = 'Rp ••••';
+        iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
+    } else {
+        totalElement.innerText = 'Rp ' + realEarnings.toLocaleString('id-ID'); saldoElement.innerText = 'Rp ' + realWithdrawable.toLocaleString('id-ID');
+        iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
+    }
+};
+
+document.addEventListener('click', (e) => {
+    const selContainer = document.querySelector('.custom-select-container');
+    const filtContainer = document.getElementById('filter-container');
+    
+    if (selContainer && !selContainer.contains(e.target)) document.querySelectorAll('.custom-select-options').forEach(el => el.classList.add('hidden'));
+    if (filtContainer && !filtContainer.contains(e.target)) {
+        const fd = document.getElementById('filter-dropdown');
+        if(fd) { fd.classList.add('hidden'); fd.classList.remove('flex'); }
+    }
+});
