@@ -21,7 +21,7 @@ function escapeHTML(str) {
 }
 
 // ==========================================
-// SISTEM CUSTOM MODAL POP-UP (Alert)
+// SISTEM CUSTOM MODAL POP-UP
 // ==========================================
 window.showAlert = function(msg, type = 'info') {
     const m = document.getElementById('customAlertModal');
@@ -38,6 +38,10 @@ window.showAlert = function(msg, type = 'info') {
         icon.className = 'w-16 h-16 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full flex items-center justify-center mb-4';
         icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
         title.innerText = 'Gagal';
+    } else {
+        icon.className = 'w-16 h-16 bg-white/10 text-white border border-white/20 rounded-full flex items-center justify-center mb-4';
+        icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+        title.innerText = 'Informasi';
     }
 
     m.classList.remove('hidden'); m.classList.add('flex');
@@ -51,6 +55,30 @@ window.closeAlert = function() {
     setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
 };
 
+let confirmCallback = null;
+window.showConfirm = function(msg, callback) {
+    const m = document.getElementById('customConfirmModal');
+    const c = document.getElementById('customConfirmContent');
+    document.getElementById('confirmMessage').innerText = msg;
+    confirmCallback = callback;
+
+    m.classList.remove('hidden'); m.classList.add('flex');
+    setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+};
+
+window.closeConfirm = function() {
+    const m = document.getElementById('customConfirmModal');
+    const c = document.getElementById('customConfirmContent');
+    m.classList.add('opacity-0'); c.classList.add('scale-95');
+    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+    confirmCallback = null; 
+};
+
+document.getElementById('confirmYesBtn').addEventListener('click', () => {
+    const cb = confirmCallback;
+    window.closeConfirm();
+    if (cb) cb();
+});
 
 // ==========================================
 // FITUR MODAL MULTIPLE SUBMIT VIDEO
@@ -60,15 +88,18 @@ window.refreshCooldown = 0;
 let cooldownInterval = null;
 
 window.toggleSubmitCampaignSelect = function() {
-    document.getElementById('submit-campaign-options').classList.toggle('hidden');
+    const dropdown = document.getElementById('submit-campaign-options');
+    dropdown.classList.toggle('hidden');
 };
 
 window.selectSubmitCampaign = function(id, title) {
     document.getElementById('submitCampaignValue').value = id;
+    
     const textEl = document.getElementById('submit-campaign-selected-text');
     textEl.innerText = title;
     textEl.classList.remove('text-zinc-400');
     textEl.classList.add('text-white');
+    
     document.getElementById('submit-campaign-options').classList.add('hidden');
 
     const camp = joinedActiveCampaigns.find(c => c.id === id);
@@ -161,15 +192,18 @@ function updateRefreshButtons() {
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
             btn.disabled = false;
-            btn.innerHTML = btn.classList.contains('bg-white') ? `Coba Lagi` : `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh`;
+            if (btn.classList.contains('bg-white')) {
+                btn.innerHTML = `Coba Lagi`; 
+            } else {
+                btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh`;
+            }
             btn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
 }
 
-
 // ===============================================
-// AUTO-FETCH VIDEO
+// AUTO-FETCH VIDEO (HASHTAG & ANTI-DUPLIKAT)
 // ===============================================
 async function fetchUserAccounts() {
     try {
@@ -187,15 +221,19 @@ window.fetchVideos = async function(forceRefresh = false) {
     const grid = document.getElementById('videoGridNew');
     const emptyState = document.getElementById('noVideoStateNew');
     
-    loader.classList.remove('hidden'); grid.classList.add('hidden'); emptyState.classList.add('hidden');
+    loader.classList.remove('hidden');
+    grid.classList.add('hidden');
+    emptyState.classList.add('hidden');
     submitState.videoUrls = []; 
     document.getElementById('urlError').classList.add('hidden');
     document.getElementById('btnSubmitVideo').disabled = true;
 
     if (userVerifiedAccounts.length === 0) {
-        loader.classList.add('hidden'); emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
+        loader.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
         document.getElementById('noVideoTitle').innerText = "Belum Ada Akun Terverifikasi";
-        document.getElementById('noVideoDesc').innerText = "Silakan tautkan akun sosial media Anda di Profil untuk submit video.";
+        document.getElementById('noVideoDesc').innerText = "Silakan tautkan dan verifikasi akun TikTok/IG Anda di halaman profil untuk bisa submit video.";
         return;
     }
 
@@ -208,7 +246,9 @@ window.fetchVideos = async function(forceRefresh = false) {
         if (cachedData) {
             try {
                 const parsed = JSON.parse(cachedData);
-                if ((now - parsed.timestamp) < 900000) rawVideos = parsed.videos;
+                if ((now - parsed.timestamp) < 900000) { 
+                    rawVideos = parsed.videos;
+                }
             } catch(e) {}
         }
     } else {
@@ -218,45 +258,61 @@ window.fetchVideos = async function(forceRefresh = false) {
     if (rawVideos.length === 0) {
         try {
             const response = await fetch('/api/fetch-latest-videos', {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accounts: userVerifiedAccounts })
             });
+
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || "Gagal menarik video.");
+
             rawVideos = data.videos || [];
             sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, videos: rawVideos }));
+
         } catch (err) {
-            loader.classList.add('hidden'); emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
+            console.error("Gagal menarik data video:", err);
+            loader.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
             return; 
         }
     }
 
     let finalVideos = [...rawVideos];
+
     if (finalVideos.length > 0) {
+        // FILTER HASHTAG
         const selectedCampId = document.getElementById('submitCampaignValue').value;
-        const selectedCamp = joinedActiveCampaigns.find(c => c.id === selectedCampId);
-        
-        if (selectedCamp && selectedCamp.hashtags) {
-            const requiredHashtags = selectedCamp.hashtags.split(' ').filter(h => h.trim() !== '');
-            if (requiredHashtags.length > 0) {
-                finalVideos = finalVideos.filter(vid => {
-                    const caption = (vid.caption || '').toLowerCase();
-                    return requiredHashtags.some(tag => caption.includes(tag.toLowerCase()));
-                });
+        if (selectedCampId) {
+            const selectedCamp = joinedActiveCampaigns.find(c => c.id === selectedCampId);
+            if (selectedCamp && selectedCamp.hashtags) {
+                const requiredHashtags = selectedCamp.hashtags.split(' ').filter(h => h.trim() !== '');
+                if (requiredHashtags.length > 0) {
+                    finalVideos = finalVideos.filter(vid => {
+                        const caption = (vid.caption || '').toLowerCase();
+                        return requiredHashtags.some(tag => caption.includes(tag.toLowerCase()));
+                    });
+                }
             }
         }
 
+        // FILTER DUPLIKAT DI DATABASE
         if (finalVideos.length > 0) {
             const urlsToCheck = finalVideos.map(v => escapeHTML(v.url));
             try {
-                const { data: existingSubs } = await supabase.from('submissions').select('video_link').in('video_link', urlsToCheck);
+                const { data: existingSubs } = await supabase
+                    .from('submissions')
+                    .select('video_link')
+                    .in('video_link', urlsToCheck);
+                
                 if (existingSubs && existingSubs.length > 0) {
                     const existingUrls = existingSubs.map(s => s.video_link);
                     finalVideos = finalVideos.filter(vid => !existingUrls.includes(escapeHTML(vid.url)));
                 }
-            } catch (err) {}
+            } catch (err) { }
         }
     }
+
     renderVideoGrid(finalVideos);
 };
 
@@ -268,7 +324,8 @@ function renderVideoGrid(videosArray) {
     loader.classList.add('hidden');
 
     if (!videosArray || videosArray.length === 0) {
-        emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
+        emptyState.classList.remove('hidden');
+        emptyState.classList.add('flex');
         return;
     }
 
@@ -300,10 +357,14 @@ function renderVideoGrid(videosArray) {
                     <img src="${escapeHTML(vid.thumbnail)}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
                     
-                    <div class="check-icon-target absolute top-2 right-2 bg-white text-black p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
+                    <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/20 p-1.5 rounded-lg flex items-center shadow-sm">
+                        ${iconHtml}
+                    </div>
+                    
+                    <div class="check-icon-target absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-
+                    
                     <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-zinc-300 font-medium z-10">
                         <span class="flex items-center gap-1"><svg class="w-3 h-3 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg> ${formatShort(views)}</span>
                         <span class="flex items-center gap-1"><svg class="w-3 h-3 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> ${formatShort(likes)}</span>
@@ -421,7 +482,7 @@ window.processSubmit = async function(e) {
 
         window.closeSubmitModal();
         setTimeout(() => {
-            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini menunggu review Brand.`, "success");
+            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini PENDING menunggu Review Admin.`, "success");
         }, 300);
         
         await Promise.all([ loadUserStats(), loadSubmissions() ]);
@@ -434,7 +495,7 @@ window.processSubmit = async function(e) {
 };
 
 // ==========================================
-// FUNGSI VIDEO PLAYER MODAL (TIDAK DIUBAH)
+// FUNGSI VIDEO PLAYER MODAL
 // ==========================================
 window.openVideoModal = async function(url) {
     const m = document.getElementById('videoModal');
@@ -473,6 +534,7 @@ window.openVideoModal = async function(url) {
             let cleanIgUrl = url.split('?')[0];
             const encodedUrl = encodeURIComponent(cleanIgUrl);
             let igVideoUrl = null;
+
             const igApis = [
                 `https://api.siputzx.my.id/api/d/igdl?url=${encodedUrl}`,
                 `https://api.ryzendesu.vip/api/downloader/igdl?url=${encodedUrl}`,
@@ -534,12 +596,20 @@ window.closeVideoModal = function() {
 };
 
 // ===============================================
-// INISIALISASI & LOAD DATA
+// INISIALISASI & LOAD DATA (MENAMPILKAN CARD)
 // ===============================================
 
-// Batas Pagination 20 Item Awal
+function getCols() {
+    const w = window.innerWidth;
+    if (w >= 1280) return 6; 
+    if (w >= 1024) return 5; 
+    if (w >= 768)  return 4; 
+    if (w >= 640)  return 3; 
+    return 2;                
+}
+
 let currentFilter = { status: 'all', campaign_id: 'all', sort: 'newest' };
-let currentLimit = 20;
+let currentLimit = getCols() * 2;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -567,15 +637,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch(e) {}
 });
-
-async function fetchUserAccounts() {
-    try {
-        const { data: profile } = await supabase.from('profiles').select('social_media').eq('id', sessionUser.id).single();
-        if (profile && profile.social_media && Array.isArray(profile.social_media)) {
-            userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
-        }
-    } catch(e) {}
-}
 
 async function loadActiveCampaigns() {
     try {
@@ -624,13 +685,21 @@ async function loadUserStats() {
         realEarnings = calcEarnings;
         realWithdrawable = calcWithdrawable;
 
-        document.getElementById('pending-detail').innerText = p;
-        document.getElementById('disetujui-detail').innerText = a;
-        document.getElementById('ditolak-detail').innerText = r;
+        // UI Updates if elements exist
+        const ePending = document.getElementById('pending-detail');
+        const eApprove = document.getElementById('disetujui-detail');
+        const eReject = document.getElementById('ditolak-detail');
+
+        if(ePending) ePending.innerText = p;
+        if(eApprove) eApprove.innerText = a;
+        if(eReject) eReject.innerText = r;
 
     } catch(e) {}
     
-    window.toggleSensor(true); 
+    // Panggil setelah semua kalkulasi selesai
+    if (typeof window.toggleSensor === 'function') {
+        window.toggleSensor(true); 
+    }
 }
 
 async function loadSubmissions() {
@@ -653,7 +722,10 @@ async function loadSubmissions() {
                 campOptionsHTML += `<div onclick="window.selectCampaign('${sub.campaigns.id}', '${safeTitle.replace(/'/g, "\\'")}')" class="px-3 py-2 hover:bg-zinc-700 cursor-pointer text-xs text-white truncate border-t border-zinc-700/50" title="${safeTitle}">${safeTitle}</div>`;
             }
         });
-        document.getElementById('campaign-options').innerHTML = campOptionsHTML;
+
+        const campOptEl = document.getElementById('campaign-options');
+        if(campOptEl) campOptEl.innerHTML = campOptionsHTML;
+
         applyFilters();
 
     } catch(err) { }
@@ -679,7 +751,7 @@ function getVideoMeta(url) {
 }
 
 // =======================================================
-// [PERUBAHAN] TAMPILAN CARD MENJADI RINGKAS (SATU TOMBOL)
+// TAMPILAN CARD MENJADI RINGKAS (SATU TOMBOL)
 // =======================================================
 function generateCard(sub, index) {
     const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0, is_private: false };
@@ -695,15 +767,43 @@ function generateCard(sub, index) {
     const currentViews = sub.views_claimed || 0;
     const uiViews = currentViews > 0 ? currentViews.toLocaleString('id-ID') : '0';
     
-    // Status Logic
     let realStatus = sub.status || 'PENDING';
+    
+    // --- PENGHITUNGAN ESTIMASI TERBARU (DISIMPAN DI MODAL NANTINYA) ---
+    let estimatedNewMoney = 0;
+    const cpm = camp.reward_per_1k || 0;
+    const minViews = camp.min_views || 10000;
+    const maxClaim = camp.max_claim || 250000;
+    const budgetRemaining = camp.budget_remaining || 0;
+    const isCampClosed = camp.status === 'CLOSED' || budgetRemaining <= 0;
+
+    if (!isCampClosed) {
+        if (camp.payment_type === 'video') {
+            if ((sub.earned || 0) > 0) {
+                estimatedNewMoney = 0; 
+            } else {
+                estimatedNewMoney = camp.price_per_video || 0;
+                if (estimatedNewMoney > budgetRemaining) estimatedNewMoney = budgetRemaining;
+            }
+        } else {
+            let effectiveViews = currentViews > maxClaim ? maxClaim : currentViews;
+            let rate = cpm;
+            if (effectiveViews > 0 && effectiveViews < minViews) {
+                rate = cpm * 0.25; 
+            }
+            let totalExpected = Math.floor((effectiveViews / 1000) * rate);
+            estimatedNewMoney = totalExpected - (sub.earned || 0);
+
+            if (estimatedNewMoney < 0) estimatedNewMoney = 0;
+            if (estimatedNewMoney > budgetRemaining) estimatedNewMoney = budgetRemaining;
+        }
+    }
     
     let isBrandReview   = (realStatus === 'PENDING' && currentViews === 0);
     let isBrandRejected = (realStatus === 'REJECTED' && currentViews === 0);
     let isClaimReview   = (realStatus === 'PENDING' && currentViews > 0);
     let isClaimApproved = (realStatus === 'APPROVED');
     let isClaimRejected = (realStatus === 'REJECTED' && currentViews > 0);
-    const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
 
     let badgeHTML = '';
     let cardOpacityClass = 'opacity-100';
@@ -744,7 +844,7 @@ function generateCard(sub, index) {
             </div>
         </div>`;
 
-    // Tombol Lihat Detail
+    // Tombol Lihat Detail (Aksi Pindah Ke Modal)
     const actionBtnHTML = `<button onclick="window.openDetailModal('${sub.id}')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-lg text-[10px] sm:text-[11px] transition-colors focus:outline-none shadow-sm active:scale-95">Lihat Detail</button>`;
 
     return `
@@ -808,7 +908,7 @@ window.openDetailModal = function(subId) {
     } else if (realStatus === 'PENDING' && currentViews > 0) {
         badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px] font-bold uppercase">Diproses Admin</span>`;
     } else if (realStatus === 'REJECTED' && currentViews > 0) {
-        badgeHTML.innerHTML = `<span class="px-2 py-1 rounded bg-red-500/20 text-red-500 border border-red-500/30 text-[10px] font-bold uppercase">Klaim Ditolak</span>`;
+        badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-red-500/20 text-red-500 border border-red-500/30 text-[10px] font-bold uppercase">Klaim Ditolak</span>`;
     } else {
         badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold uppercase">Disetujui / Selesai</span>`;
     }
@@ -862,7 +962,6 @@ window.openDetailModal = function(subId) {
     document.getElementById('detail-calc-box').innerHTML = calcHTML;
     document.getElementById('detail-earned').innerText = `Rp ${(sub.earned || 0).toLocaleString('id-ID')}`;
 
-    // Tampilkan Modal
     const m = document.getElementById('detailClaimModal');
     const c = document.getElementById('detailClaimContent');
     m.classList.remove('hidden'); m.classList.add('flex');
@@ -875,7 +974,6 @@ window.closeDetailModal = function() {
     m.classList.add('opacity-0'); c.classList.add('scale-95');
     setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
 };
-
 
 // ===================================================
 // PENGATURAN FILTER DAN LOAD MORE
@@ -962,12 +1060,12 @@ window.applyFilter = function(type, value) {
     document.getElementById('filter-dropdown').classList.add('hidden');
     document.getElementById('filter-dropdown').classList.remove('flex');
     
-    currentLimit = 20; // [REVISI] Reset ke 20
+    currentLimit = 20;
     applyFilters();
 };
 
 window.loadMore = function() { 
-    currentLimit += 20; // [REVISI] Nambah 20 item
+    currentLimit += 20; 
     applyFilters(); 
 };
 
@@ -977,12 +1075,15 @@ window.toggleSensor = function(silent = false) {
     const saldoElement = document.getElementById('saldo-detail');
     const iconElement = document.getElementById('eye-icon');
 
-    if (isSensorActive) {
-        totalElement.innerText = 'Rp ••••••'; saldoElement.innerText = 'Rp ••••';
-        iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
-    } else {
-        totalElement.innerText = 'Rp ' + realEarnings.toLocaleString('id-ID'); saldoElement.innerText = 'Rp ' + realWithdrawable.toLocaleString('id-ID');
-        iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
+    if (totalElement && saldoElement && iconElement) {
+        if (isSensorActive) {
+            totalElement.innerText = 'Rp ••••••'; saldoElement.innerText = 'Rp ••••';
+            iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>`;
+        } else {
+            totalElement.innerText = 'Rp ' + realEarnings.toLocaleString('id-ID'); 
+            saldoElement.innerText = 'Rp ' + realWithdrawable.toLocaleString('id-ID');
+            iconElement.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
+        }
     }
 };
 
