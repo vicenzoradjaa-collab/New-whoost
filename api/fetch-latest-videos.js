@@ -87,14 +87,34 @@ export default async function handler(req, res) {
     const fetchPromises = accounts.map(async (acc) => {
         try {
             if (acc.platform.toLowerCase() === 'instagram') {
-                const dataIG = await fetchFromApify('apify~instagram-profile-scraper', { usernames: [acc.username] });
-                if (dataIG && dataIG.length > 0 && dataIG[0].latestPosts) {
-                    dataIG[0].latestPosts.forEach(post => {
+                // instagram-profile-scraper TIDAK mengembalikan views di latestPosts (hanya likes),
+                // jadi pakai instagram-reel-scraper (videoViewCount/videoPlayCount) sebagai sumber utama.
+                let igPosts = [];
+                try {
+                    const dataReels = await fetchFromApify('apify~instagram-reel-scraper', {
+                        username: [acc.username],
+                        resultsLimit: 10,
+                        onlyPostsNewerThan: '1 day'
+                    });
+                    if (Array.isArray(dataReels)) igPosts = dataReels.filter(p => p && p.timestamp && !p.error);
+                } catch (e) {
+                    console.error(`Reel scraper gagal untuk ${acc.username}, fallback ke profile scraper:`, e.message);
+                }
+
+                // Fallback: profile scraper (views akan 0, tapi video tetap bisa dipilih)
+                if (igPosts.length === 0) {
+                    const dataIG = await fetchFromApify('apify~instagram-profile-scraper', { usernames: [acc.username] });
+                    if (dataIG && dataIG.length > 0 && dataIG[0].latestPosts) igPosts = dataIG[0].latestPosts;
+                }
+
+                if (igPosts.length > 0) {
+                    igPosts.forEach(post => {
                         const postTime = new Date(post.timestamp).getTime();
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            const viewsCount = extractMaxCount(post, viewFields);
+                            // Views asli IG = videoViewCount; videoPlayCount (replay dihitung) hanya cadangan
+                            const viewsCount = parseCount(post.videoViewCount) || extractMaxCount(post, viewFields);
                             const likesCount = extractMaxCount(post, likeFields);
 
                             allVideos.push({
