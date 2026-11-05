@@ -255,13 +255,16 @@
     <div id="submitVideoModal" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 transition-opacity opacity-0">
         <div class="bg-cardBg border border-zinc-700 shadow-2xl rounded-[1.5rem] w-full max-w-lg transform scale-95 transition-transform flex flex-col relative overflow-hidden h-[90vh] md:h-[650px]" id="submitVideoContent">
             
-            <button onclick="window.closeSubmitModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors z-50 focus:outline-none">
+            <button onclick="window.closeSubmitModal()" class="absolute top-5 right-5 p-2 text-zinc-400 hover:text-white bg-cardBg hover:bg-zinc-800 rounded-full transition-colors z-50 focus:outline-none">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <div class="flex-1 overflow-y-auto px-6 pt-6 pb-28 custom-scrollbar relative">
-                <h3 class="text-xl font-bold text-white mb-1 pr-10">Submit Video Baru</h3>
-                <p class="text-xs text-zinc-400 mb-5">Pilih campaign, lalu pilih satu atau beberapa video terbaru dari akun terverifikasimu.</p>
+            <div class="shrink-0 px-6 pt-6 pb-3 pr-16">
+                <h3 class="text-xl font-bold text-white mb-1">Submit Video Baru</h3>
+                <p class="text-xs text-zinc-400">Pilih campaign, lalu pilih satu atau beberapa video terbaru dari akun terverifikasimu.</p>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 pt-2 pb-28 custom-scrollbar relative isolate">
 
                 <!-- Pilih Campaign -->
                 <div class="relative submit-select-container mb-3">
@@ -307,7 +310,7 @@
                 </p>
             </div>
 
-            <div class="absolute bottom-0 left-0 w-full p-6 border-t border-zinc-800/80 bg-cardBg/95 backdrop-blur-md flex items-center gap-3 rounded-b-[1.5rem]">
+            <div class="absolute bottom-0 left-0 w-full z-20 p-6 border-t border-zinc-800/80 bg-cardBg flex items-center gap-3 rounded-b-[1.5rem]">
                 <button type="button" onclick="window.closeSubmitModal()" class="w-1/3 py-3.5 rounded-xl border border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-white font-bold text-sm transition-colors focus:outline-none">Batal</button>
                 <button type="button" id="btnSubmitVideo" onclick="window.processSubmit(event)" disabled class="w-2/3 py-3.5 rounded-xl bg-white hover:bg-zinc-200 text-black font-bold text-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-[0_0_15px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2 focus:outline-none active:scale-95">
                     Kirim Konten
