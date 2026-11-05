@@ -108,7 +108,7 @@ window.openSubmitModal = function() {
     m.classList.remove('hidden'); m.classList.add('flex');
     
     window.goToStep(0);
-    updateRefreshButtons(); // pastikan tombol refresh normal
+    updateRefreshButtons(); 
 
     setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
 };
@@ -154,7 +154,6 @@ window.goToStep = function(stepIndex) {
     if (stepIndex === 4) renderStep4Init();
 };
 
-// Render Step 1
 function renderStep1() {
     const list = document.getElementById('step-1-list');
     if (joinedActiveCampaigns.length === 0) {
@@ -180,7 +179,6 @@ window.selectSubmitCampaign = function(id) {
     renderStep1();
 };
 
-// Render Step 2
 function renderStep2() {
     const camp = submitState.campaign;
     const list = document.getElementById('step-2-list');
@@ -191,7 +189,7 @@ function renderStep2() {
         if (camp.platforms && camp.platforms.length > 0) {
             isAllowed = camp.platforms.includes(p.id);
         } else {
-            isAllowed = true; // default allow
+            isAllowed = true; 
         }
         
         let connAccs = userVerifiedAccounts.filter(a => a.platform.toLowerCase() === p.id);
@@ -232,7 +230,6 @@ window.selectSubmitPlatform = function(platId) {
     renderStep2();
 };
 
-// Render Step 3
 function renderStep3() {
     const plat = submitState.platform;
     document.getElementById('lbl-platform-name').innerText = plat.charAt(0).toUpperCase() + plat.slice(1);
@@ -264,16 +261,23 @@ window.selectSubmitAccount = function(username) {
     renderStep3();
 };
 
-// Render Step 4 Initialize
 function renderStep4Init() {
     const hashList = document.getElementById('hashtag-list');
-    const safeTitle = escapeHTML(submitState.campaign.title).replace(/[^a-zA-Z0-9]/g, '');
-    hashList.innerHTML = `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">#whoost</span><span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">#${safeTitle.toLowerCase()}</span>`;
+    const requiredHashtags = submitState.campaign.hashtags ? submitState.campaign.hashtags.split(' ').filter(h => h.trim() !== '') : [];
+    
+    let html = '';
+    if (requiredHashtags.length > 0) {
+        requiredHashtags.forEach(tag => {
+            html += `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-300 font-medium">${escapeHTML(tag)}</span>`;
+        });
+    } else {
+        html = `<span class="px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-lg text-[11px] text-zinc-500 font-medium">Bebas / Tanpa hashtag wajib</span>`;
+    }
+    hashList.innerHTML = html;
     
     window.fetchVideos(false);
 }
 
-// Logic Cooldown Refresh
 function startRefreshCooldown() {
     window.refreshCooldown = 60;
     updateRefreshButtons();
@@ -297,7 +301,6 @@ function updateRefreshButtons() {
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
             btn.disabled = false;
-            // Beda isi teks tergantung posisi tombol (di header = icon + text, di empty state = pure text)
             if (btn.classList.contains('bg-white')) {
                 btn.innerHTML = `Coba Lagi`; 
             } else {
@@ -308,8 +311,11 @@ function updateRefreshButtons() {
     });
 }
 
+// ==========================================
+// NEW AUTO FETCH & FILTER (HASHTAG & DB)
+// ==========================================
 window.fetchVideos = async function(forceRefresh = false) {
-    if (forceRefresh && window.refreshCooldown > 0) return; // double proteksi
+    if (forceRefresh && window.refreshCooldown > 0) return;
 
     const loader = document.getElementById('videoFetchLoaderNew');
     const grid = document.getElementById('videoGridNew');
@@ -325,9 +331,10 @@ window.fetchVideos = async function(forceRefresh = false) {
     const targetAccount = submitState.account;
     if (!targetAccount) return;
 
-    // [FIX] Mengubah Cache Key dengan tambahan "v2" untuk memaksa browser mengambil pembaruan dari backend
+    // Cache Key
     const cacheKey = `whoost_videos_v2_${sessionUser.id}_${targetAccount.platform}_${targetAccount.username}`;
     const now = new Date().getTime();
+    let rawVideos = [];
     
     if (!forceRefresh) {
         const cachedData = sessionStorage.getItem(cacheKey);
@@ -335,8 +342,7 @@ window.fetchVideos = async function(forceRefresh = false) {
             try {
                 const parsed = JSON.parse(cachedData);
                 if ((now - parsed.timestamp) < 900000) { 
-                    renderVideoGrid(parsed.videos);
-                    return;
+                    rawVideos = parsed.videos;
                 }
             } catch(e) {}
         }
@@ -344,26 +350,69 @@ window.fetchVideos = async function(forceRefresh = false) {
         startRefreshCooldown();
     }
 
-    try {
-        const response = await fetch('/api/fetch-latest-videos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accounts: [targetAccount] })
-        });
+    if (rawVideos.length === 0) {
+        try {
+            const response = await fetch('/api/fetch-latest-videos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accounts: [targetAccount] })
+            });
 
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Gagal menarik video.");
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error || "Gagal menarik video.");
 
-        const fetchedVideos = data.videos || [];
-        sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, videos: fetchedVideos }));
-        renderVideoGrid(fetchedVideos);
+            rawVideos = data.videos || [];
+            sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, videos: rawVideos }));
 
-    } catch (err) {
-        console.error("Gagal menarik data video:", err);
-        loader.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        emptyState.classList.add('flex');
+        } catch (err) {
+            console.error("Gagal menarik data video:", err);
+            loader.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            emptyState.classList.add('flex');
+            return;
+        }
     }
+
+    // --- PROSES FILTERING DINAMIS (TIDAK MASUK CACHE AGAR FLEKSIBEL) ---
+    let finalVideos = [...rawVideos];
+
+    if (finalVideos.length > 0) {
+        // 1. FILTER HASHTAG (Berdasarkan Campaign yang dipilih)
+        if (submitState.campaign && submitState.campaign.hashtags) {
+            const requiredHashtags = submitState.campaign.hashtags.split(' ').filter(h => h.trim() !== '');
+            if (requiredHashtags.length > 0) {
+                finalVideos = finalVideos.filter(vid => {
+                    const caption = (vid.caption || '').toLowerCase();
+                    // Harus mengandung setidaknya salah satu hashtag wajib
+                    return requiredHashtags.some(tag => caption.includes(tag.toLowerCase()));
+                });
+            }
+        }
+
+        // 2. FILTER DUPLIKAT (Cek URL ke Database Supabase Submissions)
+        if (finalVideos.length > 0) {
+            // Pastikan kita mencocokkan format data mentah URL dan Escaped URL untuk keamanan
+            const urlsToCheck = finalVideos.map(v => escapeHTML(v.url));
+            try {
+                const { data: existingSubs, error: dbErr } = await supabase
+                    .from('submissions')
+                    .select('video_link')
+                    .in('video_link', urlsToCheck);
+                
+                if (dbErr) throw dbErr;
+
+                if (existingSubs && existingSubs.length > 0) {
+                    const existingUrls = existingSubs.map(s => s.video_link);
+                    // Filter: Hanya simpan video yang URL (setelah di-escape) BELUM ADA di database
+                    finalVideos = finalVideos.filter(vid => !existingUrls.includes(escapeHTML(vid.url)));
+                }
+            } catch (err) {
+                console.error("Gagal filter duplikat dari database:", err);
+            }
+        }
+    }
+
+    renderVideoGrid(finalVideos);
 };
 
 function renderVideoGrid(videosArray) {
@@ -381,7 +430,6 @@ function renderVideoGrid(videosArray) {
 
     grid.innerHTML = '';
     
-    // Helper untuk merapikan angka besar (contoh: 1500 -> 1.5K, 2000000 -> 2M)
     const formatShort = (num) => {
         const n = parseInt(num) || 0;
         if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -391,8 +439,6 @@ function renderVideoGrid(videosArray) {
 
     videosArray.forEach((vid, idx) => {
         const isSel = submitState.videoUrl === vid.url;
-        
-        // Ambil data view dan like yang ter-fetch dari API (menangani variasi field name)
         const views = vid.views || vid.viewCount || vid.playCount || 0;
         const likes = vid.likes || vid.likeCount || vid.diggCount || 0;
         
@@ -426,7 +472,7 @@ window.selectVideo = function(url) {
         const border = card.querySelector('.card-border-target');
         const icon = card.querySelector('.check-icon-target');
         
-        if (card.getAttribute('data-url') === url) {
+        if (card.getAttribute('data-url') === escapeHTML(url)) {
             card.classList.add('selected');
             border.classList.replace('border-zinc-800', 'border-white');
             icon.classList.remove('opacity-0', 'scale-50');
@@ -667,7 +713,7 @@ async function loadActiveCampaigns() {
     try {
         const { data, error } = await supabase
             .from('user_campaigns')
-            .select(`campaigns ( id, title, status, budget_remaining, platforms )`)
+            .select(`campaigns ( id, title, status, budget_remaining, platforms, hashtags )`)
             .eq('user_id', sessionUser.id);
 
         if (!error && data) {
@@ -1047,13 +1093,6 @@ window.toggleSelect = function(id) {
     document.getElementById(id).classList.toggle('hidden');
 };
 
-window.selectCampaign = function(id, title) {
-    currentFilter.campaign_id = id;
-    document.getElementById('campaign-selected-text').innerText = title;
-    document.getElementById('campaign-options').classList.add('hidden');
-    currentLimit = getCols() * 2; applyFilters();
-};
-
 window.toggleFilter = function() {
     document.getElementById('filter-dropdown').classList.toggle('hidden');
     document.getElementById('filter-dropdown').classList.toggle('flex');
@@ -1098,10 +1137,15 @@ window.toggleSensor = function(silent = false) {
 document.addEventListener('click', (e) => {
     const selContainer = document.querySelector('.custom-select-container');
     const filtContainer = document.getElementById('filter-container');
+    const submitSelContainer = document.querySelector('.submit-select-container');
     
     if (selContainer && !selContainer.contains(e.target)) document.querySelectorAll('.custom-select-options').forEach(el => el.classList.add('hidden'));
     if (filtContainer && !filtContainer.contains(e.target)) {
         const fd = document.getElementById('filter-dropdown');
         if(fd) { fd.classList.add('hidden'); fd.classList.remove('flex'); }
+    }
+    if (submitSelContainer && !submitSelContainer.contains(e.target)) {
+        const sOpts = document.getElementById('submit-campaign-options');
+        if (sOpts) { sOpts.classList.add('hidden'); }
     }
 });
