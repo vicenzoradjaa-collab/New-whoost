@@ -21,7 +21,7 @@ function escapeHTML(str) {
 }
 
 // ==========================================
-// SISTEM CUSTOM MODAL POP-UP
+// SISTEM CUSTOM MODAL POP-UP (Alert)
 // ==========================================
 window.showAlert = function(msg, type = 'info') {
     const m = document.getElementById('customAlertModal');
@@ -38,10 +38,6 @@ window.showAlert = function(msg, type = 'info') {
         icon.className = 'w-16 h-16 bg-red-500/10 text-red-400 border border-red-500/20 rounded-full flex items-center justify-center mb-4';
         icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
         title.innerText = 'Gagal';
-    } else {
-        icon.className = 'w-16 h-16 bg-white/10 text-white border border-white/20 rounded-full flex items-center justify-center mb-4';
-        icon.innerHTML = `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-        title.innerText = 'Informasi';
     }
 
     m.classList.remove('hidden'); m.classList.add('flex');
@@ -55,6 +51,7 @@ window.closeAlert = function() {
     setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
 };
 
+
 // ==========================================
 // FITUR MODAL MULTIPLE SUBMIT VIDEO
 // ==========================================
@@ -63,18 +60,15 @@ window.refreshCooldown = 0;
 let cooldownInterval = null;
 
 window.toggleSubmitCampaignSelect = function() {
-    const dropdown = document.getElementById('submit-campaign-options');
-    dropdown.classList.toggle('hidden');
+    document.getElementById('submit-campaign-options').classList.toggle('hidden');
 };
 
 window.selectSubmitCampaign = function(id, title) {
     document.getElementById('submitCampaignValue').value = id;
-    
     const textEl = document.getElementById('submit-campaign-selected-text');
     textEl.innerText = title;
     textEl.classList.remove('text-zinc-400');
     textEl.classList.add('text-white');
-    
     document.getElementById('submit-campaign-options').classList.add('hidden');
 
     const camp = joinedActiveCampaigns.find(c => c.id === id);
@@ -139,7 +133,7 @@ window.closeSubmitModal = function() {
         const submitBtn = document.getElementById('btnSubmitVideo');
         if(submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `Kirim Konten <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+            submitBtn.innerHTML = `Kirim Konten`;
         }
     }, 300);
 };
@@ -167,18 +161,15 @@ function updateRefreshButtons() {
             btn.classList.add('opacity-50', 'cursor-not-allowed');
         } else {
             btn.disabled = false;
-            if (btn.classList.contains('bg-white')) {
-                btn.innerHTML = `Coba Lagi`; 
-            } else {
-                btn.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh`;
-            }
+            btn.innerHTML = btn.classList.contains('bg-white') ? `Coba Lagi` : `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Refresh`;
             btn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
     });
 }
 
+
 // ===============================================
-// AUTO-FETCH VIDEO (HASHTAG & ANTI-DUPLIKAT)
+// AUTO-FETCH VIDEO
 // ===============================================
 async function fetchUserAccounts() {
     try {
@@ -196,17 +187,13 @@ window.fetchVideos = async function(forceRefresh = false) {
     const grid = document.getElementById('videoGridNew');
     const emptyState = document.getElementById('noVideoStateNew');
     
-    loader.classList.remove('hidden');
-    grid.classList.add('hidden');
-    emptyState.classList.add('hidden');
+    loader.classList.remove('hidden'); grid.classList.add('hidden'); emptyState.classList.add('hidden');
     submitState.videoUrls = []; 
     document.getElementById('urlError').classList.add('hidden');
     document.getElementById('btnSubmitVideo').disabled = true;
 
     if (userVerifiedAccounts.length === 0) {
-        loader.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        emptyState.classList.add('flex');
+        loader.classList.add('hidden'); emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
         document.getElementById('noVideoTitle').innerText = "Belum Ada Akun Terverifikasi";
         document.getElementById('noVideoDesc').innerText = "Silakan tautkan akun sosial media Anda di Profil untuk submit video.";
         return;
@@ -221,9 +208,7 @@ window.fetchVideos = async function(forceRefresh = false) {
         if (cachedData) {
             try {
                 const parsed = JSON.parse(cachedData);
-                if ((now - parsed.timestamp) < 900000) { 
-                    rawVideos = parsed.videos;
-                }
+                if ((now - parsed.timestamp) < 900000) rawVideos = parsed.videos;
             } catch(e) {}
         }
     } else {
@@ -233,33 +218,26 @@ window.fetchVideos = async function(forceRefresh = false) {
     if (rawVideos.length === 0) {
         try {
             const response = await fetch('/api/fetch-latest-videos', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ accounts: userVerifiedAccounts })
             });
-
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || "Gagal menarik video.");
-
             rawVideos = data.videos || [];
             sessionStorage.setItem(cacheKey, JSON.stringify({ timestamp: now, videos: rawVideos }));
-
         } catch (err) {
-            console.error("Gagal menarik data video:", err);
-            loader.classList.add('hidden');
-            emptyState.classList.remove('hidden');
-            emptyState.classList.add('flex');
+            loader.classList.add('hidden'); emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
             return; 
         }
     }
 
-    // --- PROSES FILTERING DINAMIS ---
     let finalVideos = [...rawVideos];
-
     if (finalVideos.length > 0) {
-        // 1. FILTER HASHTAG
-        if (submitState.campaign && submitState.campaign.hashtags) {
-            const requiredHashtags = submitState.campaign.hashtags.split(' ').filter(h => h.trim() !== '');
+        const selectedCampId = document.getElementById('submitCampaignValue').value;
+        const selectedCamp = joinedActiveCampaigns.find(c => c.id === selectedCampId);
+        
+        if (selectedCamp && selectedCamp.hashtags) {
+            const requiredHashtags = selectedCamp.hashtags.split(' ').filter(h => h.trim() !== '');
             if (requiredHashtags.length > 0) {
                 finalVideos = finalVideos.filter(vid => {
                     const caption = (vid.caption || '').toLowerCase();
@@ -268,25 +246,17 @@ window.fetchVideos = async function(forceRefresh = false) {
             }
         }
 
-        // 2. FILTER DUPLIKAT DI DATABASE
         if (finalVideos.length > 0) {
             const urlsToCheck = finalVideos.map(v => escapeHTML(v.url));
             try {
-                const { data: existingSubs } = await supabase
-                    .from('submissions')
-                    .select('video_link')
-                    .in('video_link', urlsToCheck);
-                
+                const { data: existingSubs } = await supabase.from('submissions').select('video_link').in('video_link', urlsToCheck);
                 if (existingSubs && existingSubs.length > 0) {
                     const existingUrls = existingSubs.map(s => s.video_link);
                     finalVideos = finalVideos.filter(vid => !existingUrls.includes(escapeHTML(vid.url)));
                 }
-            } catch (err) {
-                console.error("Gagal filter duplikat dari database:", err);
-            }
+            } catch (err) {}
         }
     }
-
     renderVideoGrid(finalVideos);
 };
 
@@ -298,8 +268,7 @@ function renderVideoGrid(videosArray) {
     loader.classList.add('hidden');
 
     if (!videosArray || videosArray.length === 0) {
-        emptyState.classList.remove('hidden');
-        emptyState.classList.add('flex');
+        emptyState.classList.remove('hidden'); emptyState.classList.add('flex');
         return;
     }
 
@@ -311,7 +280,7 @@ function renderVideoGrid(videosArray) {
         return n.toString();
     };
 
-    videosArray.forEach((vid, idx) => {
+    videosArray.forEach((vid) => {
         const isSel = submitState.videoUrls.includes(vid.url);
         const views = vid.views || vid.viewCount || vid.playCount || 0;
         const likes = vid.likes || vid.likeCount || vid.diggCount || 0;
@@ -331,11 +300,6 @@ function renderVideoGrid(videosArray) {
                     <img src="${escapeHTML(vid.thumbnail)}" class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 group-hover:bg-black/10 transition-colors duration-300"></div>
                     
-                    <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md border border-white/20 p-1.5 rounded-lg flex items-center shadow-sm">
-                        ${iconHtml}
-                    </div>
-                    
-                    <!-- Checkmark Indicator -->
                     <div class="check-icon-target absolute top-2 right-2 bg-white text-black p-1 rounded-full ${isSel ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all shadow-md">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
@@ -388,7 +352,7 @@ window.selectVideo = function(url) {
 
 window.processSubmit = async function(e) {
     e.preventDefault();
-    const campaignId = submitState.campaign?.id;
+    const campaignId = document.getElementById('submitCampaignValue').value;
     const errorMsg = document.getElementById('urlError');
     const submitBtn = document.getElementById('btnSubmitVideo');
     
@@ -457,7 +421,7 @@ window.processSubmit = async function(e) {
 
         window.closeSubmitModal();
         setTimeout(() => {
-            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini PENDING menunggu Review Brand.`, "success");
+            showAlert(`Berhasil mengirim ${insertPayload.length} video. Status saat ini menunggu review Brand.`, "success");
         }, 300);
         
         await Promise.all([ loadUserStats(), loadSubmissions() ]);
@@ -470,7 +434,7 @@ window.processSubmit = async function(e) {
 };
 
 // ==========================================
-// FUNGSI VIDEO PLAYER MODAL
+// FUNGSI VIDEO PLAYER MODAL (TIDAK DIUBAH)
 // ==========================================
 window.openVideoModal = async function(url) {
     const m = document.getElementById('videoModal');
@@ -496,9 +460,7 @@ window.openVideoModal = async function(url) {
             if (ytMatch && ytMatch[1]) {
                 iframe.src = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
                 iframe.classList.remove('hidden');
-            } else {
-                throw new Error("No YouTube match");
-            }
+            } else { throw new Error("No YouTube match"); }
         } else if (url.includes('tiktok.com')) {
             let cleanTkUrl = url.split('?')[0];
             const res = await fetch(`https://www.tikwm.com/api/?url=${cleanTkUrl}`);
@@ -506,14 +468,11 @@ window.openVideoModal = async function(url) {
             if (json.data && json.data.play) {
                 nativeVideo.src = json.data.play;
                 nativeVideo.classList.remove('hidden');
-            } else {
-                throw new Error("TikTok API Error");
-            }
+            } else { throw new Error("TikTok API Error"); }
         } else if (url.includes('instagram.com')) {
             let cleanIgUrl = url.split('?')[0];
             const encodedUrl = encodeURIComponent(cleanIgUrl);
             let igVideoUrl = null;
-
             const igApis = [
                 `https://api.siputzx.my.id/api/d/igdl?url=${encodedUrl}`,
                 `https://api.ryzendesu.vip/api/downloader/igdl?url=${encodedUrl}`,
@@ -525,24 +484,17 @@ window.openVideoModal = async function(url) {
                 try {
                     const res = await fetch(api);
                     const json = await res.json();
-                    if (json.data && Array.isArray(json.data) && json.data.length > 0) {
-                        igVideoUrl = json.data[0].url || json.data[0];
-                    } else if (json.data && json.data.url) {
-                        igVideoUrl = json.data.url;
-                    } else if (json.url) {
-                        igVideoUrl = json.url;
-                    } else if (json.result && Array.isArray(json.result) && json.result.length > 0) {
-                        igVideoUrl = json.result[0].url || json.result[0];
-                    }
+                    if (json.data && Array.isArray(json.data) && json.data.length > 0) igVideoUrl = json.data[0].url || json.data[0];
+                    else if (json.data && json.data.url) igVideoUrl = json.data.url;
+                    else if (json.url) igVideoUrl = json.url;
+                    else if (json.result && Array.isArray(json.result) && json.result.length > 0) igVideoUrl = json.result[0].url || json.result[0];
                 } catch(e) { }
             }
 
             if (igVideoUrl) {
                 nativeVideo.src = igVideoUrl;
                 nativeVideo.classList.remove('hidden');
-            } else {
-                throw new Error("Semua API IG gagal mendapatkan direktori file MP4");
-            }
+            } else { throw new Error("Semua API IG gagal mendapatkan direktori file MP4"); }
         } else {
             iframe.src = url;
             iframe.classList.remove('hidden');
@@ -550,18 +502,12 @@ window.openVideoModal = async function(url) {
     } catch (e) {
         if (url.includes('tiktok.com')) {
             let tkMatch = url.match(/video\/(\d+)/);
-            if (tkMatch && tkMatch[1]) {
-                iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
-            } else {
-                iframe.src = url;
-            }
+            if (tkMatch && tkMatch[1]) iframe.src = `https://www.tiktok.com/embed/v2/${tkMatch[1]}`;
+            else iframe.src = url;
         } else if (url.includes('instagram.com')) {
             let igMatch = url.match(/(?:p|reel)\/([a-zA-Z0-9_-]+)/);
-            if (igMatch && igMatch[1]) {
-                iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
-            } else {
-                iframe.src = url;
-            }
+            if (igMatch && igMatch[1]) iframe.src = `https://www.instagram.com/p/${igMatch[1]}/embed`;
+            else iframe.src = url;
         } else {
             iframe.src = url;
         }
@@ -587,17 +533,13 @@ window.closeVideoModal = function() {
     }, 300);
 };
 
-function getCols() {
-    const w = window.innerWidth;
-    if (w >= 1280) return 6; 
-    if (w >= 1024) return 5; 
-    if (w >= 768)  return 4; 
-    if (w >= 640)  return 3; 
-    return 2;                
-}
+// ===============================================
+// INISIALISASI & LOAD DATA
+// ===============================================
 
+// Batas Pagination 20 Item Awal
 let currentFilter = { status: 'all', campaign_id: 'all', sort: 'newest' };
-let currentLimit = getCols() * 2;
+let currentLimit = 20;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -625,6 +567,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     } catch(e) {}
 });
+
+async function fetchUserAccounts() {
+    try {
+        const { data: profile } = await supabase.from('profiles').select('social_media').eq('id', sessionUser.id).single();
+        if (profile && profile.social_media && Array.isArray(profile.social_media)) {
+            userVerifiedAccounts = profile.social_media.filter(soc => soc.is_verified === true);
+        }
+    } catch(e) {}
+}
 
 async function loadActiveCampaigns() {
     try {
@@ -727,10 +678,9 @@ function getVideoMeta(url) {
     return { platHTML, thumbUrl };
 }
 
-// ==========================================
-// [PERUBAHAN UTAMA] 
-// LOGIKA TAMPILAN CARD & ESTIMASI PENDAPATAN
-// ==========================================
+// =======================================================
+// [PERUBAHAN] TAMPILAN CARD MENJADI RINGKAS (SATU TOMBOL)
+// =======================================================
 function generateCard(sub, index) {
     const camp = sub.campaigns || { id: '', title: 'Campaign Dihapus', brand_name: '-', status: 'CLOSED', budget_remaining: 0, niche: '-', payment_type: 'views', reward_per_1k: 0, price_per_video: 0, is_private: false };
     const isPrivate = camp.is_private === true;
@@ -739,120 +689,67 @@ function generateCard(sub, index) {
     const dateStr = new Date(sub.created_at).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
     
     const safeTitle = escapeHTML(camp.title);
-    const safeRejectReason = escapeHTML(sub.reject_reason);
     const safeSessionName = escapeHTML(sessionFullName);
     const safeUrl = encodeURI(sub.video_link || '');
 
-    // Current Views diambil langsung dari database (Telah diperbarui oleh Cron/Admin)
     const currentViews = sub.views_claimed || 0;
     const uiViews = currentViews > 0 ? currentViews.toLocaleString('id-ID') : '0';
     
-    // Uang yang sudah masuk ke dompet Clipper
-    const uiEarned = sub.earned > 0 ? 'Rp ' + sub.earned.toLocaleString('id-ID') : '-';
-    let earnedColor = sub.earned > 0 ? (isPrivate ? 'text-yellow-400' : 'text-emerald-400') : 'text-zinc-500';
-    
+    // Status Logic
     let realStatus = sub.status || 'PENDING';
-    let isPerVideo = camp.payment_type === 'video';
     
-    // --- MENGHITUNG ESTIMASI PENDAPATAN TERBARU ---
-    let estimatedNewMoney = 0;
-    const cpm = camp.reward_per_1k || 0;
-    const minViews = camp.min_views || 10000;
-    const maxClaim = camp.max_claim || 250000;
-    const budgetRemaining = camp.budget_remaining || 0;
-    const isCampClosed = camp.status === 'CLOSED' || budgetRemaining <= 0;
-
-    // Hitung Estimasi Pembayaran secara On The Fly
-    if (!isCampClosed) {
-        if (isPerVideo) {
-            // Jika per video, dan belum dibayar
-            if ((sub.earned || 0) > 0) {
-                estimatedNewMoney = 0; 
-            } else {
-                estimatedNewMoney = camp.price_per_video || 0;
-                if (estimatedNewMoney > budgetRemaining) estimatedNewMoney = budgetRemaining;
-            }
-        } else {
-            // Jika per views
-            let effectiveViews = currentViews > maxClaim ? maxClaim : currentViews;
-            let rate = cpm;
-            if (effectiveViews < minViews) {
-                rate = cpm * 0.25; // Potongan Early CPM 75%
-            }
-            let totalExpected = Math.floor((effectiveViews / 1000) * rate);
-            estimatedNewMoney = totalExpected - (sub.earned || 0);
-
-            if (estimatedNewMoney < 0) estimatedNewMoney = 0;
-            if (estimatedNewMoney > budgetRemaining) estimatedNewMoney = budgetRemaining;
-        }
-    }
-    
-    // Boolean Status Flow
     let isBrandReview   = (realStatus === 'PENDING' && currentViews === 0);
     let isBrandRejected = (realStatus === 'REJECTED' && currentViews === 0);
     let isClaimReview   = (realStatus === 'PENDING' && currentViews > 0);
     let isClaimApproved = (realStatus === 'APPROVED');
     let isClaimRejected = (realStatus === 'REJECTED' && currentViews > 0);
+    const isCampClosed = camp.status === 'CLOSED' || camp.budget_remaining <= 0;
 
-    let actionArea = '';
     let badgeHTML = '';
     let cardOpacityClass = 'opacity-100';
 
     if (isBrandReview) {
-        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Brand</div>`;
-        actionArea = `<button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-1.5 leading-tight"><svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menunggu ACC Brand</button>`;
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Review Brand</div>`;
     } 
     else if (isBrandRejected) {
         cardOpacityClass = 'opacity-70 border-red-900/30';
-        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Ditolak Brand</div>`;
-        actionArea = `
-            <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
-                <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Brand:</b> ${safeRejectReason || 'Video tidak sesuai kriteria/brief.'}</p>
-            </div>
-            <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Ditolak Brand</div>`;
     }
     else if (isClaimReview) {
-        // [BARU] Menunggu ACC Admin dengan Estimasi Cuan Dinamis
-        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Review Admin</div>`;
-        
-        actionArea = `
-            <button disabled class="w-full bg-amber-500/10 border border-amber-500/50 text-amber-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed flex items-center justify-center flex-col leading-tight">
-                <span>Diproses Admin...</span>
-                <span class="text-[8px] font-medium text-amber-500/70">Estimasi Masuk: Rp ${estimatedNewMoney.toLocaleString('id-ID')}</span>
-            </button>`;
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Review Admin</div>`;
     } 
     else if (isClaimRejected) {
         cardOpacityClass = 'opacity-80 border-red-900/50';
-        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Klaim Ditolak</div>`;
-        actionArea = `
-            <div class="p-2 bg-red-500/10 border border-red-500/20 rounded-lg mb-2 overflow-y-auto max-h-16 custom-scrollbar">
-                <p class="text-[9px] text-red-400 font-medium leading-tight break-words"><b>Ditolak Admin:</b> ${safeRejectReason || 'Bukti validitas tidak valid atau melanggar aturan.'}</p>
-            </div>
-            <button disabled class="w-full bg-zinc-800 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Klaim Permanen Ditolak</button>`;
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Klaim Ditolak</div>`;
     }
     else if (isClaimApproved) {
-        // [BARU] Selesai Cair
         if(isCampClosed) {
-            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur">Closed</div>`;
-            actionArea = `<button disabled class="w-full bg-zinc-800 border border-zinc-700 text-zinc-500 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Budget Telah Habis</button>`;
+            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-red-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Closed</div>`;
         } else {
-            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
-            actionArea = `<button disabled class="w-full bg-blue-900/20 border border-blue-500/30 text-blue-400 font-bold text-[10px] sm:text-[11px] py-2 rounded-lg cursor-not-allowed">Pembayaran Selesai</button>`;
+            badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-blue-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur flex items-center gap-1 shadow-sm"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg> Cair</div>`;
         }
     }
 
-    let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group ${cardOpacityClass} `;
-    if (isPrivate) cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
-    else cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
+    let cardBaseClass = `p-1.5 sm:p-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group h-full ${cardOpacityClass} `;
+    if (isPrivate) {
+        cardBaseClass += "bg-gradient-to-br from-zinc-900/90 to-[#0a0a0c] border border-yellow-900/40 hover:border-yellow-700/60";
+    } else {
+        cardBaseClass += "bg-cardBg border border-zinc-800 hover:border-zinc-500";
+    }
 
     let topLeftBadges = `
         <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 items-start z-20 pointer-events-none">
-            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">${meta.platHTML}</div>
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-1 sm:p-1.5 rounded-lg">
+                ${meta.platHTML}
+            </div>
         </div>`;
+
+    // Tombol Lihat Detail
+    const actionBtnHTML = `<button onclick="window.openDetailModal('${sub.id}')" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 rounded-lg text-[10px] sm:text-[11px] transition-colors focus:outline-none shadow-sm active:scale-95">Lihat Detail</button>`;
 
     return `
     <div class="${cardBaseClass}">
-        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer" onclick="window.openVideoModal('${safeUrl}')">
+        <div class="relative w-full aspect-[3/4] bg-zinc-900 rounded-xl overflow-hidden shrink-0 group cursor-pointer border border-zinc-800/50" onclick="window.openVideoModal('${safeUrl}')">
             ${badgeHTML}${topLeftBadges}
             <img id="thumb-${sub.id}" src="${meta.thumbUrl}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-0 pointer-events-none"></div>
@@ -868,24 +765,121 @@ function generateCard(sub, index) {
         </div>
         
         <div class="flex-1 flex flex-col justify-between mt-2 sm:mt-3">
-            <div class="flex justify-between items-center mb-3 sm:mb-4 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
+            <div class="flex justify-between items-center mb-2.5 bg-black/40 rounded-lg p-1.5 sm:p-2.5 border border-zinc-800/50">
                 <div>
                     <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Views Valid</p>
                     <p class="text-[10px] sm:text-xs font-bold text-white">${uiViews}</p>
                 </div>
                 <div class="text-right">
                     <p class="text-[7px] sm:text-[8px] text-zinc-500 font-bold uppercase tracking-wider mb-0.5">Telah Cair</p>
-                    <p class="text-[10px] sm:text-xs font-bold ${earnedColor}">${uiEarned}</p>
+                    <p class="text-[10px] sm:text-xs font-bold ${sub.earned > 0 ? 'text-emerald-400' : 'text-zinc-500'}">Rp ${(sub.earned || 0).toLocaleString('id-ID')}</p>
                 </div>
             </div>
-            
-            <div class="mt-auto space-y-1.5 sm:space-y-2">
-                ${actionArea}
+            <div class="mt-auto">
+                ${actionBtnHTML}
             </div>
         </div>
     </div>`;
 }
 
+// ========================================================
+// MODAL DETAIL KLAM LOGIC (MENAMPILKAN PERHITUNGAN)
+// ========================================================
+window.openDetailModal = function(subId) {
+    const sub = submissionsData.find(s => s.id === subId);
+    if(!sub) return;
+
+    const camp = sub.campaigns;
+    const isPerVideo = camp.payment_type === 'video';
+    const cpm = camp.reward_per_1k || 0;
+    const minViews = camp.min_views || 10000;
+    const maxClaim = camp.max_claim || 250000;
+    const currentViews = sub.views_claimed || 0;
+    const isCampClosed = camp.status === 'CLOSED' || (camp.budget_remaining || 0) <= 0;
+
+    let realStatus = sub.status || 'PENDING';
+    
+    // Status Badge Logic
+    const badgeEl = document.getElementById('detail-badge-status');
+    if (realStatus === 'PENDING' && currentViews === 0) {
+        badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px] font-bold uppercase">Review Brand</span>`;
+    } else if (realStatus === 'REJECTED' && currentViews === 0) {
+        badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-red-500/20 text-red-500 border border-red-500/30 text-[10px] font-bold uppercase">Ditolak Brand</span>`;
+    } else if (realStatus === 'PENDING' && currentViews > 0) {
+        badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px] font-bold uppercase">Diproses Admin</span>`;
+    } else if (realStatus === 'REJECTED' && currentViews > 0) {
+        badgeHTML.innerHTML = `<span class="px-2 py-1 rounded bg-red-500/20 text-red-500 border border-red-500/30 text-[10px] font-bold uppercase">Klaim Ditolak</span>`;
+    } else {
+        badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold uppercase">Disetujui / Selesai</span>`;
+    }
+
+    document.getElementById('detail-title').innerText = escapeHTML(camp.title);
+    document.getElementById('detail-brand').innerText = escapeHTML(camp.brand_name);
+
+    // Tampilkan Reject Reason Jika ada
+    const rejectBox = document.getElementById('detail-reject-box');
+    if (realStatus === 'REJECTED' && sub.reject_reason) {
+        rejectBox.classList.remove('hidden');
+        document.getElementById('detail-reject-reason').innerText = escapeHTML(sub.reject_reason);
+    } else {
+        rejectBox.classList.add('hidden');
+    }
+
+    // Peringatan Budget Habis
+    const closedBox = document.getElementById('detail-closed-box');
+    if (isCampClosed && realStatus !== 'APPROVED') {
+        closedBox.classList.remove('hidden');
+    } else {
+        closedBox.classList.add('hidden');
+    }
+
+    // Kalkulasi
+    let calcHTML = '';
+    if (isPerVideo) {
+        calcHTML = `
+            <div class="flex justify-between text-xs mb-1.5"><span class="text-zinc-400">Sistem Bayar</span><span class="text-white font-bold">Per Video</span></div>
+            <div class="flex justify-between text-xs mb-1.5"><span class="text-zinc-400">Rate Fixed</span><span class="text-white font-bold">Rp ${camp.price_per_video.toLocaleString('id-ID')}</span></div>
+        `;
+    } else {
+        let effectiveViews = currentViews > maxClaim ? maxClaim : currentViews;
+        let currentCpm = cpm;
+        let isPenalty = false;
+        
+        if (effectiveViews < minViews && effectiveViews > 0) {
+            currentCpm = cpm * 0.25;
+            isPenalty = true;
+        }
+
+        calcHTML = `
+            <div class="flex justify-between text-xs mb-1.5"><span class="text-zinc-400">Sistem Bayar</span><span class="text-white font-bold">Per Views</span></div>
+            <div class="flex justify-between text-xs mb-1.5"><span class="text-zinc-400">Views Diakui Sistem</span><span class="text-white font-bold">${effectiveViews.toLocaleString('id-ID')} Views</span></div>
+            <div class="flex justify-between text-xs mb-1.5"><span class="text-zinc-400">Min. Views Target</span><span class="text-zinc-300">${minViews.toLocaleString('id-ID')} Views</span></div>
+            <div class="flex justify-between text-xs mb-1.5"><span class="text-zinc-400">CPM Dasar</span><span class="text-zinc-300">Rp ${cpm.toLocaleString('id-ID')}</span></div>
+            <div class="flex justify-between text-xs"><span class="text-zinc-400">Rate Diterapkan</span><span class="${isPenalty ? 'text-red-400' : 'text-green-400'} font-bold">Rp ${currentCpm.toLocaleString('id-ID')} ${isPenalty ? '(Early CPM 25%)' : '(Full CPM)'}</span></div>
+        `;
+    }
+    
+    document.getElementById('detail-calc-box').innerHTML = calcHTML;
+    document.getElementById('detail-earned').innerText = `Rp ${(sub.earned || 0).toLocaleString('id-ID')}`;
+
+    // Tampilkan Modal
+    const m = document.getElementById('detailClaimModal');
+    const c = document.getElementById('detailClaimContent');
+    m.classList.remove('hidden'); m.classList.add('flex');
+    setTimeout(() => { m.classList.remove('opacity-0'); c.classList.remove('scale-95'); }, 10);
+};
+
+window.closeDetailModal = function() {
+    const m = document.getElementById('detailClaimModal');
+    const c = document.getElementById('detailClaimContent');
+    m.classList.add('opacity-0'); c.classList.add('scale-95');
+    setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+};
+
+
+// ===================================================
+// PENGATURAN FILTER DAN LOAD MORE
+// ===================================================
 function applyFilters() {
     const grid = document.getElementById('cards-container');
     const alertBox = document.getElementById('no-data-alert');
@@ -967,10 +961,15 @@ window.applyFilter = function(type, value) {
     });
     document.getElementById('filter-dropdown').classList.add('hidden');
     document.getElementById('filter-dropdown').classList.remove('flex');
-    currentLimit = getCols() * 2; applyFilters();
+    
+    currentLimit = 20; // [REVISI] Reset ke 20
+    applyFilters();
 };
 
-window.loadMore = function() { currentLimit += getCols() * 2; applyFilters(); };
+window.loadMore = function() { 
+    currentLimit += 20; // [REVISI] Nambah 20 item
+    applyFilters(); 
+};
 
 window.toggleSensor = function(silent = false) {
     if(!silent) isSensorActive = !isSensorActive;
