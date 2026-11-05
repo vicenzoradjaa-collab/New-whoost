@@ -713,6 +713,26 @@
             return allSubmissions.filter(s => s.campaign_id === campaignId && s.status === 'APPROVED' && rvIsPlatformUrl(s.video_link));
         }
 
+        // Satu-satunya tempat aturan "setelah refresh views, status balik ke antrean admin".
+        // - views_claimed hanya naik, tidak pernah turun.
+        // - status dikembalikan ke PENDING (menunggu ACC admin) HANYA kalau masih ada
+        //   views yang belum dibayar (views_claimed > views_paid), supaya admin bisa cek & cairkan.
+        // - campaign per-video yang sudah pernah cair tidak perlu review ulang (tidak ada bayaran tambahan).
+        // Return {} = tidak ada yang perlu diubah.
+        function rvReviewUpdate(sub, fresh) {
+            const current = sub.views_claimed || 0;
+            const paid = sub.views_paid || 0;
+            const nextViews = (typeof fresh === 'number' && fresh > current) ? fresh : current;
+            const camp = allCampaigns.find(c => c.id === sub.campaign_id);
+            const isVideoPay = (camp && camp.payment_type) === 'video';
+            const needsPayoutReview = !isVideoPay || (sub.earned || 0) === 0;
+
+            const payload = {};
+            if (nextViews > current) payload.views_claimed = nextViews;
+            if (needsPayoutReview && nextViews > paid) payload.status = 'PENDING';
+            return payload;
+        }
+
         function rvActiveCampaigns() {
             return allCampaigns.filter(c => c.status === 'ACTIVE' || c.status === 'RUNNING');
         }
@@ -847,22 +867,27 @@
                         const current = sub.views_claimed || 0;
                         if (typeof fresh !== 'number') {
                             notFound++;                               // tidak ditemukan: data lama dibiarkan
-                        } else if (fresh <= current) {
-                            unchanged++;                              // tidak pernah menurunkan angka
                         } else {
-                            // Hanya views_claimed, hanya untuk submission APPROVED
-                            const { data: upd, error } = await supabase
-                                .from('submissions')
-                                .update({ views_claimed: fresh })
-                                .eq('id', sub.id)
-                                .eq('status', 'APPROVED')
-                                .select('id');
-                            if (error || !upd || upd.length === 0) {
-                                failedSave++;
-                                if (error) errors.push(error.message);
+                            const payload = rvReviewUpdate(sub, fresh);
+                            if (Object.keys(payload).length === 0) {
+                                unchanged++;                          // tidak pernah menurunkan angka
                             } else {
-                                sub.views_claimed = fresh;            // sinkronkan data lokal
-                                updated++;
+                                // views_claimed (maksimal) + status balik PENDING agar admin cek pembayarannya
+                                const { data: upd, error } = await supabase
+                                    .from('submissions')
+                                    .update(payload)
+                                    .eq('id', sub.id)
+                                    .eq('status', 'APPROVED')
+                                    .select('id');
+                                if (error || !upd || upd.length === 0) {
+                                    failedSave++;
+                                    if (error) errors.push(error.message);
+                                } else {
+                                    // sinkronkan data lokal
+                                    if (payload.views_claimed !== undefined) sub.views_claimed = payload.views_claimed;
+                                    if (payload.status) sub.status = payload.status;
+                                    updated++;
+                                }
                             }
                         }
                         done++;
