@@ -204,7 +204,7 @@ function updateRefreshButtons() {
 }
 
 // ===============================================
-// AUTO-FETCH VIDEO (HASHTAG & ANTI-DUPLIKAT)
+// AUTO-FETCH VIDEO (HASHTAG & ANTI DUPLIKAT)
 // ===============================================
 async function fetchUserAccounts() {
     try {
