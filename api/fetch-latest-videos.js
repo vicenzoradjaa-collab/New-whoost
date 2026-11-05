@@ -35,33 +35,55 @@ export default async function handler(req, res) {
         return await response.json();
     };
 
-    // [SUPER FIX] Fungsi pembersih angka yang tahan banting (Bisa baca 1.5K, 2M, dll)
     const parseCount = (val) => {
         if (val === null || val === undefined) return 0;
-        
-        // Jika sudah berbentuk angka (proteksi dari NaN)
-        if (typeof val === 'number') {
-            return isNaN(val) ? 0 : val; 
-        }
-        
-        // Jika berbentuk string teks dari scraper (misal: "1.5K", "2M", "1,500")
+        if (typeof val === 'number') return isNaN(val) ? 0 : val; 
         if (typeof val === 'string') {
             let multiplier = 1;
             let cleanStr = val.toUpperCase().trim();
-            
             if (cleanStr.endsWith('K')) multiplier = 1000;
             else if (cleanStr.endsWith('M')) multiplier = 1000000;
+            else if (cleanStr.endsWith('B')) multiplier = 1000000000;
             
             const cleaned = cleanStr.replace(/[^0-9.]/g, ''); 
             const parsed = parseFloat(cleaned);
-            
             if (isNaN(parsed)) return 0;
             return Math.floor(parsed * multiplier);
         }
         return 0;
     };
 
-    // Jalankan pencarian video
+    // [FITUR BARU] Fungsi agresif untuk membaca setiap kemungkinan field dari Apify
+    const extractMaxCount = (post, fieldList) => {
+        let max = 0;
+        for (const field of fieldList) {
+            const parts = field.split('.');
+            let current = post;
+            for (const part of parts) {
+                if (current === null || current === undefined) {
+                    current = undefined;
+                    break;
+                }
+                current = current[part];
+            }
+            const count = parseCount(current);
+            if (count > max) max = count;
+        }
+        return max;
+    };
+
+    // Semua kamus list nama field untuk Views dan Likes dari berbagai scraper Apify
+    const viewFields = [
+        'videoViewCount', 'videoPlayCount', 'playCount', 'viewCount', 'viewsCount', 'views', 
+        'stats.playCount', 'stat.playCount', 'videoMeta.playCount', 'statistics.viewCount', 
+        'metrics.viewCount', 'metrics.playCount', 'edge_media_to_view_count.count'
+    ];
+
+    const likeFields = [
+        'likesCount', 'likeCount', 'likes', 'diggCount', 'stats.diggCount', 'stat.diggCount', 
+        'statistics.likeCount', 'metrics.likeCount', 'edge_media_preview_like.count', 'edge_liked_by.count'
+    ];
+
     const fetchPromises = accounts.map(async (acc) => {
         try {
             if (acc.platform.toLowerCase() === 'instagram') {
@@ -72,21 +94,8 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            // Tambahkan fallback angka 0 di akhir Math.max agar tidak menghasilkan NaN
-                            const viewsCount = Math.max(
-                                parseCount(post.videoPlayCount),
-                                parseCount(post.videoViewCount),
-                                parseCount(post.playCount),
-                                parseCount(post.viewCount),
-                                parseCount(post.viewsCount),
-                                0
-                            );
-                            const likesCount = Math.max(
-                                parseCount(post.likesCount),
-                                parseCount(post.likeCount),
-                                parseCount(post.likes),
-                                0
-                            );
+                            const viewsCount = extractMaxCount(post, viewFields);
+                            const likesCount = extractMaxCount(post, likeFields);
 
                             allVideos.push({
                                 id: post.id,
@@ -108,18 +117,8 @@ export default async function handler(req, res) {
                         if (now - postTime < TWENTY_FOUR_HOURS) {
                             const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                             
-                            const viewsCount = Math.max(
-                                parseCount(post.playCount),
-                                parseCount(post.stats?.playCount),
-                                parseCount(post.stat?.playCount),
-                                0
-                            );
-                            const likesCount = Math.max(
-                                parseCount(post.diggCount),
-                                parseCount(post.stats?.diggCount),
-                                parseCount(post.stat?.diggCount),
-                                0
-                            );
+                            const viewsCount = extractMaxCount(post, viewFields);
+                            const likesCount = extractMaxCount(post, likeFields);
 
                             allVideos.push({
                                 id: post.id,
@@ -146,18 +145,8 @@ export default async function handler(req, res) {
                             if (now - postTime < TWENTY_FOUR_HOURS) {
                                 const hoursAgo = Math.max(1, Math.round((now - postTime) / 3600000));
                                 
-                                const viewsCount = Math.max(
-                                    parseCount(post.viewCount),
-                                    parseCount(post.views),
-                                    parseCount(post.statistics?.viewCount),
-                                    0
-                                );
-                                const likesCount = Math.max(
-                                    parseCount(post.likeCount),
-                                    parseCount(post.likes),
-                                    parseCount(post.statistics?.likeCount),
-                                    0
-                                );
+                                const viewsCount = extractMaxCount(post, viewFields);
+                                const likesCount = extractMaxCount(post, likeFields);
 
                                 allVideos.push({
                                     id: post.id || post.videoId,
