@@ -364,6 +364,21 @@
                 <p id="detail-reject-reason" class="text-xs text-red-400 leading-relaxed"></p>
             </div>
 
+            <!-- Box Banding Yang Sudah Diajukan (Hidden by default) -->
+            <div id="detail-appeal-box" class="hidden mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                <p class="text-[10px] font-bold text-amber-500 uppercase mb-0.5">Alasan Banding Kamu:</p>
+                <p id="detail-appeal-reason" class="text-xs text-amber-300 leading-relaxed"></p>
+                <p class="text-[10px] text-amber-500/70 mt-1.5">Banding sedang ditinjau ulang oleh Client & Admin.</p>
+            </div>
+
+            <!-- Form Ajukan Banding (Hidden by default) -->
+            <div id="detail-appeal-form" class="hidden mb-4 p-3 bg-zinc-900/60 border border-zinc-800 rounded-xl">
+                <p class="text-[10px] font-bold text-zinc-400 uppercase mb-2">Ajukan Banding</p>
+                <textarea id="detail-appeal-input" rows="3" maxlength="500" placeholder="Jelaskan kenapa video ini layak ditinjau ulang..." class="w-full bg-black/50 border border-zinc-700 rounded-lg p-2.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500 resize-none"></textarea>
+                <p id="detail-appeal-error" class="hidden text-[10px] text-red-500 mt-1.5">Alasan banding wajib diisi minimal 10 karakter.</p>
+                <button id="detail-appeal-btn" onclick="window.submitAppeal()" class="w-full mt-2 py-2.5 bg-white text-black font-bold text-xs rounded-lg hover:bg-zinc-200 transition-colors focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed">Kirim Banding</button>
+            </div>
+
             <!-- Box Peringatan Budget Habis (Hidden by default) -->
             <div id="detail-closed-box" class="hidden mb-4 p-3 bg-zinc-800 border border-zinc-700 rounded-xl">
                 <p class="text-xs text-zinc-300 flex items-center gap-1.5 font-medium"><svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> Campaign Ditutup / Budget Habis.</p>

@@ -484,7 +484,18 @@
         }
 
         // Tentukan Kategori Tab Filter Admin
+        const APPEAL_MARK = '\n\n[Banding] ';
+
+        function parseRejectReason(raw) {
+            const text = (raw || '').toString();
+            const idx = text.indexOf(APPEAL_MARK);
+            if (idx === -1) return { original: text.trim(), appeal: '' };
+            return { original: text.slice(0, idx).trim(), appeal: text.slice(idx + APPEAL_MARK.length).trim() };
+        }
+
         function getAdminStatus(sub) {
+            // Banding yang belum di-review ulang oleh client tetap di sisi client
+            if (sub.status === 'PENDING' && parseRejectReason(sub.reject_reason).appeal !== '') return 'Menunggu Client';
             if (sub.status === 'PENDING' && (sub.views_claimed || 0) === 0 && sub.campaigns?.payment_type !== 'video') return 'Menunggu Client'; 
             if (sub.status === 'PENDING' && (sub.views_claimed || 0) > 0) return 'Perlu Review';
             if (sub.status === 'APPROVED' || sub.status === 'REJECTED') return 'Selesai';

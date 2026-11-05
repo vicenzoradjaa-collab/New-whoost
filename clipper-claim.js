@@ -55,6 +55,25 @@ window.closeAlert = function() {
     setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
 };
 
+// ==========================================
+// BANDING (APPEAL)
+// Alasan banding disimpan di kolom reject_reason dengan format:
+// "<alasan penolakan asli>\n\n[Banding] <alasan banding>"
+// Dipilih supaya tidak butuh kolom baru & data lama tetap terbaca.
+// ==========================================
+const APPEAL_MARK = '\n\n[Banding] ';
+let activeDetailId = null;
+
+function parseRejectReason(raw) {
+    const text = (raw || '').toString();
+    const idx = text.indexOf(APPEAL_MARK);
+    if (idx === -1) return { original: text.trim(), appeal: '' };
+    return {
+        original: text.slice(0, idx).trim(),
+        appeal: text.slice(idx + APPEAL_MARK.length).trim()
+    };
+}
+
 let confirmCallback = null;
 window.showConfirm = function(msg, callback) {
     const m = document.getElementById('customConfirmModal');
@@ -800,6 +819,8 @@ function generateCard(sub, index) {
     const uiViews = currentViews > 0 ? currentViews.toLocaleString('id-ID') : '0';
     
     let realStatus = sub.status || 'PENDING';
+    const appealInfo = parseRejectReason(sub.reject_reason);
+    const isAppealing = realStatus === 'PENDING' && appealInfo.appeal !== '';
     
     // --- PENGHITUNGAN ESTIMASI TERBARU (DISIMPAN DI MODAL NANTINYA) ---
     let estimatedNewMoney = 0;
@@ -840,7 +861,10 @@ function generateCard(sub, index) {
     let badgeHTML = '';
     let cardOpacityClass = 'opacity-100';
 
-    if (isBrandReview) {
+    if (isAppealing) {
+        badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Banding Ditinjau</div>`;
+    }
+    else if (isBrandReview) {
         badgeHTML = `<div class="absolute top-2 right-2 z-20 bg-amber-500/90 text-white text-[7px] sm:text-[9px] font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-bl-lg rounded-tr-lg backdrop-blur shadow-sm">Review Brand</div>`;
     } 
     else if (isBrandRejected) {
@@ -929,10 +953,16 @@ window.openDetailModal = function(subId) {
     const isCampClosed = camp.status === 'CLOSED' || (camp.budget_remaining || 0) <= 0;
 
     let realStatus = sub.status || 'PENDING';
+    activeDetailId = subId;
+
+    const appealInfo = parseRejectReason(sub.reject_reason);
+    const isAppealing = realStatus === 'PENDING' && appealInfo.appeal !== '';
     
     // Status Badge Logic
     const badgeEl = document.getElementById('detail-badge-status');
-    if (realStatus === 'PENDING' && currentViews === 0) {
+    if (isAppealing) {
+        badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px] font-bold uppercase">Banding Ditinjau</span>`;
+    } else if (realStatus === 'PENDING' && currentViews === 0) {
         badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-amber-500/20 text-amber-500 border border-amber-500/30 text-[10px] font-bold uppercase">Review Brand</span>`;
     } else if (realStatus === 'REJECTED' && currentViews === 0) {
         badgeEl.innerHTML = `<span class="px-2 py-1 rounded bg-red-500/20 text-red-500 border border-red-500/30 text-[10px] font-bold uppercase">Ditolak Brand</span>`;
@@ -947,13 +977,34 @@ window.openDetailModal = function(subId) {
     document.getElementById('detail-title').innerText = escapeHTML(camp.title);
     document.getElementById('detail-brand').innerText = escapeHTML(camp.brand_name);
 
-    // Tampilkan Reject Reason Jika ada
+    // Tampilkan Reject Reason Jika ada (termasuk saat banding sedang ditinjau)
     const rejectBox = document.getElementById('detail-reject-box');
-    if (realStatus === 'REJECTED' && sub.reject_reason) {
+    if ((realStatus === 'REJECTED' || isAppealing) && (appealInfo.original || appealInfo.appeal)) {
         rejectBox.classList.remove('hidden');
-        document.getElementById('detail-reject-reason').innerText = escapeHTML(sub.reject_reason);
+        document.getElementById('detail-reject-reason').innerText = escapeHTML(appealInfo.original || 'Tanpa alasan tertulis');
     } else {
         rejectBox.classList.add('hidden');
+    }
+
+    // Box banding yang sudah diajukan
+    const appealBox = document.getElementById('detail-appeal-box');
+    const appealForm = document.getElementById('detail-appeal-form');
+    if (isAppealing) {
+        document.getElementById('detail-appeal-reason').innerText = escapeHTML(appealInfo.appeal);
+        appealBox.classList.remove('hidden');
+    } else {
+        appealBox.classList.add('hidden');
+    }
+
+    // Form banding hanya muncul untuk klaim yang ditolak
+    if (realStatus === 'REJECTED') {
+        appealForm.classList.remove('hidden');
+        document.getElementById('detail-appeal-input').value = '';
+        document.getElementById('detail-appeal-error').classList.add('hidden');
+        document.getElementById('detail-appeal-btn').disabled = false;
+        document.getElementById('detail-appeal-btn').innerText = 'Kirim Banding';
+    } else {
+        appealForm.classList.add('hidden');
     }
 
     // Peringatan Budget Habis
@@ -1004,6 +1055,59 @@ window.closeDetailModal = function() {
     const c = document.getElementById('detailClaimContent');
     m.classList.add('opacity-0'); c.classList.add('scale-95');
     setTimeout(() => { m.classList.add('hidden'); m.classList.remove('flex'); }, 300);
+};
+
+// ========================================================
+// AJUKAN BANDING: REJECTED -> PENDING (review client lalu admin)
+// ========================================================
+window.submitAppeal = async function() {
+    if (!activeDetailId) return;
+
+    const sub = submissionsData.find(s => s.id === activeDetailId);
+    if (!sub) return;
+
+    const input = document.getElementById('detail-appeal-input');
+    const errEl = document.getElementById('detail-appeal-error');
+    const btn = document.getElementById('detail-appeal-btn');
+    const appealText = (input.value || '').trim();
+
+    if (appealText.length < 10) {
+        errEl.classList.remove('hidden');
+        input.focus();
+        return;
+    }
+    errEl.classList.add('hidden');
+
+    const { original } = parseRejectReason(sub.reject_reason);
+    const newReason = `${original}${APPEAL_MARK}${appealText}`;
+
+    btn.disabled = true;
+    btn.innerText = 'Mengirim...';
+
+    try {
+        const { data, error } = await supabase.from('submissions')
+            .update({ status: 'PENDING', reject_reason: newReason })
+            .eq('id', sub.id)
+            .eq('status', 'REJECTED')
+            .select('id');
+
+        if (error) throw error;
+        if (!data || data.length === 0) throw new Error('Status klaim sudah berubah. Muat ulang halaman ini.');
+
+        sub.status = 'PENDING';
+        sub.reject_reason = newReason;
+
+        window.closeDetailModal();
+        applyFilters();
+        if (typeof loadUserStats === 'function') loadUserStats();
+
+        window.showAlert('Banding terkirim. Video akan ditinjau ulang oleh Client lalu Admin.', 'success');
+    } catch (err) {
+        window.showAlert('Gagal mengirim banding: ' + err.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Kirim Banding';
+    }
 };
 
 // ===================================================

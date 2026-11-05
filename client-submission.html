@@ -149,6 +149,12 @@
                 </button>
             </div>
             <p class="text-[12px] sm:text-[13px] text-zinc-400 mb-5 leading-relaxed">Tentukan apakah video ini sesuai dengan brief campaign Anda. Jika disetujui, kreator akan dapat melanjutkan untuk mengklaim pembayaran ke Admin.</p>
+
+            <div id="clientAppealBox" class="hidden mb-5 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                <p class="text-[10px] font-bold text-amber-500 uppercase mb-1">Banding dari Clipper</p>
+                <p id="clientAppealText" class="text-[12px] sm:text-[13px] text-amber-300 leading-relaxed"></p>
+                <p id="clientAppealOriginal" class="text-[10px] text-zinc-500 mt-1.5"></p>
+            </div>
             
             <div class="flex gap-3 sm:gap-4 mb-5 sm:mb-6">
                 <button id="btnSetuju" onclick="window.selectDecision('setuju')" class="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-green-500 hover:text-green-500 transition-all focus:outline-none">
@@ -454,7 +460,7 @@
                     const { data, error } = await supabase
                         .from('submissions')
                         .select(`
-                            id, video_link, status, created_at, user_id, views_claimed,
+                            id, video_link, status, created_at, user_id, views_claimed, reject_reason,
                             profiles (full_name, email),
                             campaigns (id, title, platforms, is_private)
                         `)
@@ -496,7 +502,18 @@
             return { platHTML, thumbUrl };
         }
 
+        const APPEAL_MARK = '\n\n[Banding] ';
+
+        function parseRejectReason(raw) {
+            const text = (raw || '').toString();
+            const idx = text.indexOf(APPEAL_MARK);
+            if (idx === -1) return { original: text.trim(), appeal: '' };
+            return { original: text.slice(0, idx).trim(), appeal: text.slice(idx + APPEAL_MARK.length).trim() };
+        }
+
         function getClientUIStatus(sub) {
+            // Banding dari clipper: PENDING + ada alasan banding = review brand lagi
+            if (sub.status === 'PENDING' && parseRejectReason(sub.reject_reason).appeal !== '') return 'PENDING_CLIENT';
             if (sub.status === 'PENDING' && (!sub.views_claimed || sub.views_claimed === 0)) return 'PENDING_CLIENT';
             if (sub.status === 'PENDING' && sub.views_claimed > 0) return 'PENDING_ADMIN';
             return sub.status; 
@@ -756,6 +773,18 @@
             btnTolak.className = "flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-zinc-800 bg-zinc-900 text-zinc-400 text-[13px] sm:text-base font-semibold hover:border-red-500 hover:text-red-500 transition-all focus:outline-none";
             document.querySelectorAll('input[name="alasan"]').forEach(radio => radio.checked = false);
 
+            // Tampilkan alasan banding (kalau ada) supaya client bisa menilai ulang
+            const subReview = submissionsData.find(s => s.id === subId);
+            const appealData = subReview ? parseRejectReason(subReview.reject_reason) : { original: '', appeal: '' };
+            const appealBox = document.getElementById('clientAppealBox');
+            if (appealData.appeal) {
+                document.getElementById('clientAppealText').innerText = appealData.appeal;
+                document.getElementById('clientAppealOriginal').innerText = appealData.original ? `Penolakan sebelumnya: ${appealData.original}` : '';
+                appealBox.classList.remove('hidden');
+            } else {
+                appealBox.classList.add('hidden');
+            }
+
             const reviewModal = document.getElementById('reviewModal');
             const reviewModalBox = document.getElementById('reviewModalBox');
             reviewModal.classList.remove('hidden');
@@ -836,7 +865,15 @@
             btnSubmit.innerText = "Memproses...";
 
             try {
+                const subBefore = submissionsData.find(s => s.id === activeCardId);
+                const isAppealReview = subBefore ? parseRejectReason(subBefore.reject_reason).appeal !== '' : false;
+
                 let updateData = { status: currentDecision === 'setuju' ? 'APPROVED' : 'REJECTED' };
+
+                // Banding yang disetujui brand: masuk antrean review pembayaran admin
+                if (currentDecision === 'setuju' && isAppealReview) {
+                    updateData.status = (subBefore.views_claimed || 0) > 0 ? 'PENDING' : 'APPROVED';
+                }
                 
                 if (currentDecision === 'tolak') {
                     const checked = document.querySelector('input[name="alasan"]:checked');
